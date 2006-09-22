@@ -53,28 +53,36 @@ int gpio_check( void ) {
 void TimerCounterHandler(void *CallBackRef, Xuint8 TmrCtrNumber);
 
 int main (void) {
-    int old_count = 0;
-
-    gpio_init();
-    XGpio_DiscreteWrite(&led,1,0);
-    XGpio_DiscreteWrite(&ledPush,1,0x1);
-    xil_printf("-- Entering main() --\r\n");
-    XTmrCtr_Initialize(&XTC, XPAR_OPB_TIMER_0_DEVICE_ID );
-    XTmrCtr_SetOptions(&XTC, 0, XTC_DOWN_COUNT_OPTION | XTC_INT_MODE_OPTION );
-    XTmrCtr_SetHandler(&XTC, TimerCounterHandler, &XTC);
-    microblaze_enable_interrupts();
-    XTmrCtr_SetResetValue ( &XTC, 0, 300*1000000L );
-    XTmrCtr_Start( &XTC, 0 );
-    XGpio_DiscreteWrite(&ledPush,1,0x3);
-    while(1) {
-        if (gpio_check()) break;
-	    if ( old_count != intr_count ) {
+	int old_count = 0;
+	
+	gpio_init();
+	XGpio_DiscreteWrite(&led,1,0);
+	XGpio_DiscreteWrite(&ledPush,1,0x1);
+	xil_printf("-- Entering main() --\r\n");
+	XTmrCtr_Initialize(&XTC, XPAR_OPB_TIMER_1_DEVICE_ID );
+	XTmrCtr_SetOptions(&XTC, 0, XTC_DOWN_COUNT_OPTION | XTC_INT_MODE_OPTION |
+    XTC_AUTO_RELOAD_OPTION );
+	XTmrCtr_SetHandler(&XTC, TimerCounterHandler, &XTC);
+  microblaze_register_handler( (XInterruptHandler)XTmrCtr_InterruptHandler,
+    &XTC );
+ 	microblaze_enable_interrupts();
+	XTmrCtr_SetResetValue ( &XTC, 0, 50*1000000L );
+	XTmrCtr_Start( &XTC, 0 );
+	XGpio_DiscreteWrite(&ledPush,1,0x3);
+	while(1) {
+	  if (gpio_check()) break;
+	  if ( old_count != intr_count ) {
 		  xil_printf("  TmrCtr update %d\r\n", intr_count );
-          XGpio_DiscreteWrite(&led,1,3);
-	      XGpio_DiscreteWrite(&ledPush,1,0x10 | (intr_count&0xF));
+		  XGpio_DiscreteWrite(&led,1,3);
+		  XGpio_DiscreteWrite(&ledPush,1,0x10 | (intr_count&0xF));
 		  old_count = intr_count;
 		}
-    }
+	}
+  if ( XTmrCtr_IsExpired( &XTC, 0 ) ) {
+		xil_printf("  TmrCtr Timed out\r\n" );
+  } else {
+	 xil_printf("  TmrCtr un-Timeout\r\n" );
+  }
 	XTmrCtr_Stop(&XTC, 0 );
 	microblaze_disable_interrupts();
     XGpio_DiscreteWrite(&ledPush,1,0x10);
@@ -84,8 +92,8 @@ int main (void) {
 
 void TimerCounterHandler(void *CallBackRef, Xuint8 TmrCtrNumber)
 {
-  XTmrCtr *XTC = (XTmrCtr *)CallBackRef;
-  XTmrCtr_Stop(XTC, 0 );
+  // XTmrCtr *XTC = (XTmrCtr *)CallBackRef;
+  // XTmrCtr_Stop(XTC, 0 );
   //XGpio_DiscreteWrite(&led,1,1);
   intr_count++;
 }
