@@ -1,0 +1,22 @@
+Interrupt debugging:
+
+TmrCtr connected directly to microblaze
+ISR XTmrCtr_InterruptHandler defined as ISR in XPS SPS Interrupt Handlers
+I have verified that vectors are appropriate for calling the top level
+__interrupt_handler() (standalone_v1_00_a/src/microblaze_interrupt_handler.c)
+and the MB_InterruptVectorTable[] defined in
+(standalone_v1_00_a/src/microblaze_interrupts_g.c) correctly points to
+XTmrCtr_InterruptHandler
+
+I call XTmrCtr_SetHandler(&XTC, TimerCounterHandler, &XTC);
+
+to define my handler, but my handler never gets called.
+
+For test, I called
+
+microblaze_register_handler( (XInterruptHandler)TimerCounterHandler,
+      &XTC );
+
+i.e. I replaced the TmrCtr interrupt handler with my own, and then
+I can see that the code in my handler gets executed when the
+interrupt occurs, but I still lose control of the processor afterward.
