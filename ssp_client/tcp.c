@@ -4,13 +4,13 @@ static int tcp_socket;
 
 int tcp_create( char *hostname ) {
 
-  int rc, i;
+  int rc;
   struct sockaddr_in localAddr, servAddr;
   struct hostent *h;
 
   h = gethostbyname(hostname);
   if(h==NULL) {
-    printf("%s: unknown host '%s'\n",argv[0],argv[1]);
+    printf("Unknown host '%s'\n",hostname);
     exit(1);
   }
 
@@ -32,7 +32,7 @@ int tcp_create( char *hostname ) {
   
   rc = bind(tcp_socket, (struct sockaddr *) &localAddr, sizeof(localAddr));
   if (rc<0) {
-    printf("%s: cannot bind port TCP %u\n",argv[0],SERVER_PORT);
+    printf("Cannot bind port TCP %u\n",SSP_SERVER_PORT);
     perror("error ");
     exit(1);
   }
@@ -43,4 +43,29 @@ int tcp_create( char *hostname ) {
     perror("cannot connect ");
     exit(1);
   }
+  return 0;
+}
+
+// tcp_send() sends the specified command, then waits for a response,
+// which should be an ascii-encoded integer. It returns the value.
+int tcp_send( char * cmd ) {
+	char recv_buf[RECV_BUF_SIZE];
+	int rv, i;
+	int cmdlen = strlen(cmd);
+	rv = send( tcp_socket, cmd, cmdlen, 0);
+	if ( rv != cmdlen ) {
+		fprintf(stderr, "Send failed: %d: errno = %d\n", rv, errno );
+		exit(1);
+	}
+	rv = recv( tcp_socket, recv_buf, RECV_BUF_SIZE, 0 );
+	if ( rv <= 0 ) {
+		fprintf(stderr, "Recv returned %d\n", rv );
+		return -1;
+	} else {
+		int rnum = 0;
+		for ( i = 0; i < rv && isdigit(recv_buf[i]); i++ ) {
+			rnum = rnum*10 + recv_buf[i] - '0';
+		}
+		return rnum;
+	}
 }

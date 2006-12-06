@@ -8,10 +8,13 @@ QCONFIG=qconfig.mk
 endif
 include $(QCONFIG)
 
+#===== USEFILE - the file containing the usage message for the application. 
 USEFILE=
 
 
 
+#===== LIBS - a space-separated list of library items to be included in the link.
+LIBS+=socket
 include $(MKFILES_ROOT)/qmacros.mk
 #QNX internal start
 ifeq ($(filter g, $(VARIANT_LIST)),g)
@@ -58,5 +61,5 @@ BUILDNAME_SAR:= $(patsubst %$(IMAGE_SUFF_$(BUILD_TYPE)),%S.a,$(BUILDNAME))
 POST_BUILD:=$($(call EXPRESSION,POST_BUILD))
 #QNX internal end
 include $(MKFILES_ROOT)/qtargets.mk
-OPTIMIZE_TYPE_g=none
 OPTIMIZE_TYPE=$(OPTIMIZE_TYPE_$(filter g, $(VARIANTS)))
+OPTIMIZE_TYPE_g=none
