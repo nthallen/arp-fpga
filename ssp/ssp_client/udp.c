@@ -6,12 +6,12 @@ static int udp_socket;
 
 int udp_create(void) {
   struct sockaddr_in servAddr;
-  int port;
+  int port, rc;
 
   /* socket creation */
   udp_socket=socket(AF_INET, SOCK_DGRAM, 0);
   if (udp_socket<0) {
-    printf("%s: cannot open socket \n",argv[0]);
+    printf("Cannot open UDP socket \n");
     exit(1);
   }
 
@@ -31,7 +31,7 @@ int udp_create(void) {
 int udp_receive(void) {
     struct sockaddr_in cliAddr;
 	char msg[MAX_MSG];
-	int rc, n, cliLen;
+	int n, cliLen;
 
     cliLen = sizeof(cliAddr);
     n = recvfrom(udp_socket, msg, MAX_MSG, 0, 

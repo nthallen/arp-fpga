@@ -8,10 +8,14 @@
 #include <stdio.h>
 #include <unistd.h> /* close() */
 #include <string.h> /* memset() */
+#include <errno.h>
+#include <ctype.h>
 
 extern int udp_create(void);
 extern int udp_receive(void);
-extern int tcp_create(void);
+extern int tcp_create(char *hostname);
+extern int tcp_send( char * cmd );
 #define SSP_SERVER_PORT 1500
+#define RECV_BUF_SIZE 80
 
 #endif

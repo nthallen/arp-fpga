@@ -21,12 +21,23 @@
 #include "udp_demo.h"
 
 int main( int argc, char **argv ) {
+	char cmdbuf[80];
+	int i;
 	int udp_port = udp_create();
 	printf("Opened UDP port %d\n", udp_port);
-  // open TCP connection to SSP board
-  tcp_create();
-  // transmit the command including UDP socket number
-  // read a bunch of scans
-  // send DA command
+    // open TCP connection to SSP board
+    tcp_create("localhost");
+    // transmit the command including UDP socket number
+    sprintf(cmdbuf, "NS:1207;UP:%d\r\n", udp_port );
+    tcp_send(cmdbuf);
+    tcp_send("EN\r\n");
+    // read a bunch of scans
+    for (i = 0; i < 500; i++ ) {
+    	udp_receive();
+    }
+    // send DA command
+    tcp_send("DA\r\n");
+    printf("Received 500 scans\n");
+    return 0;
 }
 
