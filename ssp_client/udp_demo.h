@@ -17,5 +17,6 @@ extern int tcp_create(char *hostname);
 extern int tcp_send( char * cmd );
 #define SSP_SERVER_PORT 1500
 #define RECV_BUF_SIZE 80
+#define UDP_MAX_MSG (4096*4)
 
 #endif
