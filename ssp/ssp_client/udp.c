@@ -1,7 +1,5 @@
 #include "udp_demo.h"
 
-#define MAX_MSG (4096*4)
-
 static int udp_socket;
 
 int udp_create(void) {
@@ -30,11 +28,11 @@ int udp_create(void) {
 
 int udp_receive(void) {
     struct sockaddr_in cliAddr;
-	char msg[MAX_MSG];
+	char msg[UDP_MAX_MSG];
 	int n, cliLen;
 
     cliLen = sizeof(cliAddr);
-    n = recvfrom(udp_socket, msg, MAX_MSG, 0, 
+    n = recvfrom(udp_socket, msg, UDP_MAX_MSG, 0, 
 		 (struct sockaddr *) &cliAddr, &cliLen);
 
     return n;
