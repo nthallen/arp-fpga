@@ -28,7 +28,7 @@ int main( int argc, char **argv ) {
     // open TCP connection to SSP board
     tcp_create("localhost");
     // transmit the command including UDP socket number
-    sprintf(cmdbuf, "NS:1207;UP:%d\r\n", udp_port );
+    sprintf(cmdbuf, "UP:%d\r\n", udp_port );
     tcp_send(cmdbuf);
     tcp_send("EN\r\n");
     // read a bunch of scans
