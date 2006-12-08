@@ -38,6 +38,7 @@ int main( int argc, char **argv ) {
     // send DA command
     tcp_send("DA\r\n");
     printf("Received 500 scans\n");
+    tcp_send("EX\r\n");
     return 0;
 }
 
