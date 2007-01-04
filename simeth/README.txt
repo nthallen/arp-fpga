@@ -1,3 +1,6 @@
+Simeth: Test project using Sysgen generated scan
+to test ethernet throughput.
+
 Notes on use LwIP with Xilkernel
 
 LwIP Thread Usage
