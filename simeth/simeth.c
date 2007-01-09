@@ -16,7 +16,7 @@ static struct sockaddr_in udpSrvrAddr;
 static int udp_port = 0;
 unsigned long scan[SCAN_LENGTH];
 int xfrEnabled = 0, app_done = 0;
-static int parse_cmds( char *cmd );
+static unsigned int parse_cmds( char *cmd );
 
 int main() {
   xilkernel_main();
@@ -27,21 +27,29 @@ int main() {
 void* main_main(void* arg) {
   lwip_init(); // starts two more threads
   sleep(100); // msecs to finish message
-  if ( ethernet_init() ) return &err_rv;
+  xil_printf("lwIP initialized\n");
+  // Cannot initialize the ethernet here because
+  // Xemacif_init call lwIP's mem_malloc, which requires
+  // that the thread have been registered via sys_thread_new()
+  // if ( ethernet_init() ) return &err_rv;
+  // xil_printf("ethernet initialized\n");
   if ( sem_init(&udp_sem, 0, 0) ) {
     xil_printf( "Unable to initialize udp_sem\n" );
     return &err_rv;
   }
 
-  // Configure the ethernet interface
   sys_thread_new((void *)&udpThread, 0, 8);
     // run the UDP thread at the lowest priority for now
     // since it will run ready until we configure interrupts
-  // sys_thread_new((void *)&serverAppThread, 0, 1);
-  serverAppThread(0);
+  sem_wait(&udp_sem); // wait for ethernet initialization
+  sleep(100);
+  
+  sys_thread_new((void *)&serverAppThread, 0, 1);
+  // serverAppThread(0);
   // Since this is the end of the main_main() thread, we should
   // be able to simply call the serverAppThread and save the
-  // thread create/destroy overhead.
+  // thread create/destroy overhead. Unfortunately, lwip needs
+  // to keep separate track of the threads.
 }
   
 // udpThread() is responsible for fetching data from the FSL
@@ -56,6 +64,11 @@ void *udpThread(void *arg) {
   int udp_socket, rc;
   int cur_N_skipped;
   int transfers = 0;
+
+  if ( ethernet_init() ) return &err_rv;
+  xil_printf("ethernet initialized\n");
+  sem_post(&udp_sem);
+
   udp_socket = socket(AF_INET,SOCK_DGRAM,0);
   if ( udp_socket < 0 ) {
     xil_printf("cannot open udp socket\n");
@@ -67,18 +80,21 @@ void *udpThread(void *arg) {
   udpCliAddr.sin_addr.s_addr = htonl(INADDR_ANY);
   udpCliAddr.sin_port = htons(0);
 
-  /* We'll leave configuraiton of the udpSrvrAddr to the tcpThread */
+  /* We'll leave configuration of the udpSrvrAddr to the tcpThread */
   rc = bind(udp_socket, (struct sockaddr *) &udpCliAddr, sizeof(udpCliAddr));
   if ( rc<0 ) {
     xil_printf("cannot bind UDP port\n");
     return &err_rv;
   }
+  xil_printf("udp_thread: UDP bound, awaiting semaphore\n");
   for (;;) {
     // wait for an enable message from the tcpThread
+    xil_printf("udp_thread: Suspended\n");
     if ( sem_wait( &udp_sem ) ) {
       xil_printf("Error %d from sem_wait() in udpThread\n", errno );
       return &err_rv;
     }
+    xil_printf("udp_thread: starting acquisition\n");
     while ( xfrEnabled ) {
       int status;
       int words_read;
@@ -141,6 +157,7 @@ void *serverAppThread(void *arg) {
     return &err_rv;
   }
 
+  xil_printf("serverAppThread: entering main loop\n");
   while(1) {
     int cliLen = sizeof(cliAddr);
     new_sock = accept(tcp_socket, (struct sockaddr *)&cliAddr, &cliLen);
@@ -148,6 +165,7 @@ void *serverAppThread(void *arg) {
       xil_printf("serverAppThread: cannot accept connection\n");
       return &err_rv;
     }
+    xil_printf("serverAppThread: accepted connection\n");
     // This must be handled more robustly. Only one UDP client
     // can be supported at a time, but we probably need to allow
     // us to hijack the connection if we lose one for some reason
@@ -160,36 +178,42 @@ void *serverAppThread(void *arg) {
 }
   
 static char rcv_msg[SSP_MAX_MSG+1];
+
 void *tcpThread( void *socketptr ) {
   int my_sock = *(int *)socketptr;
   int n;
+  int done = 0;
   
-  for (;;) {
+  while (!done) {
     n = recv(my_sock, rcv_msg, SSP_MAX_MSG, 0);
-    if ( n < 0 ) {
-      xil_printf("tcpThread: recv returned error\n");
-      close(my_sock);
-      return &err_rv;
-    }
+    xil_printf("tcpThread: received %d bytes\n", n);
+    if ( n <= 0 ) break;
     if ( n > SSP_MAX_MSG ) {
       xil_printf("tcpThread: recv overflow!\n");
-      close(my_sock);
-      return &err_rv;
+      break;
     }
     if ( n > 0 ) {
-      int rv;
+      unsigned int rv;
       rcv_msg[n] = '\0';
       rv = parse_cmds(rcv_msg);
-      rcv_msg[0] = rv%10 + '0';
-      rv = 1;
-      // itoa(rv, rcv_msg, 10);
-      // rv = strlen(rcv_msg);
-      rcv_msg[rv++] = '\r';
-      rcv_msg[rv++] = '\n';
-      rcv_msg[rv++] = '\0';
-      rv = send( my_sock, rcv_msg, rv, 0 );
+      if ( rv == 410 ) done = 1;
+      rcv_msg[7] = '\0';
+      rcv_msg[6] = '\n';
+      rcv_msg[5] = '\r';
+      rcv_msg[4] = rv%10 + '0';
+      rv /= 10;
+      n = 4;
+      while ( rv ) {
+        ++n;
+        rcv_msg[8-n] = rv%10+'0';
+        rv /= 10;
+      }
+      rv = send( my_sock, rcv_msg+8-n, n, 0 );
     }
   }
+  xil_printf("tcpThread: exiting thread\n");
+  close(my_sock);
+  return &err_rv;
 }
 
 int ethernet_init(void) {
@@ -257,29 +281,30 @@ void check_fifo_status( int status, char *where ) {
     RS Return Status
   Return Values:
     200 OK
+    410 Gone (successful response to EX)
     500 Bad
 */
-static int parse_cmds( char *cmd ) {
+static unsigned int parse_cmds( char *cmd ) {
   if ( cmd[0] == 'E' ) {
     if ( cmd[1] == 'N' ) {
       xfr_enable();
-      return 0;
+      return 200;
     } else if ( cmd[1] == 'X' ) {
       app_done = 1;
       xil_printf("\nReceived Exit\n");
-      return 0;
+      return 410;
     }
   } else if ( cmd[0] == 'D' ) {
     if ( cmd[1] == 'A' ) {
       xfr_disable();
-      return 0;
+      return 200;
     }
   } else if ( cmd[0] == 'U' && cmd[1] == 'P' && cmd[2] == ':' ) {
     udp_port = atoi(cmd+3);
     xil_printf("tcpThread: Setting UDP port to %d\n", udp_port );
-    return 0;
+    return 200;
   }
-  return 1;
+  return 500;
 }
 
 void xfr_init(void) {
@@ -321,4 +346,5 @@ void xfr_enable(void) {
     SOURCE_SCAN2_SM_0_CONTROL_DIN, 1);
   check_fifo_status( status, "Setting circuit enable" );
   xfrEnabled = 1;
+  sem_post(&udp_sem);
 }
