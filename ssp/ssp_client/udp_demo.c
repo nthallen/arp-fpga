@@ -26,7 +26,7 @@ int main( int argc, char **argv ) {
 	int udp_port = udp_create();
 	printf("Opened UDP port %d\n", udp_port);
     // open TCP connection to SSP board
-    tcp_create("localhost");
+    tcp_create("10.0.0.200");
     // transmit the command including UDP socket number
     sprintf(cmdbuf, "UP:%d\r\n", udp_port );
     tcp_send(cmdbuf);

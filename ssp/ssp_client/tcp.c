@@ -59,13 +59,14 @@ int tcp_send( char * cmd ) {
 	}
 	rv = recv( tcp_socket, recv_buf, RECV_BUF_SIZE, 0 );
 	if ( rv <= 0 ) {
-		fprintf(stderr, "Recv returned %d\n", rv );
+		fprintf(stderr, "Recv returned %d errno %d cmd='%s'\n", rv, errno, cmd );
 		return -1;
 	} else {
 		int rnum = 0;
 		for ( i = 0; i < rv && isdigit(recv_buf[i]); i++ ) {
 			rnum = rnum*10 + recv_buf[i] - '0';
 		}
+		printf("tcp_send: returning %d, %d from command %s", rv, rnum, cmd );
 		return rnum;
 	}
 }
