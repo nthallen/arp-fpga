@@ -66,7 +66,8 @@ int tcp_send( char * cmd ) {
 		for ( i = 0; i < rv && isdigit(recv_buf[i]); i++ ) {
 			rnum = rnum*10 + recv_buf[i] - '0';
 		}
-		printf("tcp_send: returning %d, %d from command %s", rv, rnum, cmd );
+		if ( verbosity )
+  		printf("tcp_send: returning %d, %d from command %s", rv, rnum, cmd );
 		return rnum;
 	}
 }
