@@ -19,26 +19,67 @@
     500 Bad
 */
 #include "udp_demo.h"
+#include <time.h>
+#include <sys/neutrino.h>
+#include <inttypes.h>
+#include <sys/syspage.h>
+
+#define SCANS_PER_TEST 100
+int verbosity = 0;
 
 int main( int argc, char **argv ) {
 	char cmdbuf[80];
-	int i;
+	int i, scan_length;
 	int udp_port = udp_create();
+	FILE *ofp;
+
+	uint64_t cps = SYSPAGE_ENTRY(qtime)->cycles_per_sec;
 	printf("Opened UDP port %d\n", udp_port);
-    // open TCP connection to SSP board
-    tcp_create("10.0.0.200");
-    // transmit the command including UDP socket number
-    sprintf(cmdbuf, "UP:%d\r\n", udp_port );
-    tcp_send(cmdbuf);
-    tcp_send("EN\r\n");
-    // read a bunch of scans
-    for (i = 0; i < 500; i++ ) {
-    	udp_receive();
-    }
-    // send DA command
-    tcp_send("DA\r\n");
-    printf("Received 500 scans\n");
-    tcp_send("EX\r\n");
-    return 0;
+	// open TCP connection to SSP board
+	tcp_create("10.0.0.200");
+	// transmit the command including UDP socket number
+	sprintf(cmdbuf, "UP:%d\r\n", udp_port );
+	tcp_send(cmdbuf);
+	ofp = fopen("udp_demo.log", "w");
+	if ( ofp == NULL ) {
+	  fprintf(stderr,"Cannot open udp_demo.log\n");
+	  exit(1);
+	}
+	for ( scan_length = 25; scan_length < 1207; scan_length += 25 ) {
+		int scan_size = scan_length*sizeof(long);
+		int n;
+    uint64_t start_time, end_time;
+		double duration;
+		int total_bytes;
+		
+		sprintf(cmdbuf, "NS:%d\r\n", scan_length );
+		tcp_send(cmdbuf);
+  	tcp_send("EN\r\n");
+		for (;;) {
+			n = udp_receive();
+			if ( n == scan_size ) break;
+			fprintf(stderr, "Expected %d bytes, received %d\n", scan_size, n );
+		}
+		start_time = ClockCycles( );
+		// read a bunch of scans
+		for (i = 0; i < SCANS_PER_TEST; i++ ) {
+			n = udp_receive();
+			if ( n != scan_size )
+			  fprintf( stderr, "!Expected %d bytes, received %d\n", scan_size, n);
+		}
+		end_time = ClockCycles( );
+		// send DA command
+		tcp_send("DA\r\n");
+		// Calculate throughput
+		duration = (end_time - start_time) / (double)cps;
+		total_bytes = scan_size * SCANS_PER_TEST;
+		printf( "%4d  %4d  %5.4f\n",
+		  scan_length,SCANS_PER_TEST, duration );
+		fprintf(ofp, "%4d  %4d  %5.4f\n",
+		  scan_length,SCANS_PER_TEST, duration );
+	}
+	tcp_send("EX\r\n");
+	fclose(ofp);
+	return 0;
 }
 

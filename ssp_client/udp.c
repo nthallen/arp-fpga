@@ -40,9 +40,13 @@ int udp_receive(void) {
     cliLen = sizeof(cliAddr);
     n = recvfrom(udp_socket, msg, UDP_MAX_MSG, 0, 
 		 (struct sockaddr *) &cliAddr, &cliLen);
-    if ( n > max_msg_size ) {
-    	max_msg_size = n;
-    	printf("Maximum UDP message received: %d\n", n );
-    }
+//    if ( n > max_msg_size ) {
+//      FILE *fp;
+//      	max_msg_size = n;
+//      	printf("Maximum UDP message received: %d\n", n );
+//      	fp = fopen("udp.log", "w");
+//      	n = fwrite( msg, max_msg_size, 1, fp );
+//      	fclose(fp);
+//    }
     return n;
 }
