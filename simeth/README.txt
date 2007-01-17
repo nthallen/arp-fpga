@@ -2,7 +2,36 @@ Simeth: Test project using Sysgen generated scan
 to test ethernet throughput.
 
 Notes on use LwIP with Xilkernel
+  Software Platform Settings
+    xilkernel
+	    sysintc_spec => opb_intc_0
+	    config_sema => true
+	    max_sem => 40 [40 is enough for the current config. 20 is not enough]
+	    config_time => true
+	    config_sched => true
+	      sched_type => SCHED_PRIO
+	    config_pthread_support => true
+	      static_pthread_table => ((main_main, 0))
+	      pthread_stack_size => 8000
+	    systmr_spec->systmr_dev => opb_timer_1
+	  LwIP
+	    emac_instances  ((Ethernet_MAC, 0, 0xA, 0x35, 0x55, 0x55, 0x55))
+	      (or whatever, using the Xilinx numbers without authorization)
+	    api_mode SOCKETS_API
+	    All other options current defaulted
 
+Lessons Learned:
+  Threads that are going to interact with LwIP need to be created via
+  sys_thread_new(), which sets up additional data structures, rather
+  than going directly to pthread_create(). Specifically, this means that
+  main_main() cannot do anything directly with LwIP, and must be limited
+  to starting up other threads that will do the real work. I was tempted
+  to initialize the ethernet interface in main_main() before starting up
+  the tcp and upd threads, but netif_add() attempts to allocate memory
+  using mem_malloc(), which needs to run in a thread known to LwIP (hence
+  created by sys_thread_new()) so ethernet_init() was moved into the
+  tcpThread().
+  
 LwIP Thread Usage
 
   lwip_init {
@@ -14,6 +43,7 @@ LwIP Thread Usage
 
   Net result is 2 additional threads. It looks like lwip_init could
   simply call lwip_init_proper and avoid one thread create/destroy.
+  [Probably not, since lwip_init is called from main_main()'s thread.]
 
   In any event, after calling lwip_init, there are two new threads,
   one for tcpip, one for packets.
@@ -54,9 +84,6 @@ Basic Application Layout
       // run the UDP thread at the lowest priority for now
       // since it will run ready until we configure interrupts
     sys_thread_new((void *)&serverAppThread, 0, 1);
-    // Since this is the end of the main_main() thread, we should
-    // be able to simply call the serverAppThread and save the
-    // thread create/destroy overhead.
   }
   
   // udpThread() is responsible for fetching data from the FSL
@@ -72,12 +99,12 @@ Basic Application Layout
       // wait for an enable message from the serverAppThread
       // set up udp destination port
       for (;;) {
-	// check for incoming message
-	// check for data on FSL
-	if ( whole packet received ) {
-	  send();
-	  if ( !enabled ) break;
-	}
+				// check for incoming message
+				// check for data on FSL
+				if ( whole packet received ) {
+				  send();
+				  if ( !enabled ) break;
+				}
       }
     }
   }
