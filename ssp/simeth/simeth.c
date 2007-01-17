@@ -16,6 +16,7 @@ static struct sockaddr_in udpSrvrAddr;
 static int udp_port = 0;
 unsigned long scan[SCAN_LENGTH];
 int xfrEnabled = 0, app_done = 0;
+int scan_xmit_length = SCAN_LENGTH;
 static unsigned int parse_cmds( char *cmd );
 
 int main() {
@@ -97,7 +98,7 @@ void *udpThread(void *arg) {
     xil_printf("udp_thread: starting acquisition\n");
     while ( xfrEnabled ) {
       int status;
-      int words_read;
+      int words_read, scan_size;
       
       // First wait for there to be data in the FIFO so
       // N_skipped is valid.
@@ -120,12 +121,15 @@ void *udpThread(void *arg) {
         words_read += nw;
         ++transfers;
       }
-      rc = sendto(udp_socket, scan, sizeof(scan), 0, 
-        (struct sockaddr *) &udpSrvrAddr, 
-        sizeof(udpSrvrAddr));
-      if ( rc<0 ) {
-        xil_printf( "udpThread: cannot send data: %d\n", errno);
-        return &err_rv;
+      while ( xfrEnabled ) { // Strictly for benchmarking!
+        scan_size = scan_xmit_length * sizeof(long);
+        rc = sendto(udp_socket, scan, scan_size, 0, 
+          (struct sockaddr *) &udpSrvrAddr, 
+          sizeof(udpSrvrAddr));
+        if ( rc<0 ) {
+          xil_printf( "udpThread: cannot send data: %d\n", errno);
+          return &err_rv;
+        }
       }
     }
   }
@@ -297,12 +301,17 @@ static unsigned int parse_cmds( char *cmd ) {
   } else if ( cmd[0] == 'D' ) {
     if ( cmd[1] == 'A' ) {
       xfr_disable();
+      sleep(200);
       return 200;
     }
   } else if ( cmd[0] == 'U' && cmd[1] == 'P' && cmd[2] == ':' ) {
     udp_port = atoi(cmd+3);
     xil_printf("tcpThread: Setting UDP port to %d\n", udp_port );
     return 200;
+  } else if ( cmd[0] == 'N' && cmd[1] == 'S' && cmd[2] == ':' ) {
+    scan_xmit_length = atoi(cmd+3);
+    xil_printf("tcpThread: Setting scan_xmit_length to %d\n",
+      scan_xmit_length );
   }
   return 500;
 }
