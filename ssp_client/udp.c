@@ -32,13 +32,12 @@ int udp_create(void) {
 }
 
 static int max_msg_size = 0;
-int udp_receive(void) {
+int udp_receive(unsigned long int *scan ) {
     struct sockaddr_in cliAddr;
-	char msg[UDP_MAX_MSG];
-	int n, cliLen;
+  	int n, cliLen;
 
     cliLen = sizeof(cliAddr);
-    n = recvfrom(udp_socket, msg, UDP_MAX_MSG, 0, 
+    n = recvfrom(udp_socket, scan, UDP_MAX_MSG, 0, 
 		 (struct sockaddr *) &cliAddr, &cliLen);
 //    if ( n > max_msg_size ) {
 //      FILE *fp;
