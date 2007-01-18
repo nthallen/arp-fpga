@@ -12,7 +12,7 @@
 #include <ctype.h>
 
 extern int udp_create(void);
-extern int udp_receive(void);
+extern int udp_receive(unsigned long int *scan );
 extern int tcp_create(char *hostname);
 extern int tcp_send( char * cmd );
 #define SSP_SERVER_PORT 1500

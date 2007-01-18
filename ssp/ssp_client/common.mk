@@ -14,7 +14,7 @@ USEFILE=
 
 
 #===== LIBS - a space-separated list of library items to be included in the link.
-LIBS+=socket
+LIBS+=socket m
 include $(MKFILES_ROOT)/qmacros.mk
 #QNX internal start
 ifeq ($(filter g, $(VARIANT_LIST)),g)
