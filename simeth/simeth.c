@@ -43,6 +43,8 @@ void* main_main(void* arg) {
     // run the UDP thread at the lowest priority for now
     // since it will run ready until we configure interrupts
   sem_wait(&udp_sem); // wait for ethernet initialization
+  disable_interrupt( SG_INTR_ID );
+  register_int_handler( SG_INTR_ID, sg_handler, NULL );
   sleep(100);
   
   sys_thread_new((void *)&serverAppThread, 0, 1);
@@ -90,87 +92,73 @@ void *udpThread(void *arg) {
   xil_printf("udp_thread: UDP bound, awaiting semaphore\n");
   for (;;) {
     int i; // for overrun check at the bottom
-    // wait for an enable message from the tcpThread
-    xil_printf("udp_thread: Suspended\n");
+    int status;
+    int words_read, scan_size;
+
     if ( sem_wait( &udp_sem ) ) {
       xil_printf("Error %d from sem_wait() in udpThread\n", errno );
       return &err_rv;
     }
-    xil_printf("udp_thread: starting acquisition\n");
-    while ( xfrEnabled ) {
-      int status;
-      int err_reported = 0;
-      int empty_err_reported = 0;
-      int empty_err_count;
-      int words_read, scan_size;
       
       // First wait for there to be data in the FIFO so
       // N_skipped is valid.
-      while (xfrEnabled) {
-        int empty;
-        status = scan_gen_sm_0_Read(SCAN_GEN_SM_0_SRCSIGNAL,
-          SCAN_GEN_SM_0_SRCSIGNAL_EMPTY, &empty);
-        if ( status ) {
-          if ( !empty_err_reported ) {
-            xil_printf("Error %d reading empty\n", status);
-            empty_err_reported = 1;
-            empty_err_count = 0;
-          }
-          empty_err_count++;
-        } else {
-          if ( empty_err_reported ) {
-            xil_printf("Empty error recovered: %d\n",
-              empty_err_count );
-            empty_err_reported = 0;
-          }
-          if ( empty == 0 ) break;
-        }
-        sleep(100);
-      }
-      if ( empty_err_reported ) {
-        xil_printf("Exited empty loop error count: %d\n", empty_err_count );
-      }
-      while ( xfrEnabled ) {
-        int pctfull;
-        int status = scan_gen_sm_0_Read(SCAN_GEN_SM_0_SRCSIGNAL,
-           SCAN_GEN_SM_0_SRCSIGNAL_PERCENTFULL, &pctfull);
-        if ( status ) {
-          if ( !err_reported ) {
-           xil_printf("Error %d reading pctfull\n", status );
-           err_reported = 1;
-          }
-        } else {
-          if ( err_reported ) {
-            xil_printf("pctfull recovered\n");
-            err_reported = 0;
-          }
-          if ( pctfull >= scan_xmit_length ) break;
-        }
-      }
+      // Assume non-empty, since we got in interrupt
+//      while (xfrEnabled) {
+//        int empty;
+//        status = scan_gen_sm_0_Read(SCAN_GEN_SM_0_SRCSIGNAL,
+//          SCAN_GEN_SM_0_SRCSIGNAL_EMPTY, &empty);
+//        if ( status ) {
+//          if ( !empty_err_reported ) {
+//            xil_printf("Error %d reading empty\n", status);
+//            empty_err_reported = 1;
+//            empty_err_count = 0;
+//          }
+//          empty_err_count++;
+//        } else {
+//          if ( empty_err_reported ) {
+//            xil_printf("Empty error recovered: %d\n",
+//              empty_err_count );
+//            empty_err_reported = 0;
+//          }
+//          if ( empty == 0 ) break;
+//        }
+//        sleep(100);
+//      }
+//      if ( empty_err_reported ) {
+//        xil_printf("Exited empty loop error count: %d\n", empty_err_count );
+//      }
+//      while ( xfrEnabled ) {
+//        int pctfull;
+//        int status = scan_gen_sm_0_Read(SCAN_GEN_SM_0_SRCSIGNAL,
+//           SCAN_GEN_SM_0_SRCSIGNAL_PERCENTFULL, &pctfull);
+//        if ( status ) {
+//          if ( !err_reported ) {
+//           xil_printf("Error %d reading pctfull\n", status );
+//           err_reported = 1;
+//          }
+//        } else {
+//          if ( err_reported ) {
+//            xil_printf("pctfull recovered\n");
+//            err_reported = 0;
+//          }
+//          if ( pctfull >= scan_xmit_length ) break;
+//        }
+//      }
       // xil_printf(".");
-      for ( words_read = 0; xfrEnabled && words_read <= scan_xmit_length; ) {
-        int nw;
-        // This assumes error-checking, so the transfer will stop
-        // early if the entire scan isn't present
-        nw = scan_gen_sm_0_ArrayRead(SCAN_GEN_SM_0_SRCSIGNAL,
-           SCAN_GEN_SM_0_SRCSIGNAL_DOUT,
-           scan_xmit_length+1-words_read, scan+words_read);
-        if ( nw == 0 ) sleep(50);
-        words_read += nw;
-        ++transfers;
-      }
-      // xil_printf("+");
-      if ( words_read < scan_xmit_length+1 ) {
-        xil_printf("Short packet received: %d/%d\n", words_read, scan_xmit_length+1 );
-      } else {
-        scan_size = (scan_xmit_length+1) * sizeof(unsigned int);
-        rc = sendto(udp_socket, scan, scan_size, 0, 
-          (struct sockaddr *) &udpSrvrAddr, 
-          sizeof(udpSrvrAddr));
-        if ( rc<0 ) {
-          xil_printf( "udpThread: cannot send data: %d\n", errno);
-          return &err_rv;
-        }
+    words_read = scan_gen_sm_0_ArrayRead(SCAN_GEN_SM_0_SRCSIGNAL,
+         SCAN_GEN_SM_0_SRCSIGNAL_DOUT,
+         scan_xmit_length+1, scan);
+    // xil_printf("+");
+    if ( words_read < scan_xmit_length+1 ) {
+      xil_printf("Short packet received: %d/%d\n", words_read, scan_xmit_length+1 );
+    } else {
+      scan_size = (scan_xmit_length+1) * sizeof(unsigned int);
+      rc = sendto(udp_socket, scan, scan_size, 0, 
+        (struct sockaddr *) &udpSrvrAddr, 
+        sizeof(udpSrvrAddr));
+      if ( rc<0 ) {
+        xil_printf( "udpThread: cannot send data: %d\n", errno);
+        return &err_rv;
       }
     }
     for ( i = MAX_SCAN_LENGTH; i < MAX_SCAN_LENGTH+SCAN_GUARD; i++ ) {
@@ -350,7 +338,7 @@ static unsigned int parse_cmds( char *cmd ) {
   } else if ( cmd[0] == 'D' ) {
     if ( cmd[1] == 'A' ) {
       xfr_disable();
-      sleep(200);
+      // sleep(200);
       return 200;
     }
   } else if ( cmd[0] == 'U' && cmd[1] == 'P' && cmd[2] == ':' ) {
@@ -421,6 +409,8 @@ void xfr_init(void) {
 
 void xfr_disable(void) {
   set_scan_gen_control( 0, "Clearing circuit enable" );
+  sleep( 200 );
+  disable_interrupt( SG_INTR_ID );
   xfrEnabled = 0;
 }
 
@@ -430,7 +420,13 @@ void xfr_enable(void) {
     return;
   }
   udpSrvrAddr.sin_port = htons(udp_port);
+  enable_interrupt( SG_INTR_ID );
   set_scan_gen_control( 1, "Setting circuit enable" );
   xfrEnabled = 1;
+  // sem_post(&udp_sem);
+}
+
+void sg_handler(void *foo) {
   sem_post(&udp_sem);
+  acknowledge_interrupt( SG_INTR_ID );
 }
