@@ -3,9 +3,6 @@
 #include "lwip/tcpip.h"
 #include "xmk.h"
 #include "xparameters.h"
-//#include "sys/intr.h"
-//#include "xgpio.h"
-// #include "xutil.h"
 #include "scan_gen_sm_0.h"
 
 extern void* main_main(void* arg);
