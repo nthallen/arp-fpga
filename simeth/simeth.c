@@ -14,7 +14,7 @@ static sem_t udp_sem;
 static struct sockaddr_in udpCliAddr;
 static struct sockaddr_in udpSrvrAddr;
 static int udp_port = 0;
-unsigned int scan[MAX_SCAN_LENGTH];
+unsigned int scan[MAX_SCAN_LENGTH + SCAN_GUARD];
 int xfrEnabled = 0, app_done = 0;
 int scan_xmit_length = 0;
 static unsigned int parse_cmds( char *cmd );
@@ -89,6 +89,7 @@ void *udpThread(void *arg) {
   }
   xil_printf("udp_thread: UDP bound, awaiting semaphore\n");
   for (;;) {
+    int i; // for overrun check at the bottom
     // wait for an enable message from the tcpThread
     xil_printf("udp_thread: Suspended\n");
     if ( sem_wait( &udp_sem ) ) {
@@ -146,7 +147,7 @@ void *udpThread(void *arg) {
           if ( pctfull >= scan_xmit_length ) break;
         }
       }
-      xil_printf(".");
+      // xil_printf(".");
       for ( words_read = 0; xfrEnabled && words_read <= scan_xmit_length; ) {
         int nw;
         // This assumes error-checking, so the transfer will stop
@@ -158,7 +159,7 @@ void *udpThread(void *arg) {
         words_read += nw;
         ++transfers;
       }
-      xil_printf("+");
+      // xil_printf("+");
       if ( words_read < scan_xmit_length+1 ) {
         xil_printf("Short packet received: %d/%d\n", words_read, scan_xmit_length+1 );
       } else {
@@ -170,6 +171,12 @@ void *udpThread(void *arg) {
           xil_printf( "udpThread: cannot send data: %d\n", errno);
           return &err_rv;
         }
+      }
+    }
+    for ( i = MAX_SCAN_LENGTH; i < MAX_SCAN_LENGTH+SCAN_GUARD; i++ ) {
+      if ( scan[i] ) {
+        xil_printf("Overrun: scan[%d] = %d\n", i, scan[i]);
+        break;
       }
     }
   }
@@ -377,8 +384,8 @@ static void drain_fifo( char *where) {
     } else if ( status < 0 ) {
       xil_printf("drain_fifo: ####ArrayRead returned %d %s\n", status, where);
       break;
-    } else {
-      xil_printf("drain_fifo: #####Read %d words %s\n", status, where );
+    // } else {
+    //  xil_printf("drain_fifo: #####Read %d words %s\n", status, where );
     }
   }
 }
@@ -396,6 +403,9 @@ void set_scan_gen_netsamples( unsigned int val ) {
 }
 
 void xfr_init(void) {
+  int i;
+  for ( i = MAX_SCAN_LENGTH; i < MAX_SCAN_LENGTH+SCAN_GUARD; i++ )
+    scan[i] = 0;
   set_scan_gen_control( 0, "Clearing enable" );
   set_scan_gen_netsamples( scan_xmit_length );
   set_scan_gen_control( 2, "Resetting circuit" );
@@ -404,10 +414,9 @@ void xfr_init(void) {
 //    SCAN_GEN_SM_0_SRCSIGNAL_RST, 1);
 //  GAAA! RST isn't defined.
   drain_fifo("during reset");
-  sleep(100);
+  sleep(100); // This time is apparently essential
   set_scan_gen_control( 0, "Clearing circuit reset" );
-  sleep(200);
-  // drain_fifo("after reset");
+  sleep(200); // As is this one
 }
 
 void xfr_disable(void) {
@@ -422,7 +431,6 @@ void xfr_enable(void) {
   }
   udpSrvrAddr.sin_port = htons(udp_port);
   set_scan_gen_control( 1, "Setting circuit enable" );
-  sleep(1000);
   xfrEnabled = 1;
   sem_post(&udp_sem);
 }
