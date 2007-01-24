@@ -68,7 +68,6 @@ void *udpThread(void *arg) {
 
   if ( ethernet_init() ) return &err_rv;
   xil_printf("ethernet initialized\n");
-  xil_printf("Circuit initialized\n");
   sem_post(&udp_sem);
 
   udp_socket = socket(AF_INET,SOCK_DGRAM,0);
@@ -99,36 +98,78 @@ void *udpThread(void *arg) {
     xil_printf("udp_thread: starting acquisition\n");
     while ( xfrEnabled ) {
       int status;
-      int words_read = 0, scan_size;
+      int err_reported = 0;
+      int empty_err_reported = 0;
+      int empty_err_count;
+      int words_read, scan_size;
       
       // First wait for there to be data in the FIFO so
       // N_skipped is valid.
-      for (;;) {
+      while (xfrEnabled) {
         int empty;
         status = scan_gen_sm_0_Read(SCAN_GEN_SM_0_SRCSIGNAL,
           SCAN_GEN_SM_0_SRCSIGNAL_EMPTY, &empty);
-        if ( empty == 0 ) break;
+        if ( status ) {
+          if ( !empty_err_reported ) {
+            xil_printf("Error %d reading empty\n", status);
+            empty_err_reported = 1;
+            empty_err_count = 0;
+          }
+          empty_err_count++;
+        } else {
+          if ( empty_err_reported ) {
+            xil_printf("Empty error recovered: %d\n",
+              empty_err_count );
+            empty_err_reported = 0;
+          }
+          if ( empty == 0 ) break;
+        }
+        sleep(100);
       }
-//      status = scan_gen_sm_0_Read(SCAN_GEN_SM_0_N_SKIPPED,
-//        SCAN_GEN_SM_0_N_SKIPPED_DOUT, &cur_N_skipped);
-//      check_fifo_status( status, "Reading N_skipped" );
-      while ( words_read <= scan_xmit_length ) {
+      if ( empty_err_reported ) {
+        xil_printf("Exited empty loop error count: %d\n", empty_err_count );
+      }
+      while ( xfrEnabled ) {
+        int pctfull;
+        int status = scan_gen_sm_0_Read(SCAN_GEN_SM_0_SRCSIGNAL,
+           SCAN_GEN_SM_0_SRCSIGNAL_PERCENTFULL, &pctfull);
+        if ( status ) {
+          if ( !err_reported ) {
+           xil_printf("Error %d reading pctfull\n", status );
+           err_reported = 1;
+          }
+        } else {
+          if ( err_reported ) {
+            xil_printf("pctfull recovered\n");
+            err_reported = 0;
+          }
+          if ( pctfull >= scan_xmit_length ) break;
+        }
+      }
+      xil_printf(".");
+      for ( words_read = 0; xfrEnabled && words_read <= scan_xmit_length; ) {
         int nw;
         // This assumes error-checking, so the transfer will stop
         // early if the entire scan isn't present
         nw = scan_gen_sm_0_ArrayRead(SCAN_GEN_SM_0_SRCSIGNAL,
            SCAN_GEN_SM_0_SRCSIGNAL_DOUT,
            scan_xmit_length+1-words_read, scan+words_read);
+        if ( nw == 0 ) sleep(50);
         words_read += nw;
         ++transfers;
       }
-      scan_size = (scan_xmit_length+1) * sizeof(unsigned int);
-      rc = sendto(udp_socket, scan, scan_size, 0, 
-        (struct sockaddr *) &udpSrvrAddr, 
-        sizeof(udpSrvrAddr));
-      if ( rc<0 ) {
-        xil_printf( "udpThread: cannot send data: %d\n", errno);
-        return &err_rv;
+      xil_printf("+");
+      if ( words_read < scan_xmit_length+1 ) {
+        xil_printf("Short packet received: %d/%d\n", words_read, scan_xmit_length+1 );
+      } else {
+        scan_size = (scan_xmit_length+1) * sizeof(unsigned int);
+        rc = sendto(udp_socket, scan, scan_size, 0, 
+          (struct sockaddr *) &udpSrvrAddr, 
+          sizeof(udpSrvrAddr));
+        if ( rc<0 ) {
+          xil_printf( "udpThread: cannot send data: %d\n", errno);
+          return &err_rv;
+        }
       }
     }
   }
@@ -216,6 +257,7 @@ void *tcpThread( void *socketptr ) {
   }
   xil_printf("tcpThread: exiting thread\n");
   close(my_sock);
+  xfr_disable();
   return &err_rv;
 }
 
@@ -295,7 +337,7 @@ static unsigned int parse_cmds( char *cmd ) {
       return 200;
     } else if ( cmd[1] == 'X' ) {
       app_done = 1;
-      xil_printf("\nReceived Exit\n");
+      xil_printf("Received Exit\n");
       return 410;
     }
   } else if ( cmd[0] == 'D' ) {
@@ -330,7 +372,7 @@ static void drain_fifo( char *where) {
     status = scan_gen_sm_0_ArrayRead(SCAN_GEN_SM_0_SRCSIGNAL,
        SCAN_GEN_SM_0_SRCSIGNAL_DOUT, MAX_SCAN_LENGTH, scan);
     if ( status == 0 ) {
-      xil_printf("fifo drained\n");
+      // xil_printf("fifo drained\n");
       break;
     } else if ( status < 0 ) {
       xil_printf("drain_fifo: ####ArrayRead returned %d %s\n", status, where);
@@ -341,13 +383,13 @@ static void drain_fifo( char *where) {
   }
 }
 
-void set_scan_gen_control( int val, char *where ) {
+void set_scan_gen_control( unsigned int val, char *where ) {
   int status = scan_gen_sm_0_Write(SCAN_GEN_SM_0_CONTROL,
      SCAN_GEN_SM_0_CONTROL_DIN, val);
   check_fifo_status( status, where );
 }
 
-void set_scan_gen_netsamples( int val ) {
+void set_scan_gen_netsamples( unsigned int val ) {
   int status = scan_gen_sm_0_Write(SCAN_GEN_SM_0_NETSAMPLES,
      SCAN_GEN_SM_0_NETSAMPLES_DIN, val);
   check_fifo_status( status, "Setting NetSamples" );
@@ -357,12 +399,15 @@ void xfr_init(void) {
   set_scan_gen_control( 0, "Clearing enable" );
   set_scan_gen_netsamples( scan_xmit_length );
   set_scan_gen_control( 2, "Resetting circuit" );
+  sleep(200);
 //  status = scan_gen_sm_0_Write(SCAN_GEN_SM_0_SRCSIGNAL,
 //    SCAN_GEN_SM_0_SRCSIGNAL_RST, 1);
 //  GAAA! RST isn't defined.
   drain_fifo("during reset");
+  sleep(100);
   set_scan_gen_control( 0, "Clearing circuit reset" );
-  drain_fifo("after reset");
+  sleep(200);
+  // drain_fifo("after reset");
 }
 
 void xfr_disable(void) {
@@ -377,6 +422,7 @@ void xfr_enable(void) {
   }
   udpSrvrAddr.sin_port = htons(udp_port);
   set_scan_gen_control( 1, "Setting circuit enable" );
+  sleep(1000);
   xfrEnabled = 1;
   sem_post(&udp_sem);
 }
