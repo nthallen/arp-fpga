@@ -100,55 +100,10 @@ void *udpThread(void *arg) {
       return &err_rv;
     }
       
-      // First wait for there to be data in the FIFO so
-      // N_skipped is valid.
-      // Assume non-empty, since we got in interrupt
-//      while (xfrEnabled) {
-//        int empty;
-//        status = scan_gen_sm_0_Read(SCAN_GEN_SM_0_SRCSIGNAL,
-//          SCAN_GEN_SM_0_SRCSIGNAL_EMPTY, &empty);
-//        if ( status ) {
-//          if ( !empty_err_reported ) {
-//            xil_printf("Error %d reading empty\n", status);
-//            empty_err_reported = 1;
-//            empty_err_count = 0;
-//          }
-//          empty_err_count++;
-//        } else {
-//          if ( empty_err_reported ) {
-//            xil_printf("Empty error recovered: %d\n",
-//              empty_err_count );
-//            empty_err_reported = 0;
-//          }
-//          if ( empty == 0 ) break;
-//        }
-//        sleep(100);
-//      }
-//      if ( empty_err_reported ) {
-//        xil_printf("Exited empty loop error count: %d\n", empty_err_count );
-//      }
-//      while ( xfrEnabled ) {
-//        int pctfull;
-//        int status = scan_gen_sm_0_Read(SCAN_GEN_SM_0_SRCSIGNAL,
-//           SCAN_GEN_SM_0_SRCSIGNAL_PERCENTFULL, &pctfull);
-//        if ( status ) {
-//          if ( !err_reported ) {
-//           xil_printf("Error %d reading pctfull\n", status );
-//           err_reported = 1;
-//          }
-//        } else {
-//          if ( err_reported ) {
-//            xil_printf("pctfull recovered\n");
-//            err_reported = 0;
-//          }
-//          if ( pctfull >= scan_xmit_length ) break;
-//        }
-//      }
-      // xil_printf(".");
-    words_read = scan_gen_sm_0_ArrayRead(SCAN_GEN_SM_0_SRCSIGNAL,
-         SCAN_GEN_SM_0_SRCSIGNAL_DOUT,
-         scan_xmit_length+1, scan);
-    // xil_printf("+");
+//    words_read = scan_gen_sm_0_ArrayRead(SCAN_GEN_SM_0_SRCSIGNAL,
+//         SCAN_GEN_SM_0_SRCSIGNAL_DOUT,
+//         scan_xmit_length+1, scan);
+    words_read = scan_gen_read_fifo( scan, scan_xmit_length+1 );
     if ( words_read < scan_xmit_length+1 ) {
       xil_printf("Short packet received: %d/%d\n", words_read, scan_xmit_length+1 );
     } else {
