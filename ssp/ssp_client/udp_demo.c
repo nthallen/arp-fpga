@@ -26,9 +26,10 @@
 #include <math.h>
 
 #define SCANS_PER_TEST 100
+#define VERBOSE_LOG 0
 int verbosity = 0;
 
-void process_scan_set( int scan_length, int n_scans, FILE *logfp, char *dumpfile ) {
+void process_scan_set( int scan_length, int n_scans, FILE *logfp, FILE *dumpfp ) {
 	char cmdbuf[80];
 	int scan_size = (scan_length+1)*sizeof(long);
 	int n;
@@ -39,12 +40,9 @@ void process_scan_set( int scan_length, int n_scans, FILE *logfp, char *dumpfile
 	int total_bytes, i, j;
 	unsigned long int scan[4096];
 	uint64_t cps = SYSPAGE_ENTRY(qtime)->cycles_per_sec;
-	FILE *dumpfp = NULL;
-	
-	if (dumpfile != NULL ) {
-		dumpfp = fopen( dumpfile, "w" );
-	}
+
 	sprintf(cmdbuf, "NS:%d\r\n", scan_length );
+	printf("Setting scan_length to %d\n", scan_length );
 	tcp_send(cmdbuf);
 	tcp_send("EN\r\n");
 	for (;;) {
@@ -68,13 +66,16 @@ void process_scan_set( int scan_length, int n_scans, FILE *logfp, char *dumpfile
 		}
 		last_scan = scan[scan_length];
 		if ( dumpfp ) {
+		        printf( "Dumping Scan %d\n", i );
 			fprintf( dumpfp, "Scan %d\n", i );
 			for ( j = 0; j <= scan_length; j++ )
 			  fprintf( dumpfp, "%08lX\n", scan[j] );
+			fflush(dumpfp);
 		}
 	}
 	end_time = ClockCycles( );
 	// send DA command
+	printf("Sending Disable\n");
 	tcp_send("DA\r\n");
 	// Calculate throughput
 	duration = (end_time - start_time) / (double)cps;
@@ -90,7 +91,7 @@ void process_scan_set( int scan_length, int n_scans, FILE *logfp, char *dumpfile
 int main( int argc, char **argv ) {
 	char cmdbuf[80];
 	int udp_port = udp_create();
-	FILE *ofp;
+	FILE *ofp, *vfp;
 	int scan_length;
 
 	printf("Opened UDP port %d\n", udp_port);
@@ -104,9 +105,17 @@ int main( int argc, char **argv ) {
 	  fprintf(stderr,"Cannot open udp_demo.log\n");
 	  exit(1);
 	}
+	#if VERBOSE_LOG
+	  vfp = fopen("udp_demo_v.log", "w");
+	  if (vfp == NULL) {
+	    fprintf(stderr, "Cannot open udp_demo_v.log\n");
+	  }
+	#else
+	  vfp = NULL;
+	#endif
 //	for ( scan_length = 999; scan_length < 1207; scan_length += 25 ) {
 	for ( scan_length = 999; scan_length > 25; scan_length -= 25 ) {
-		process_scan_set( scan_length, SCANS_PER_TEST, ofp, NULL );
+		process_scan_set( scan_length, SCANS_PER_TEST, ofp, vfp );
 	}
 //  for (; ;) {
 //    process_scan_set( 999, 100, ofp, NULL );
@@ -115,4 +124,3 @@ int main( int argc, char **argv ) {
 	fclose(ofp);
 	return 0;
 }
-
