@@ -26,8 +26,9 @@
 #include <math.h>
 
 #define SCANS_PER_TEST 100
-#define VERBOSE_LOG 0
-int verbosity = 0;
+#define VERBOSE_LOG 1
+#define BENCHMARK_UDP 0
+int verbosity = 1;
 
 void process_scan_set( int scan_length, int n_scans, FILE *logfp, FILE *dumpfp ) {
 	char cmdbuf[80];
@@ -44,7 +45,7 @@ void process_scan_set( int scan_length, int n_scans, FILE *logfp, FILE *dumpfp )
 	sprintf(cmdbuf, "NS:%d\r\n", scan_length );
 	printf("Setting scan_length to %d\n", scan_length );
 	tcp_send(cmdbuf);
-	tcp_send("EN\r\n");
+	while (tcp_send("EN\r\n") == 503 ) sleep(1);
 	for (;;) {
 		n = udp_receive(scan);
 		if ( n == scan_size ) break;
@@ -76,7 +77,7 @@ void process_scan_set( int scan_length, int n_scans, FILE *logfp, FILE *dumpfp )
 	end_time = ClockCycles( );
 	// send DA command
 	printf("Sending Disable\n");
-	tcp_send("DA\r\n");
+	while (tcp_send("DA\r\n") == 503 ) sleep(1);
 	// Calculate throughput
 	duration = (end_time - start_time) / (double)cps;
 	total_bytes = scan_size * n_scans;
@@ -114,12 +115,13 @@ int main( int argc, char **argv ) {
 	  vfp = NULL;
 	#endif
 //	for ( scan_length = 999; scan_length < 1207; scan_length += 25 ) {
-	for ( scan_length = 999; scan_length > 25; scan_length -= 25 ) {
+	#if BENCHMARK_UDP
+	  for ( scan_length = 999; scan_length > 25; scan_length -= 25 ) {
 		process_scan_set( scan_length, SCANS_PER_TEST, ofp, vfp );
-	}
-//  for (; ;) {
-//    process_scan_set( 999, 100, ofp, NULL );
-//  }
+	  }
+	#else
+	  process_scan_set( 999, 10, ofp, vfp );
+	#endif
 	tcp_send("EX\r\n");
 	fclose(ofp);
 	return 0;
