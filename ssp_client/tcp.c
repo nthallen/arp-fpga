@@ -1,4 +1,4 @@
-#include "udp_demo.h"
+#include "ssp_get.h"
 
 static int tcp_socket;
 
@@ -36,7 +36,7 @@ int tcp_create( char *hostname ) {
     perror("error ");
     exit(1);
   }
-				
+        
   /* connect to server */
   rc = connect(tcp_socket, (struct sockaddr *) &servAddr, sizeof(servAddr));
   if (rc<0) {
@@ -49,25 +49,25 @@ int tcp_create( char *hostname ) {
 // tcp_send() sends the specified command, then waits for a response,
 // which should be an ascii-encoded integer. It returns the value.
 int tcp_send( char * cmd ) {
-	char recv_buf[RECV_BUF_SIZE];
-	int rv, i;
-	int cmdlen = strlen(cmd);
-	rv = send( tcp_socket, cmd, cmdlen, 0);
-	if ( rv != cmdlen ) {
-		fprintf(stderr, "Send failed: %d: errno = %d\n", rv, errno );
-		exit(1);
-	}
-	rv = recv( tcp_socket, recv_buf, RECV_BUF_SIZE, 0 );
-	if ( rv <= 0 ) {
-		fprintf(stderr, "Recv returned %d errno %d cmd='%s'\n", rv, errno, cmd );
-		return -1;
-	} else {
-		int rnum = 0;
-		for ( i = 0; i < rv && isdigit(recv_buf[i]); i++ ) {
-			rnum = rnum*10 + recv_buf[i] - '0';
-		}
-		if ( verbosity )
-  		printf("tcp_send: returning %d, %d from command %s", rv, rnum, cmd );
-		return rnum;
-	}
+  char recv_buf[RECV_BUF_SIZE];
+  int rv, i;
+  int cmdlen = strlen(cmd);
+  rv = send( tcp_socket, cmd, cmdlen, 0);
+  if ( rv != cmdlen ) {
+    fprintf(stderr, "Send failed: %d: errno = %d\n", rv, errno );
+    exit(1);
+  }
+  rv = recv( tcp_socket, recv_buf, RECV_BUF_SIZE, 0 );
+  if ( rv <= 0 ) {
+    fprintf(stderr, "Recv returned %d errno %d cmd='%s'\n", rv, errno, cmd );
+    return -1;
+  } else {
+    int rnum = 0;
+    for ( i = 0; i < rv && isdigit(recv_buf[i]); i++ ) {
+      rnum = rnum*10 + recv_buf[i] - '0';
+    }
+    if ( verbosity )
+      printf("tcp_send: returning %d, %d from command %s", rv, rnum, cmd );
+    return rnum;
+  }
 }
