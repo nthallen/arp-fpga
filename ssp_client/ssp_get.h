@@ -1,5 +1,5 @@
-#ifndef udp_demo_h_included
-#define udp_demo_h_included
+#ifndef ssp_get_h_included
+#define ssp_get_h_included
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
