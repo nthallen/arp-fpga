@@ -30,7 +30,7 @@
 #define BENCHMARK_UDP 0
 int verbosity = 1;
 
-void process_scan_set( int scan_length, int n_scans, FILE *logfp, FILE *dumpfp ) {
+void process_scan_set( int scan_length, int n_scans, FILE *logfp, char *dumpfile ) {
   char cmdbuf[80];
   int scan_size = (scan_length+1)*sizeof(long);
   int n;
@@ -41,6 +41,7 @@ void process_scan_set( int scan_length, int n_scans, FILE *logfp, FILE *dumpfp )
   int total_bytes, i, j;
   unsigned long int scan[4096];
   clock_t cps = CLOCKS_PER_SEC;
+  FILE *dumpfp;
 
   sprintf(cmdbuf, "NS:%d\r\n", scan_length );
   printf("Setting scan_length to %d\n", scan_length );
@@ -66,12 +67,17 @@ void process_scan_set( int scan_length, int n_scans, FILE *logfp, FILE *dumpfp )
       sdS2 += dS*dS;
     }
     last_scan = scan[scan_length];
-    if ( dumpfp ) {
+    if ( dumpfile ) {
       printf( "Dumping Scan %d/%d: %ld\n", i, n_scans, last_scan );
-      // fprintf( dumpfp, "Scan %d\n", i );
-      for ( j = 0; j <= scan_length; j++ )
-        fprintf( dumpfp, "%10ld\n", scan[j] );
-      fflush(dumpfp);
+      dumpfp = fopen(dumpfile, "w");
+      if (dumpfp == NULL) {
+	fprintf(stderr, "Cannot open dump file '%s'\n", dumpfile);
+      } else {
+	// fprintf( dumpfp, "Scan %d\n", i );
+	for ( j = 0; j < scan_length; j++ )
+	  fprintf( dumpfp, "%10ld\n", scan[j] );
+	fclose(dumpfp);
+      }
     }
   }
   end_time = clock( );
@@ -92,8 +98,9 @@ void process_scan_set( int scan_length, int n_scans, FILE *logfp, FILE *dumpfp )
 int main( int argc, char **argv ) {
   char cmdbuf[80];
   int udp_port = udp_create();
-  FILE *ofp, *vfp;
+  FILE *ofp;
   int scan_length;
+  char *dumpfile = NULL;
 
   printf("Opened UDP port %d\n", udp_port);
   // open TCP connection to SSP board
@@ -107,20 +114,15 @@ int main( int argc, char **argv ) {
     exit(1);
   }
   #if VERBOSE_LOG
-    vfp = fopen("ssp_get_v.log", "w");
-    if (vfp == NULL) {
-      fprintf(stderr, "Cannot open ssp_get_v.log\n");
-    }
-  #else
-    vfp = NULL;
+    dumpfile = "ssp_get_v.log";
   #endif
 //  for ( scan_length = 999; scan_length < 1207; scan_length += 25 ) {
   #if BENCHMARK_UDP
     for ( scan_length = 999; scan_length > 25; scan_length -= 25 ) {
-      process_scan_set( scan_length, SCANS_PER_TEST, ofp, vfp );
+      process_scan_set( scan_length, SCANS_PER_TEST, ofp, dumpfile );
     }
   #else
-    process_scan_set( 999, 10, ofp, vfp );
+    process_scan_set( 999, 10, ofp, dumpfile );
   #endif
   // tcp_send("EX\r\n");
   fclose(ofp);
