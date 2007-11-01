@@ -1,0 +1,11 @@
+SSP_SRCS = ssp_get.c tcp.c udp.c
+SSP_OBJS = $(SSP_SRCS:.c=.o)
+SSP_LOG_SRCS = ssp_log.c tcp.c udp.c
+SSP_LOG_OBJS = $(SSP_LOG_SRCS:.c=.o)
+SSP_CMD_SRCS = ssp_cmd.c tcp.c udp.c
+SSP_CMD_OBJS = $(SSP_CMD_SRCS:.c=.o)
+LDLIBS=-lnort
+
+ssp_get : $(SSP_OBJS)
+ssp_log : $(SSP_LOG_OBJS)
+ssp_cmd : $(SSP_CMD_OBJS)
