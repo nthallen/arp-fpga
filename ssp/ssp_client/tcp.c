@@ -71,3 +71,8 @@ int tcp_send( char * cmd ) {
     return rnum;
   }
 }
+
+int tcp_close(void) {
+  close(tcp_socket);
+  return 0;
+}
