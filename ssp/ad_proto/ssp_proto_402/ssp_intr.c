@@ -10,7 +10,7 @@ signed short TriggerLevel = 0;
 static int sg_mutex_lock(void) {
   int rv = pthread_mutex_lock(&sg_mutex);
   if ( rv ) {
-    xil_printf("\r\nmutex lock failed: %d\r\n", rv );
+    safe_printf(("\r\nmutex lock failed: %d\r\n", rv ));
     return 0;
   } else return 1;
 }
@@ -18,7 +18,7 @@ static int sg_mutex_lock(void) {
 static void sg_mutex_unlock(void) {
   int rv = pthread_mutex_unlock(&sg_mutex);
   if ( rv ) {
-    xil_printf("\r\nmutex unlock failed: %d\r\n", rv );
+    safe_printf(("\r\nmutex unlock failed: %d\r\n", rv ));
   }
 }
 

@@ -117,7 +117,7 @@ void *udpThread(void *arg) {
     // safe_print("udp_thread: waiting\n");
     if ( sem_wait( &udp_sem ) ) {
       print_mutex_lock();
-      xil_printf("Error %d from sem_wait() in udpThread\n", errno );
+      safe_printf(("Error %d from sem_wait() in udpThread\n", errno ));
       print_mutex_unlock();
       return &err_rv;
     }
@@ -165,7 +165,7 @@ void *udpThread(void *arg) {
       if ( words_read == 0 ) break;
       if ( words_read < scan_xmit_length+1 ) {
         print_mutex_lock();
-        xil_printf("Short packet received: %d/%d\n", words_read, scan_xmit_length+1 );
+        safe_printf(("Short packet received: %d/%d\n", words_read, scan_xmit_length+1 ));
         print_mutex_unlock();
       } else {
         scan_size = (scan_xmit_length+1) * sizeof(unsigned int);
@@ -176,7 +176,7 @@ void *udpThread(void *arg) {
         // safe_print("udp_Thread: Post-sendto\n");
         if ( rc<0 ) {
           print_mutex_lock();
-          xil_printf( "udpThread: cannot send data: %d\n", errno);
+          safe_printf(( "udpThread: cannot send data: %d\n", errno));
           print_mutex_unlock();
           return &err_rv;
         }
@@ -186,7 +186,7 @@ void *udpThread(void *arg) {
     for ( i = MAX_SCAN_LENGTH; i < MAX_SCAN_LENGTH+SCAN_GUARD; i++ ) {
       if ( scan[i] ) {
         print_mutex_lock();
-        xil_printf("Overrun: scan[%d] = %d\n", i, scan[i]);
+        safe_printf(("Overrun: scan[%d] = %d\n", i, scan[i]));
         print_mutex_unlock();
         break;
       }
@@ -259,7 +259,7 @@ void *tcpThread( void *context ) {
   while (!done) {
     n = recv(my_sock, rcv_msg, SSP_MAX_MSG, 0);
     print_mutex_lock();
-    xil_printf("tcpThread: received %d bytes: %d\n", n, errno);
+    safe_printf(("tcpThread: received %d bytes\n", n));
     print_mutex_unlock();
     if ( n <= 0 ) break;
     if ( n > SSP_MAX_MSG ) {
@@ -339,7 +339,7 @@ int ethernet_init(void) {
 int check_fifo_status( int status, char *where ) {
   if ( status ) {
         print_mutex_lock();
-    xil_printf("ERROR: status = %d while %s\n", status, where );
+    safe_printf(("ERROR: status = %d while %s\n", status, where ));
     print_mutex_unlock();
   }
   return status;
@@ -409,22 +409,22 @@ static unsigned int parse_cmds( char *cmd, tcpThreadContext_t *tcpThreadContext 
   } else if ( cmd[0] == 'U' && cmd[1] == 'P' && cmd[2] == ':' ) {
     udp_port = atoi(cmd+3);
     print_mutex_lock();
-    xil_printf("tcpThread: Setting UDP port to %d\n", udp_port );
+    safe_printf(("tcpThread: Setting UDP port to %d\n", udp_port ));
     print_mutex_unlock();
     return 200;
   } else if ( cmd[0] == 'N' && cmd[1] == 'S' && cmd[2] == ':' ) {
     new_scan_xmit_length = atoi(cmd+3);
     if ( new_scan_xmit_length > 4000 ) {
       print_mutex_lock();
-      xil_printf("tcpThread: scan length request too large: %d\n",
-        new_scan_xmit_length );
+      safe_printf(("tcpThread: scan length request too large: %d\n",
+        new_scan_xmit_length ));
       print_mutex_unlock();
       new_scan_xmit_length = 0;
       return 400;
     } else {
       print_mutex_lock();
-      xil_printf("tcpThread: Setting scan_xmit_length to %d\n",
-        new_scan_xmit_length );
+      safe_printf(("tcpThread: Setting scan_xmit_length to %d\n",
+        new_scan_xmit_length ));
       print_mutex_unlock();
       return 200;
     }
