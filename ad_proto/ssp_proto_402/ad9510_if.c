@@ -23,6 +23,7 @@
 #include "xspi.h"
 #include "xio.h"
 #include "ssp_ad.h"
+#include "ssp_intr.h"
 #include "ad9510_if.h"
 
 /************************** Constant Definitions ******************************/
@@ -78,7 +79,7 @@ static int ErrorCnt;
 static int check_status( int Status, char *reason ) {
 	if (Status != XST_SUCCESS) {
 	  print_mutex_lock();
-	  xil_printf("AD9510: %s\n");
+	  safe_printf(("AD9510: %s\n"));
 	  print_mutex_unlock();
 	  return 1;
 	}

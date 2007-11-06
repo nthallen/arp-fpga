@@ -11,10 +11,6 @@ extern void *serverAppThread(void *arg);
 extern void *tcpThread( void *socketptr );
 extern int ethernet_init(void);
 extern int check_fifo_status( int status, char *where );
-extern int print_mutex_lock(void);
-extern void print_mutex_unlock(void);
-extern void safe_print( char *text );
-
 
 #define SCAN_TZ 100
 #define SCAN_TRAMP 1000

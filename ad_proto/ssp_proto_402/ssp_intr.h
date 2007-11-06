@@ -39,3 +39,16 @@ extern signed short TriggerLevel;
 #define SSP_TRIG_EXTERNAL 0
 #define SSP_TRIG_LEVEL_UP 0x4
 #define SSP_TRIG_LEVEL_DN 0x8
+
+#ifdef STDOUT_BASEADDRESS
+  extern int print_mutex_lock(void);
+  extern void print_mutex_unlock(void);
+  extern void safe_print( char *text );
+  #define safe_printf(x) xil_printf x
+#else
+  #define print_mutex_lock()
+  #define print_mutex_unlock()
+  #define safe_print(x)
+  #define safe_printf(x)
+#endif
+
