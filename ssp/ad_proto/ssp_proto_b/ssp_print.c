@@ -1,7 +1,10 @@
 #include "xmk.h"
+#include "xparameters.h"
 #include <stdio.h>
 #include <pthread.h>
 //#include "ssp_ad.h"
+
+#ifdef STDOUT_BASEADDRESS
 
 static pthread_mutex_t print_mutex = PTHREAD_MUTEX_INITIALIZER;
 
@@ -26,3 +29,8 @@ void safe_print( char *text ) {
 	print(text);
 	print_mutex_unlock();
 }
+
+#else
+void xil_printf( const char *fmt, ... ) {}
+void print( char *txt ) {}
+#endif /* STDOUT_BASEADDRESS */
