@@ -51,3 +51,4 @@ extern signed short TriggerLevel;
   #define safe_print(x)
   #define safe_printf(x)
 #endif
+
