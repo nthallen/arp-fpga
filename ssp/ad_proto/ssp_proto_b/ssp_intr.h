@@ -14,17 +14,17 @@ extern int ssp_read_fifo( int *buf, unsigned int nwords );
 extern sem_t udp_sem;
 #define MAX_SCAN_LENGTH 2048
 #define SCAN_GUARD 100
-extern unsigned int scan[];
+extern int scan[];
 extern int scan_xmit_length, new_scan_xmit_length;
 extern int xfrEnabled;
 extern signed short TriggerLevel;
 
-#define SG_INTR_ID XPAR_OPB_INTC_0_SSP_AD_SCAN_SM_0_SCANINTR_INTR
+#define SG_INTR_ID XPAR_INTC_0_SSP_AD_SCAN_SM_0_VEC_ID
 #define ssp_ArrayRead( nw, buf ) ssp_ad_scan_sm_0_ArrayRead(SSP_AD_SCAN_SM_0_SRCSIGNAL, \
          SSP_AD_SCAN_SM_0_SRCSIGNAL_DOUT, \
-         nw, buf )
+         nw, (unsigned int *)buf )
 #define ssp_ll_pctfull(words) ssp_ad_scan_sm_0_Read(SSP_AD_SCAN_SM_0_SRCSIGNAL, \
-    SSP_AD_SCAN_SM_0_SRCSIGNAL_PERCENTFULL, words)
+    SSP_AD_SCAN_SM_0_SRCSIGNAL_PERCENTFULL, (unsigned int *)words)
 #define ssp_ll_control(val) ssp_ad_scan_sm_0_Write(SSP_AD_SCAN_SM_0_CONTROL, \
      SSP_AD_SCAN_SM_0_CONTROL_DIN, val)
 #define ssp_ll_netsamples(val) ssp_ad_scan_sm_0_Write(SSP_AD_SCAN_SM_0_NETSAMPLES, \

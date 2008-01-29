@@ -7,8 +7,11 @@
    serverAppThread() accept()s TCP connections from clients
    tcpThread() manages TCP connections after accept()
 */
+#include "errno.h"
+#include "mb_interface.h"
 #include "ssp_ad.h"
 #include "ssp_intr.h"
+#include "ad9510_if.h"
 
 typedef struct {
   int socket;
@@ -20,7 +23,7 @@ sem_t udp_sem;
 static struct sockaddr_in udpCliAddr;
 static struct sockaddr_in udpSrvrAddr;
 static int udp_port = 0;
-unsigned int scan[MAX_SCAN_LENGTH + SCAN_GUARD];
+int scan[MAX_SCAN_LENGTH + SCAN_GUARD];
 int xfrEnabled = 0, app_done = 0;
 int scan_xmit_length = 0, new_scan_xmit_length = 0;
 static unsigned int parse_cmds( char *cmd, tcpThreadContext_t *context );
@@ -33,13 +36,19 @@ static int udpThreadCmd = 0;
 #define UDPCMD_AUTOEN 6
 #define UDPCMD_AUTODA 7
 
-int main() {
+int main(void) {
+  microblaze_init_icache_range(0, XPAR_MICROBLAZE_0_CACHE_BYTE_SIZE);
+  microblaze_enable_icache();
+  microblaze_init_dcache_range(0, XPAR_MICROBLAZE_0_DCACHE_BYTE_SIZE);
+  microblaze_enable_dcache();
   xilkernel_main();
   // xilkernel_main() will start whatever threads are specified
   // in XPS Software Platform Settings, e.g. main_main
+  return 0;
 }
 
 void* main_main(void* arg) {
+  extern void lwip_init();
   safe_print("In main_main\n");
   sleep(100);
   lwip_init(); // starts two more threads
@@ -68,6 +77,7 @@ void* main_main(void* arg) {
   // be able to simply call the serverAppThread and save the
   // thread create/destroy overhead. Unfortunately, lwip needs
   // to keep separate track of the threads.
+  return &err_rv;
 }
   
 // udpThread() is responsible for fetching data from the FSL
@@ -81,7 +91,7 @@ void *udpThread(void *arg) {
   // set up the udp socket
   int udp_socket, rc;
   // int cur_N_skipped;
-  int transfers = 0;
+  //int transfers = 0;
 
   if ( ethernet_init() ) return &err_rv;
   safe_print("ethernet initialized\n");
@@ -111,7 +121,7 @@ void *udpThread(void *arg) {
   safe_print("udp_thread: UDP bound, awaiting semaphore\n");
   for (;;) {
     int i; // for overrun check at the bottom
-    int status;
+    //int status;
     unsigned int words_read, scan_size;
 
     // safe_print("udp_thread: waiting\n");
@@ -295,40 +305,33 @@ void *tcpThread( void *context ) {
 int ethernet_init(void) {
     struct ip_addr ipaddr, netmask, gateway;
     struct netif *server_netif;
+    unsigned char mac_addr[] = { 0,0xA,0x35,0x55,0x55,0x55};
     sleep(100);
-    XEmacIf_Config *xemacif_ptr = &XEmacIf_ConfigTable[0];
-    IP4_ADDR(&ipaddr, 10, 0, 0, 200 );
-    IP4_ADDR(&netmask, 255, 255, 255, 0 );
-    IP4_ADDR(&gateway, 10, 0, 0, 1 );
+    IP_ADDRESS(&ipaddr);
+    IP_NETMASK(&netmask);
+    IP_GATEWAY(&gateway);
     
     // Set up the lwIP network interface
     // Allocate and configure the server's netif
-    server_netif = mem_malloc(sizeof(struct netif)); 
+    server_netif = malloc(sizeof(struct netif)); 
     if (server_netif == NULL) {
         safe_print("ERROR: netif_add(): Out of memory for default netif\n\r");
         return 1;
     }
-    server_netif = netif_add(server_netif,
-                             &ipaddr,
-                             &netmask,
-                             &gateway,
-                             &XEmacIf_ConfigTable[0],
-                             xemacif_init,
-                             tcpip_input);
+    xemac_add(server_netif, &ipaddr, &netmask, &gateway,
+              mac_addr, EMAC_BASEADDR );
     sleep(100);
     safe_print("netif_added\n");
     netif_set_default(server_netif);
     sleep(100);
     safe_print("default added\n");
-    
-    // Register the XEMAC interrupt handler with the controller and enable
-    // interrupts within XMK
-    register_int_handler(EMAC_INTERRUPT_ID,
-                         (XInterruptHandler)XEmac_IntrHandlerFifo,
-                         xemacif_ptr->instance_ptr);
-    enable_interrupt(EMAC_INTERRUPT_ID);
-    sleep(100);
-    safe_print("interrupt enabled\n");
+
+  	/* specify that the network if is up */
+  	netif_set_up(server_netif);
+
+  	/* start packet receive thread - required for lwIP operation */
+  	sys_thread_new((void *)&xemacif_input_thread, server_netif, 5);
+
     return 0;
 }
 
