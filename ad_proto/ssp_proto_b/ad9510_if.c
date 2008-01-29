@@ -18,7 +18,8 @@
 *******************************************************************************/
 
 /***************************** Include Files **********************************/
-
+#include "xmk.h"
+#include "sys/intr.h"
 #include "xparameters.h"
 #include "xspi.h"
 #include "xio.h"
@@ -32,9 +33,9 @@
  * xparameters.h file. They are defined here such that a user can easily
  * change all the needed parameters in one place.
  */
-#define SPI_DEVICE_ID			XPAR_OPB_SPI_0_DEVICE_ID
-#define INTC_DEVICE_ID          XPAR_OPB_INTC_0_DEVICE_ID
-#define SPI_IRPT_INTR           XPAR_OPB_INTC_0_OPB_SPI_0_IP2INTC_IRPT_INTR
+#define SPI_DEVICE_ID			XPAR_XPS_SPI_0_DEVICE_ID
+#define INTC_DEVICE_ID          XPAR_XPS_INTC_0_DEVICE_ID
+#define SPI_IRPT_INTR           XPAR_XPS_INTC_0_XPS_SPI_0_IP2INTC_IRPT_INTR
 
 // AD9510 SPI Interface Command constant definitions
 #define WRITE_1BYTE				0x00
@@ -60,8 +61,9 @@ void AD9510_Init(void);
 static XStatus SetupInterruptSystem(XSpi *SpiPtr);
 static void SpiHandler(void *CallBackRef, Xuint32 StatusEvent, unsigned int ByteCount);
 static void ad9510_Write(XSpi *SpiPtr, Xuint16 dat);
-static Xuint8 ad9510_Read(XSpi *SpiPtr, Xuint8 SPIaddr);
-
+#if AD9510_READ_NEEDED
+  static Xuint8 ad9510_Read(XSpi *SpiPtr, Xuint8 SPIaddr);
+#endif
 /************************** Variable Definitions ******************************/
 
 static XSpi Spi;					// SPI device struct instance
@@ -98,9 +100,9 @@ static int check_status( int Status, char *reason ) {
 *******************************************************************************/
 int SPI_system_init(void) {
     XStatus Status;
-	unsigned char byte;						// SPI xferred byte
-	Xuint8 ad9510RegAddr, ad9510RegVal=1;	// AD9510 Register address and value
-	Xuint32 SlaveSel;						// SPI Slave Select Register Contents
+	//unsigned char byte;						// SPI xferred byte
+	//Xuint8 ad9510RegAddr, ad9510RegVal=1;	// AD9510 Register address and value
+	//Xuint32 SlaveSel;						// SPI Slave Select Register Contents
    
 // Initialize Devices and Ports:
 // SPI device
@@ -170,7 +172,7 @@ int SPI_system_init(void) {
 ******************************************************************************/
 static void ad9510_Write(XSpi *SpiPtr, Xuint16 dat)
 {
-	unsigned char byte;
+	//unsigned char byte;
 	static unsigned char buf[3];		// buf conains cmd, addr and data
 	
 	buf[0] = WRITE_1BYTE;
@@ -234,6 +236,7 @@ void AD9510_Init(void) {
 * @return	Received byte
 *
 ******************************************************************************/
+#if AD9510_READ_NEEDED
 static Xuint8 ad9510_Read(XSpi *SpiPtr, Xuint8 SPIaddr)
 {
 	static unsigned char obuf[3], ibuf[3];	// obuf conains cmd & addr
@@ -252,6 +255,7 @@ static Xuint8 ad9510_Read(XSpi *SpiPtr, Xuint8 SPIaddr)
 	
 	return ibuf[2];
 }
+#endif
 
 /****************************************************************************/
 /** SpiHandler
@@ -300,7 +304,7 @@ void SpiHandler(void *CallBackRef, Xuint32 StatusEvent,
 *
 ****************************************************************************/
 XStatus SetupInterruptSystem(XSpi *SpiPtr) {
-    XStatus Status;
+    //XStatus Status;
 
 // Connect a device driver handler that will be called when an interrupt
 // for the device occurs, the device driver handler performs the specific

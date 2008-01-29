@@ -18,7 +18,9 @@ int print_mutex_lock(void) {
 }
 
 void print_mutex_unlock(void) {
-  int rv = pthread_mutex_unlock(&print_mutex);
+  int rv;
+  print("\r");
+  rv = pthread_mutex_unlock(&print_mutex);
   if ( rv ) {
     xil_printf("\r\nprint mutex unlock failed: %d\r\n", rv );
   }
@@ -27,6 +29,7 @@ void print_mutex_unlock(void) {
 void safe_print( char *text ) {
 	print_mutex_lock();
 	print(text);
+	print("\r");
 	print_mutex_unlock();
 }
 

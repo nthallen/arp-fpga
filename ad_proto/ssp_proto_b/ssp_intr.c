@@ -1,6 +1,7 @@
 #include "ssp_intr.h"
 #include "sys/intr.h"
 #include "pthread.h"
+#include "ssp_ad.h"
 
 static pthread_mutex_t sg_mutex = PTHREAD_MUTEX_INITIALIZER;
 
@@ -90,7 +91,7 @@ static unsigned int drain_fifo( void ) {
 }
 
 void xfr_init(void) {
-  int i, words_before, words_after, words_drained;
+  int i, words_before, words_drained;
   for ( i = MAX_SCAN_LENGTH; i < MAX_SCAN_LENGTH+SCAN_GUARD; i++ )
     scan[i] = 0;
   set_ssp_control( SSP_ENABLE_MASK, 0, "Clearing enable" );
