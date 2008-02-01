@@ -7,9 +7,9 @@
    serverAppThread() accept()s TCP connections from clients
    tcpThread() manages TCP connections after accept()
 */
+#include "ssp_ad.h"
 #include "errno.h"
 #include "mb_interface.h"
-#include "ssp_ad.h"
 #include "ssp_intr.h"
 #include "ad9510_if.h"
 

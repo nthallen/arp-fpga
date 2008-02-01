@@ -1,8 +1,8 @@
+#include "xmk.h"
 #include <string.h>
 #include "lwip/tcpip.h"
 #include "lwip/sockets.h"
 #include "netif/xadapter.h"
-#include "xmk.h"
 #include "xparameters.h"
 #include "ssp_ad_scan_sm_0.h"
 
