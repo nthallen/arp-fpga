@@ -25,7 +25,8 @@ static struct sockaddr_in udpSrvrAddr;
 static int udp_port = 0;
 int scan[MAX_SCAN_LENGTH + SCAN_GUARD];
 int xfrEnabled = 0, app_done = 0;
-int scan_xmit_length = 0, new_scan_xmit_length = 0;
+unsigned int scan_xmit_length = 0, new_scan_xmit_length = 0;
+unsigned int n_average = 1, new_n_average = 1, preaddr_enable = 0;
 static unsigned int parse_cmds( char *cmd, tcpThreadContext_t *context );
 static int udpThreadCmd = 0;
 #define UDPCMD_ENABLE 1
@@ -369,6 +370,7 @@ static int enq_udpcmd( int cmdcode ) {
     DA Disable
     EX Quit
     NS:xxxx N_Samples
+    NA:xxxx N_Average (Pre-Adder)
     NC:xxxx N_Coadd
     UP:xxxxx UDP Port Number
     TE Trigger External
@@ -415,22 +417,42 @@ static unsigned int parse_cmds( char *cmd, tcpThreadContext_t *tcpThreadContext 
     safe_printf(("tcpThread: Setting UDP port to %d\n", udp_port ));
     print_mutex_unlock();
     return 200;
-  } else if ( cmd[0] == 'N' && cmd[1] == 'S' && cmd[2] == ':' ) {
-    new_scan_xmit_length = atoi(cmd+3);
-    if ( new_scan_xmit_length > 4000 ) {
+  } else if ( cmd[0] == 'N' && cmd[2] == ':' ) {
+  	unsigned int newval = atoi(cmd+3);
+  	if ( cmd[1] == 'S' ) {
+	    if ( newval > 4000 ) {
+	      print_mutex_lock();
+	      safe_printf(("tcpThread: scan length request too large: %d\n",
+	        newval ));
+	      print_mutex_unlock();
+	      return 400;
+	    } else {
+	    	new_scan_xmit_length = newval;
+	      print_mutex_lock();
+	      safe_printf(("tcpThread: Setting scan_xmit_length to %d\n",
+	        new_scan_xmit_length ));
+	      print_mutex_unlock();
+	      return 200;
+	    }
+  	} else if ( cmd[1] == 'A' ) {
+  		if ( newval > 2*(SSP_MAX_PREADD+1) ) {
+  			newval = 2*(SSP_MAX_PREADD+1);
+  		} else if ( newval <= 1 ) {
+  			newval = 1;
+  		} else if ( newval > 1 && newval & 1 ) {
+  			newval = newval & (4*SSP_MAX_PREADD + 2);
+  		}
+ 
+  		new_n_average = newval;
+  		preaddr_enable = new_n_average > 1;
       print_mutex_lock();
-      safe_printf(("tcpThread: scan length request too large: %d\n",
-        new_scan_xmit_length ));
-      print_mutex_unlock();
-      new_scan_xmit_length = 0;
-      return 400;
-    } else {
-      print_mutex_lock();
-      safe_printf(("tcpThread: Setting scan_xmit_length to %d\n",
-        new_scan_xmit_length ));
+      safe_printf(("tcpThread: Setting n_average to %d\n",
+        new_n_average ));
       print_mutex_unlock();
       return 200;
-    }
+  	} else {
+  		safe_print("tcpThread: unrecognized N command\n");
+  	}
   } else if ( cmd[0] == 'T' ) {
     if ( cmd[1] == 'E' ) return enq_udpcmd( UDPCMD_TRIGEXT );
     else if ( ( cmd[1] == 'U' || cmd[1] == 'D' ) && cmd[2] == ':' ) {

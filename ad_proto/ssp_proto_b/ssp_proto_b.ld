@@ -12,7 +12,7 @@
 /*******************************************************************/
 
 _STACK_SIZE = DEFINED(_STACK_SIZE) ? _STACK_SIZE : 0x1000;
-_HEAP_SIZE = DEFINED(_HEAP_SIZE) ? _HEAP_SIZE : 0x1000;
+_HEAP_SIZE = DEFINED(_HEAP_SIZE) ? _HEAP_SIZE : 0x2000;
 
 /* Define Memories in the system */
 
@@ -67,13 +67,13 @@ SECTIONS
    *(.rodata.*)
    *(.gnu.linkonce.r.*)
    __rodata_end = .;
-} > DDR_SDRAM_C_MPMC_BASEADDR
+} > SRAM_C_MEM0_BASEADDR
 
 .sdata2 : { 
    *(.sdata2) 
    *(.sdata2.*) 
    *(.gnu.linkonce.s2.*) 
- } > DDR_SDRAM_C_MPMC_BASEADDR 
+ } > SRAM_C_MEM0_BASEADDR 
 
 .sbss2 : {
    __sbss2_start = .;
@@ -81,7 +81,7 @@ SECTIONS
    *(.sbss2.*)
    *(.gnu.linkonce.sb2.*)
    __sbss2_end = .;
-} > DDR_SDRAM_C_MPMC_BASEADDR
+} > SRAM_C_MEM0_BASEADDR
 
 .data : {
    . = ALIGN(4);
@@ -90,19 +90,19 @@ SECTIONS
    *(.data.*)
    *(.gnu.linkonce.d.*)
    __data_end = .;
-} > DDR_SDRAM_C_MPMC_BASEADDR
+} > SRAM_C_MEM0_BASEADDR
 
 .got : {
    *(.got)
-} > DDR_SDRAM_C_MPMC_BASEADDR
+} > SRAM_C_MEM0_BASEADDR
 
 .got1 : {
    *(.got1)
-} > DDR_SDRAM_C_MPMC_BASEADDR
+} > SRAM_C_MEM0_BASEADDR
 
 .got2 : {
    *(.got2)
-} > DDR_SDRAM_C_MPMC_BASEADDR
+} > SRAM_C_MEM0_BASEADDR
 
 .ctors : {
    __CTOR_LIST__ = .;
@@ -113,7 +113,7 @@ SECTIONS
    KEEP (*(.ctors))
    __CTOR_END__ = .;
    ___CTORS_END___ = .;
-} > DDR_SDRAM_C_MPMC_BASEADDR
+} > SRAM_C_MEM0_BASEADDR
 
 .dtors : {
    __DTOR_LIST__ = .;
@@ -124,19 +124,19 @@ SECTIONS
    KEEP (*(.dtors))
    __DTOR_END__ = .;
    ___DTORS_END___ = .;
-} > DDR_SDRAM_C_MPMC_BASEADDR
+} > SRAM_C_MEM0_BASEADDR
 
 .eh_frame : {
    *(.eh_frame)
-} > DDR_SDRAM_C_MPMC_BASEADDR
+} > SRAM_C_MEM0_BASEADDR
 
 .jcr : {
    *(.jcr)
-} > DDR_SDRAM_C_MPMC_BASEADDR
+} > SRAM_C_MEM0_BASEADDR
 
 .gcc_except_table : {
    *(.gcc_except_table)
-} > DDR_SDRAM_C_MPMC_BASEADDR
+} > SRAM_C_MEM0_BASEADDR
 
 .sbss : {
    . = ALIGN(4);
@@ -146,7 +146,7 @@ SECTIONS
    *(.gnu.linkonce.sb.*)
    . = ALIGN(8);
    __sbss_end = .;
-} > DDR_SDRAM_C_MPMC_BASEADDR
+} > SRAM_C_MEM0_BASEADDR
 
 .tdata : {
    __tdata_start = .;
@@ -154,7 +154,7 @@ SECTIONS
    *(.tdata.*)
    *(.gnu.linkonce.td.*)
    __tdata_end = .;
-} > DDR_SDRAM_C_MPMC_BASEADDR
+} > SRAM_C_MEM0_BASEADDR
 
 .tbss : {
    __tbss_start = .;
@@ -162,7 +162,7 @@ SECTIONS
    *(.tbss.*)
    *(.gnu.linkonce.tb.*)
    __tbss_end = .;
-} > DDR_SDRAM_C_MPMC_BASEADDR
+} > SRAM_C_MEM0_BASEADDR
 
 .bss : {
    . = ALIGN(4);
@@ -173,7 +173,7 @@ SECTIONS
    *(COMMON)
    . = ALIGN(4);
    __bss_end = .;
-} > DDR_SDRAM_C_MPMC_BASEADDR
+} > SRAM_C_MEM0_BASEADDR
 
 _SDA_BASE_ = ((__sbss_end - __sbss_start) / 2 );
 
