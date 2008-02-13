@@ -28,7 +28,7 @@ static void set_ssp_control( unsigned int mask, unsigned int val, char *where ) 
   unsigned int new_control;
   int status;
   sg_mutex_lock();
-  new_control = ((control & ~mask) | (val & mask)) & 0x1F;
+  new_control = ((control & ~mask) | (val & mask)) & SSP_CONTROL_MASK;
   if ( new_control != control ) {
     status = ssp_ll_control(new_control);
     control = new_control;
@@ -42,6 +42,14 @@ static void set_ssp_netsamples( unsigned int val ) {
   sg_mutex_lock();
   status = ssp_ll_netsamples(val);
   check_fifo_status( status, "Setting NetSamples" );
+  sg_mutex_unlock();
+}
+
+static void set_ssp_navg( unsigned int val ) {
+  int status;
+  sg_mutex_lock();
+  status = ssp_ll_navg(val);
+  check_fifo_status( status, "Setting Navg" );
   sg_mutex_unlock();
 }
 
@@ -97,6 +105,10 @@ void xfr_init(void) {
   set_ssp_control( SSP_ENABLE_MASK, 0, "Clearing enable" );
   set_ssp_netsamples( new_scan_xmit_length );
   scan_xmit_length = new_scan_xmit_length;
+  if (preaddr_enable) {
+    set_ssp_navg( (new_n_average/2)-1 );
+    n_average = new_n_average;
+  }
   words_before = ssp_read_pctfull();
   set_ssp_control( SSP_RESET_MASK, SSP_RESET_MASK, "Resetting circuit" );
   sleep(20); // shortened from 200
@@ -106,6 +118,13 @@ void xfr_init(void) {
   //words_after = ssp_read_pctfull();
   //xil_printf( " words: %d %d\n", words_before, words_after );
   words_drained = drain_fifo();
+  if ( preaddr_enable ) {
+  	safe_print("xfr_init: enabling preadd\n");
+    set_ssp_control( SSP_PREADD_MASK, SSP_PREADD_MASK, "Setting preadd bit" );
+  } else {
+  	safe_print("xfr_init: disabling preadd\n");
+    set_ssp_control( SSP_PREADD_MASK, 0, "Clearing preadd bit" );
+  }
   set_ssp_control( SSP_RESET_MASK, 0, "Clearing circuit reset" );
 }
 

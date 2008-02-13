@@ -49,8 +49,8 @@ extern void *serverAppThread(void *arg);
 extern void *tcpThread( void *context );
 /* Define one of the following to be non-zero: */
 #define HELLO 0
-#define BENCHMARK_TCP 1
-#define BENCHMARK_UDP 0
+#define BENCHMARK_TCP 0
+#define BENCHMARK_UDP 1
 
 static int err_rv = 1;
 
