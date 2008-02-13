@@ -20,5 +20,6 @@ extern int tcp_close(void);
 #define RECV_BUF_SIZE 80
 #define UDP_MAX_MSG (4096*4)
 extern int verbosity;
+#define PID_FILE "LOG/ssp_log.pid"
 
 #endif

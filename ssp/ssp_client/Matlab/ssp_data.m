@@ -22,7 +22,7 @@ function varargout = ssp_data(varargin)
 
 % Edit the above text to modify the response to help ssp_data
 
-% Last Modified by GUIDE v2.5 07-Nov-2007 15:36:58
+% Last Modified by GUIDE v2.5 13-Feb-2008 09:57:33
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -90,16 +90,26 @@ if handles.data.stopped
 end
 % could use the lock file to determine where to set index
 handles.data.fsample = str2double(get(handles.MSPS,'String')) * 1e6;
-NS = str2double(get(handles.NS, 'String'));
+NS = round(str2double(get(handles.NS, 'String')));
+NA = round(str2double(get(handles.NA, 'String')));
+if NA > 256
+  NA = 256;
+elseif NA < 1
+  NA = 1;
+elseif NA > 1 && bitand(NA,1)
+  NA = bitand(NA, 512-2);
+end
+set(handles.NA, 'String', sprintf('%d', NA));
 x = (1:NS)';
 x2 = (1:NS/2)';
-f_fft = (x2-1)*handles.data.fsample/NS;
+f_fft = (x2-1)*handles.data.fsample/(NA*NS);
 W = 1 - (2*x/NS - 1).^2; % Welch window
 TC = Trigger_Command(handles);
 IX = handles.data.index;
-cmd = sprintf('start ssp_log NS:%d %s IX:%d', NS, TC, IX);
+cmd = sprintf('start ssp_log NS:%d NA:%d %s IX:%d', NS, NA, TC, IX);
 fprintf(1, '%s\n', cmd );
 set(handles.NS, 'enable', 'off');
+set(handles.NA, 'enable', 'off');
 system(cmd);
 pause(1);
 % files = dir('LOG/ssp_*.lock');
@@ -122,23 +132,31 @@ pause(1);
 set( handles.start_btn, 'String', 'Stop');
 guidata(hObject, handles);
 index = handles.data.index;
+SN = -1;
 while 1
   handles = guidata(hObject);
   path = mlf_path( 'LOG', index );
   lockfile = sprintf('LOG/ssp_%d.lock', index);
   if exist( path, 'file' ) && ~exist( lockfile, 'file')
     D = load(path);
+    newSN = D(end);
+    D = D(1:end-1);
+    if SN >= 0
+      dSN = newSN-SN;
+      set(handles.dSN,'string',sprintf('%d',dSN));
+    end
+    SN = newSN;
     if ~handles.data.logging
-      delete(path); % avoid wasting lots of disk space, could be optional
+      delete(path);
     end
     axes(handles.axes1);
     if get(handles.FFT,'Value')
       F = abs(fft(D.*W));
       loglog(f_fft, F(x2)*2/NS);
-      ylim([.8 32768]);
+      ylim([.8 32768*NA]);
     else
       plot(D,'*');
-      ylim([-32767 32768]);
+      ylim([-32767 32768]*NA);
       xlim([1 length(D)]);
     end
     title(sprintf('Index %d', index));
@@ -152,6 +170,7 @@ end
 set( handles.start_btn, 'String', 'Start');
 set( hObject, 'enable', 'on');
 set( handles.NS, 'enable', 'on');
+set( handles.NA, 'enable', 'on');
 handles.data.index = index;
 guidata(hObject,handles);
 
