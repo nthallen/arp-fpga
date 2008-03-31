@@ -3,25 +3,30 @@
 <leo_file>
 <leo_header file_format="2" tnodes="0" max_tnode_index="0" clone_windows="0"/>
 <globals body_outline_ratio="0.5">
-	<global_window_position top="20" left="20" height="580" width="896"/>
+	<global_window_position top="40" left="228" height="520" width="741"/>
 	<global_log_window_position top="0" left="0" height="0" width="0"/>
 </globals>
 <preferences/>
 <find_panel_settings/>
 <vnodes>
 <v t="ntallen.20080228100701" a="E"><vh>SSP Documentation</vh>
-<v t="ntallen.20080228100842"><vh>IIP Development Notes</vh>
-<v t="ntallen.20080228100842.1"><vh>Design Issues</vh>
+<v t="ntallen.20080228100842" a="E"><vh>IIP Development Notes</vh>
+<v t="ntallen.20080228100842.1" a="E"><vh>Design Issues</vh>
 <v t="ntallen.20080228100842.2"><vh>Multiple Clocks</vh></v>
-<v t="ntallen.20080228100842.3"><vh>Implement Coadd and N Channels</vh></v>
+<v t="ntallen.20080228100842.3" a="E"><vh>Implement Coadd and N Channels</vh>
+<v t="ntallen.20080311125846"><vh>Remaining Work</vh></v>
+<v t="ntallen.20080313122934"><vh>Using StateCAD with Sysgen</vh></v>
+</v>
 <v t="ntallen.20080228100842.4"><vh>Back to benchmarks</vh></v>
-<v t="ntallen.20080228100842.5" a="E"><vh>Data Transfer Strategies</vh>
+<v t="ntallen.20080228100842.5"><vh>Data Transfer Strategies</vh>
 <v t="ntallen.20080228100842.6"><vh>V1</vh></v>
-<v t="ntallen.20080228100842.7"><vh>V2</vh></v>
+<v t="ntallen.20080228100842.7" a="E"><vh>V2</vh>
+<v t="ntallen.20080311125846.1"><vh>V2a</vh></v>
+</v>
 <v t="ntallen.20080228100842.8"><vh>V3</vh></v>
 </v>
 </v>
-<v t="ntallen.20080228100842.9"><vh>Knowledge Base</vh>
+<v t="ntallen.20080228100842.9" a="E"><vh>Knowledge Base</vh>
 <v t="ntallen.20080228100842.10"><vh>Software Versions</vh>
 <v t="ntallen.20080228100842.11"><vh>LwIP</vh></v>
 <v t="ntallen.20080228100842.12"><vh>Cygwin compatability</vh></v>
@@ -29,7 +34,7 @@
 <v t="ntallen.20080228100842.13"><vh>Do we need to have different pcores for different FPGA targets?</vh></v>
 <v t="ntallen.20080228100842.14"><vh>Xilkernel timer bug</vh></v>
 </v>
-<v t="ntallen.20080228100842.15"><vh>Document clearly what we need to build this app</vh>
+<v t="ntallen.20080228100842.15" a="E"><vh>Document clearly what we need to build this app</vh>
 <v t="ntallen.20080228100842.14"><vh>Xilkernel timer bug</vh></v>
 <v t="ntallen.20080228100842.16"><vh>Sysgen Pcore Creation</vh>
 <v t="ntallen.20080228100842.13"><vh>Do we need to have different pcores for different FPGA targets?</vh></v>
@@ -52,7 +57,7 @@
 </v>
 <v t="ntallen.20080228100842.31" a="E"><vh>SW Components</vh>
 <v t="ntallen.20080228100842.32"><vh>xilkernel</vh></v>
-<v t="ntallen.20080228100842.33"><vh>LwIP</vh></v>
+<v t="ntallen.20080228100842.33" a="TV"><vh>LwIP</vh></v>
 </v>
 <v t="ntallen.20080228100842.34"><vh>Remote Driver</vh>
 <v t="ntallen.20080228100842.35"><vh>Incoming Messages</vh>
@@ -105,18 +110,20 @@
 </v>
 <v t="ntallen.20080228133017" a="E"><vh>Documentation</vh>
 <v t="ntallen.20080228133017.1" a="E"><vh>Circuits</vh>
-<v t="ntallen.20080228133017.2" a="E"><vh>SSP Prototype V2.2</vh>
-<v t="ntallen.20080228133017.3" a="M"><vh>arp_ssp V3.0</vh></v>
+<v t="ntallen.20080228133017.2" a="E"><vh>SSP V1</vh>
+<v t="ntallen.20080228133017.3" a="M"><vh>arp_ssp V2.0</vh></v>
 <v t="ntallen.20080228133017.4"><vh>ssp_trigger V1.0</vh></v>
-<v t="ntallen.20080228133017.5" a="ETV"><vh>ssp_ad_preaddr V2.00a</vh>
-<v t="ntallen.20080228140103"><vh>Handshaking</vh></v>
-<v t="ntallen.20080229125358" a="E"><vh>Rework Again?</vh>
+<v t="ntallen.20080228133017.5" a="E"><vh>ssp_ad_preaddr V2.00a</vh>
 <v t="ntallen.20080229125358.1"><vh>dual-clock FIFO</vh></v>
+<v t="ntallen.20080303084933"><vh>Handshaking</vh></v>
+<v t="ntallen.20080228140103"><vh>Handshaking - old plan</vh></v>
+<v t="ntallen.20080229125358"><vh>Rework Again?</vh></v>
 </v>
-</v>
-<v t="ntallen.20080228133017.6" a="E"><vh>ssp_ad_scan V???</vh>
+<v t="ntallen.20080228133017.6" a="E"><vh>ssp_ad_scan V3.00a</vh>
 <v t="ntallen.20080229125358.2"><vh>DStat</vh></v>
 <v t="ntallen.20080229125358.3"><vh>SampleCount</vh></v>
+<v t="ntallen.20080305130648"><vh>CoaddCount</vh></v>
+<v t="ntallen.20080305165613"><vh>ShiftOut Logic</vh></v>
 </v>
 </v>
 </v>
@@ -128,8 +135,20 @@
 <t tx="ntallen.20080228100701">@nocolor</t>
 <t tx="ntallen.20080228100842"></t>
 <t tx="ntallen.20080228100842.1"></t>
-<t tx="ntallen.20080228100842.2">The Multiple Subsystem bocks in Sysgen die catastrophically. How do we work around that?</t>
-<t tx="ntallen.20080228100842.3"></t>
+<t tx="ntallen.20080228100842.2">The Multiple Subsystem bocks in Sysgen die catastrophically. How do we work around that?
+Must make the designs separate and interconnect manually. This is not ideal, since it makes it difficult to use things like FIFOs, but we can deal.</t>
+<t tx="ntallen.20080228100842.3">Full design for 3 channels as documented under SSP V1. Each component required:
+    Design
+    Simulation
+    Export from Sysgen
+    Import into XPS
+
+Then the system as a whole required:
+    Interconnect in XPS
+    Place and Route
+
+Based on P&amp;R results, we can see what size device we're going to need. It looks like the ideal choice will be the XC4VSX35, which has lots of RAM, but we can definitely fit the existing design into the XC4VLS25 which is on the ML401. The additional RAM will allow us to expand the application or simply allow for longer scans at higher resolution.
+    </t>
 <t tx="ntallen.20080228100842.4">Things to look into:
     cache
     barrel shifter
@@ -377,7 +396,9 @@ This design implements the circuitry for three channels of high-speed A/D conver
     ssp_ad_preaddr: to handle A/D interface and time-based filtering
     ssp_ad_scan: to handle scan processing, coadding and connection to the processor
 
-An overall system diagram will be created that describes the interconnection</t>
+An overall system diagram will be created that describes the interconnection
+
+Tied to software V2_0</t>
 <t tx="ntallen.20080228133017.3">This block needs to be entered into CVS
 
 arp_ssp implements the LVDS input buffers for the A/D data and clock. It takes P,N pairs as input and outputs buffered signals. It also provides both true and inverted outputs for the clock to facilitate synchronization.
@@ -391,11 +412,11 @@ Inputs:
         2: Trigger_Rising
         3: Auto Trigger Enable
     TrigLvl[0:3]
-    TrigArm_In
+    TrigReset_In
 
 Outputs:
     Trigger
-    TrigArm_Out
+    TrigReset_Out
 
 The trigger source index indicates which one of the four TrigLvl inputs will be monitored. TrigLvl0, 1 and 2 will be connected to TrigLvl_Greater outputs from the three ssp_ad_preaddr blocks which are boolean outputs that indicate that the input is greater than the specified trigger level. TrigLvl3 will be connected to the external trigger, which is how we expect to use this circuit in production.
 
@@ -415,10 +436,12 @@ Inputs:
     Trigger: Synchronized boolean signal from triggering block.
         
 Outputs:
-    Signal_Out: The 24-bit pre-added signal to the scan processor
-    Empty: Boolean signal true when there is no data on the outputs
-    Reset_Ack: True when the circuit has been reset. Will go low when a trigger is accepted
-    OVF: Boolean overflow status indication to the scan processor
+    Scan Processor Bus:
+        Signal_Out: The 24-bit pre-added signal to the scan processor
+        Empty: Boolean signal true when there is no data on the outputs
+        Full: Boolean signal true when there are two data in the FIFO
+        Reset_Ack: True when the circuit has been reset. Will go low when a trigger is accepted
+        OVF: Boolean overflow status indication to the scan processor
     LvlGreater: Boolean output to the triggering block indicating current Signal value is greater than the TrigLevel
     
 On Reset, all counters and states are reset. No data will be accepted until a Trigger is observed. After the Trigger is observed, data is shifted out via a FIFO. The circuit must be reset after each scan.
@@ -440,14 +463,147 @@ There are still synchronization issues. I want to make sure I have adequate setu
 I think I would like to see:
     pre-adder controlled by a single reset line. When asserted, the circuit is in reset. When cleared, it is ready for a trigger. Obviously clearing the reset must be synchronized, but setting it could be asynchronous.
     Better FIFO implementation to allow higher throughput.</t>
-<t tx="ntallen.20080229125358.1">FIFO holds N samples, where N is most likely greater than 1</t>
-<t tx="ntallen.20080229125358.2">The DStat block handles the handshaking. Data must be ready from all enabled channels before the transfer is acknowledged.
+<t tx="ntallen.20080229125358.1">FIFO holds N samples, where N is most likely greater than 1
+In this case, N is 2. There are 3 registers. The write index and the read index are implemented as 3-bit one-hot shift registers (FIFOdec) with a reset.
 
-The reset input resets the DStat_Ack output to zero. It should be asserted on either system reset or the Arm condition.
+Inputs:
+    Din: The data to be stored
+    WE: Single write enable line
+    RE: 3-bit one-hot read enable lines from remote clock domain
+    Reset: Clears Overflow, resets write decoder circuit to point to first register
+
+Outputs:
+    Dout: The data in the register currently selected by the RE bits
+    Empty: True when there is no data in the FIFO
+    Full: True when no more data can be written to the FIFO
+    OVF: True if a write occurred during a Full condition
+
+The empty condition is when the read and write indexes point to the same register. Full is when incrementing the write index would advance to the empty condition. In this special case where the total capacity of the FIFO is 2, Full indicates that there are 2 data in the FIFO. The signal we really want on the remote side is one that tells us that there is more than one datum in the FIFO, and this fits the bill. If we were to increase the size of the FIFO, we'd probably need to do some more elaborate analysis to come up with that condition.</t>
+<t tx="ntallen.20080229125358.2">The DStat block handles the handshaking with the pre addr stages. Data must be ready from all enabled channels before the transfer is acknowledged.
+
+Inputs:
+    DSI1,2,3: Data Status Inputs from the three channels consisting of:
+        DataReady: True when at least one datum is ready
+        DataReady2: True when at least two data are ready
+        Reset_Ack: True when Pre_adder channel has been reset
+        OVF: True if the channel has overflowed its output FIFO
+    ChEn: 3-bit Configuration vector indicating which channels are enabled
+    Reset: Resets read FIFO and issues PA_Reset to the pre_adder circuit.
+
+Outputs:
+    DV0: Data will be valid on the next cycle. This output should enable the data register
+    RE: FIFO Read Enable vector (output to pre_adder channel)
+    PA_Reset: Pre_Adder reset (routed through trigger block for synchronization)
+    OVF: True if OVF input has been observed from any channel since reset
+
+The Reset input should be driven by the (SSP_Reset + EOS)
 
 The DV0 output will drive the enable on the register which will hold the incoming data. As such, it is one clock in advance of a proper data valid signal.
 
-As discussed in the Handshaking node, the current implementation is not optimal. An implementation with a more robust sort of FIFO could probably increase throughput.</t>
-<t tx="ntallen.20080229125358.3">This block is responsible for individual scan processing. Internally, it will maintain the states</t>
+RE is a 3-bit one-hot vector indicating which of the 3 FIFO registers is currently being read.</t>
+<t tx="ntallen.20080229125358.3">This block is responsible for individual scan processing.
+
+Inputs:
+    DV0: Data will be valid
+    Count: NSample configuration from the CPU
+    Reset: Scan Reset. Should be connected to (PA_Reset + SSP_Reset)
+
+Outputs:
+    DV: Data is valid (DV0 delayed one cycle and qualified appropriately)
+    BOS: Beginning of scan. Synchronous with DVO
+    EOS: End of scan. Synchronous with last DV of the scan
+    ScanNum: Scan number (free running counter)
+
+Internally, it will maintain the states ResetSt, ScanSt and EOSSt</t>
+<t tx="ntallen.20080303084933"></t>
+<t tx="ntallen.20080305130648">States:
+    PreCoadd: Skipping scans before first scan
+    FirstScan: no coadding yet
+    PreLast: Skipping scans before last scan
+    LastScan: Shifting out the coadded data
+
+Inputs:
+    OVFin: Overflow bits from Coadd block
+    NCoaddIn: NCoadd from configuration input
+    DV: Data valid from Sample Count block
+    BOS: Beginning of Scan signal from Sample Count Block
+    Reset: SSP_Reset signal
+    Empty: FIFO1 empty output
+Outputs:
+    FirstScan: True when scan is not being coadded
+    WE0: Write enable for FIFO0
+    RE0: Read enable for FIFO0
+    WE1: Write enable for FIFO1
+    NSkF: Number of scans skipped before coadding
+    NSkL: Number of scans skipped before last scan
+    NCoadd: For header
+    OVF: Coadd overflow bits</t>
+<t tx="ntallen.20080305165613">Everything I might want to record in the header:
+    d0: Format Version: 16 bits (0)    NWordsHdr: 16 bits (6)
+    d1: NSamples: 14 bits  NChannels: 2 bits
+    d2: NAvg: 7 bits  NCoadd: 14 bits
+    d3: NSkP: 16 bits NSkL: 16 bits
+    d4: ScanNum: 32 bits
+    d5: Spare: 32 bits (for recording P, T, etc.)
+    D[CE[0],0]
+    ...
+    D[CE[NChannels-1],0]
+    D[CE[0],1]
+    ...
+    D[CE[NChannels-1],1]
+    ...
+    D[CE[0],NSamples-1]
+    ...
+    D[CE[NChannels-1],NSamples-1]
+
+    d6: Channel Config: 3 bits Trigger Config: 4 bits PA_OVF: 3 bits CA_OVF: 3 bits
+
+As soon as FIFO1 goes non-empty, I can start transmitting the header and data. The next EOS is synchronous with the last DV (and WE1), which means that once we've seen that, we should keep transfering data until FIFO1 is empty, then return to our ready state. CoaddCount is guaranteed not to start writing the next coadd sequence until FIFO1 is empty.
+
+Note that the overflow status bits cannot properly be recorded until after the scan data because all the data has not been recorded when the header goes out.
+
+Inputs:
+    full: full signal from outbound FIFO
+    SigIn: 96-bit data bus from the inbound FIFO
+    empty: empty signal from inbound FIFO
+    EOS: End-of-Scan signal from SampleCount block
+    NSkP: N scans skipped before coadding
+    NSkL: N scans skipped before final scan
+    NC: NCoadd from CoaddCount block
+    CAOVF: 3-bit Overflow from Coadd block
+    Reset: SSP_Reset
+    ScanNum: Scan number of last scan(*)
+    NS: NSamples from input
+    PAOVF: 3-bit Pre-Adder overflow
+    ChEn: 3-bit channel enable vector from Control input
+    TrigConfig: Trigger configuration from input
+    NA: NAvg from input
+
+Overflow bits are cleared on scan reset, so they must be recorded here until end of coadd. Preaddr overflow is held until end of scan, so we don't need to register it on the sample level, but we will need to do so on the scan level.
+OVF from CoaddCount is cleared on BOS. In both cases, it should be adequate to record them on EOS. Neither vector is qualified with ChEn prior to being sent to ShiftOut, so ShiftOut should probably do that
+(*) ScanNum should probably be latched on last scan. This will only be an issue if the outbound FIFO is so backed up that it takes longer than a scan time to transmit the first few words of the header.</t>
+<t tx="ntallen.20080311125846">Software:
+    Modify firmware to support new configuration:
+        Change in control bits
+        Different use of interrupts for receiving data
+        Support for multiple channels
+    Modify driver to support new configuration:
+        Change in packet format
+        Support for multiple channels
+
+Hardware:
+    Clean up top-level diagram and decide on best global new names
+    Set defaults in pcores where possible
+    Draw and/or implement Shift Header State machine as state diagram.
+    </t>
+<t tx="ntallen.20080311125846.1">HW: Still use a FIFO. Assume SW can keep up with the data transfer. If not, skip scans as necessary, then use that information to automatically skip scans before next coadd group.
+SW: Transfer data whenever a sufficient amount is ready</t>
+<t tx="ntallen.20080313122934">Generate VHDL needs some massaging.
+
+First, there are two entities in one file, and Sysgen's Blackbox doesn't like that, but the file is easy to split. If the main diagram is called 'SHSTATE', the output file is named SHSTATE.vhd and the two entities are SHSTATE and SHELL_SHSTATE. Cut out the SHELL_STATE stuff and save it into SHELL_STATE.vhd.
+
+Next, the state machine has a single CLK input, but Sysgen's Blackbox is looking for a clk/ce pair. I modified SHELL.vhd to change the name of the CLK port to sh_clk, properly mapped it to SHELL_SHSTATE's CLK port, and then added a dummy sh_ce input port. (The 'sh_' prefix is arbitrary, as long as the clk and ce signals match)
+
+When you add the black box part, you will select SHSTATE.vhd, and it looks like it's happy, but if you go to simulate, you'll find that it does nothing, although it doesn't complain. I will, however dump a log file into the directory which indicates that it doesn't know where to find the SHELL_SHSTATE entity. What you need to do is edit the .m file that was generated by the black box part and near the end of the file add the SHELL_SHSTATE.vhd file after the SHSTATE.vhd file is listed.</t>
 </tnodes>
 </leo_file>
