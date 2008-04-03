@@ -3,7 +3,7 @@
 <leo_file>
 <leo_header file_format="2" tnodes="0" max_tnode_index="0" clone_windows="0"/>
 <globals body_outline_ratio="0.5">
-	<global_window_position top="40" left="228" height="520" width="741"/>
+	<global_window_position top="40" left="228" height="599" width="741"/>
 	<global_log_window_position top="0" left="0" height="0" width="0"/>
 </globals>
 <preferences/>
@@ -11,7 +11,7 @@
 <vnodes>
 <v t="ntallen.20080228100701" a="E"><vh>SSP Documentation</vh>
 <v t="ntallen.20080228100842" a="E"><vh>IIP Development Notes</vh>
-<v t="ntallen.20080228100842.1" a="E"><vh>Design Issues</vh>
+<v t="ntallen.20080228100842.1"><vh>Design Issues</vh>
 <v t="ntallen.20080228100842.2"><vh>Multiple Clocks</vh></v>
 <v t="ntallen.20080228100842.3" a="E"><vh>Implement Coadd and N Channels</vh>
 <v t="ntallen.20080311125846"><vh>Remaining Work</vh></v>
@@ -26,7 +26,7 @@
 <v t="ntallen.20080228100842.8"><vh>V3</vh></v>
 </v>
 </v>
-<v t="ntallen.20080228100842.9" a="E"><vh>Knowledge Base</vh>
+<v t="ntallen.20080228100842.9"><vh>Knowledge Base</vh>
 <v t="ntallen.20080228100842.10"><vh>Software Versions</vh>
 <v t="ntallen.20080228100842.11"><vh>LwIP</vh></v>
 <v t="ntallen.20080228100842.12"><vh>Cygwin compatability</vh></v>
@@ -55,9 +55,9 @@
 <v t="ntallen.20080228100842.29"><vh>opb_intc</vh></v>
 <v t="ntallen.20080228100842.30"><vh>UCF</vh></v>
 </v>
-<v t="ntallen.20080228100842.31" a="E"><vh>SW Components</vh>
+<v t="ntallen.20080228100842.31"><vh>SW Components</vh>
 <v t="ntallen.20080228100842.32"><vh>xilkernel</vh></v>
-<v t="ntallen.20080228100842.33" a="TV"><vh>LwIP</vh></v>
+<v t="ntallen.20080228100842.33"><vh>LwIP</vh></v>
 </v>
 <v t="ntallen.20080228100842.34"><vh>Remote Driver</vh>
 <v t="ntallen.20080228100842.35"><vh>Incoming Messages</vh>
@@ -72,26 +72,46 @@
 <v t="ntallen.20080228100842.42" a="E"><vh>SSP_Proto_c3</vh>
 <v t="ntallen.20080228100842.43"><vh>ssp_ad_scan V2.01b</vh></v>
 <v t="ntallen.20080228100842.44"><vh>ssp_ad_preaddr V1.00a</vh></v>
-<v t="ntallen.20080228100842.45"><vh>arp_ssp V2.00a</vh></v>
+<v t="ntallen.20080228100842.45" a="M"><vh>arp_ssp V2.00a</vh></v>
 </v>
 </v>
 <v t="ntallen.20080228100842.46" a="E"><vh>IP</vh>
-<v t="ntallen.20080228100842.47" a="E"><vh>ssp_ad_scan</vh>
+<v t="ntallen.20080228100842.47"><vh>ssp_ad_scan</vh>
 <v t="ntallen.20080228100842.48"><vh>ssp_ad_scan V2.00a</vh></v>
 <v t="ntallen.20080228100842.49"><vh>ssp_ad_scan V2.01a</vh></v>
 <v t="ntallen.20080228100842.43"><vh>ssp_ad_scan V2.01b</vh></v>
-<v t="ntallen.20080228100842.50" a="E"><vh>ssp_ad_scan V2.02a</vh>
+<v t="ntallen.20080228100842.50"><vh>ssp_ad_scan V2.02a</vh>
 <v t="ntallen.20080228100842.51"><vh>Scan Logic</vh></v>
 </v>
+<v t="ntallen.20080228133017.6"><vh>ssp_ad_scan V3.00b</vh>
+<v t="ntallen.20080229125358.2"><vh>DStat</vh></v>
+<v t="ntallen.20080229125358.3"><vh>SampleCount</vh></v>
+<v t="ntallen.20080305130648"><vh>CoaddCount</vh></v>
+<v t="ntallen.20080305165613"><vh>ShiftOut Logic</vh></v>
 </v>
-<v t="ntallen.20080228100842.52" a="E"><vh>ssp_ad_preaddr</vh>
+</v>
+<v t="ntallen.20080228100842.52"><vh>ssp_ad_preaddr</vh>
 <v t="ntallen.20080228100842.44"><vh>ssp_ad_preaddr V1.00a</vh></v>
 <v t="ntallen.20080228100842.53"><vh>ssp_ad_preaddr V1.00b</vh></v>
-<v t="ntallen.20080228100842.54"><vh>ssp_ad_preaddr V2.00a</vh></v>
+<v t="ntallen.20080228133017.5"><vh>ssp_ad_preaddr V2.00a</vh>
+<v t="ntallen.20080229125358.1"><vh>dual-clock FIFO</vh></v>
+<v t="ntallen.20080303084933"><vh>Handshaking</vh></v>
+<v t="ntallen.20080228140103"><vh>Handshaking - old plan</vh></v>
+<v t="ntallen.20080229125358"><vh>Rework Again?</vh></v>
 </v>
-<v t="ntallen.20080228100842.55" a="E"><vh>arp_ssp</vh>
+<v t="ntallen.20080403140406"><vh>ssp_ad_preaddr V2.00b</vh>
+<v t="ntallen.20080403140406.1"><vh>dual-clock FIFO</vh></v>
+<v t="ntallen.20080403140406.2"><vh>Handshaking</vh></v>
+<v t="ntallen.20080403140406.3"><vh>Handshaking - old plan</vh></v>
+<v t="ntallen.20080403140406.4"><vh>Rework Again?</vh></v>
+</v>
+</v>
+<v t="ntallen.20080228100842.55"><vh>arp_ssp</vh>
 <v t="ntallen.20080228100842.56"><vh>arp_ssp V1.00a</vh></v>
-<v t="ntallen.20080228100842.45"><vh>arp_ssp V2.00a</vh></v>
+<v t="ntallen.20080228100842.45" a="M"><vh>arp_ssp V2.00a</vh></v>
+</v>
+<v t="ntallen.20080403141641"><vh>ssp_trigger</vh>
+<v t="ntallen.20080228133017.4"><vh>ssp_trigger V1.0</vh></v>
 </v>
 </v>
 </v>
@@ -111,15 +131,15 @@
 <v t="ntallen.20080228133017" a="E"><vh>Documentation</vh>
 <v t="ntallen.20080228133017.1" a="E"><vh>Circuits</vh>
 <v t="ntallen.20080228133017.2" a="E"><vh>SSP V1</vh>
-<v t="ntallen.20080228133017.3" a="M"><vh>arp_ssp V2.0</vh></v>
+<v t="ntallen.20080228100842.45" a="M"><vh>arp_ssp V2.00a</vh></v>
 <v t="ntallen.20080228133017.4"><vh>ssp_trigger V1.0</vh></v>
-<v t="ntallen.20080228133017.5" a="E"><vh>ssp_ad_preaddr V2.00a</vh>
+<v t="ntallen.20080228133017.5"><vh>ssp_ad_preaddr V2.00a</vh>
 <v t="ntallen.20080229125358.1"><vh>dual-clock FIFO</vh></v>
 <v t="ntallen.20080303084933"><vh>Handshaking</vh></v>
 <v t="ntallen.20080228140103"><vh>Handshaking - old plan</vh></v>
 <v t="ntallen.20080229125358"><vh>Rework Again?</vh></v>
 </v>
-<v t="ntallen.20080228133017.6" a="E"><vh>ssp_ad_scan V3.00a</vh>
+<v t="ntallen.20080228133017.6"><vh>ssp_ad_scan V3.00b</vh>
 <v t="ntallen.20080229125358.2"><vh>DStat</vh></v>
 <v t="ntallen.20080229125358.3"><vh>SampleCount</vh></v>
 <v t="ntallen.20080305130648"><vh>CoaddCount</vh></v>
@@ -127,7 +147,16 @@
 </v>
 </v>
 </v>
-<v t="ntallen.20080228133017.7"><vh>Software</vh></v>
+<v t="ntallen.20080228133017.7" a="E"><vh>Software</vh>
+<v t="ntallen.20080331101629" a="E"><vh>Server V2.0</vh>
+<v t="ntallen.20080331101629.1"><vh>Threads</vh></v>
+<v t="ntallen.20080331101629.2" a="E"><vh>Commands</vh>
+<v t="ntallen.20080331114222"><vh>Inter-thread communication</vh></v>
+</v>
+<v t="ntallen.20080331131839"><vh>Data</vh></v>
+</v>
+<v t="ntallen.20080331101629.3" a="TV"><vh>Client</vh></v>
+</v>
 </v>
 </v>
 </vnodes>
@@ -321,7 +350,14 @@ Need to support Sample Rate, NAvg</t>
 Demonstration of use of separate clock domains
 </t>
 <t tx="ntallen.20080228100842.44"></t>
-<t tx="ntallen.20080228100842.45">Added DATA_VALID_INV for clocking the pre adder.</t>
+<t tx="ntallen.20080228100842.45">Added DATA_VALID_INV for clocking the pre adder.
+
+This block needs to be entered into CVS
+It also needs to be augmented to support the OOR bit from the converter
+
+arp_ssp implements the LVDS input buffers for the A/D data and clock. It takes P,N pairs as input and outputs buffered signals. It also provides both true and inverted outputs for the clock to facilitate synchronization.
+
+The A/D clock goes high at the same time the data is updated, so the data should be latched on the falling edge of the clock. Hence the ssp_ad_preaddr block will be driven by the inverted signal clock. On the other hand, we need to synchronize signals coming from ssp_ad_scan, which runs off the processor's clock. There are three ssp_ad_preaddrs, and each has it's own clock. These should be very closely matched, and in theory we can use the 9510 to tweak out any phase differences, but in practice, it's possible that there will be some slight difference between the clocks. In order to reliably synchronize signals from ssp_ad_scan and from the external trigger, we will have the ssp_trigger block use the non-inverted signal clock from one of the A/D channels.</t>
 <t tx="ntallen.20080228100842.46"></t>
 <t tx="ntallen.20080228100842.47">Added support for ssp_ad_preaddr 1.00a
 </t>
@@ -334,9 +370,6 @@ Demonstration of use of separate clock domains
 Once we begin a coadd sequence, we continue accepting scans at least until the coadd sequence is complete. That means that the enable control line is only referenced If we need to throttle, that would be the right time to do it (from a data analysis standpoint) From a data processing standpoint, we can't really make the decision until we're just about ready to accept the last scan, but that's not a good time to discard scans</t>
 <t tx="ntallen.20080228100842.52"></t>
 <t tx="ntallen.20080228100842.53"></t>
-<t tx="ntallen.20080228100842.54">Implement new simpler handshaking protocol for output, allowing clock rate to approach CPU clock rate.
-
-The pre adder enable input is controlled from ssp_ad_scan</t>
 <t tx="ntallen.20080228100842.55"></t>
 <t tx="ntallen.20080228100842.56"></t>
 <t tx="ntallen.20080228100842.57"></t>
@@ -399,11 +432,6 @@ This design implements the circuitry for three channels of high-speed A/D conver
 An overall system diagram will be created that describes the interconnection
 
 Tied to software V2_0</t>
-<t tx="ntallen.20080228133017.3">This block needs to be entered into CVS
-
-arp_ssp implements the LVDS input buffers for the A/D data and clock. It takes P,N pairs as input and outputs buffered signals. It also provides both true and inverted outputs for the clock to facilitate synchronization.
-
-The A/D clock goes high at the same time the data is updated, so the data should be latched on the falling edge of the clock. Hence the ssp_ad_preaddr block will be driven by the inverted signal clock. On the other hand, we need to synchronize signals coming from ssp_ad_scan, which runs off the processor's clock. There are three ssp_ad_preaddrs, and each has it's own clock. These should be very closely matched, and in theory we can use the 9510 to tweak out any phase differences, but in practice, it's possible that there will be some slight difference between the clocks. In order to reliably synchronize signals from ssp_ad_scan and from the external trigger, we will have the ssp_trigger block use the non-inverted signal clock from one of the A/D channels.</t>
 <t tx="ntallen.20080228133017.4">This block handles trigger configuration and synchronization. The clock input for this block should be connected to the non-inverted data clock from one of the three A/D converters. They should all be approximately in phase, so it should not matter which one your choose.
 
 Inputs:
@@ -447,7 +475,14 @@ Outputs:
 On Reset, all counters and states are reset. No data will be accepted until a Trigger is observed. After the Trigger is observed, data is shifted out via a FIFO. The circuit must be reset after each scan.
 
 When the scan processor determines that the scan is complete, it will raise the Reset signal. After the Reset_Ack is observed, the scan processor will remove the Reset to arm the circuit for the next trigger.</t>
-<t tx="ntallen.20080228133017.6"></t>
+<t tx="ntallen.20080228133017.6">Inputs:
+    NS: 1-4096 (Net samples per scan)
+    NA: 0-255 (NA+1 samples pre-added)
+    NC: 1-16383 (N Coadds)
+    NE: 1-7 (channel enable, bit-mapped)
+
+Would like to read in out-of-range status from the A/D
+</t>
 <t tx="ntallen.20080228133017.7"></t>
 <t tx="ntallen.20080228140103">Obsolete: Inadequate
 
@@ -605,5 +640,158 @@ First, there are two entities in one file, and Sysgen's Blackbox doesn't like th
 Next, the state machine has a single CLK input, but Sysgen's Blackbox is looking for a clk/ce pair. I modified SHELL.vhd to change the name of the CLK port to sh_clk, properly mapped it to SHELL_SHSTATE's CLK port, and then added a dummy sh_ce input port. (The 'sh_' prefix is arbitrary, as long as the clk and ce signals match)
 
 When you add the black box part, you will select SHSTATE.vhd, and it looks like it's happy, but if you go to simulate, you'll find that it does nothing, although it doesn't complain. I will, however dump a log file into the directory which indicates that it doesn't know where to find the SHELL_SHSTATE entity. What you need to do is edit the .m file that was generated by the black box part and near the end of the file add the SHELL_SHSTATE.vhd file after the SHSTATE.vhd file is listed.</t>
+<t tx="ntallen.20080331101629">The source code is in
+forge.abcd.harvard.edu:/cvsroot/arp-fpga
+/ssp/ad_proto/ssp_proto_b V2_0
+
+The server software is the code that runs on the microblaze processor inside the FPGA. It's responsibilities include:
+    Monitoring TCP connections for incoming commands
+    Monitoring and servicing the hardware
+    Transmitting collected data</t>
+<t tx="ntallen.20080331101629.1">main_main,2:
+    The startup thread as specified in software platform settings. Invokes lwip_init(), which ultimately runs tcpip_init() which starts the tcpip_thread and then runs ready waiting for tcpip_thread's initialization to complete. As such, main_main needs to run at a lower priority than tcpip_thread or it will never complete.
+
+tcpip_thread, TCPIP_THREAD_PRIO (1):
+    Started by lwip_init(). Services messages in the tcpip mbox (outbound processing)
+
+udpThread, 5:
+    Started by main_main. Initializes ethernet and starts xemacif_input_thread. This version will poll for data and sleep() when none is available. Also monitors the command queue.
+
+ServerAppThread,1:
+    listens for new TCP connections. Starts a new tcpThread on each new connection
+
+tcpThread, 4:
+    Services a TCP connection. Reads commands, queues command requests and formats replies.
+    </t>
+<t tx="ntallen.20080331101629.2">Note that these command codes differ from the earlier version.
+As such, the client code will have to be modified. Only a single command is accepted on each transmission currently, although including multiple commands would be relatively easy, albeit complicating the reply coding.
+
+  Commands:
+    DA Disable/Reset: Always legal
+    EN Enable: Should not be legal while acquiring
+    
+    Configuration Commands: Not legal unless disabled
+      NS:xxxx N_Samples (1-SSP_MAX_SAMPLES)
+      NA:xxxx N_Average (Pre-Adder: 1-SSP_MAX_AVERAGE)
+      NC:xxxx N_Coadd (1-SSP_MAX_COADD)
+      NP:xxxxx UDP Port Number
+      NE:x Channel enable: 1-7 bit-mapped
+
+    Triggering Commands: Take effect immediately
+      TU:[-]xxxxx Level Trigger Rising
+      TD:[-]xxxxx Level Trigger Falling
+      TS:x Trigger Source (0-3)
+      AE Autotrig Enable
+      AD Autotrig Disable
+
+    Deprecated and/or unimplemented commands:
+      EX Quit (not useful in production)
+      RS Return Status (not implemented?)
+
+  Return Values:
+    200 OK
+    410 Gone (successful response to EX)
+    500 Bad
+    503 Busy (Service Unavailable)
+</t>
+<t tx="ntallen.20080331101629.3"></t>
+<t tx="ntallen.20080331114222">The configuration of the hardware will be maintained in a shared structure. Since it is possible that more than one tcpThread will exist, access to the structure must be controlled. I will maintain a mutex for the structure itself, then a pair of semaphores: udp_sem for signaling udpThread and tcp_sem for signaling a reply to the tcpThread currently holding the mutex. Posting to udp_sem is illegal unless you are holding the mutex. Once tcpThread has posted to udp_sem, it must wait on tcp_sem for the operation to complete. udpThread has control of the structure from the time it receives udp_sem until it posts to tcp_sem.
+
+    CC: Command code.
+    RV: Return code
+    EN: Enable flag.
+    NS: Number of scan samples reported
+    NA: Number of consecutive samples average in the pre-adder
+    NC: Number of scans coadded
+    NP: UDP Port number
+    TL: Trigger level (signed short) (from NU or ND commands)
+    TrigConfig: includes trigger polarity bit (from NU,ND), trigger source (NT) and AE
+
+tcpThread will write all of these values and signal udpThread when necessary.
+tcpThread will only set CC and EN. udpThread will be responsible for clearing these codes.
+Updates to NS, NA, NC or NP will be illegal while EN != 0 (Busy return code)
+
+CC values used to signal udpThread:
+    UDPCMD_ENABLE
+    UDPCMD_DISABLE
+    UDPCMD_TRIGGER
+    </t>
+<t tx="ntallen.20080331131839">The data from the SSP is transmitted in UDP packets
+
+SSP_MAX_SAMPLES (Hardware limit: ~4K)
+SSP_MAX_PREADD
+SSP_MAX_COADD
+SSP_MAX_CHANNELS 3
+N_Channels (1-SSP_MAX_CHANNELS, software selectable)
+
+Word 0: [Version: 16 bits. Current Value: 0][NWhdr: 16 bits: Current Value: 6]
+Word 1: [NS: 16 bits][NCh: 16 bits]
+Word 2: [NA: 16 bits][NC: 16 bits]
+Word 3: [NSkP: 16 bits][NSkL: 16 bits]
+Word 4: [ScanNum: 32 bits]
+Word 5: [0: 32 bits. Fill in P, T? ]
+Word 6:6+NS*NCh: [32 bits signed integer data]
+Word 7+NS*NCh: [32 bits TrigConfig:ChEn:ADovf:PAovf:CAovf]
+
+
+</t>
+<t tx="ntallen.20080403140406">The pre-adder reads in the raw signal from the A/D converter and optionally adds a pre-configured number of samples before passing the data on to the scan processing unit. It also performs level-comparison for level-sensitive triggering.
+
+V2.00b outputs 25bits of signal with the 25th bit being the OOR status.
+
+In the complete design, there will be three of these pre-adders: one for each A/D converter. The clock input to each pre-adder should be connected to the inverted data clock from its associated A/D converter.
+
+Inputs:
+    Signal: The 16-bit A/D data from the arp_ssp block
+    TrigLevel: 16-bit configuration value from the scan processor for level-sensitive triggering.
+    NAvg: 8-bit configuration value. Pre-adder will add NAvg+1 samples before reporting.
+    Reset: Boolean control signal from scan processor. Resets all states and counters. The signal must be synchronized to the rising edge of a sample clock via the triggering block.
+    RE[0:2]: Read enable vector (one-hot)
+    Trigger: Synchronized boolean signal from triggering block.
+        
+Outputs:
+    Scan Processor Bus:
+        Signal_Out: The 24-bit pre-added signal to the scan processor
+        Empty: Boolean signal true when there is no data on the outputs
+        Full: Boolean signal true when there are two data in the FIFO
+        Reset_Ack: True when the circuit has been reset. Will go low when a trigger is accepted
+        OVF: Boolean overflow status indication to the scan processor
+    LvlGreater: Boolean output to the triggering block indicating current Signal value is greater than the TrigLevel
+    
+On Reset, all counters and states are reset. No data will be accepted until a Trigger is observed. After the Trigger is observed, data is shifted out via a FIFO. The circuit must be reset after each scan.
+
+When the scan processor determines that the scan is complete, it will raise the Reset signal. After the Reset_Ack is observed, the scan processor will remove the Reset to arm the circuit for the next trigger.</t>
+<t tx="ntallen.20080403140406.1">FIFO holds N samples, where N is most likely greater than 1
+In this case, N is 2. There are 3 registers. The write index and the read index are implemented as 3-bit one-hot shift registers (FIFOdec) with a reset.
+
+Inputs:
+    Din: The data to be stored
+    WE: Single write enable line
+    RE: 3-bit one-hot read enable lines from remote clock domain
+    Reset: Clears Overflow, resets write decoder circuit to point to first register
+
+Outputs:
+    Dout: The data in the register currently selected by the RE bits
+    Empty: True when there is no data in the FIFO
+    Full: True when no more data can be written to the FIFO
+    OVF: True if a write occurred during a Full condition
+
+The empty condition is when the read and write indexes point to the same register. Full is when incrementing the write index would advance to the empty condition. In this special case where the total capacity of the FIFO is 2, Full indicates that there are 2 data in the FIFO. The signal we really want on the remote side is one that tells us that there is more than one datum in the FIFO, and this fits the bill. If we were to increase the size of the FIFO, we'd probably need to do some more elaborate analysis to come up with that condition.</t>
+<t tx="ntallen.20080403140406.2"></t>
+<t tx="ntallen.20080403140406.3">Obsolete: Inadequate
+
+On Reset, DStat_Out (in ssp_ad_preaddr) and DStat_Ack (in ssp_ad_scan) are set to zero. When a new data value is ready to be shipped from the pre-adder to the scan processor, it is latched into Signal_Out and the DStat_Out value is toggled.
+
+In the scan processor, the exclusive-or of DStat_Out and DStat_Ack is monitored. When it is true, that indicates new data is ready. When the new data is clocked into the scan processor, DStat_Ack is toggled to match DStat_Out.
+
+In the pre-adder, if DStat_Ack is not equal to DStat_Out when new data is ready, that is an overflow condition, and the OVF bit is set. This bit is cleared at the end of each scan, but it can be monitored by the scan processor and reported back to the processor.
+
+There are still synchronization issues. I want to make sure I have adequate setup times for the enables that I'm driving off the xor gates. If DStat_Out goes directly to the scan processor, I will need to add a delay or risk unpredictable behavior. The cost of the delay is reducing the maximum data rate from the pre adder to one half the cpu clock rate or less. The alternative is to route all the DStat_Out lines through an outside module to synchronize them to the falling edge of sys_clk</t>
+<t tx="ntallen.20080403140406.4">I'm having trouble with end-of-scan because I haven't worked out a reset handshake. Since the arm circuit is synchronized with the sample clock, we don't have a way of knowing when the pre add circuit is properly reset, and hence whether the incoming sample is the result of a trigger or a stray sample from the previous scan.
+
+I think I would like to see:
+    pre-adder controlled by a single reset line. When asserted, the circuit is in reset. When cleared, it is ready for a trigger. Obviously clearing the reset must be synchronized, but setting it could be asynchronous.
+    Better FIFO implementation to allow higher throughput.</t>
+<t tx="ntallen.20080403141641"></t>
 </tnodes>
 </leo_file>
