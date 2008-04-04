@@ -5,27 +5,26 @@
 
 extern void xfr_disable(void);
 extern void xfr_enable(void);
-extern void xfr_init(void);
-extern void set_trigger_mode( int autoen );
-extern void set_trigger_src( unsigned short src );
-extern void sg_handler(void *);
-extern void setup_dsp_interrupt(void);
-extern int ssp_read_fifo( int *buf, unsigned int nwords );
-extern sem_t udp_sem;
-#define MAX_SCAN_LENGTH 2048
+extern void set_trigger( void );
+// extern void sg_handler(void *);
+// extern void setup_dsp_interrupt(void);
+extern int ssp_read_fifo( unsigned int *buf, unsigned int nwords );
+extern sem_t udp_sem, tcp_sem;
 #define SCAN_GUARD 100
-extern int scan[];
-extern unsigned int scan_xmit_length, new_scan_xmit_length;
-extern unsigned int n_average, new_n_average, preaddr_enable;
-extern int xfrEnabled;
-extern signed short TriggerLevel;
+extern unsigned int scan[];
+// extern unsigned int scan_xmit_length;
+// extern unsigned int n_average, new_n_average, preaddr_enable;
+// extern int xfrEnabled;
+// extern signed short TriggerLevel;
 
 #define SG_INTR_ID XPAR_INTC_0_SSP_AD_SCAN_SM_0_VEC_ID
 #define ssp_ArrayRead( nw, buf ) ssp_ad_scan_sm_0_ArrayRead(SSP_AD_SCAN_SM_0_SRCSIGNAL, \
          SSP_AD_SCAN_SM_0_SRCSIGNAL_DOUT, \
-         nw, (unsigned int *)buf )
+         nw, buf )
 #define ssp_ll_pctfull(words) ssp_ad_scan_sm_0_Read(SSP_AD_SCAN_SM_0_SRCSIGNAL, \
     SSP_AD_SCAN_SM_0_SRCSIGNAL_PERCENTFULL, (unsigned int *)words)
+#define ssp_ll_empty(val) ssp_ad_scan_sm_0_Read(SSP_AD_SCAN_SM_0_SRCSIGNAL, \
+    SSP_AD_SCAN_SM_0_SRCSIGNAL_EMPTY, &val);
 #define ssp_ll_control(val) ssp_ad_scan_sm_0_Write(SSP_AD_SCAN_SM_0_CONTROL, \
      SSP_AD_SCAN_SM_0_CONTROL_DIN, val)
 #define ssp_ll_netsamples(val) ssp_ad_scan_sm_0_Write(SSP_AD_SCAN_SM_0_NETSAMPLES, \
@@ -34,17 +33,9 @@ extern signed short TriggerLevel;
      SSP_AD_SCAN_SM_0_TRIGGERLEVEL_DIN, val)
 #define ssp_ll_navg(val) ssp_ad_scan_sm_0_Write(SSP_AD_SCAN_SM_0_NAVG, \
      SSP_AD_SCAN_SM_0_NAVG_DIN, val)
+#define ssp_ll_ncoadd(val) ssp_ad_scan_sm_0_Write(SSP_AD_SCAN_SM_0_NCOADD, \
+     SSP_AD_SCAN_SM_0_NCOADD_DIN, val)
 
-#define SSP_ENABLE_MASK 1
-#define SSP_RESET_MASK  2
-#define SSP_TRIGSRC_MASK 0xC
-#define SSP_AUTOTRIG_MASK 0x10
-#define SSP_PREADD_MASK 0x20
-#define SSP_CONTROL_MASK 0x3F
-#define SSP_TRIG_EXTERNAL 0
-#define SSP_TRIG_LEVEL_UP 0x4
-#define SSP_TRIG_LEVEL_DN 0x8
-#define SSP_MAX_PREADD 127
 
 #ifdef STDOUT_BASEADDRESS
   extern int print_mutex_lock(void);

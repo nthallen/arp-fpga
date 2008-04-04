@@ -5,8 +5,6 @@
 
 static pthread_mutex_t sg_mutex = PTHREAD_MUTEX_INITIALIZER;
 
-signed short TriggerLevel = 0;
-
 // return 1 on success
 static int sg_mutex_lock(void) {
   int rv = pthread_mutex_lock(&sg_mutex);
@@ -24,7 +22,7 @@ static void sg_mutex_unlock(void) {
 }
 
 static void set_ssp_control( unsigned int mask, unsigned int val, char *where ) {
-  static unsigned int control = 0x8000;
+  static unsigned int control = ~SSP_CONTROL_MASK | SSP_RESET_MASK;
   unsigned int new_control;
   int status;
   sg_mutex_lock();
@@ -53,21 +51,34 @@ static void set_ssp_navg( unsigned int val ) {
   sg_mutex_unlock();
 }
 
-/* Reads from the fifo as long as at least nwords are present */
-int ssp_read_fifo( int *buf, unsigned int nwords ) {
+static void set_ssp_ncoadd( unsigned int val ) {
   int status;
-  unsigned int words_read;
+  sg_mutex_lock();
+  status = ssp_ll_ncoadd(val);
+  check_fifo_status( status, "Setting Navg" );
+  sg_mutex_unlock();
+}
+
+/* Reads up to nwords from the fifo */
+int ssp_read_fifo( unsigned int *buf, unsigned int nwords ) {
+  int status;
+  unsigned int n_words_ready, is_empty;
   sg_mutex_lock();
 
-  status = ssp_ll_pctfull(&words_read);
-  if ( check_fifo_status( status, "Reading PercentFull" ) ||
-        words_read < nwords ) {
-    words_read = 0;
-  }  else {
-    words_read = ssp_ArrayRead( nwords, buf );
-  }
+  status = ssp_ll_empty(is_empty);
+  if ( check_fifo_status( status, "Reading Empty" ) || is_empty )
+  	return 0;
+  status = ssp_ll_pctfull(n_words_ready);
+  if ( check_fifo_status( status, "Reading PercentFull" ) )
+  	return 0;
+  if ( n_words_ready < nwords )
+  	nwords = n_words_ready+1;
+  // n_words_ready = ssp_ArrayRead( nwords, buf );
+  n_words_ready = ssp_ad_scan_sm_0_ArrayRead(SSP_AD_SCAN_SM_0_SRCSIGNAL,
+         SSP_AD_SCAN_SM_0_SRCSIGNAL_DOUT,
+         nwords, buf );
   sg_mutex_unlock();
-  return words_read;
+  return n_words_ready;
 }
 
 int ssp_read_pctfull( void ) {
@@ -80,90 +91,55 @@ int ssp_read_pctfull( void ) {
 
 /* Reads from the fifo as long as at least nwords are present.
  * Returns total number of words read. */
-static unsigned int drain_fifo( void ) {
-  unsigned int nwords, words_read, total_words = 0;
-  int status;
-  sg_mutex_lock();
-
-  for (;;) {
-    status = ssp_ll_pctfull(&nwords);
-    if ( check_fifo_status( status, "Reading PercentFull in drain_fifo" ) ||
-         nwords == 0 ) break;
-    if ( nwords > MAX_SCAN_LENGTH ) nwords = MAX_SCAN_LENGTH;
-    words_read = ssp_ArrayRead( nwords, scan );
-    total_words += words_read;
-    if ( words_read == 0 ) break;
-  }
-  sg_mutex_unlock();
-  return total_words;
-}
-
-void xfr_init(void) {
-  int i, words_before, words_drained;
-  for ( i = MAX_SCAN_LENGTH; i < MAX_SCAN_LENGTH+SCAN_GUARD; i++ )
-    scan[i] = 0;
-  set_ssp_control( SSP_ENABLE_MASK, 0, "Clearing enable" );
-  set_ssp_netsamples( new_scan_xmit_length );
-  scan_xmit_length = new_scan_xmit_length;
-  if (preaddr_enable) {
-    set_ssp_navg( (new_n_average/2)-1 );
-    n_average = new_n_average;
-  }
-  words_before = ssp_read_pctfull();
-  set_ssp_control( SSP_RESET_MASK, SSP_RESET_MASK, "Resetting circuit" );
-  sleep(20); // shortened from 200
-//  status = ssp_ad_scan_sm_0_Write(SSP_AD_SCAN_SM_0_SRCSIGNAL,
-//    SSP_AD_SCAN_SM_0_SRCSIGNAL_RST, 1);
-//  GAAA! RST isn't defined.
-  //words_after = ssp_read_pctfull();
-  //xil_printf( " words: %d %d\n", words_before, words_after );
-  words_drained = drain_fifo();
-  if ( preaddr_enable ) {
-  	safe_print("xfr_init: enabling preadd\n");
-    set_ssp_control( SSP_PREADD_MASK, SSP_PREADD_MASK, "Setting preadd bit" );
-  } else {
-  	safe_print("xfr_init: disabling preadd\n");
-    set_ssp_control( SSP_PREADD_MASK, 0, "Clearing preadd bit" );
-  }
-  set_ssp_control( SSP_RESET_MASK, 0, "Clearing circuit reset" );
-}
+//static unsigned int drain_fifo( void ) {
+//  unsigned int nwords, words_read, total_words = 0;
+//  int status;
+//  sg_mutex_lock();
+//
+//  for (;;) {
+//    status = ssp_ll_pctfull(&nwords);
+//    if ( check_fifo_status( status, "Reading PercentFull in drain_fifo" ) ||
+//         nwords == 0 ) break;
+//    if ( nwords > MAX_SCAN_LENGTH ) nwords = MAX_SCAN_LENGTH;
+//    words_read = ssp_ArrayRead( nwords, scan );
+//    total_words += words_read;
+//    if ( words_read == 0 ) break;
+//  }
+//  sg_mutex_unlock();
+//  return total_words;
+//}
 
 void xfr_disable(void) {
-  set_ssp_control( SSP_ENABLE_MASK, 0, "Clearing circuit enable" );
-  // sleep( 200 ); // leave some time for processing
-  // disable_interrupt( SG_INTR_ID );
-  xfrEnabled = 0;
+  set_ssp_control( SSP_RESET_MASK, SSP_RESET_MASK, "Reseting circuit" );
 }
 
 void xfr_enable(void) {
-  enable_interrupt( SG_INTR_ID );
-  set_ssp_control( SSP_ENABLE_MASK, SSP_ENABLE_MASK,
-		  "Setting circuit enable" );
-  xfrEnabled = 1;
+  int i, status;
+  unsigned int is_empty;
+  
+  for ( i = SSP_MAX_SCAN_LENGTH; i < SSP_MAX_SCAN_LENGTH+SCAN_GUARD; i++ )
+    scan[i] = 0;
+  set_ssp_control( SSP_RESET_MASK, SSP_RESET_MASK, "Reseting circuit" );
+  set_ssp_netsamples( ssp_config.NS );
+  set_ssp_navg( ssp_config.NA );
+  set_ssp_ncoadd( ssp_config.NC );
+  set_ssp_control( SSP_NE_MASK, ssp_config.NE << SSP_NE_LSB, "During init" );
+  set_trigger();
+
+  // Verify that fifo is empty
+  status = ssp_ll_empty(is_empty);
+  check_fifo_status( status, "Reading Empty during init" );
+  if ( !is_empty )
+  	safe_print("FIFO non-empty during init\n");
+
+  set_ssp_control( SSP_RESET_MASK, 0, "Enabling Circuit" );
 }
 
-void set_trigger_mode( int autoen ) {
-  set_ssp_control( SSP_AUTOTRIG_MASK, autoen ? SSP_AUTOTRIG_MASK : 0,
-		  "Setting trigger mode" );
-}
-
-void set_trigger_src( unsigned short mode ) {
-  if ( mode == SSP_TRIG_LEVEL_UP || mode == SSP_TRIG_LEVEL_DN ) {
-    int status;
-    sg_mutex_lock();
-    status = ssp_ll_triggerlevel(TriggerLevel);
-    check_fifo_status( status, "Setting TriggerLevel" );
-    sg_mutex_unlock();
-  }
-  set_ssp_control( SSP_TRIGSRC_MASK, mode, "Setting trigger src" );
-}
-
-void sg_handler(void *foo) {
-  acknowledge_interrupt( SG_INTR_ID );
-  sem_post(&udp_sem);
-}
-
-void setup_dsp_interrupt(void) {
-  disable_interrupt( SG_INTR_ID );
-  register_int_handler( SG_INTR_ID, sg_handler, NULL );
+void set_trigger( void ) {
+	int status;
+  sg_mutex_lock();
+  status = ssp_ll_triggerlevel(ssp_config.TL);
+  check_fifo_status( status, "Setting TriggerLevel" );
+  sg_mutex_unlock();
+  set_ssp_control( SSP_TRIG_MASK, ssp_config.TrigConfig, "Setting Trigger Config" );
 }

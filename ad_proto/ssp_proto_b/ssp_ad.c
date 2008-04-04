@@ -19,23 +19,19 @@ typedef struct {
 } tcpThreadContext_t;
 
 static int err_rv = 1;
-sem_t udp_sem;
+sem_t udp_sem, tcp_sem, cfg_sem;
 static struct sockaddr_in udpCliAddr;
 static struct sockaddr_in udpSrvrAddr;
-static int udp_port = 0;
-int scan[MAX_SCAN_LENGTH + SCAN_GUARD];
+unsigned int scan[SSP_MAX_SCAN_LENGTH + SCAN_GUARD];
 int xfrEnabled = 0, app_done = 0;
-unsigned int scan_xmit_length = 0, new_scan_xmit_length = 0;
-unsigned int n_average = 1, new_n_average = 1, preaddr_enable = 0;
+unsigned int scan_xmit_length, words_read;
 static unsigned int parse_cmds( char *cmd, tcpThreadContext_t *context );
-static int udpThreadCmd = 0;
+
 #define UDPCMD_ENABLE 1
 #define UDPCMD_DISABLE 2
-#define UDPCMD_TRIGEXT 3
-#define UDPCMD_TRIGUP 4
-#define UDPCMD_TRIGDN 5
-#define UDPCMD_AUTOEN 6
-#define UDPCMD_AUTODA 7
+#define UDPCMD_TRIGGER 3
+
+ssp_config_t ssp_config;
 
 int main(void) {
   microblaze_init_icache_range(0, XPAR_MICROBLAZE_0_CACHE_BYTE_SIZE);
@@ -64,12 +60,21 @@ void* main_main(void* arg) {
     safe_print( "Unable to initialize udp_sem\n" );
     return &err_rv;
   }
+  if ( sem_init(&tcp_sem, 0, 0) ) {
+    safe_print( "Unable to initialize tcp_sem\n" );
+    return &err_rv;
+  }
+  /* cfg_sem could be a mutex. */
+  if ( sem_init(&cfg_sem, 0, 0) ) {
+    safe_print( "Unable to initialize cfg_sem\n" );
+    return &err_rv;
+  }
+  sem_post( &cfg_sem ); // unlock the semaphore
 
   sys_thread_new((void *)&udpThread, 0, 5);
     // run the UDP thread at the lowest priority for now
     // since it will run ready until we configure interrupts
   sem_wait(&udp_sem); // wait for ethernet initialization
-  setup_dsp_interrupt();
   sleep(100);
   
   sys_thread_new((void *)&serverAppThread, 0, 1);
@@ -123,84 +128,117 @@ void *udpThread(void *arg) {
   for (;;) {
     int i; // for overrun check at the bottom
     //int status;
-    unsigned int words_read, scan_size;
 
     // safe_print("udp_thread: waiting\n");
     if ( sem_wait( &udp_sem ) ) {
+    	/* We never expect this to happen and know of no way to recover */
       print_mutex_lock();
       safe_printf(("Error %d from sem_wait() in udpThread\n", errno ));
       print_mutex_unlock();
       return &err_rv;
     }
-    // safe_print("udp_thread: awake\n");
-    for (;;) {
-      if ( udpThreadCmd ) {
-        switch (udpThreadCmd) {
-          case UDPCMD_ENABLE:
-            xfr_init();
-            xfr_enable();
-            safe_print("Enabled\n");
-            break;
-          case UDPCMD_DISABLE:
-            xfr_disable();
-            safe_print("Disabled\n");
-            break;
-          case UDPCMD_TRIGEXT:
-            set_trigger_src( SSP_TRIG_EXTERNAL );
-            safe_print("External\n");
-            break;
-          case UDPCMD_TRIGUP:
-            set_trigger_src( SSP_TRIG_LEVEL_UP );
-            safe_print("Rising\n");
-            break;
-                case UDPCMD_TRIGDN:
-            set_trigger_src( SSP_TRIG_LEVEL_DN );
-            safe_print("Falling\n");
-            break;
-          case UDPCMD_AUTOEN:
-            set_trigger_mode( 1 );
-            safe_print("Auto Enabled\n");
-            break;
-          case UDPCMD_AUTODA:
-            set_trigger_mode( 0 );
-            safe_print("Auto Disabled\n");
-            break;
-          default:
-            safe_print("Invalid UDPCMD\n");
-            break;
-        }
-        udpThreadCmd = 0;
-      }
+    if ( ssp_config.CC != UDPCMD_ENABLE ) {
+    	ssp_config.RV = 500; /* Invalid command at this time */
+    	sem_post( &tcp_sem );
+    } else {
+    	int enabled = 1;
+    	int n_channels;
+	    unsigned int scan_xmit_length, words_remaining, words_read;
+	    unsigned int scan_size;
 
-      words_read = ssp_read_fifo( scan, scan_xmit_length+1 );
-      if ( words_read == 0 ) break;
-      if ( words_read < scan_xmit_length+1 ) {
-        print_mutex_lock();
-        safe_printf(("Short packet received: %d/%d\n", words_read, scan_xmit_length+1 ));
-        print_mutex_unlock();
-      } else {
-        scan_size = (scan_xmit_length+1) * sizeof(unsigned int);
-        // safe_print("udp_Thread: Pre-sendto\n");
-        rc = sendto(udp_socket, scan, scan_size, 0, 
-          (struct sockaddr *) &udpSrvrAddr, 
-          sizeof(udpSrvrAddr));
-        // safe_print("udp_Thread: Post-sendto\n");
-        if ( rc<0 ) {
-          print_mutex_lock();
-          safe_printf(( "udpThread: cannot send data: %d\n", errno));
-          print_mutex_unlock();
-          return &err_rv;
-        }
-        sleep(100);
-      }
-    }
-    for ( i = MAX_SCAN_LENGTH; i < MAX_SCAN_LENGTH+SCAN_GUARD; i++ ) {
-      if ( scan[i] ) {
-        print_mutex_lock();
-        safe_printf(("Overrun: scan[%d] = %d\n", i, scan[i]));
-        print_mutex_unlock();
-        break;
-      }
+    	if ( ssp_config.NE < 1 || ssp_config.NE > 7 ) {
+    		safe_print("Invalid NE configuration\n");
+    		ssp_config.NE = 1;
+    	}
+    	if ( ssp_config.NS > SSP_MAX_SAMPLES ) {
+    		safe_print("NS exceeds SSP_MAX_SAMPLES\n");
+    		ssp_config.NS = SSP_MAX_SAMPLES;
+    	}
+    	xfr_enable(); /* ### make sure this includes the full init */
+    	ssp_config.RV = 200; /* OK */
+    	sem_post( &tcp_sem );
+    	safe_print("Enabled\n");
+    	// Setup data transfer area (don't have to do this before enabling circuit
+    	// because we are the thread that reads in the data)
+    	// Need a buffer that holds 7+SSP_MAX_CHANNELS*SSP_MAX_SAMPLES words
+    	switch ( ssp_config.NE ) {
+    		case 1:
+    		case 2:
+    		case 4:
+    			n_channels = 1;
+    			break;
+    		case 3:
+    		case 5:
+    		case 6:
+    			n_channels = 2;
+    			break;
+    		case 7:
+    			n_channels = 3;
+    			break;
+    		default:
+    			safe_print("Cannot happen\n");
+    			break;
+    	}
+    	scan_xmit_length = 7 + n_channels * ssp_config.NS;
+    	words_remaining = scan_xmit_length;
+    	words_read = 0;
+    	scan_size = scan_xmit_length * sizeof(int);
+
+	    while ( enabled ) {
+	    	unsigned int nw;
+	    	
+	    	if ( sem_trywait( &udp_sem ) ) {
+	    		// No command waiting: Look for data
+	    		if ( errno != EAGAIN ) {
+	    			safe_print("Error from sem_trywait\n");
+	    		}
+	    		nw = ssp_read_fifo( &scan[words_read], words_remaining );
+	    		if ( nw == 0 ) sleep(20);
+	    		else if ( words_remaining == nw ) {
+		        rc = sendto(udp_socket, scan, scan_size, 0, 
+		          (struct sockaddr *) &udpSrvrAddr, 
+		          sizeof(udpSrvrAddr));
+		        if ( rc<0 ) {
+		          print_mutex_lock();
+		          safe_printf(( "udpThread: cannot send data: %d\n", errno));
+		          print_mutex_unlock();
+		          return &err_rv;
+		        }
+		        words_read = 0;
+		        words_remaining = scan_xmit_length;
+	    		} else {
+	    			words_read += nw;
+	    			words_remaining -= nw;
+	    		}
+	    	} else {
+	    		// We have received a command from tcpThread
+	        ssp_config.RV = 200;
+	        switch (ssp_config.CC) {
+	          case UDPCMD_DISABLE:
+	            xfr_disable();
+	            safe_print("Disabled\n");
+	            enabled = 0;
+	            break;
+	          case UDPCMD_TRIGGER:
+	            set_trigger( );
+	            safe_print("Trigger Reconfigured\n");
+	            break;
+	          default:
+	            safe_print("Invalid UDPCMD\n");
+	            ssp_config.RV = 500;
+	            break;
+	        }
+	        sem_post( &tcp_sem );
+	      }
+	    }
+	    for ( i = SSP_MAX_SCAN_LENGTH; i < SSP_MAX_SCAN_LENGTH+SCAN_GUARD; i++ ) {
+	      if ( scan[i] ) {
+	        print_mutex_lock();
+	        safe_printf(("Overrun: scan[%d] = %d\n", i, scan[i]));
+	        print_mutex_unlock();
+	        break;
+	      }
+	    }
     }
   }
 }
@@ -270,17 +308,18 @@ void *tcpThread( void *context ) {
   while (!done) {
     n = recv(my_sock, rcv_msg, SSP_MAX_MSG, 0);
     print_mutex_lock();
-    safe_printf(("tcpThread: received %d bytes\n", n));
+    safe_printf(("tcpThread: received %d bytes: %s", n, rcv_msg));
     print_mutex_unlock();
-    if ( n <= 0 ) break;
     if ( n > SSP_MAX_MSG ) {
       safe_print("tcpThread: recv overflow!\n");
       break;
-    }
-    if ( n > 0 ) {
+    } else if ( n <= 0 ) break;
+    else {
       unsigned int rv;
       rcv_msg[n] = '\0';
+      sem_wait( &cfg_sem ); // lock the semaphore
       rv = parse_cmds(rcv_msg, tcpThreadContext);
+      sem_post( &cfg_sem ); // unlock it
       if ( rv == 410 ) done = 1;
       rcv_msg[7] = '\0';
       rcv_msg[6] = '\n';
@@ -342,7 +381,7 @@ int ethernet_init(void) {
  */
 int check_fifo_status( int status, char *where ) {
   if ( status ) {
-        print_mutex_lock();
+    print_mutex_lock();
     safe_printf(("ERROR: status = %d while %s\n", status, where ));
     print_mutex_unlock();
   }
@@ -350,34 +389,52 @@ int check_fifo_status( int status, char *where ) {
 }
 
 static int enq_udpcmd( int cmdcode ) {
-  if (udpThreadCmd) return 503;
-  udpThreadCmd = cmdcode;
+  ssp_config.CC = cmdcode;
   sem_post(&udp_sem);
-  return 200;
+  sem_wait(&tcp_sem);
+  return ssp_config.RV;
+}
+
+static unsigned int limit_range( char *var, unsigned int val,
+   unsigned int low, unsigned int high ) {
+  if ( val < low ) {
+  	val = low;
+    print_mutex_lock();
+    safe_printf(("Value for '%s' too low: using %d\n", var, val ));
+    print_mutex_unlock();
+  } else if ( val > high ) {
+  	val = high;
+    print_mutex_lock();
+    safe_printf(("Value for '%s' too high: using %d\n", var, val ));
+    print_mutex_unlock();
+  }
+  return val;
 }
 
 /*
-  get_data
-    Opens a UDP socket for receiving data
-    Opens TCP command connection to SSP board
-    Issues the configuration command, informing the SSP board
-      what UDP port to send data to
-    Reads some quantity of data from the UDP port
-    Issues the stop command
-
+  Currently we support one command per line/packet. All commands with
+  numerical arguments begin with 'N'. The parser supports a minus
+  sign in the number, but negative values are out of range for many
+  commands.
+  
+  We hold the cfg_sem, so we can examine and make changes to ssp_config
+  with impunity.
+  
   Commands:
     EN Enable
-    DA Disable
     EX Quit
+    DA Disable
     NS:xxxx N_Samples
     NA:xxxx N_Average (Pre-Adder)
     NC:xxxx N_Coadd
-    UP:xxxxx UDP Port Number
-    TE Trigger External
-    TU:[-]xxxxx Level Trigger Rising
-    TD:[-]xxxxx Level Trigger Falling
+    NP:xxxxx UDP Port Number
+    NE:x 1-7 bit-mapped
+    NU:[-]xxxxx Level Trigger Rising
+    ND:[-]xxxxx Level Trigger Falling
+    NT:x (0-3)
     AE Autotrig Enable
     AD Autotrig Disable
+
     RS Return Status
   Return Values:
     200 OK
@@ -388,80 +445,71 @@ static int enq_udpcmd( int cmdcode ) {
 static unsigned int parse_cmds( char *cmd, tcpThreadContext_t *tcpThreadContext ) {
   if ( cmd[0] == 'E' ) {
     if ( cmd[1] == 'N' ) {
-      if (!udp_port) {
+    	if (ssp_config.EN) return(503); // busy
+      if (!ssp_config.NP) {
         safe_print("xfr_enable: udp_port not initialized\n");
         return 400;
       }
       memcpy((char *)&udpSrvrAddr, (char *)&tcpThreadContext->cliAddr,
         sizeof(struct sockaddr_in) );
-      udpSrvrAddr.sin_port = htons(udp_port);
+      udpSrvrAddr.sin_port = htons(ssp_config.NP);
       return enq_udpcmd( UDPCMD_ENABLE );
-      // xfr_init();
-      // xfr_enable();
-      // return 200;
     } else if ( cmd[1] == 'X' ) {
+    	if (ssp_config.EN) return(503); // busy
       app_done = 1;
       safe_print("Received Exit\n");
       return 410;
     }
   } else if ( cmd[0] == 'D' ) {
     if ( cmd[1] == 'A' ) {
-      return enq_udpcmd( UDPCMD_DISABLE );
-      // safe_print("xfr_disable\n");
-      // xfr_disable();
-      // return 200;
+    	if ( ssp_config.EN )
+	      return enq_udpcmd( UDPCMD_DISABLE );
+	    return 200;
     }
-  } else if ( cmd[0] == 'U' && cmd[1] == 'P' && cmd[2] == ':' ) {
-    udp_port = atoi(cmd+3);
-    print_mutex_lock();
-    safe_printf(("tcpThread: Setting UDP port to %d\n", udp_port ));
-    print_mutex_unlock();
-    return 200;
   } else if ( cmd[0] == 'N' && cmd[2] == ':' ) {
   	unsigned int newval = atoi(cmd+3);
-  	if ( cmd[1] == 'S' ) {
-	    if ( newval > 4000 ) {
-	      print_mutex_lock();
-	      safe_printf(("tcpThread: scan length request too large: %d\n",
-	        newval ));
-	      print_mutex_unlock();
-	      return 400;
-	    } else {
-	    	new_scan_xmit_length = newval;
-	      print_mutex_lock();
-	      safe_printf(("tcpThread: Setting scan_xmit_length to %d\n",
-	        new_scan_xmit_length ));
-	      print_mutex_unlock();
-	      return 200;
-	    }
-  	} else if ( cmd[1] == 'A' ) {
-  		if ( newval > 2*(SSP_MAX_PREADD+1) ) {
-  			newval = 2*(SSP_MAX_PREADD+1);
-  		} else if ( newval <= 1 ) {
-  			newval = 1;
-  		} else if ( newval > 1 && newval & 1 ) {
-  			newval = newval & (4*SSP_MAX_PREADD + 2);
-  		}
- 
-  		new_n_average = newval;
-  		preaddr_enable = new_n_average > 1;
-      print_mutex_lock();
-      safe_printf(("tcpThread: Setting n_average to %d\n",
-        new_n_average ));
-      print_mutex_unlock();
-      return 200;
-  	} else {
-  		safe_print("tcpThread: unrecognized N command\n");
-  	}
+  	
+  	// None of the 'N' commands are legal when enabled
+ 		if (ssp_config.EN) return 503;
+ 		switch ( cmd[1] ) {
+ 			case 'S':
+	  		ssp_config.NS = limit_range( "NS", newval, 1, SSP_MAX_SAMPLES );
+	  		break;
+  		case 'A':
+	  		ssp_config.NA = limit_range( "NA", newval, 1, SSP_MAX_PREADD );
+	  		break;
+  		case 'C':
+	  		ssp_config.NC = limit_range( "NC", newval, 1, SSP_MAX_COADD );
+	  		break;
+  		case 'P':
+		    ssp_config.NP = newval;
+		    break;
+	    case 'E':
+	  		ssp_config.NE = limit_range( "NE", newval, 1, SSP_MAX_NE );
+	  		break;
+  		default:
+	  		safe_print("tcpThread: unrecognized N command\n");
+	  		return 400;
+ 		}
+  	return 200;
   } else if ( cmd[0] == 'T' ) {
-    if ( cmd[1] == 'E' ) return enq_udpcmd( UDPCMD_TRIGEXT );
-    else if ( ( cmd[1] == 'U' || cmd[1] == 'D' ) && cmd[2] == ':' ) {
-      TriggerLevel = atoi(cmd+3);
-      return enq_udpcmd( cmd[1] == 'U' ? UDPCMD_TRIGUP : UDPCMD_TRIGDN );
+    if ( cmd[1] == 'S' && cmd[2] == ':' ) {
+    	int val = limit_range( "TS", atoi(cmd+3), 0, SSP_TRIG_SRC_MAX );
+    	ssp_config.TrigConfig =
+    		(ssp_config.TrigConfig & ~SSP_TRIG_SRC_MASK) |
+    		(val << SSP_TRIG_SRC_LSB);
+      return ssp_config.EN ? enq_udpcmd( UDPCMD_TRIGGER ) : 200;
+    } else if ( ( cmd[1] == 'U' || cmd[1] == 'D' ) && cmd[2] == ':' ) {
+      ssp_config.TL = atoi(cmd+3);
+      if ( cmd[1] == 'U' ) ssp_config.TrigConfig |= SSP_TRIG_RISING;
+      else ssp_config.TrigConfig &= ~SSP_TRIG_RISING;
+      return ssp_config.EN ? enq_udpcmd( UDPCMD_TRIGGER ) : 200;
     }
   } else if ( cmd[0] == 'A' ) {
-    if ( cmd[1] == 'E' ) return enq_udpcmd( UDPCMD_AUTOEN );
-    if ( cmd[1] == 'D' ) return enq_udpcmd( UDPCMD_AUTODA );
+    if ( cmd[1] == 'E' ) ssp_config.TrigConfig |= SSP_TRIG_AE;
+    else if ( cmd[1] == 'D' ) ssp_config.TrigConfig &= ~ SSP_TRIG_AE;
+    else return 500;
+    return ssp_config.EN ? enq_udpcmd( UDPCMD_TRIGGER ) : 200;
   }
   return 500;
 }
