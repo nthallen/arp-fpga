@@ -18,9 +18,8 @@ _HEAP_SIZE = DEFINED(_HEAP_SIZE) ? _HEAP_SIZE : 0x2000;
 
 MEMORY
 {
-   ilmb_cntlr_dlmb_cntlr : ORIGIN = 0x00000050, LENGTH = 0x0000FFB0
-   SRAM_C_MEM0_BASEADDR : ORIGIN = 0x88300000, LENGTH = 0x00100000
-   DDR_SDRAM_C_MPMC_BASEADDR : ORIGIN = 0x8C000000, LENGTH = 0x04000000
+   ilmb_cntlr_dlmb_cntlr : ORIGIN = 0x00000050, LENGTH = 0x00003FB0
+   SRAM_C_MEM0_BASEADDR : ORIGIN = 0x83D00000, LENGTH = 0x00100000
 }
 
 /* Specify the default entry point to the program */
@@ -187,7 +186,7 @@ _SDA2_BASE_ = ((__sbss2_end - __sbss2_start) / 2 );
    _heap_start = .;
    . += _HEAP_SIZE;
    _heap_end = .;
-} > DDR_SDRAM_C_MPMC_BASEADDR
+} > SRAM_C_MEM0_BASEADDR
 
 .stack : {
    _stack_end = .;
@@ -195,7 +194,7 @@ _SDA2_BASE_ = ((__sbss2_end - __sbss2_start) / 2 );
    . = ALIGN(8);
    _stack = .;
    __stack = _stack;
-} > DDR_SDRAM_C_MPMC_BASEADDR
+} > SRAM_C_MEM0_BASEADDR
 
 }
 
