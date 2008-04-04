@@ -1,20 +1,23 @@
 /*
   ssp_cmd
-    Opens TCP command connection to SSP board, sends a command or commands and closes
-    This program is an auxiliary program, so it will not allow commands that alter the
-    basic sampling. Just the triggering modes for now.
+    Opens TCP command connection to 10.0.0.200 or the IP address specified in the
+    environment variable SSP_HOSTNAME. Sends the list of commands passed on
+    the command line. If the disable command (DA) is sent, attempts to shut down
+    ssp_log if it is running. Otherwise, ssp_cmd does not attempt to interpret the
+    commands.
 
   Commands:
-    # EN Enable
-    # DA Disable
-    # EX Quit
-    # NS:xxxx N_Samples
-    # NA:xxxx N_Avg
-    # NC:xxxx N_Coadd
-    # UP:xxxxx UDP Port Number
-    TE Trigger External
+    EN Enable
+    DA Disable
+    EX Quit
+    NS:xxxx N_Samples
+    NA:xxxx N_Avg
+    NC:xxxx N_Coadd
+    NP:xxxxx UDP Port Number
+    NE:x Channel Enable (1-7)
     TU:[-]xxxxx Level Trigger Rising
     TD:[-]xxxxx Level Trigger Falling
+    TS:x Trigger Source (0-3)
     AE Autotrig Enable
     AD Autotrig Disable
   Return Values:
@@ -71,9 +74,9 @@ int main( int argc, char **argv ) {
       if ( fgets(cmdbuf, 20, stdin) == 0 ) break;
       if ( cmdbuf[0] == '\n' ) break;
       for (;;) {
-	rv = tcp_send(cmdbuf);
-	if ( rv == 503 && ++tries < 5 ) sleep(2);
-	else break;
+      	rv = tcp_send(cmdbuf);
+      	if ( rv == 503 && ++tries < 5 ) sleep(2);
+      	else break;
       }
     }
   }

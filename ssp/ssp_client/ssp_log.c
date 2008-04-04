@@ -72,7 +72,9 @@ int main( int argc, char **argv ) {
   long int scan[4096];
   int udp_port;
   int scan_length = 0;
-  int scan_size;
+  int NE = 0;
+  int scan_size, n_channels;
+  long int scan0 = 6, scan1, scan5 = 0l;
   char *ssp_hostname;
 
   time_t last_rpt = 0, now;
@@ -96,14 +98,22 @@ int main( int argc, char **argv ) {
     nl_error(0, "Opened UDP port %d", udp_port);
     // open TCP connection to SSP board
     tcp_create(ssp_hostname);
+    // disable first, because no config commands can be send while enabled
+    tcp_send( "DA\r\n" );
     // transmit the command including UDP socket number
-    sprintf(cmdbuf, "UP:%d\r\n", udp_port );
+    sprintf(cmdbuf, "NP:%d\r\n", udp_port );
     tcp_send(cmdbuf);
     for ( i = 1; i < argc; i++ ) {
       sprintf( cmdbuf, "%s\r\n", argv[i] );
-      if ( strncmp( cmdbuf, "NS:", 3 ) == 0 )
+      if ( strncmp( cmdbuf, "NS:", 3 ) == 0 ) {
         scan_length = atoi(cmdbuf+3);
-      else if ( strncmp( cmdbuf, "IX:", 3 ) == 0 ) {
+        if ( scan_length < 1 || scan_length > SSP_MAX_SAMPLES )
+          nl_error( 3, "Invalid scan length: %d", scan_length );
+      } else if ( strncmp( cmdbuf, "NE:", 3 ) == 0 ) {
+        NE = atoi(cmdbuf+3);
+        if ( NE < 1 || NE > 7 )
+          nl_error( 3, "Invalid channel configuration: %d", NE );
+      } else if ( strncmp( cmdbuf, "IX:", 3 ) == 0 ) {
       	index = strtoul(cmdbuf+3, NULL, 10);
       	mlf_set_index(mlf, index);
       	move_lock(index);
@@ -117,7 +127,20 @@ int main( int argc, char **argv ) {
       nl_error( 0, "Setting scan_length to %d\n", scan_length );
       tcp_send(cmdbuf);
     }
-    scan_size = (scan_length+1)*sizeof(long);
+    if ( NE == 0 ) {
+      NE = 1;
+      sprintf(cmdbuf, "NE:%d\r\n", NE );
+      nl_error( 0, "Setting NE to %d\n", NE );
+      tcp_send(cmdbuf);
+    }
+    switch ( NE ) {
+      case 1: case 2: case 4: n_channels = 1; break;
+      case 3: case 5: case 6: n_channels = 2; break;
+      case 7: n_channels = 3; break;
+      default: nl_error( 4, "Invalid NE configuration" );
+    }
+    scan_size = (7 + scan_length*n_channels)*sizeof(long);
+    scan1 = scan_length << 16 + n_channels;
     while (tcp_send("EN\r\n") == 503 ) sleep(1);
     tcp_close();
     for (;;) {
@@ -128,6 +151,7 @@ int main( int argc, char **argv ) {
       } else {
       	int j;
       	FILE *ofp = mlf_next_file(mlf);
+
       	for ( j = 0; j <= scan_length; j++ ) {
       	  fprintf( ofp, "%10ld\n", scan[j] );
       	}
@@ -138,6 +162,14 @@ int main( int argc, char **argv ) {
       	  nl_error( 0, "Recorded Scan %lu", mlf->index );
       	  last_rpt = now;
       	}
+        
+        // Perform some sanity checks on the inbound scan
+        if ( scan[0] != scan0 )
+          nl_error( 1, "scan[0] = %08lX (not %d)\n", scan[0], scan0 );
+        if ( scan[1] != scan1 )
+          nl_error( 1, "scan[1] = %08lX (not %08lX)\n", scan[1], scan1 );
+        if ( scan[5] != scan5 )
+          nl_error( 1, "scan[5] = %08lX (not %08lX)\n", scan[5], scan5 );
       }
     }
   }
