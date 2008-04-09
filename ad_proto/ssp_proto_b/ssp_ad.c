@@ -7,11 +7,11 @@
    serverAppThread() accept()s TCP connections from clients
    tcpThread() manages TCP connections after accept()
 */
-#include "ssp_ad.h"
+#include "ssp_intr.h"
 #include "errno.h"
 #include "mb_interface.h"
-#include "ssp_intr.h"
 #include "ad9510_if.h"
+#include "sys/process.h"
 
 typedef struct {
   int socket;
@@ -154,7 +154,8 @@ void *udpThread(void *arg) {
     		safe_print("NS exceeds SSP_MAX_SAMPLES\n");
     		ssp_config.NS = SSP_MAX_SAMPLES;
     	}
-    	xfr_enable(); /* ### make sure this includes the full init */
+    	xfr_enable();
+    	ssp_config.EN = 1;
     	ssp_config.RV = 200; /* OK */
     	sem_post( &tcp_sem );
     	safe_print("Enabled\n");
@@ -193,8 +194,13 @@ void *udpThread(void *arg) {
 	    			safe_print("Error from sem_trywait\n");
 	    		}
 	    		nw = ssp_read_fifo( &scan[words_read], words_remaining );
-	    		if ( nw == 0 ) sleep(20);
-	    		else if ( words_remaining == nw ) {
+	    		if ( nw == 0 ) {
+	    			sleep(100);
+	    			yield();
+	    		} else if ( words_remaining == nw ) {
+	          print_mutex_lock();
+	          safe_printf(( "udpThread: read %d words from fifo: transmitting\n", nw));
+	          print_mutex_unlock();
 		        rc = sendto(udp_socket, scan, scan_size, 0, 
 		          (struct sockaddr *) &udpSrvrAddr, 
 		          sizeof(udpSrvrAddr));
@@ -207,6 +213,9 @@ void *udpThread(void *arg) {
 		        words_read = 0;
 		        words_remaining = scan_xmit_length;
 	    		} else {
+	          print_mutex_lock();
+	          safe_printf(( "udpThread: read %d words from fifo\n", nw));
+	          print_mutex_unlock();
 	    			words_read += nw;
 	    			words_remaining -= nw;
 	    		}
@@ -216,6 +225,7 @@ void *udpThread(void *arg) {
 	        switch (ssp_config.CC) {
 	          case UDPCMD_DISABLE:
 	            xfr_disable();
+	            ssp_config.EN = 0;
 	            safe_print("Disabled\n");
 	            enabled = 0;
 	            break;
@@ -296,7 +306,7 @@ void *serverAppThread(void *arg) {
   }    
 }
   
-static char rcv_msg[SSP_MAX_MSG+1];
+static char rcv_msg[SSP_MAX_CTRL_MSG+1];
 
 void *tcpThread( void *context ) {
   tcpThreadContext_t *tcpThreadContext =
@@ -306,11 +316,12 @@ void *tcpThread( void *context ) {
   int done = 0;
   
   while (!done) {
-    n = recv(my_sock, rcv_msg, SSP_MAX_MSG, 0);
+    n = recv(my_sock, rcv_msg, SSP_MAX_CTRL_MSG, 0);
+    rcv_msg[n] = '\0';
     print_mutex_lock();
     safe_printf(("tcpThread: received %d bytes: %s", n, rcv_msg));
     print_mutex_unlock();
-    if ( n > SSP_MAX_MSG ) {
+    if ( n > SSP_MAX_CTRL_MSG ) {
       safe_print("tcpThread: recv overflow!\n");
       break;
     } else if ( n <= 0 ) break;
