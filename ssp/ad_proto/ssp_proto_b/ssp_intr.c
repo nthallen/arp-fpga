@@ -1,7 +1,6 @@
 #include "ssp_intr.h"
 #include "sys/intr.h"
 #include "pthread.h"
-#include "ssp_ad.h"
 
 static pthread_mutex_t sg_mutex = PTHREAD_MUTEX_INITIALIZER;
 
@@ -62,27 +61,32 @@ static void set_ssp_ncoadd( unsigned int val ) {
 /* Reads up to nwords from the fifo */
 int ssp_read_fifo( unsigned int *buf, unsigned int nwords ) {
   int status;
-  unsigned int n_words_ready, is_empty;
+  unsigned int n_words_ready = 0, is_empty;
+  
   sg_mutex_lock();
-
-  status = ssp_ll_empty(is_empty);
-  if ( check_fifo_status( status, "Reading Empty" ) || is_empty )
-  	return 0;
-  status = ssp_ll_pctfull(n_words_ready);
-  if ( check_fifo_status( status, "Reading PercentFull" ) )
-  	return 0;
-  if ( n_words_ready < nwords )
-  	nwords = n_words_ready+1;
-  // n_words_ready = ssp_ArrayRead( nwords, buf );
-  n_words_ready = ssp_ad_scan_sm_0_ArrayRead(SSP_AD_SCAN_SM_0_SRCSIGNAL,
-         SSP_AD_SCAN_SM_0_SRCSIGNAL_DOUT,
-         nwords, buf );
+  status = ssp_ll_empty(&is_empty);
+  if ( ! check_fifo_status( status, "Reading Empty" ) && !is_empty ) {
+    status = ssp_ll_pctfull(&n_words_ready);
+    if ( !check_fifo_status( status, "Reading PercentFull" ) ) {
+		  if ( n_words_ready < nwords )
+		  	nwords = n_words_ready+1;
+		  else {
+		      print_mutex_lock();
+		      safe_printf(("ssp_read_fifo: %d/%d ready\n", n_words_ready+1, nwords ));
+		      print_mutex_unlock();
+		  }
+		  n_words_ready = ssp_ad_scan_sm_0_ArrayRead(SSP_AD_SCAN_SM_0_SRCSIGNAL,
+		         SSP_AD_SCAN_SM_0_SRCSIGNAL_DOUT,
+		         nwords, buf );
+    }
+  }
   sg_mutex_unlock();
   return n_words_ready;
 }
 
 int ssp_read_pctfull( void ) {
-  int words, status;
+  int status;
+  unsigned int words;
   sg_mutex_lock();
   status = ssp_ll_pctfull(&words);
   sg_mutex_unlock();
@@ -121,13 +125,13 @@ void xfr_enable(void) {
     scan[i] = 0;
   set_ssp_control( SSP_RESET_MASK, SSP_RESET_MASK, "Reseting circuit" );
   set_ssp_netsamples( ssp_config.NS );
-  set_ssp_navg( ssp_config.NA );
+  set_ssp_navg( ssp_config.NA-1 );
   set_ssp_ncoadd( ssp_config.NC );
   set_ssp_control( SSP_NE_MASK, ssp_config.NE << SSP_NE_LSB, "During init" );
   set_trigger();
 
   // Verify that fifo is empty
-  status = ssp_ll_empty(is_empty);
+  status = ssp_ll_empty(&is_empty);
   check_fifo_status( status, "Reading Empty during init" );
   if ( !is_empty )
   	safe_print("FIFO non-empty during init\n");
