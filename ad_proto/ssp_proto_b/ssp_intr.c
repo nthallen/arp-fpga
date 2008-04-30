@@ -70,11 +70,6 @@ int ssp_read_fifo( unsigned int *buf, unsigned int nwords ) {
     if ( !check_fifo_status( status, "Reading PercentFull" ) ) {
 		  if ( n_words_ready < nwords )
 		  	nwords = n_words_ready+1;
-		  else {
-		      print_mutex_lock();
-		      safe_printf(("ssp_read_fifo: %d/%d ready\n", n_words_ready+1, nwords ));
-		      print_mutex_unlock();
-		  }
 		  n_words_ready = ssp_ad_scan_sm_0_ArrayRead(SSP_AD_SCAN_SM_0_SRCSIGNAL,
 		         SSP_AD_SCAN_SM_0_SRCSIGNAL_DOUT,
 		         nwords, buf );
@@ -127,6 +122,7 @@ void xfr_enable(void) {
   set_ssp_netsamples( ssp_config.NS );
   set_ssp_navg( ssp_config.NA-1 );
   set_ssp_ncoadd( ssp_config.NC );
+  
   set_ssp_control( SSP_NE_MASK, ssp_config.NE << SSP_NE_LSB, "During init" );
   set_trigger();
 
