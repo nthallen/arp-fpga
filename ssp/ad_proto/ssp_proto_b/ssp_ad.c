@@ -198,9 +198,6 @@ void *udpThread(void *arg) {
 	    			sleep(100);
 	    			yield();
 	    		} else if ( words_remaining == nw ) {
-	          print_mutex_lock();
-	          safe_printf(( "udpThread: read %d words from fifo: transmitting\n", nw));
-	          print_mutex_unlock();
 		        rc = sendto(udp_socket, scan, scan_size, 0, 
 		          (struct sockaddr *) &udpSrvrAddr, 
 		          sizeof(udpSrvrAddr));
@@ -213,9 +210,6 @@ void *udpThread(void *arg) {
 		        words_read = 0;
 		        words_remaining = scan_xmit_length;
 	    		} else {
-	          print_mutex_lock();
-	          safe_printf(( "udpThread: read %d words from fifo\n", nw));
-	          print_mutex_unlock();
 	    			words_read += nw;
 	    			words_remaining -= nw;
 	    		}
