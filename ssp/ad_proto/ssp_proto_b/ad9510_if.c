@@ -47,6 +47,24 @@
 #define READ_3BYTES				0xC0
 #define READ_STREAM				0xE0
 
+#define LVPECL_LVL_810 8
+#define LVPECL_LVL_500 0
+#define LVPECL_LVL_340 4
+#define LVPECL_LVL_660 0xC
+#define LVPECL_ON 0
+#define LVPECL_SAFE_PD 2
+#define LVPECL_TOTAL_PD 3
+#define LVDS_ON 0
+#define LVDS_PD 1
+#define LVDS_3_5_MA 2
+#define LVDS_1_75_MA 0
+#define LVDS_5_25_MA 4
+#define LVDS_7_MA 6
+#define LVDS_LVDS 0
+#define LVDS_CMOS 8
+
+#define DIVIDER_BYPASS 0x80
+
 // AD9510 Slave Select Address on SPI bus
 #define AD9510_SS_ADDR			0x01
 
@@ -57,7 +75,6 @@
 /************************** Function Prototypes *******************************/
 
 int SPI_system_init(void);
-void AD9510_Init(void);
 static XStatus SetupInterruptSystem(XSpi *SpiPtr);
 static void SpiHandler(void *CallBackRef, Xuint32 StatusEvent, unsigned int ByteCount);
 static void ad9510_Write(XSpi *SpiPtr, Xuint16 dat);
@@ -137,20 +154,6 @@ int SPI_system_init(void) {
 
 // Start the SPI driver so that interrupts and the device are enabled
     XSpi_Start(&Spi);
-    
-/********************* End Device Initializations ************************/
-	
-	// AD9510_Init();							// Initialize AD9510
-
-/************************ Begin Main Loop *****************************/
-	
-//	xil_printf("\r\n -- AD9510 Register File --\r\n");
-
-//	for( ad9510RegAddr = 0 ; ad9510RegAddr <= 0x5A ; ad9510RegAddr++ ) {
-//		ad9510RegVal = ad9510_Read(&Spi, ad9510RegAddr);	// Read Register
-//		xil_printf("AD9510 [%02x] = %02x \r\n", ad9510RegAddr, ad9510RegVal);
-//	}
-	
     return XST_SUCCESS;
 }
 
@@ -200,24 +203,86 @@ static void ad9510_Write(XSpi *SpiPtr, Xuint16 dat)
 *
 * @return	nothing
 *
+* AD9510 Initialization Strategy:
+  Power down any unused portions of the board
+  Use safe power down option for terminated LVPECL circuits
+    All 4 LVPECL outputs are terminated on the SSP Proto board
+    0, 1 and 2 are terminated on SSP, 3 is not.
+    LVPECL Output level is (presumably) 810 mV
+    Outputs 0, 1, 2 go to A/Ds (except on proto)
+       On the proto board, if any channel is enabled, channel 0 must be,
+       since it's the only real channel.
+    Output 5 goes to FPGA USERCLK
+    Output 6 goes to QCLI
+    Outputs 3, 4 and 7 are currently unused
+    CLK1 is 100MHz Oscillator. CLK1 is selected by default.
+    CLK2 is 100MHz VCXO for use with PLL circuit. It will not be installed at the start,
+    and we will not use the PLL block. PLL is powered down by default. CLK2 should
+    be powered down as well to avoid any crosstalk. Can also power down PLL prescaler
+    and REFIN.
+    Each output can be divided by any integer from 1 to 32.
+      Division by 1 is accomplished by bypassing the divider
+      Division by greater values is accomplished by setting the number of input clock periods
+      the output should remain high and low respectively.
+    
 ****************************************************************************/
-void AD9510_Init(void) {
-// Write AD9510 Initializaton strings
-	ad9510_Write(&Spi , 0x3C08);					// Turn on OUT0
-	ad9510_Write(&Spi , 0x3D0A);					// Turn off OUT1
-	ad9510_Write(&Spi , 0x3E0A);					// Turn off OUT2
-	ad9510_Write(&Spi , 0x3F0A);					// Turn off OUT3
-	ad9510_Write(&Spi , 0x4003);					// Turn off OUT4
-//	ad9510_Write(&Spi , 0x4103);					// Turn off OUT5
-	ad9510_Write(&Spi , 0x4102);					// Turn on OUT5 
-	ad9510_Write(&Spi , 0x4203);					// Turn off OUT6
-	ad9510_Write(&Spi , 0x4303);					// Turn off OUT7
-//	ad9510_Write(&Spi , 0x4844);					// Divide OUT0 by 10
-	ad9510_Write(&Spi , 0x4899);					// Divide OUT0 by 20
-	ad9510_Write(&Spi , 0x5244);					// Divide OUT5 by 10
-	ad9510_Write(&Spi , 0x082C);					// Turn off STATUS led
-
-	ad9510_Write(&Spi , 0x5A01);					// Execute
+void AD9510_Init(int ChEn, int divisor) {
+	  int ch;
+	  unsigned short div_code_0, div_code_1;
+	  XStatus Status = XSpi_SetSlaveSelect(&Spi, AD9510_SS_ADDR);
+	  if ( check_status( Status, "Could not SetSlaveSelect" ))
+	    return;
+	// Write AD9510 Initializaton strings
+	  #ifdef SSP_PROTO_A
+	    if (ChEn) ChEn = 1;
+	    ChEn &= 0x7;
+	  #else
+	    ChEn &= 0x67;
+	  #endif
+	  // AD9510 Serial Port Configuration leave as default
+	  // PLL section leave in default power-down mode
+	  // Find Adjust leave as bypassed
+	  // LVPECL Outputs
+	  for ( ch = 0; ch <= 3; ch++ ) {
+	    unsigned short lvpecl_cfg = 0x3C00 + 0x100*ch + LVPECL_LVL_810;
+	    if ( ChEn & (1<<ch) ) {
+	      lvpecl_cfg |= LVPECL_ON; // actually a no-op
+	    } else {
+	      lvpecl_cfg |= LVPECL_SAFE_PD;
+	    }
+	    ad9510_Write(&Spi, lvpecl_cfg);
+	  }
+	  // LVDS Outputs
+	  for ( ch = 4; ch <= 7; ch++ ) {
+	    unsigned short lvds_cfg = 0x3C00 + 0x100*ch + LVDS_3_5_MA + LVDS_LVDS;
+	    if ( ChEn & (1<<ch) ) {
+	      lvds_cfg |= LVDS_ON; // no-op
+	    } else {
+	      lvds_cfg |= LVDS_PD;
+	    }
+	    ad9510_Write(&Spi, lvds_cfg);
+	  }
+	  // Dividers
+	  if ( divisor <= 1 ) {
+	    div_code_0 = 0;
+	    div_code_1 = DIVIDER_BYPASS;
+	  } else {
+	    if (divisor > 32 ) divisor = 32;
+	    div_code_0 = ((divisor/2-1)<<4) + ((divisor+1)/2-1);
+	    div_code_1 = 0;
+	  }
+	  for ( ch = 0; ch <= 7; ch++ ) {
+	    ad9510_Write(&Spi, 0x4800 + 0x200*ch + div_code_0 );
+	    ad9510_Write(&Spi, 0x4900 + 0x200*ch + div_code_1 );
+	    // could possibly reduce power a bit more by bypassing divider for disabled channels
+	  }
+	  // CLK Inputs
+	  ad9510_Write(&Spi, ChEn ? 0x451D : 0x453F );
+		ad9510_Write(&Spi, ChEn ? 0x0800 : 0x082C ); // STATUS led
+	  ad9510_Write(&Spi, 0x5804 );  // Synch On
+		ad9510_Write(&Spi , 0x5A01);					// Execute
+	  ad9510_Write(&Spi, 0x5800 );  // Sync Off
+	  ad9510_Write(&Spi , 0x5A01);					// Execute
 }
 
 /*****************************************************************************/

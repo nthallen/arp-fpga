@@ -35,6 +35,7 @@ typedef struct {
 	unsigned short NS, NA, NC;
 	unsigned short NP; /* udp port number */
 	unsigned short NE;
+  unsigned short NF; /* Frequency Divisor */
 	signed short TL;
 	unsigned short TrigConfig;
 } ssp_config_t;

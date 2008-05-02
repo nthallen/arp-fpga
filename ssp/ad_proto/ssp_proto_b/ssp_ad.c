@@ -70,6 +70,9 @@ void* main_main(void* arg) {
     return &err_rv;
   }
   sem_post( &cfg_sem ); // unlock the semaphore
+  
+  // Initialize the ssp_config as necessary
+  ssp_config.NF = 1;
 
   sys_thread_new((void *)&udpThread, 0, 5);
     // run the UDP thread at the lowest priority for now
@@ -103,7 +106,7 @@ void *udpThread(void *arg) {
   safe_print("ethernet initialized\n");
   
   SPI_system_init();
-  AD9510_Init();
+  AD9510_Init( 0, 1 );
   
   sem_post(&udp_sem);
 
@@ -432,6 +435,7 @@ static unsigned int limit_range( char *var, unsigned int val,
     NS:xxxx N_Samples
     NA:xxxx N_Average (Pre-Adder)
     NC:xxxx N_Coadd
+    NF:xx      Frequency Divisor
     NP:xxxxx UDP Port Number
     NE:x 1-7 bit-mapped
     NU:[-]xxxxx Level Trigger Rising
@@ -492,6 +496,9 @@ static unsigned int parse_cmds( char *cmd, tcpThreadContext_t *tcpThreadContext 
 	    case 'E':
 	  		ssp_config.NE = limit_range( "NE", newval, 1, SSP_MAX_NE );
 	  		break;
+      case 'F':
+        ssp_config.NF = limit_range( "NF", newval, 1, 32 );
+        break;
   		default:
 	  		safe_print("tcpThread: unrecognized N command\n");
 	  		return 400;
