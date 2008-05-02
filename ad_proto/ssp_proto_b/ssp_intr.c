@@ -1,4 +1,5 @@
 #include "ssp_intr.h"
+#include "ad9510_if.h"
 #include "sys/intr.h"
 #include "pthread.h"
 
@@ -110,6 +111,7 @@ int ssp_read_pctfull( void ) {
 
 void xfr_disable(void) {
   set_ssp_control( SSP_RESET_MASK, SSP_RESET_MASK, "Reseting circuit" );
+  AD9510_Init( 0, 1 );
 }
 
 void xfr_enable(void) {
@@ -119,6 +121,7 @@ void xfr_enable(void) {
   for ( i = SSP_MAX_SCAN_LENGTH; i < SSP_MAX_SCAN_LENGTH+SCAN_GUARD; i++ )
     scan[i] = 0;
   set_ssp_control( SSP_RESET_MASK, SSP_RESET_MASK, "Reseting circuit" );
+  AD9510_Init( ssp_config.NE, ssp_config.NF );
   set_ssp_netsamples( ssp_config.NS );
   set_ssp_navg( ssp_config.NA-1 );
   set_ssp_ncoadd( ssp_config.NC );
@@ -131,6 +134,7 @@ void xfr_enable(void) {
   check_fifo_status( status, "Reading Empty during init" );
   if ( !is_empty )
   	safe_print("FIFO non-empty during init\n");
+  
 
   set_ssp_control( SSP_RESET_MASK, 0, "Enabling Circuit" );
 }
