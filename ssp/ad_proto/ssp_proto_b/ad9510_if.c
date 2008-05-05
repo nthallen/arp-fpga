@@ -93,12 +93,11 @@ static volatile Xboolean TransferInProgress;
 /* the following variable tracks any errors that occur during interrupt
  * processing
  */
-static int ErrorCnt;
 
 static int check_status( int Status, char *reason ) {
 	if (Status != XST_SUCCESS) {
 	  print_mutex_lock();
-	  safe_printf(("AD9510: %s\n"));
+	  safe_printf(("AD9510: %s\r\n"));
 	  print_mutex_unlock();
 	  return 1;
 	}
@@ -229,11 +228,14 @@ static void ad9510_Write(XSpi *SpiPtr, Xuint16 dat)
 void AD9510_Init(int ChEn, int divisor) {
 	  int ch;
 	  unsigned short div_code_0, div_code_1;
+    XSpi_Stats Stats;
+    
+    XSpi_ClearStats(&Spi);
 	  XStatus Status = XSpi_SetSlaveSelect(&Spi, AD9510_SS_ADDR);
 	  if ( check_status( Status, "Could not SetSlaveSelect" ))
 	    return;
-	// Write AD9510 Initializaton strings
-	  #ifdef SSP_PROTO_A
+
+    #ifdef SSP_PROTO_A
 	    if (ChEn) ChEn = 1;
 	    ChEn &= 0x7;
 	  #else
@@ -283,6 +285,21 @@ void AD9510_Init(int ChEn, int divisor) {
 		ad9510_Write(&Spi , 0x5A01);					// Execute
 	  ad9510_Write(&Spi, 0x5800 );  // Sync Off
 	  ad9510_Write(&Spi , 0x5A01);					// Execute
+    #if PRINT_ENABLE
+      XSpi_GetStats(&Spi, &Stats);
+      print_mutex_lock();
+      if (Stats.ModeFaults)
+        safe_printf(("SPI: %d mode faults\r\n", Stats.ModeFaults ));
+      if (Stats.XmitUnderruns)
+        safe_printf(("SPI: %d XmitUnderruns\r\n", Stats.XmitUnderruns ));
+      if (Stats.RecvOverruns)
+        safe_printf(("SPI: %d RecvOverruns\r\n", Stats.RecvOverruns ));
+      if (Stats.SlaveModeFaults)
+        safe_printf(("SPI: %d SlaveModeFaults\r\n", Stats.SlaveModeFaults ));
+      safe_printf(("SPI: %d bytes transferred\r\n", Stats.BytesTransferred ));
+      safe_printf(("SPI: %d interrupts\r\n", Stats.NumInterrupts ));
+      print_mutex_unlock();
+    #endif
 }
 
 /*****************************************************************************/
@@ -341,15 +358,8 @@ static Xuint8 ad9510_Read(XSpi *SpiPtr, Xuint8 SPIaddr)
 void SpiHandler(void *CallBackRef, Xuint32 StatusEvent,
                 unsigned int ByteCount)
 {
-    /* Indicate the transfer on the SPI bus is no longer in progress
-     * regardless of the status event
-     */
-    TransferInProgress = XFALSE;
-
-    /* If the event was not transfer done, then track it as an error */
-
-    if (StatusEvent != XST_SPI_TRANSFER_DONE)
-        ErrorCnt++;
+    if (StatusEvent == XST_SPI_TRANSFER_DONE)
+      TransferInProgress = XFALSE;
 }
 
 /****************************************************************************/

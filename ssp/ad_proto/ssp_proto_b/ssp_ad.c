@@ -136,7 +136,7 @@ void *udpThread(void *arg) {
     if ( sem_wait( &udp_sem ) ) {
     	/* We never expect this to happen and know of no way to recover */
       print_mutex_lock();
-      safe_printf(("Error %d from sem_wait() in udpThread\n", errno ));
+      safe_printf(("Error %d from sem_wait() in udpThread\r\n", errno ));
       print_mutex_unlock();
       return &err_rv;
     }
@@ -206,7 +206,7 @@ void *udpThread(void *arg) {
 		          sizeof(udpSrvrAddr));
 		        if ( rc<0 ) {
 		          print_mutex_lock();
-		          safe_printf(( "udpThread: cannot send data: %d\n", errno));
+		          safe_printf(( "udpThread: cannot send data: %d\r\n", errno));
 		          print_mutex_unlock();
 		          return &err_rv;
 		        }
@@ -241,7 +241,7 @@ void *udpThread(void *arg) {
 	    for ( i = SSP_MAX_SCAN_LENGTH; i < SSP_MAX_SCAN_LENGTH+SCAN_GUARD; i++ ) {
 	      if ( scan[i] ) {
 	        print_mutex_lock();
-	        safe_printf(("Overrun: scan[%d] = %d\n", i, scan[i]));
+	        safe_printf(("Overrun: scan[%d] = %d\r\n", i, scan[i]));
 	        print_mutex_unlock();
 	        break;
 	      }
@@ -390,7 +390,7 @@ int ethernet_init(void) {
 int check_fifo_status( int status, char *where ) {
   if ( status ) {
     print_mutex_lock();
-    safe_printf(("ERROR: status = %d while %s\n", status, where ));
+    safe_printf(("ERROR: status = %d while %s\r\n", status, where ));
     print_mutex_unlock();
   }
   return status;
@@ -408,12 +408,12 @@ static unsigned int limit_range( char *var, unsigned int val,
   if ( val < low ) {
   	val = low;
     print_mutex_lock();
-    safe_printf(("Value for '%s' too low: using %d\n", var, val ));
+    safe_printf(("Value for '%s' too low: using %d\r\n", var, val ));
     print_mutex_unlock();
   } else if ( val > high ) {
   	val = high;
     print_mutex_lock();
-    safe_printf(("Value for '%s' too high: using %d\n", var, val ));
+    safe_printf(("Value for '%s' too high: using %d\r\n", var, val ));
     print_mutex_unlock();
   }
   return val;

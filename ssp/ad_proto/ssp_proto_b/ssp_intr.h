@@ -75,11 +75,13 @@ extern unsigned int scan[];
 
 
 #ifdef STDOUT_BASEADDRESS
+  #define PRINT_ENABLE 1
   extern int print_mutex_lock(void);
   extern void print_mutex_unlock(void);
   extern void safe_print( char *text );
   #define safe_printf(x) xil_printf x
 #else
+  #define PRINT_ENABLE 0
   #define print_mutex_lock()
   #define print_mutex_unlock()
   #define safe_print(x)
