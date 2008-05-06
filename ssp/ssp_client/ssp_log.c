@@ -72,6 +72,7 @@ int main( int argc, char **argv ) {
   long int scan[4096];
   int udp_port;
   int scan_length = 0;
+  int raw_length;
   int NE = 0;
   int scan_size, n_channels;
   long int scan0 = 6, scan1, scan5 = 0l;
@@ -139,8 +140,9 @@ int main( int argc, char **argv ) {
       case 7: n_channels = 3; break;
       default: nl_error( 4, "Invalid NE configuration" );
     }
-    scan_size = (7 + scan_length*n_channels)*sizeof(long);
-    scan1 = scan_length << 16 + n_channels;
+    raw_length = (7 + scan_length*n_channels);
+    scan_size = raw_length*sizeof(long);
+    scan1 = (scan_length << 16) + n_channels;
     while (tcp_send("EN\r\n") == 503 ) sleep(1);
     tcp_close();
     for (;;) {
@@ -151,9 +153,15 @@ int main( int argc, char **argv ) {
       } else {
       	int j;
       	FILE *ofp = mlf_next_file(mlf);
+        ssp_scan_header_t *hdr = (ssp_scan_header_t *)scan;
 
-      	for ( j = 0; j <= scan_length; j++ ) {
-      	  fprintf( ofp, "%10ld\n", scan[j] );
+        fprintf( ofp, "%u\n%u\n%u\n%u\n%u\n%u\n%u\n%u\n",
+          hdr->NWordsHdr, hdr->FormatVersion, hdr->NChannels, hdr->NSamples,
+          hdr->NCoadd, hdr->NAvg, hdr->NSkL, hdr->NSkP );
+        fprintf( ofp, "%lu\n%lu\n%lu\n", hdr->ScanNum, hdr->Spare,
+          (unsigned long)scan[raw_length-1] );
+      	for ( j = 6; j < raw_length-1; j++ ) {
+      	  fprintf( ofp, "%ld\n", scan[j] );
       	}
       	fclose(ofp);
       	move_lock(mlf->index+1);
@@ -165,11 +173,11 @@ int main( int argc, char **argv ) {
         
         // Perform some sanity checks on the inbound scan
         if ( scan[0] != scan0 )
-          nl_error( 1, "scan[0] = %08lX (not %d)\n", scan[0], scan0 );
+          nl_error( 1, "%lu: scan[0] = %08lX (not %d)\n", mlf->index, scan[0], scan0 );
         if ( scan[1] != scan1 )
-          nl_error( 1, "scan[1] = %08lX (not %08lX)\n", scan[1], scan1 );
+          nl_error( 1, "%lu: scan[1] = %08lX (not %08lX)\n", mlf->index, scan[1], scan1 );
         if ( scan[5] != scan5 )
-          nl_error( 1, "scan[5] = %08lX (not %08lX)\n", scan[5], scan5 );
+          nl_error( 1, "%lu: scan[5] = %08lX (not %08lX)\n", mlf->index, scan[5], scan5 );
       }
     }
   }
