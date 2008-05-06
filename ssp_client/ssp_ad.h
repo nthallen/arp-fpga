@@ -2,8 +2,8 @@
 #define SSP_AD_H_INCLUDED
 
 #define SSP_MAX_SAMPLES 4096
-#define SSP_MAX_PREADD 5
-#define SSP_MAX_COADD 7
+#define SSP_MAX_PREADD 256
+#define SSP_MAX_COADD 16383
 #define SSP_MAX_CHANNELS 3
 #define SSP_MAX_NE ((1<<SSP_MAX_CHANNELS)-1)
 #define SSP_NE_LSB 5
@@ -21,5 +21,18 @@
 #define SSP_MAX_SCAN_SIZE (SSP_MAX_SCAN_LENGTH*sizeof(int))
 #define SSP_SERVER_PORT 1500
 #define SSP_MAX_CTRL_MSG 80
+
+typedef struct {
+  unsigned short NWordsHdr;
+  unsigned short FormatVersion;
+  unsigned short NChannels;
+  unsigned short NSamples;
+  unsigned short NCoadd;
+  unsigned short NAvg;
+  unsigned short NSkL;
+  unsigned short NSkP;
+  unsigned long  ScanNum;
+  unsigned long  Spare;
+} ssp_scan_header_t;
 
 #endif

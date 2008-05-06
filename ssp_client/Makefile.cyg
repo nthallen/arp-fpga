@@ -6,6 +6,8 @@ SSP_CMD_SRCS = ssp_cmd.c tcp.c udp.c
 SSP_CMD_OBJS = $(SSP_CMD_SRCS:.c=.o)
 LDLIBS=-lnort
 
-ssp_get : $(SSP_OBJS)
+all : ssp_log ssp_cmd
+
 ssp_log : $(SSP_LOG_OBJS)
 ssp_cmd : $(SSP_CMD_OBJS)
+ssp_get : $(SSP_OBJS)

@@ -22,7 +22,7 @@ function varargout = ssp_data(varargin)
 
 % Edit the above text to modify the response to help ssp_data
 
-% Last Modified by GUIDE v2.5 13-Feb-2008 09:57:33
+% Last Modified by GUIDE v2.5 01-May-2008 13:48:32
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -57,6 +57,11 @@ handles.output = hObject;
 handles.data.index = 1;
 handles.data.stopped = 1;
 handles.data.logging = 0;
+set(handles.PAOOR, 'Visible','off');
+set(handles.CAOVF, 'Visible','off');
+NF = (1:32)';
+MSPSstr = cellstr(num2str(100./NF,'%.2f'));
+set(handles.NF,'String',MSPSstr,'Value', 20);
 
 % Update handles structure
 guidata(hObject, handles);
@@ -89,27 +94,55 @@ if handles.data.stopped
   return;
 end
 % could use the lock file to determine where to set index
-handles.data.fsample = str2double(get(handles.MSPS,'String')) * 1e6;
+NF = get(handles.NF,'Value');
+handles.data.fsample = 100e6/NF;
 NS = round(str2double(get(handles.NS, 'String')));
 NA = round(str2double(get(handles.NA, 'String')));
 if NA > 256
   NA = 256;
 elseif NA < 1
   NA = 1;
-elseif NA > 1 && bitand(NA,1)
-  NA = bitand(NA, 512-2);
 end
 set(handles.NA, 'String', sprintf('%d', NA));
+
+NC = round(str2double(get(handles.NC, 'String')));
+if NC > 16383
+  NC = 16383;
+elseif NC < 1
+  NC = 1;
+end
+set(handles.NC, 'String', sprintf('%d', NC));
+
+NE = get(handles.Ch0,'Value') + ...
+     2 * get(handles.Ch1,'Value') + ...
+     4 * get(handles.Ch2,'Value');
+if NE == 0
+  set(handles.Ch0, 'Value', 1);
+  NE = 1;
+end
+
+NCh = [ 1 1 2 1 2 2 3 ];
+
 x = (1:NS)';
 x2 = (1:NS/2)';
 f_fft = (x2-1)*handles.data.fsample/(NA*NS);
-W = 1 - (2*x/NS - 1).^2; % Welch window
-TC = Trigger_Command(handles);
+W = (1 - (2*x/NS - 1).^2) * ones(1, NCh(NE)); % Welch window
+TC = TriggerSource_Command(handles);
 IX = handles.data.index;
-cmd = sprintf('start ssp_log NS:%d NA:%d %s IX:%d', NS, NA, TC, IX);
+cmd = sprintf('start ssp_log NS:%d NA:%d NC:%d NF:%d NE:%d %s IX:%d', ...
+  NS, NA, NC, NF, NE, TC, IX);
 fprintf(1, '%s\n', cmd );
 set(handles.NS, 'enable', 'off');
 set(handles.NA, 'enable', 'off');
+set(handles.NC, 'enable', 'off');
+set(handles.NF, 'enable', 'off');
+set(handles.Ch0, 'enable', 'off');
+set(handles.Ch1, 'enable', 'off');
+set(handles.Ch2, 'enable', 'off');
+set(handles.CAOVF, 'visible','off');
+set(handles.PAOOR, 'visible','off');
+PAOOR = 0;
+CAOVF = 0;
 system(cmd);
 pause(1);
 % files = dir('LOG/ssp_*.lock');
@@ -138,29 +171,81 @@ while 1
   path = mlf_path( 'LOG', index );
   lockfile = sprintf('LOG/ssp_%d.lock', index);
   if exist( path, 'file' ) && ~exist( lockfile, 'file')
-    D = load(path);
-    newSN = D(end);
-    D = D(1:end-1);
-    if SN >= 0
-      dSN = newSN-SN;
-      set(handles.dSN,'string',sprintf('%d',dSN));
+    S = load(path);
+    if length(S) > 12
+      D = S(12:end);
+      hdr = struct( 'N', index, 'NWordsHdr', S(1), ...
+        'FormatVersion', S(2), ...
+        'NChannels', S(3), ...
+        'NSamples', S(4), ...
+        'NCoadd', S(5), ...
+        'NAvg', S(6)+1, ...
+        'NSkL', S(7), ...
+        'NSkP', S(8), ...
+        'ScanNum', S(9), ...
+        'Spare', S(10), ...
+        'OVF', S(11));
+      if length(D) ~= hdr.NChannels*hdr.NSamples;
+        error('Incorrect length of scan: cpci: %d NS:%d NCh:%d len:%d', ...
+          i, NS, hdr.NChannels, length(D));
+      end
+      if hdr.NChannels ~= NCh(NE)
+        error('Incorrect NChannels: %d/%d', hdr.NChannels, NCh(NE) );
+      end
+      if hdr.NSamples ~= NS
+        error('Incorrect NSamples: %d/%d', hdr.NSamples, NS );
+      end
+      if hdr.NAvg ~= NA
+        error('Incorrect NAvg: %d/%d', hdr.NAvg, NA );
+      end
+      if hdr.NCoadd ~= NC
+        error('Incorrect NCoadd: %d/%d', hdr.NCoadd, NC );
+      end
+      D = reshape(D,hdr.NChannels,NS)'/(hdr.NAvg * hdr.NCoadd);
+      newSN = hdr.ScanNum;
+      if SN >= 0
+        dSN = newSN-SN;
+        set(handles.dSN,'string',sprintf('%d',dSN));
+      end
+      SN = newSN;
+      if ~handles.data.logging
+        delete(path);
+      end
+
+      axes(handles.axes1);
+      if get(handles.FFT,'Value')
+        F = abs(fft(D.*W));
+        loglog(f_fft, F(x2,:)*2/NS);
+        ylim([.8/(hdr.NAvg*hdr.NCoadd) 32768]);
+        set(gca,'ygrid','on');
+      else
+        plot(D,'*');
+        ylim([-32767 32768]);
+        xlim([1 length(D)]);
+      end
+      title(sprintf('Index %d', index));
+      index = index+1;
+      
+      new_PAOOR = bitand(hdr.OVF,448) ~= 0;
+      if new_PAOOR ~= PAOOR
+        if new_PAOOR
+          set( handles.PAOOR,'visible','on');
+        else
+          set( handles.PAOOR,'visible','off');
+        end
+        PAOOR = new_PAOOR;
+      end
+      
+      new_CAOVF = bitand(hdr.OVF,7) ~= 0;
+      if new_CAOVF ~= CAOVF
+        if new_CAOVF
+          set( handles.CAOVF,'visible','on');
+        else
+          set( handles.CAOVF,'visible','off');
+        end
+        CAOVF = new_CAOVF;
+      end
     end
-    SN = newSN;
-    if ~handles.data.logging
-      delete(path);
-    end
-    axes(handles.axes1);
-    if get(handles.FFT,'Value')
-      F = abs(fft(D.*W));
-      loglog(f_fft, F(x2)*2/NS);
-      ylim([.8 32768*NA]);
-    else
-      plot(D,'*');
-      ylim([-32767 32768]*NA);
-      xlim([1 length(D)]);
-    end
-    title(sprintf('Index %d', index));
-    index = index+1;
   elseif handles.data.stopped && ~exist('LOG/ssp_log.pid','file')
     break;
   else
@@ -171,6 +256,11 @@ set( handles.start_btn, 'String', 'Start');
 set( hObject, 'enable', 'on');
 set( handles.NS, 'enable', 'on');
 set( handles.NA, 'enable', 'on');
+set( handles.NC, 'enable', 'on');
+set( handles.NF, 'enable', 'on');
+set( handles.Ch0, 'enable', 'on');
+set( handles.Ch1, 'enable', 'on');
+set( handles.Ch2, 'enable', 'on');
 handles.data.index = index;
 guidata(hObject,handles);
 
@@ -202,31 +292,22 @@ function Log_Callback(hObject, eventdata, handles)
 handles.data.logging = get(hObject,'Value');
 guidata(hObject, handles);
 
-function cmd = Trigger_Command(handles)
-trigtypes = get(handles.Trigger,'String');
-trigtype = trigtypes{get(handles.Trigger,'Value')};
+function cmd = TriggerSource_Command(handles)
+trigsrc = get(handles.TriggerSource,'Value') - 1;
 triglevel = round(get(handles.triglevel,'Value'));
-switch (trigtype)
-    case 'External'
-        cmd = 'TE';
-    case 'Level Rising'
-        cmd = sprintf('TU:%d', triglevel);
-    case 'Level Falling'
-        cmd = sprintf('TD:%d', triglevel);
-    otherwise
-        errordlg('Invalid Trigger Type');
-        cmd = ''
-end
+trigrising = get(handles.TrigRising,'Value');
+trcmds = { 'TU', 'TD' };
+cmd = sprintf('TS:%d %s:%d', trigsrc, trcmds{trigrising}, triglevel);
 
-% --- Executes on selection change in Trigger.
-function Trigger_Callback(hObject, eventdata, handles)
-% hObject    handle to Trigger (see GCBO)
+% --- Executes on selection change in TriggerSource.
+function TriggerSource_Callback(hObject, eventdata, handles)
+% hObject    handle to TriggerSource (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: contents = get(hObject,'String') returns Trigger contents as cell array
-%        contents{get(hObject,'Value')} returns selected item from Trigger
-cmd = Trigger_Command(handles);
+% Hints: contents = get(hObject,'String') returns TriggerSource contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from TriggerSource
+cmd = TriggerSource_Command(handles);
 if length(cmd)
     fprintf(1,'Trigger command: "%s"\n', cmd);
     [status,result] = system(sprintf('ssp_cmd %s', cmd));
@@ -236,8 +317,8 @@ if length(cmd)
 end
 
 % --- Executes during object creation, after setting all properties.
-function Trigger_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to Trigger (see GCBO)
+function TriggerSource_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to TriggerSource (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -260,17 +341,7 @@ function triglevel_Callback(hObject, eventdata, handles)
 %        get(hObject,'Min') and get(hObject,'Max') to determine range of slider
 triglevel = round(get(handles.triglevel,'Value'));
 set(handles.trigtext,'String',sprintf('%d',triglevel));
-trigtypes = get(handles.Trigger,'String');
-trigtype = trigtypes{get(handles.Trigger,'Value')};
-switch (trigtype)
-    case 'External'
-        return
-    case { 'Level Rising', 'Level Falling' }
-        Trigger_Callback(hObject, eventdata, handles);
-    otherwise
-        errordlg('Invalid Trigger Type');
-        return;
-end
+TriggerSource_Callback(hObject, eventdata, handles);
 
 
 % --- Executes during object creation, after setting all properties.
@@ -284,10 +355,6 @@ if isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColo
     set(hObject,'BackgroundColor',[.9 .9 .9]);
 end
 
-
-
-
-
 function trigtext_Callback(hObject, eventdata, handles)
 % hObject    handle to trigtext (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -298,7 +365,7 @@ function trigtext_Callback(hObject, eventdata, handles)
 triglevel = round(str2double(get(hObject,'String')));
 if triglevel <= 32768 && triglevel > -32767
     set(handles.triglevel,'Value',triglevel);
-    triglevel_Callback(hObject,eventdata,handles);
+    TriggerSource_Callback(hObject, eventdata, handles);
 else
     errordlg('level value out of range');
 end
@@ -353,18 +420,18 @@ function FFT_Callback(hObject, eventdata, handles)
 
 
 
-function MSPS_Callback(hObject, eventdata, handles)
-% hObject    handle to MSPS (see GCBO)
+function NF_Callback(hObject, eventdata, handles)
+% hObject    handle to NF (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of MSPS as text
-%        str2double(get(hObject,'String')) returns contents of MSPS as a double
+% Hints: get(hObject,'String') returns contents of NF as text
+%        str2double(get(hObject,'String')) returns contents of NF as a double
 
 
 % --- Executes during object creation, after setting all properties.
-function MSPS_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to MSPS (see GCBO)
+function NF_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to NF (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -419,5 +486,58 @@ function NA_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
+
+
+
+
+% --- Executes on button press in Ch0.
+function Ch0_Callback(hObject, eventdata, handles)
+% hObject    handle to Ch0 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of Ch0
+
+
+% --- Executes on selection change in TrigRising.
+function TrigRising_Callback(hObject, eventdata, handles)
+% hObject    handle to TrigRising (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: contents = get(hObject,'String') returns TrigRising contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from TrigRising
+TriggerSource_Callback(hObject, eventdata, handles);
+
+
+% --- Executes during object creation, after setting all properties.
+function TrigRising_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to TrigRising (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: popupmenu controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on button press in Ch1.
+function Ch1_Callback(hObject, eventdata, handles)
+% hObject    handle to Ch1 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of Ch1
+
+
+% --- Executes on button press in Ch2.
+function Ch2_Callback(hObject, eventdata, handles)
+% hObject    handle to Ch2 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of Ch2
 
 
