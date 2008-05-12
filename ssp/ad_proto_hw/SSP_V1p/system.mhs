@@ -49,6 +49,7 @@
  PORT SPI_SCK_pin = SPI_SCK, DIR = IO
  PORT SSP_DATA_OOR_N_pin = SSP_DATA_OOR_N, DIR = I
  PORT SSP_DATA_OOR_P_pin = SSP_DATA_OOR_P, DIR = I
+ PORT SSP_PMT_Input_0_PMT_pin = SSP_PMT_Input_0_PMT, DIR = I
 
 
 BEGIN microblaze
@@ -331,8 +332,8 @@ BEGIN ssp_ad_preaddr
  PARAMETER HW_VER = 2.00.b
  PORT pa_out = PA_2_PA_OUT
  PORT lvlgreater = PA_2_LVL_GREATER
- PORT signal_x0 = SSP_DATA
- PORT oor = SSP_DATA_OOR
+ PORT signal_x0 = SSP_PMT_SIG
+ PORT oor = net_gnd
  PORT clk_1 = SSP_DATA_VALID_INV
 END
 
@@ -359,6 +360,7 @@ BEGIN ssp_ad_scan_sm
  PORT pa_1_out = PA_1_PA_OUT
  PORT pa_0_out = PA_0_PA_OUT
  PORT ce = net_vcc
+ PORT ssp_reset = SSP_Reset
 END
 
 BEGIN fsl_v20
@@ -367,5 +369,14 @@ BEGIN fsl_v20
  PARAMETER C_EXT_RESET_HIGH = 1
  PORT FSL_Clk = sys_clk_s
  PORT SYS_Rst = sys_bus_reset
+END
+
+BEGIN SSP_PMT_Input
+ PARAMETER INSTANCE = SSP_PMT_Input_0
+ PARAMETER HW_VER = 1.00.a
+ PORT SIG = SSP_PMT_SIG
+ PORT RESET = SSP_Reset
+ PORT PMT = SSP_PMT_Input_0_PMT
+ PORT CLK = SSP_DATA_VALID
 END
 
