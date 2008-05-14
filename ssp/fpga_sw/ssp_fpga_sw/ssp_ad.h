@@ -23,6 +23,6 @@
 #define SSP_MAX_CTRL_MSG 80
 
 // SSP_PROTO_A is defined for the SSP Proto Rev A
-#define SSP_PROTO_A 1
+// #define SSP_PROTO_A 1
 
 #endif
