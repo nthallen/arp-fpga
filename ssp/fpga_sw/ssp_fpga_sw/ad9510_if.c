@@ -210,7 +210,10 @@ static void ad9510_Write(XSpi *SpiPtr, Xuint16 dat)
     LVPECL Output level is (presumably) 810 mV
     Outputs 0, 1, 2 go to A/Ds (except on proto)
        On the proto board, if any channel is enabled, channel 0 must be,
-       since it's the only real channel.
+       since it's the only real channel. Channels 1 & 2 go nowhere, so can be
+       disabled always
+       On SSP, if any channel is enabled, channel 0 must be, since it runs to
+       the trigger circuit as well.
     Output 5 goes to FPGA USERCLK
     Output 6 goes to QCLI
     Outputs 3, 4 and 7 are currently unused
@@ -239,7 +242,8 @@ void AD9510_Init(int ChEn, int divisor) {
 	    if (ChEn) ChEn = 1;
 	    ChEn &= 0x7;
 	  #else
-	    ChEn &= 0x67;
+      if (ChEn) ChEn |= 1;
+	    ChEn &= 0x67; // Channels 3, 4 & 7 are unused
 	  #endif
 	  // AD9510 Serial Port Configuration leave as default
 	  // PLL section leave in default power-down mode
