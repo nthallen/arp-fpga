@@ -88,7 +88,8 @@ static XSpi Spi;					// SPI device struct instance
 /* the following variables are shared between non-interrupt processing and
  * interrupt processing such that they must be global.
  */
-static volatile Xboolean TransferInProgress;
+// static volatile Xboolean TransferInProgress;
+sem_t spi_sem;
 
 /* the following variable tracks any errors that occur during interrupt
  * processing
@@ -122,6 +123,9 @@ int SPI_system_init(void) {
    
 // Initialize Devices and Ports:
 // SPI device
+    Status = sem_init( &spi_sem, 0, 0 );
+    if ( check_status( Status, "Initializing spi_sem"))
+      return Status;
     Status = XSpi_Initialize(&Spi, SPI_DEVICE_ID);
     if ( check_status(Status, "Could not initialize SPI" ))
       return Status;
@@ -176,6 +180,7 @@ static void ad9510_Write(XSpi *SpiPtr, Xuint16 dat)
 {
 	//unsigned char byte;
 	static unsigned char buf[3];		// buf conains cmd, addr and data
+  int rc;
 	
 	buf[0] = WRITE_1BYTE;
 	buf[1] = (dat >> 8);
@@ -183,12 +188,13 @@ static void ad9510_Write(XSpi *SpiPtr, Xuint16 dat)
 
 // send the write command, address, and data to the AD9510.
 // No receive buffer is specified since there is nothing to receive
-	TransferInProgress = XTRUE;
+	//TransferInProgress = XTRUE;
 
-	XSpi_Transfer(SpiPtr, buf, XNULL, 0x3);		// Send Write Cmd, Addr, Data
+	rc = XSpi_Transfer(SpiPtr, buf, XNULL, 0x3);		// Send Write Cmd, Addr, Data
+  if ( check_status( rc, "Calling XSpi_Transfer")) return;
 	
-	while (TransferInProgress);			// wait for SPI transfer to be complete
-	
+  rc = sem_wait( &spi_sem );
+  check_status( rc, "Write sem_wait" );
 }
 
 /*****************************************************************************/
@@ -363,7 +369,12 @@ void SpiHandler(void *CallBackRef, Xuint32 StatusEvent,
                 unsigned int ByteCount)
 {
     if (StatusEvent == XST_SPI_TRANSFER_DONE)
-      TransferInProgress = XFALSE;
+      sem_post( &spi_sem );
+    // else {
+		  // print_mutex_lock();
+		  // safe_printf(("AD9510: Status not done: %d\r\n", StatusEvent));
+		  // print_mutex_unlock();
+    // }
 }
 
 /****************************************************************************/
