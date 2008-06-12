@@ -69,7 +69,14 @@ extern unsigned int scan[];
 
 #define EMAC_INTERRUPT_ID XPAR_XPS_INTC_0_ETHERNET_MAC_IP2INTC_IRPT_INTR
 #define EMAC_BASEADDR XPAR_EMACLITE_0_BASEADDR
-#define IP_ADDRESS(x) IP4_ADDR(x, 10, 0, 0, 200)
+#ifndef SSP_BOARD_ID
+  #define SSP_BOARD_ID 0
+#endif
+#define SSP_MAC_ADDRESS 0,0xA,0x35,0x55,0x55,0x55+SSP_BOARD_ID
+#define SSP_IP_ADDRESS 10, 0, 0, 200+SSP_BOARD_ID
+#define SSP_IP_NETMASK 255, 255, 255, 0
+#define SSP_IP_GATEWAY 10, 0, 0, 1
+#define IP_ADDRESS(x) IP4_ADDR(x, )
 #define IP_NETMASK(x) IP4_ADDR(x, 255, 255, 255, 0)
 #define IP_GATEWAY(x) IP4_ADDR(x, 10, 0, 0, 1)
 
@@ -87,5 +94,10 @@ extern unsigned int scan[];
   #define safe_print(x)
   #define safe_printf(x)
 #endif
+
+// SSP_PROTO_A is defined for the SSP Proto Rev A
+// Make this definition in the project build configuration
+// #define SSP_PROTO_A 1
+// Also be sure to define SSP_BOARD_ID if necessary
 
 #endif
