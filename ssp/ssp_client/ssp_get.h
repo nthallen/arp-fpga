@@ -14,7 +14,7 @@
 #include "ssp_ad.h"
 
 extern int udp_create(void);
-extern int udp_receive(unsigned long int *scan );
+extern int udp_receive(long int *scan, size_t length );
 extern int tcp_create(char *hostname);
 extern int tcp_send( char * cmd );
 extern int tcp_close(void);
