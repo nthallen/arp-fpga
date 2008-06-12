@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include "ssp_get.h"
 
 static int udp_socket;
@@ -31,21 +32,12 @@ int udp_create(void) {
   return port;
 }
 
-static int max_msg_size = 0;
-int udp_receive(unsigned long int *scan ) {
+int udp_receive(long int *scan, size_t length ) {
     struct sockaddr_in cliAddr;
   	int n, cliLen;
 
     cliLen = sizeof(cliAddr);
-    n = recvfrom(udp_socket, scan, SSP_MAX_SCAN_SIZE, 0, 
+    n = recvfrom(udp_socket, scan, length, 0, 
 		 (struct sockaddr *) &cliAddr, &cliLen);
-//    if ( n > max_msg_size ) {
-//      FILE *fp;
-//      	max_msg_size = n;
-//      	printf("Maximum UDP message received: %d\n", n );
-//      	fp = fopen("udp.log", "w");
-//      	n = fwrite( msg, max_msg_size, 1, fp );
-//      	fclose(fp);
-//    }
-    return n;
+     return n;
 }
