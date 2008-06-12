@@ -22,7 +22,7 @@ static int err_rv = 1;
 sem_t udp_sem, tcp_sem, cfg_sem;
 static struct sockaddr_in udpCliAddr;
 static struct sockaddr_in udpSrvrAddr;
-unsigned int scan[SSP_MAX_SCAN_LENGTH + SCAN_GUARD];
+unsigned int scan[SSP_MAX_SCAN_LENGTH + SCAN_GUARD + 1];
 int xfrEnabled = 0, app_done = 0;
 unsigned int scan_xmit_length, words_read;
 static unsigned int parse_cmds( char *cmd, tcpThreadContext_t *context );
@@ -46,11 +46,11 @@ int main(void) {
 
 void* main_main(void* arg) {
   extern void lwip_init();
-  safe_print("In main_main\n");
+  safe_print("\r\n\r\nSSP System Software V1.0\n");
   sleep(100);
   lwip_init(); // starts two more threads
   sleep(100); // msecs to finish message
-  safe_print("lwIP initialized\n");
+  //safe_print("lwIP initialized\n");
   // Cannot initialize the ethernet here because
   // Xemacif_init call lwIP's mem_malloc, which requires
   // that the thread have been registered via sys_thread_new()
@@ -88,6 +88,37 @@ void* main_main(void* arg) {
   // to keep separate track of the threads.
   return &err_rv;
 }
+
+int sendfrags( int udp_socket, int *bfr, int total_size, int flags,
+        struct sockaddr *to, socklen_t tolen ) {
+  int rc, bytes_remaining, word_offset = 0;
+  int frag_size, frag_words;
+  static unsigned long serial_number = 0;
+  
+  serial_number = (serial_number + 0x10000L) & 0x3FFF0000;
+  bytes_remaining = total_size;
+  while ( bytes_remaining ) {
+  	int tmp_hdr;
+    frag_size = (bytes_remaining > MAX_FRAG_PAYLOAD) ?
+      MAX_FRAG_PAYLOAD : bytes_remaining;
+    bytes_remaining -= frag_size;
+    tmp_hdr = SSP_FRAG_FLAG | serial_number | word_offset |
+      (bytes_remaining ? 0 : SSP_LAST_FRAG_FLAG);
+    { unsigned char *fr = (unsigned char *)&tmp_hdr;
+    	unsigned char *to = (unsigned char *)bfr;
+    	to[3] = fr[0];
+    	to[2] = fr[1];
+    	to[1] = fr[2];
+    	to[0] = fr[3];
+    }
+    frag_words = frag_size/sizeof(int);
+    word_offset += frag_words;
+    rc = sendto( udp_socket, bfr, frag_size + sizeof(int), flags, to, tolen );
+    bfr += frag_words;
+    if ( rc < 0 ) break;
+  }
+  return rc;
+}
   
 // udpThread() is responsible for fetching data from the FSL
 // and forwarding it to the UDP destination. Currently this is
@@ -103,7 +134,7 @@ void *udpThread(void *arg) {
   //int transfers = 0;
 
   if ( ethernet_init() ) return &err_rv;
-  safe_print("ethernet initialized\n");
+  //safe_print("ethernet initialized\n");
   
   SPI_system_init();
   AD9510_Init( 0, 1 );
@@ -196,14 +227,19 @@ void *udpThread(void *arg) {
 	    		if ( errno != EAGAIN ) {
 	    			safe_print("Error from sem_trywait\n");
 	    		}
-	    		nw = ssp_read_fifo( &scan[words_read], words_remaining );
+	    		nw = ssp_read_fifo( &scan[words_read+1], words_remaining );
 	    		if ( nw == 0 ) {
 	    			sleep(100);
-	    			yield();
+	    			// yield();
 	    		} else if ( words_remaining == nw ) {
-		        rc = sendto(udp_socket, scan, scan_size, 0, 
+            if ( scan_size > MAX_UDP_PAYLOAD )
+              rc = sendfrags(udp_socket, scan, scan_size, 0, 
 		          (struct sockaddr *) &udpSrvrAddr, 
 		          sizeof(udpSrvrAddr));
+            else
+  		        rc = sendto(udp_socket, &scan[1], scan_size, 0, 
+  		          (struct sockaddr *) &udpSrvrAddr, 
+  		          sizeof(udpSrvrAddr));
 		        if ( rc<0 ) {
 		          print_mutex_lock();
 		          safe_printf(( "udpThread: cannot send data: %d\r\n", errno));
@@ -298,7 +334,7 @@ void *serverAppThread(void *arg) {
       // are made.
       memcpy((char *)&tcpThreadContext->cliAddr, (char *)&cliAddr, cliLen );
       tcpThreadContext->socket = new_sock;
-      sys_thread_new((void *)&tcpThread, (void *)tcpThreadContext, 4);
+      sys_thread_new((void *)&tcpThread, (void *)tcpThreadContext, 1);
     }
   }    
 }
@@ -350,16 +386,27 @@ void *tcpThread( void *context ) {
   return &err_rv;
 }
 
+static void define_ip4addr( struct ip_addr *dest, int a, int b, int c, int d ) {
+  IP4_ADDR( dest, a, b, c, d );
+}
+
 int ethernet_init(void) {
     struct ip_addr ipaddr, netmask, gateway;
     struct netif *server_netif;
-    unsigned char mac_addr[] = { 0,0xA,0x35,0x55,0x55,0x55};
+    unsigned char mac_addr[] = { SSP_MAC_ADDRESS };
     sleep(100);
-    IP_ADDRESS(&ipaddr);
-    IP_NETMASK(&netmask);
-    IP_GATEWAY(&gateway);
+    define_ip4addr(&ipaddr, SSP_IP_ADDRESS );
+    define_ip4addr(&netmask, SSP_IP_NETMASK );
+    define_ip4addr(&gateway, SSP_IP_GATEWAY );
     
     // Set up the lwIP network interface
+    print_mutex_lock();
+    safe_printf(("MAC Address: %02x:%02x:%02x:%02x:%02x:%02x\r\n", SSP_MAC_ADDRESS ));
+    safe_printf(("IP Address: %d.%d.%d.%d\r\n", SSP_IP_ADDRESS ));
+    safe_printf(("IP Netmask: %d.%d.%d.%d\r\n", SSP_IP_NETMASK ));
+    safe_printf(("IP Gateway: %d.%d.%d.%d\r\n", SSP_IP_GATEWAY ));
+    print_mutex_unlock();
+    
     // Allocate and configure the server's netif
     server_netif = malloc(sizeof(struct netif)); 
     if (server_netif == NULL) {
@@ -369,16 +416,16 @@ int ethernet_init(void) {
     xemac_add(server_netif, &ipaddr, &netmask, &gateway,
               mac_addr, EMAC_BASEADDR );
     sleep(100);
-    safe_print("netif_added\n");
+    //safe_print("netif_added\n");
     netif_set_default(server_netif);
     sleep(100);
-    safe_print("default added\n");
+    //safe_print("default added\n");
 
   	/* specify that the network if is up */
   	netif_set_up(server_netif);
 
   	/* start packet receive thread - required for lwIP operation */
-  	sys_thread_new((void *)&xemacif_input_thread, server_netif, 5);
+  	sys_thread_new((void *)&xemacif_input_thread, server_netif, 1);
 
     return 0;
 }

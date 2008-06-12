@@ -22,7 +22,23 @@
 #define SSP_SERVER_PORT 1500
 #define SSP_MAX_CTRL_MSG 80
 
-// SSP_PROTO_A is defined for the SSP Proto Rev A
-// #define SSP_PROTO_A 1
+typedef struct {
+  unsigned short NWordsHdr;
+  unsigned short FormatVersion;
+  unsigned short NChannels;
+  unsigned short NSamples;
+  unsigned short NCoadd;
+  unsigned short NAvg;
+  unsigned short NSkL;
+  unsigned short NSkP;
+  unsigned long  ScanNum;
+  unsigned long  Spare;
+} ssp_scan_header_t;
+
+#define MAX_UDP_PAYLOAD 1472
+#define MAX_FRAG_PAYLOAD (MAX_UDP_PAYLOAD-sizeof(int))
+#define SSP_FRAG_FLAG 0x80000000L
+#define SSP_LAST_FRAG_FLAG 0x40000000L
+#define SSP_MAX_FRAGS ((SSP_MAX_SCAN_SIZE+MAX_FRAG_PAYLOAD-1)/MAX_FRAG_PAYLOAD)
 
 #endif
