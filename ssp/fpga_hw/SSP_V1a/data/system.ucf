@@ -252,6 +252,11 @@ Net fpga_0_RS232_Uart_TX_pin LOC=A21 | IOSTANDARD = LVCMOS33;
 Net sys_clk_pin LOC=A16 | IOSTANDARD = LVCMOS33;
 Net sys_clk_pin TNM_NET = sys_clk_pin;
 TIMESPEC TS_sys_clk_pin = PERIOD sys_clk_pin 10000 ps;
+Net fpga_0_SRAM_CLOCK LOC=AE18;
+Net fpga_0_SRAM_CLOCK SLEW = FAST;
+Net fpga_0_SRAM_CLOCK IOSTANDARD = LVCMOS33;
+Net fpga_0_SRAM_CLOCK DRIVE = 16;
+
 Net sys_rst_pin LOC=F23 | IOSTANDARD = LVCMOS33;
 Net sys_rst_pin PULLUP;
 Net sys_rst_pin TIG;
