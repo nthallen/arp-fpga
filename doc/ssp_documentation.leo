@@ -3,7 +3,7 @@
 <leo_file>
 <leo_header file_format="2" tnodes="0" max_tnode_index="0" clone_windows="0"/>
 <globals body_outline_ratio="0.5">
-	<global_window_position top="40" left="228" height="599" width="741"/>
+	<global_window_position top="67" left="10" height="519" width="741"/>
 	<global_log_window_position top="0" left="0" height="0" width="0"/>
 </globals>
 <preferences/>
@@ -27,7 +27,7 @@
 </v>
 </v>
 <v t="ntallen.20080228100842.9"><vh>Knowledge Base</vh>
-<v t="ntallen.20080228100842.10"><vh>Software Versions</vh>
+<v t="ntallen.20080228100842.10" a="E"><vh>Software Versions</vh>
 <v t="ntallen.20080228100842.11"><vh>LwIP</vh></v>
 <v t="ntallen.20080228100842.12"><vh>Cygwin compatability</vh></v>
 </v>
@@ -36,6 +36,7 @@
 </v>
 <v t="ntallen.20080228100842.15" a="E"><vh>Document clearly what we need to build this app</vh>
 <v t="ntallen.20080228100842.14"><vh>Xilkernel timer bug</vh></v>
+<v t="ntallen.20080502115342"><vh>System ACE File Generation</vh></v>
 <v t="ntallen.20080228100842.16"><vh>Sysgen Pcore Creation</vh>
 <v t="ntallen.20080228100842.13"><vh>Do we need to have different pcores for different FPGA targets?</vh></v>
 <v t="ntallen.20080228100842.17" a="E"><vh>Things to do after generation</vh>
@@ -44,20 +45,22 @@
 <v t="ntallen.20080228100842.20"><vh>Edit src files to fix ArrayRead prototype</vh></v>
 </v>
 </v>
-<v t="ntallen.20080228100842.21"><vh>HW Components</vh>
+<v t="ntallen.20080228100842.21" a="E"><vh>HW Components</vh>
 <v t="ntallen.20080228100842.22"><vh>CPU: Microblaze</vh></v>
-<v t="ntallen.20080228100842.23"><vh>opb_spi</vh></v>
+<v t="ntallen.20080228100842.23"><vh>xps_spi</vh></v>
 <v t="ntallen.20080228100842.24"><vh>Ethernet</vh></v>
 <v t="ntallen.20080228100842.25"><vh>opb_timer</vh></v>
 <v t="ntallen.20080228100842.26"><vh>scan_ctrl pcore</vh></v>
 <v t="ntallen.20080228100842.27"><vh>arp_ssp pcore</vh></v>
 <v t="ntallen.20080228100842.28"><vh>ssp_ad_scan</vh></v>
 <v t="ntallen.20080228100842.29"><vh>opb_intc</vh></v>
+<v t="ntallen.20081029142547"><vh>xps_iic</vh></v>
 <v t="ntallen.20080228100842.30"><vh>UCF</vh></v>
 </v>
-<v t="ntallen.20080228100842.31"><vh>SW Components</vh>
+<v t="ntallen.20080228100842.31" a="E"><vh>SW Components</vh>
 <v t="ntallen.20080228100842.32"><vh>xilkernel</vh></v>
 <v t="ntallen.20080228100842.33"><vh>LwIP</vh></v>
+<v t="ntallen.20080512113736"><vh>Libraries</vh></v>
 </v>
 <v t="ntallen.20080228100842.34"><vh>Remote Driver</vh>
 <v t="ntallen.20080228100842.35"><vh>Incoming Messages</vh>
@@ -69,13 +72,63 @@
 </v>
 <v t="ntallen.20080228100842.40" a="E"><vh>Revisions</vh>
 <v t="ntallen.20080228100842.41" a="E"><vh>XPS</vh>
-<v t="ntallen.20080228100842.42" a="E"><vh>SSP_Proto_c3</vh>
+<v t="ntallen.20080228100842.42"><vh>SSP_Proto_c3</vh>
 <v t="ntallen.20080228100842.43"><vh>ssp_ad_scan V2.01b</vh></v>
 <v t="ntallen.20080228100842.44"><vh>ssp_ad_preaddr V1.00a</vh></v>
 <v t="ntallen.20080228100842.45" a="M"><vh>arp_ssp V2.00a</vh></v>
 </v>
+<v t="ntallen.20080717103941"><vh>SSP_Proto_402</vh></v>
+<v t="ntallen.20080930104722"><vh>SSP_V1 (ML401)</vh>
+<v t="ntallen.20080228133017.4"><vh>ssp_trigger V1.0a</vh></v>
+<v t="ntallen.20080930104722.1"><vh>arp_ssp V2.00c</vh></v>
+<v t="ntallen.20080403140406"><vh>ssp_ad_preaddr V2.00b</vh>
+<v t="ntallen.20080403140406.1"><vh>dual-clock FIFO</vh></v>
+<v t="ntallen.20080403140406.2"><vh>Handshaking</vh></v>
+<v t="ntallen.20080403140406.3"><vh>Handshaking - old plan</vh></v>
+<v t="ntallen.20080403140406.4"><vh>Rework Again?</vh></v>
 </v>
-<v t="ntallen.20080228100842.46" a="E"><vh>IP</vh>
+<v t="ntallen.20080228133017.6"><vh>ssp_ad_scan V3.00b</vh>
+<v t="ntallen.20080229125358.2"><vh>DStat</vh></v>
+<v t="ntallen.20080229125358.3"><vh>SampleCount</vh></v>
+<v t="ntallen.20080305130648"><vh>CoaddCount</vh></v>
+<v t="ntallen.20080305165613"><vh>ShiftOut Logic</vh></v>
+</v>
+</v>
+<v t="ntallen.20080930110102"><vh>SSP_V1a (SSP)</vh>
+<v t="ntallen.20080930104722.1"><vh>arp_ssp V2.00c</vh></v>
+<v t="ntallen.20080403140406"><vh>ssp_ad_preaddr V2.00b</vh>
+<v t="ntallen.20080403140406.1"><vh>dual-clock FIFO</vh></v>
+<v t="ntallen.20080403140406.2"><vh>Handshaking</vh></v>
+<v t="ntallen.20080403140406.3"><vh>Handshaking - old plan</vh></v>
+<v t="ntallen.20080403140406.4"><vh>Rework Again?</vh></v>
+</v>
+<v t="ntallen.20080228133017.4"><vh>ssp_trigger V1.0a</vh></v>
+<v t="ntallen.20080228133017.6"><vh>ssp_ad_scan V3.00b</vh>
+<v t="ntallen.20080229125358.2"><vh>DStat</vh></v>
+<v t="ntallen.20080229125358.3"><vh>SampleCount</vh></v>
+<v t="ntallen.20080305130648"><vh>CoaddCount</vh></v>
+<v t="ntallen.20080305165613"><vh>ShiftOut Logic</vh></v>
+</v>
+</v>
+<v t="ntallen.20080930110904" a="TV"><vh>SSP_V1p (ML401)</vh>
+<v t="ntallen.20080930110904.1"><vh>SSP_PMT_Input</vh></v>
+<v t="ntallen.20080930104722.1"><vh>arp_ssp V2.00c</vh></v>
+<v t="ntallen.20080403140406"><vh>ssp_ad_preaddr V2.00b</vh>
+<v t="ntallen.20080403140406.1"><vh>dual-clock FIFO</vh></v>
+<v t="ntallen.20080403140406.2"><vh>Handshaking</vh></v>
+<v t="ntallen.20080403140406.3"><vh>Handshaking - old plan</vh></v>
+<v t="ntallen.20080403140406.4"><vh>Rework Again?</vh></v>
+</v>
+<v t="ntallen.20080228133017.4"><vh>ssp_trigger V1.0a</vh></v>
+<v t="ntallen.20080228133017.6"><vh>ssp_ad_scan V3.00b</vh>
+<v t="ntallen.20080229125358.2"><vh>DStat</vh></v>
+<v t="ntallen.20080229125358.3"><vh>SampleCount</vh></v>
+<v t="ntallen.20080305130648"><vh>CoaddCount</vh></v>
+<v t="ntallen.20080305165613"><vh>ShiftOut Logic</vh></v>
+</v>
+</v>
+</v>
+<v t="ntallen.20080228100842.46"><vh>IP</vh>
 <v t="ntallen.20080228100842.47"><vh>ssp_ad_scan</vh>
 <v t="ntallen.20080228100842.48"><vh>ssp_ad_scan V2.00a</vh></v>
 <v t="ntallen.20080228100842.49"><vh>ssp_ad_scan V2.01a</vh></v>
@@ -109,10 +162,12 @@
 <v t="ntallen.20080228100842.55"><vh>arp_ssp</vh>
 <v t="ntallen.20080228100842.56"><vh>arp_ssp V1.00a</vh></v>
 <v t="ntallen.20080228100842.45" a="M"><vh>arp_ssp V2.00a</vh></v>
+<v t="ntallen.20080930104722.1" a="M"><vh>arp_ssp V2.00c</vh></v>
 </v>
 <v t="ntallen.20080403141641"><vh>ssp_trigger</vh>
-<v t="ntallen.20080228133017.4"><vh>ssp_trigger V1.0</vh></v>
+<v t="ntallen.20080228133017.4"><vh>ssp_trigger V1.0a</vh></v>
 </v>
+<v t="ntallen.20080930110904.1"><vh>SSP_PMT_Input</vh></v>
 </v>
 </v>
 </v>
@@ -127,19 +182,21 @@
 <v t="ntallen.20080228100842.64"><vh>Reply to Siva</vh></v>
 </v>
 </v>
+<v t="ntallen.20080602105139"><vh>Packet Fragmentation Strategy</vh></v>
+<v t="ntallen.20080404114126"><vh>Debugging</vh></v>
 </v>
 <v t="ntallen.20080228133017" a="E"><vh>Documentation</vh>
 <v t="ntallen.20080228133017.1" a="E"><vh>Circuits</vh>
 <v t="ntallen.20080228133017.2" a="E"><vh>SSP V1</vh>
 <v t="ntallen.20080228100842.45" a="M"><vh>arp_ssp V2.00a</vh></v>
-<v t="ntallen.20080228133017.4"><vh>ssp_trigger V1.0</vh></v>
+<v t="ntallen.20080228133017.4"><vh>ssp_trigger V1.0a</vh></v>
 <v t="ntallen.20080228133017.5"><vh>ssp_ad_preaddr V2.00a</vh>
 <v t="ntallen.20080229125358.1"><vh>dual-clock FIFO</vh></v>
 <v t="ntallen.20080303084933"><vh>Handshaking</vh></v>
 <v t="ntallen.20080228140103"><vh>Handshaking - old plan</vh></v>
 <v t="ntallen.20080229125358"><vh>Rework Again?</vh></v>
 </v>
-<v t="ntallen.20080228133017.6"><vh>ssp_ad_scan V3.00b</vh>
+<v t="ntallen.20080228133017.6" a="E"><vh>ssp_ad_scan V3.00b</vh>
 <v t="ntallen.20080229125358.2"><vh>DStat</vh></v>
 <v t="ntallen.20080229125358.3"><vh>SampleCount</vh></v>
 <v t="ntallen.20080305130648"><vh>CoaddCount</vh></v>
@@ -155,8 +212,12 @@
 </v>
 <v t="ntallen.20080331131839"><vh>Data</vh></v>
 </v>
-<v t="ntallen.20080331101629.3" a="TV"><vh>Client</vh></v>
+<v t="ntallen.20080331101629.3"><vh>Client</vh></v>
 </v>
+</v>
+<v t="ntallen.20080617120554" a="E"><vh>To Do</vh>
+<v t="ntallen.20080617120554.1"><vh>Read Temperatures</vh></v>
+<v t="ntallen.20080617120554.2"><vh>Plug sample rate into header</vh></v>
 </v>
 </v>
 </vnodes>
@@ -193,11 +254,14 @@ SW: Dont' start reading a scan until EOS interrupt</t>
 SW: Transfer data whenever a sufficient amount is ready</t>
 <t tx="ntallen.20080228100842.8">Figure out whether a real shared-memory approach exists with PLB. If so, keep the whole UDP packet in the shared memory and transfer when ready.</t>
 <t tx="ntallen.20080228100842.9"></t>
-<t tx="ntallen.20080228100842.10">12/04/2007:
+<t tx="ntallen.20080228100842.10">4/01/2008:
+    10.1 is out there....
+    
+12/04/2007:
     ISE 9.2i SP3
       Virtex4 QPro Devices for ISE 9.2.03i
       ISE 9.2i IP Update 2 (May be incompatible with Sysgen 9.2 SP1)
-    EDK 9.2i SP1
+    EDK 9.2i SP2
     Matlab 7.3 R2006b (still)
     DSP_Tools 9.2.01.1028 (Includes Sysgen and AccelDSP)
     cygwin make 3.79.1
@@ -306,7 +370,7 @@ static_pthread_table: [main_main,2] [priority needs to be greater than 1 with Lw
 config_pthread_mutex [true]
 max_pthreads  [10] (still, may need to increase later)
 
-sched_type   [SCHED_PRIO]
+sched_type   [SCHED_PRIO] [SCHED_RR]
 
 config_sema  [true]
   max        [40] (up from 10)
@@ -591,7 +655,14 @@ Outputs:
     ...
     D[CE[NChannels-1],NSamples-1]
 
-    d6: Channel Config: 3 bits Trigger Config: 4 bits PA_OVF: 3 bits CA_OVF: 3 bits
+    d6: bits
+      15:13: Channel Enable
+      12: Auto Trigger Enable
+      11: Trigger Rising
+      10:9 Trigger Source
+      8:6 A/D Out of range
+      5:3 Pre-Adder FIFO Overflow
+      2:0 Coadd Overflow
 
 As soon as FIFO1 goes non-empty, I can start transmitting the header and data. The next EOS is synchronous with the last DV (and WE1), which means that once we've seen that, we should keep transfering data until FIFO1 is empty, then return to our ready state. CoaddCount is guaranteed not to start writing the next coadd sequence until FIFO1 is empty.
 
@@ -616,7 +687,9 @@ Inputs:
 
 Overflow bits are cleared on scan reset, so they must be recorded here until end of coadd. Preaddr overflow is held until end of scan, so we don't need to register it on the sample level, but we will need to do so on the scan level.
 OVF from CoaddCount is cleared on BOS. In both cases, it should be adequate to record them on EOS. Neither vector is qualified with ChEn prior to being sent to ShiftOut, so ShiftOut should probably do that
-(*) ScanNum should probably be latched on last scan. This will only be an issue if the outbound FIFO is so backed up that it takes longer than a scan time to transmit the first few words of the header.</t>
+(*) ScanNum should probably be latched on last scan. This will only be an issue if the outbound FIFO is so backed up that it takes longer than a scan time to transmit the first few words of the header.
+
+The high order bit or two of the format version word should be reserved as 0 to distinguish the format from the fragmentation word.</t>
 <t tx="ntallen.20080311125846">Software:
     Modify firmware to support new configuration:
         Change in control bits
@@ -649,13 +722,16 @@ The server software is the code that runs on the microblaze processor inside the
     Monitoring and servicing the hardware
     Transmitting collected data</t>
 <t tx="ntallen.20080331101629.1">main_main,2:
-    The startup thread as specified in software platform settings. Invokes lwip_init(), which ultimately runs tcpip_init() which starts the tcpip_thread and then runs ready waiting for tcpip_thread's initialization to complete. As such, main_main needs to run at a lower priority than tcpip_thread or it will never complete.
+    The startup thread as specified in software platform settings. Invokes lwip_init(), which ultimately runs tcpip_init() which starts the tcpip_thread and then runs ready waiting for tcpip_thread's initialization to complete. As such, main_main needs to run at a lower priority than tcpip_thread or it will never complete. In round robin scheduling, the tcpip_thread should complete its initialization before tcpip_init() hits its busy loop.
 
 tcpip_thread, TCPIP_THREAD_PRIO (1):
-    Started by lwip_init(). Services messages in the tcpip mbox (outbound processing)
+    Started by lwip_init(). Services messages in the tcpip mbox (outbound processing) Uses sys_mbox_fetch() to wait for messages.
 
 udpThread, 5:
-    Started by main_main. Initializes ethernet and starts xemacif_input_thread. This version will poll for data and sleep() when none is available. Also monitors the command queue.
+    Started by main_main. Initializes ethernet and starts xemacif_input_thread. This version will poll for data and sleep() when none is available. Also monitors the command queue. Starts xemacif_input_thread()
+    
+xemacif_input_thread, 5:
+    Started by udpThread. Monitors incoming queue and dispatches packets to the appropriate processor. Currently runs ready or with a yield(), but should use a semaphore signaled from the incoming interrupt. (I patched the LwIP library to use a semaphore)
 
 ServerAppThread,1:
     listens for new TCP connections. Starts a new tcpThread on each new connection
@@ -730,8 +806,8 @@ Word 2: [NA: 16 bits][NC: 16 bits]
 Word 3: [NSkP: 16 bits][NSkL: 16 bits]
 Word 4: [ScanNum: 32 bits]
 Word 5: [0: 32 bits. Fill in P, T? ]
-Word 6:6+NS*NCh: [32 bits signed integer data]
-Word 7+NS*NCh: [32 bits TrigConfig:ChEn:ADovf:PAovf:CAovf]
+Word 6:6+NS*NCh-1: [32 bits signed integer data]
+Word 6+NS*NCh: [32 bits TrigConfig:ChEn:ADovf:PAovf:CAovf]
 
 
 </t>
@@ -793,5 +869,84 @@ I think I would like to see:
     pre-adder controlled by a single reset line. When asserted, the circuit is in reset. When cleared, it is ready for a trigger. Obviously clearing the reset must be synchronized, but setting it could be asynchronous.
     Better FIFO implementation to allow higher throughput.</t>
 <t tx="ntallen.20080403141641"></t>
+<t tx="ntallen.20080404114126">SSP_V1
+  []DA doesn't seem to get through
+  []Communication is spotty
+  The FPGA appears to be missing some packets, which is apparently worse when on the LAN.
+  Probably should write some benchmark apps to record timing info indicating exactly when particular packets get through. Of course with TCP, we don't have much insight into the retries, but we can follow that with wireshark. What is happening when a packet is lost? Is the ethernetlite firmware busy? Is the driver busy? Is LwIP busy?</t>
+<t tx="ntallen.20080502115342">Use GENACE, documented in the Embedded System Tools Reference Manual.</t>
+<t tx="ntallen.20080512113736">-llwip4 -lxilkernel</t>
+<t tx="ntallen.20080602105139">We have identified at least one system that cannot receive large UDP packets (elec-ws). Since this is a system that is likely to be used during continuing development, we need to come up with our own packet fragmentation strategy.
+
+MTU for 802.3 ethernet is 1500. Does this include the ethernet header? According to Wikipedia, Ethernet 802.3 allows 1500 octets for payload, which should include the entire IP packet.
+IP header is 20 bytes, leaving UDP packet max packet size of 1480 bytes.
+
+MTU          1500
+IP Hdr         20
+UDP Hdr         8
+Max UDP Payload: 1472
+
+Total scan size = 4 * (NWHDR + NCh * NS)
+If the total scan size exceeds the Max UDP Payload size, we must fragment the scan. We will add an additional 4-byte fragmentation header, with the following contents:
+    bit 31: 1 - indicates that the scan is fragmented
+    bit 30: Last fragment - true on last fragment of the scan
+    bits 16-29: Scan serial number - incremented on each complete scan that is transmitted
+    bits 0-15: Word offset of the start of this fragment. Multiply by 4 to get byte offset.
+
+On the receiving end, we should be able to predict fragmentation and be ready for it. In the wide open network, the receiver should be able to tolerate packets arriving out of order, but I think it's safe to assume that won't happen in the lab. I can certainly detect it and report it if it happens.
+
+</t>
+<t tx="ntallen.20080617120554"></t>
+<t tx="ntallen.20080617120554.1"></t>
+<t tx="ntallen.20080617120554.2"></t>
+<t tx="ntallen.20080717103941"></t>
+<t tx="ntallen.20080930104722">Targeting ML401 for desktop testing
+
+ssp_trigger 1.00.a
+arp_ssp 2.00.c
+ssp_ad_preaddr 2.00.b X3
+ssp_ad_scan_sm 3.00.b</t>
+<t tx="ntallen.20080930104722.1">V2.00a: Added DATA_VALID_INV for clocking the pre adder.
+
+This block needs to be entered into CVS
+It also needs to be augmented to support the OOR bit from the converter
+
+arp_ssp implements the LVDS input buffers for the A/D data and clock. It takes P,N pairs as input and outputs buffered signals. It also provides both true and inverted outputs for the clock to facilitate synchronization.
+
+The A/D clock goes high at the same time the data is updated, so the data should be latched on the falling edge of the clock. Hence the ssp_ad_preaddr block will be driven by the inverted signal clock. On the other hand, we need to synchronize signals coming from ssp_ad_scan, which runs off the processor's clock. There are three ssp_ad_preaddrs, and each has it's own clock. These should be very closely matched, and in theory we can use the 9510 to tweak out any phase differences, but in practice, it's possible that there will be some slight difference between the clocks. In order to reliably synchronize signals from ssp_ad_scan and from the external trigger, we will have the ssp_trigger block use the non-inverted signal clock from one of the A/D channels.</t>
+<t tx="ntallen.20080930110102">Targeting SSP Rev 1
+
+ssp_trigger 1.00.a
+arp_ssp 2.00.c X3
+ssp_ad_preaddr 2.00.b X3
+ssp_ad_scan_sm 3.00.b</t>
+<t tx="ntallen.20080930110904">Targeting ML401 for quick test of PMT input
+
+ssp_trigger 1.00.a
+arp_ssp 2.00.c
+ssp_ad_preaddr 2.00.b X3
+ssp_ad_scan_sm 3.00.b
+SSP_PMT_Input 1.00.a
+
+Still an open question is how to connect the external trigger and the PMT input to the ML401/SSP_AD_PROTO combination. The SMAs on the ML401 are attractive and connected directly to the FPGA, but there isn't enough clearance under the SSP_AD_PROTO board to make the connection, and only one or two of those connections are Global Clock-capable. There are several pins on the headers that are local-clock-capable:
+
+    J6.38 AC26 HDR1_24 (Associated DGND pins at J6.(n-1))
+    J6.6  AC25 HDR1_36
+    J6.14  Y24 HDR1_26
+    J6.2  AA24 HDR1_28
+
+but these would require some wiring on the proto board.
+</t>
+<t tx="ntallen.20080930110904.1"></t>
+<t tx="ntallen.20081029142547">On the SSP, we use the XPS IIC Bus Interface component to talk to the 24LC04B EEPROM. This is a finicky system. Although xps_iic provides a bus interface, it is necessary to understand the details of the specific device being addressed in order to successfully communicate. In addition, the xps_iic must be fully integrated with the interrupt system even when operation is thoroughly serialized.
+
+XIic_SetAddress() refers to the device address, not a linear address within a memory block. The 24LC04B is configured as two banks of 256 words, and the associated device addresses for the banks are 0x50 and 0x51. The 24LC04B only uses a 7-bit device address, so the xps_iic can be built without 10-bit address support, or the 10-bit address option can be interactively de-selected.
+
+To write to the 24LC04B, we can use XIic_MasterWrite(), which initializes a transfer of a specified number of data bytes. The first byte is the address within the memory block, and the remaining bytes are the data. Note however, that you can write at most 16 bytes of data using this method, and all the target addresses must be within the same 16-byte 'page' of memory. If more than 16 bytes are received or the internal address reaches a page boundary, the internal address will wrap back to the previous page boundary and overwrite. Hence write operations must be broken up into 16-byte chunks.
+
+To read from the 24LC04B, we must first select the address within the memory block from which we wish to read. This is done by writing out a single byte containing the address. After that, XIic_MasterRead() can be used to read data from the device. There is apparently no page limitation on read requests.
+
+Also note that as a general feature of the Xilinx driver libraries, there is a basic undocumented assumption that device instance structures are allocated statically and hence initialized to zero. The *_Initialize() functions (at least for XIntc and XIic) check a 'Started' field and refuse to initialize the device if that field is non-zero. This is counter-intuitive. The purpose of these functions is to initialize these structures, but they assume the structure has already been initialized.
+</t>
 </tnodes>
 </leo_file>
