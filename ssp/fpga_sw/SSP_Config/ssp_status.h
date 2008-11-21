@@ -4,6 +4,8 @@
 extern int status_init(void);
 extern void status_set( int clear, unsigned char *codes);
 extern void status_error( unsigned char *codes );
+extern unsigned int read_jp1(void);
+int report_error( char *reason, unsigned char *codes );
 
 /*
   Status sequences:
@@ -28,5 +30,18 @@ extern void status_error( unsigned char *codes );
     1 5 1 EE _ReadConfig 2nd call to EE_Read
     1 6 EE_WriteConfig notes too long
     1 6 1 EE_WriteConfig error calling EE_Write
+    1 7 ethernet_init memory allocation failed
+    1 7 1 ethernet_init xemac_add failed
+    2 1 Server_App_Thread invalid configuration option
+    2 1 2 Server_App_Thread socket failed
+    2 1 3 Server_App_Thread bind failed
+    2 1 4 Server_App_Thread listen failed
+    2 1 5 Server_App_Thread accept failed
+    2 1 6 Server_App_Thread memory allocation failed
+    2 1 7 Server_App_Thread buffer allocation failed
+    2 3 1 process_http_get error from lwip_send
+    2 3 2 process_http_get short write to lwip_send
+    2 3 4 fields_init: out of memory
+    2 3 5 fields_update
 */
 #endif

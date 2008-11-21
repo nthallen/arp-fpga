@@ -1,4 +1,4 @@
-/* * This file will abstract the read/write interfaces to the 24LC04B EEPROM on the XPS IIC Bus. * It was originally written and tested in a standalone environment, so the interrupts were * connected directly to the interrupt controller. Since it will be used in applications that * also require TCP/IP, it will need to use the xilkernel interfaces instead. */#include "config.h"#include <string.h>#include "ssp_print.h"#include "ssp_status.h"#include "xparameters.h"
+/* * This file will abstract the read/write interfaces to the 24LC04B EEPROM on the XPS IIC Bus. * It was originally written and tested in a standalone environment, so the interrupts were * connected directly to the interrupt controller. Since it will be used in applications that * also require TCP/IP, it will need to use the xilkernel interfaces instead. */#include "config.h"#include <string.h>#include "ssp_print.h"#include "ssp_status.h"#include "ssp_eeprom.h"#include "xparameters.h"
 #include "xiic.h"#ifdef __XMK__  #include "sys/timer.h"#else  #include "xintc.h"
   #include "xtmrctr.h"
   #include "mb_interface.h"
@@ -26,7 +26,7 @@ static void Iic_SendHandler(void *CallBackRef, int ByteCount ) {
 // return non-zero if error reported
 static int check_return( int rv, char *where, unsigned char *codes ) {
 	if ( rv != XST_SUCCESS ) {    print_mutex_lock();
-		safe_printf("Error from %s: %d\r\n", where, rv );    print_mutex_unlock();    status_error(codes);    return 1;
+		safe_printf(("Error from %s: %d\r\n", where, rv));    print_mutex_unlock();    status_error(codes);    return 1;
   }  return 0;
 }
 
@@ -50,8 +50,8 @@ int Iic_Write( XIic *Iicp, unsigned char *rbuf, int n_bytes ) {
   return send_complete ? XST_SUCCESS : XST_FAILURE;
 }
 // Deail with block boundaries
-int EE_Write( unsigned char addr, unsigned char *rbuf, int n_bytes ) {
-	unsigned char pbuf[EE_PAGE_SIZE+1];
+int EE_Write( unsigned addr, unsigned char *rbuf, int n_bytes ) {
+	unsigned char pbuf[EE_PAGE_SIZE+1];	int rv;	
   if ( addr > EE_TOTAL_SIZE ) return XST_FAILURE;  if ( addr + n_bytes > EE_TOTAL_SIZE ) n_bytes = EE_TOTAL_SIZE - addr;  rv = XIic_SetAddress( &Iic, XII_ADDR_TO_SEND_TYPE, ADDR_24LC04B +    (addr < EE_BLOCK_SIZE ? 0 : 1));
   check_return( rv, "XIic_SetAddress", "\001\003" );	while (n_bytes > 0) {
 		int i;
@@ -73,7 +73,7 @@ static int EE_SetReadAddress( XIic *Iicp, unsigned char addr ) {
 	return Iic_Write( Iicp, &addr, 1 );
 } 
 /* This needs to be expanded to deal with the two pages of memory and note the limited size of memory */
-int EE_Read( unsigned char addr, unsigned char *rbuf, int n_bytes ) {
+int EE_Read( unsigned addr, unsigned char *rbuf, int n_bytes ) {
 	int rv, cnt = 0;
   recv_complete = 0;
   status_events = 0;  if ( addr > EE_TOTAL_SIZE ) return XST_FAILURE;  if ( addr + n_bytes > EE_TOTAL_SIZE ) n_bytes = EE_TOTAL_SIZE - addr;  while ( n_bytes > 0 ) {    int r_bytes;    rv = XIic_SetAddress( &Iic, XII_ADDR_TO_SEND_TYPE, ADDR_24LC04B +      (addr < EE_BLOCK_SIZE ? 0 : 1));
@@ -133,5 +133,42 @@ int EE_Init(void) {
   sum2 = (sum2 & 0xff) + (sum2 >> 8);
   return ((sum1&0xff) << 8) + (sum2&0xff);
 }
-// return 0 on success, 1 on errorint EE_ReadConfig( SSP_Config_t *cfg ) {  int rv;  uint16_t check;  status_set( 1, "\001\002" );  rv = EE_Read( 0, cfg, sizeof(SSP_Config_hdr_t));  if ( check_return( rv, "EE_Read", "\001\005" ) ) return 1;  if ( cfg->hdr.n_bytes > EE_TOTAL_SIZE ||       cfg->hdr.n_bytes < offsetof(SSP_Config_t,notes)) {    status_set( 1, "\001\002\001" );    return 1;  }  rv = EE_Read( 0, &cfg->version, cfg->hdr.n_bytes );  if ( check_return( rv, "EE_Read 2", "\001\005\001" ) ) return 1;  check = fletcher16( (uint8_t *)&cfg->version, cfg->hdr.n_bytes - sizeof(cfg->hdr));  if ( check != cfg->hdr.checksum ) {    status_set( 1, "\001\002\003" );    return 1;  }  return 0;}static void store_IP4( uint8_t *addr, uint8_t a, uint8_t b, uint8_t c, uint8_t d ) {  addr[0] = a;  addr[1] = b;  addr[2] = c;  addr[3] = d;}static void store_mac( uint8_t *addr, uint8_t a, uint8_t b, uint8_t c,                      uint8_t d, uint8_t e, uint8_t f ) {  addr[0] = a;  addr[1] = b;  addr[2] = c;  addr[3] = d;  addr[4] = e;  addr[5] = f;}void EE_DefaultConfig(SSP_Config_t *cfg) {  cfg->version = 0;  store_mac(cfg->mac_address, 0, 0xA, 0x35, 0x55, 0x55, 0x55 );  store_IP4(cfg->ip_address, 10, 0, 0, 200 );  store_IP4(cfg->ip_netmask, 255, 255, 255, 0 );  store_IP4(cfg->ip_gateway, 10, 0, 0, 1 );  cfg->serial = 0;  cfg->fab_year = 2008;  cfg->fab_month = 7;  cfg->fab_day = 1;  cfg->cfg_year = 2008;  cfg->cfg_month = 11;  cfg->cfg_day = 1;  cfg->notes[0] = '\0';  cfg->hdr.n_bytes = offsetof(SSP_Config_t,notes) + 1;  cfg->hdr.checksum =    fletcher16( (uint8_t *)&cfg->version, cfg->hdr.n_bytes - sizeof(cfg->hdr));}
-int EE_WriteConfig( SSP_Config_T *cfg ) {  int rv;  cfg->hdr.n_bytes = offsetof(SSP_Config_t,notes) + strlen(cfg->notes) + 1;  if ( cfg->hdr.n_bytes > EE_TOTAL_SIZE ) {    status_error( "\001\006" );    return 1;  }  cfg->hdr.checksum =    fletcher16( (uint8_t *)&cfg->version, cfg->hdr.n_bytes - sizeof(cfg->hdr));  status_set( 1, "\001\003" );  rv = EE_Write( 0, cfg, cfg->hdr.n_bytes );  if ( rv != 0 ) status_error( "\001\006\001" );}
+// return 0 on success, 1 on errorint EE_ReadConfig( SSP_Config_t *cfg ) {  int rv;  uint16_t check;  status_set( 1, "\001\002" );  rv = EE_Read( 0, (unsigned char *)cfg, sizeof(SSP_Config_hdr_t));  if ( check_return( rv, "EE_Read", "\001\005" ) ) return 1;  if ( cfg->hdr.n_bytes > EE_TOTAL_SIZE ||       cfg->hdr.n_bytes < offsetof(SSP_Config_t,notes)) {    status_set( 1, "\001\002\001" );    return 1;  }  rv = EE_Read( 0, (unsigned char *)&cfg->version, cfg->hdr.n_bytes );  if ( check_return( rv, "EE_Read 2", "\001\005\001" ) ) return 1;  check = fletcher16( (uint8_t *)&cfg->version, cfg->hdr.n_bytes - sizeof(cfg->hdr));  if ( check != cfg->hdr.checksum ) {    status_set( 1, "\001\002\003" );    return 1;  }  return 0;}static void store_IP4( uint8_t *addr, uint8_t a, uint8_t b, uint8_t c, uint8_t d ) {  addr[0] = a;  addr[1] = b;  addr[2] = c;  addr[3] = d;}static void store_mac( uint8_t *addr, uint8_t a, uint8_t b, uint8_t c,                      uint8_t d, uint8_t e, uint8_t f ) {  addr[0] = a;  addr[1] = b;  addr[2] = c;  addr[3] = d;  addr[4] = e;  addr[5] = f;}void EE_DefaultConfig(SSP_Config_t *cfg) {  cfg->version = 0;  store_mac(cfg->net_cfg.mac_address, 0, 0xA, 0x35, 0x55, 0x55, 0x55 );  store_IP4(cfg->net_cfg.ip_address, 10, 0, 0, 200 );  store_IP4(cfg->net_cfg.ip_netmask, 255, 255, 255, 0 );  store_IP4(cfg->net_cfg.ip_gateway, 10, 0, 0, 1 );  cfg->serial = 0;  cfg->fab_date.year = 2008;  cfg->fab_date.month = 7;  cfg->fab_date.day = 1;  cfg->cfg_date.year = 2008;  cfg->cfg_date.month = 11;  cfg->cfg_date.day = 1;  cfg->notes[0] = '\0';  cfg->hdr.n_bytes = offsetof(SSP_Config_t,notes) + 1;  cfg->hdr.checksum =    fletcher16( (uint8_t *)&cfg->version, cfg->hdr.n_bytes - sizeof(cfg->hdr));}
+int EE_WriteConfig( SSP_Config_t *cfg ) {  int rv;  cfg->hdr.n_bytes = offsetof(SSP_Config_t,notes) + strlen(cfg->notes) + 1;  if ( cfg->hdr.n_bytes > EE_TOTAL_SIZE ) {    status_error( "\001\006" );    return 1;  }  cfg->hdr.checksum =    fletcher16( (uint8_t *)&cfg->version, cfg->hdr.n_bytes - sizeof(cfg->hdr));  status_set( 1, "\001\003" );  rv = EE_Write( 0, (unsigned char *)cfg, cfg->hdr.n_bytes );  if ( rv != 0 ) status_error( "\001\006\001" );}
+
+void EE_print_config( SSP_Config_t *cfg, char *heading ) {
+  print_mutex_lock();
+  safe_printf(("%s\r\n", heading));
+  safe_printf(("  n_bytes: %d\r\n", cfg->hdr.n_bytes ));
+  safe_printf(("  checksum: %04X\r\n", cfg->hdr.checksum ));
+  safe_printf(("  cfg version: %d\r\n", cfg->version ));
+  safe_printf(("  Board S/N: %d\r\n", cfg->serial ));
+  safe_printf(("  Fab Date: %d/%d/%d\r\n", cfg->fab_date.year,
+                  cfg->fab_date.month, cfg->fab_date.day ));
+  safe_printf(("  Cfg Date: %d/%d/%d\r\n", cfg->cfg_date.year,
+                  cfg->cfg_date.month, cfg->cfg_date.day ));
+  safe_printf(("  Notes: %s\r\n", cfg->notes ));
+  safe_printf(("  mac_address: %02X:%02X:%02X:%02X:%02X:%02X\r\n",
+    cfg->net_cfg.mac_address[0],
+    cfg->net_cfg.mac_address[1],
+    cfg->net_cfg.mac_address[2],
+    cfg->net_cfg.mac_address[3],
+    cfg->net_cfg.mac_address[4],
+    cfg->net_cfg.mac_address[5] ));
+  safe_printf(("  ip_address: %d.%d.%d.%d\r\n",
+    cfg->net_cfg.ip_address[0],
+    cfg->net_cfg.ip_address[1],
+    cfg->net_cfg.ip_address[2],
+    cfg->net_cfg.ip_address[3] ));
+  safe_printf(("  ip_netmask: %d.%d.%d.%d\r\n",
+    cfg->net_cfg.ip_netmask[0],
+    cfg->net_cfg.ip_netmask[1],
+    cfg->net_cfg.ip_netmask[2],
+    cfg->net_cfg.ip_netmask[3] ));
+  safe_printf(("  ip_gateway: %d.%d.%d.%d\r\n\r\n",
+    cfg->net_cfg.ip_gateway[0],
+    cfg->net_cfg.ip_gateway[1],
+    cfg->net_cfg.ip_gateway[2],
+    cfg->net_cfg.ip_gateway[3] ));
+  print_mutex_unlock();
+}

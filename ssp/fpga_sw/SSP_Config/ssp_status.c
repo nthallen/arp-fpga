@@ -1,5 +1,8 @@
 /* status.c
  * Module to provide status indications via LEDs
+ * Also supports the JP1 dipswitch interface.
+ * Must call status_init() before any other functions.
+ *
  * Status messages should be a string of values all between 1 and 15 inclusive along with an indication of warning or error status
  * Maintain a list of current status codes and a list of error codes. Error codes remain, but we only support a limited number of them,
  * so they will overwrite at some point.
@@ -16,6 +19,7 @@
 #include "xparameters.h"
 #include "xgpio.h"
 #include "ssp_status.h"
+#include "ssp_print.h"
 
 #define MAX_STATUS_SETS 6
 #define MAX_ERROR_SETS 6
@@ -30,17 +34,31 @@ static int cur_elt = 0;
 static unsigned char s_init[] = { 1, 0 };
 static unsigned char s_ready[] = { 1, 2, 4, 8, 0 };
 
-XGpio LED;
+XGpio JP1, LED;
 
 #ifdef __XMK__
 static pthread_mutex_t status_mutex = PTHREAD_MUTEX_INITIALIZER;
 static pthread_t status_tid;
 
+static void set_status( int val ) {
+  XGpio_DiscreteWrite(&LED,1,val);
+}
+
+static void status_lock(void) {
+  int rv = pthread_mutex_lock(&status_mutex);
+  if ( rv != 0 ) set_status( 0x1F );
+}
+
+static void status_unlock(void) {
+  int rv = pthread_mutex_unlock(&status_mutex);
+  if ( rv != 0) set_status( 0x1E);
+}
+
 static void *status_thread(void *param) {
   for (;;) {
     int cur_value;
-    sleep(250);
-    pthread_mutex_lock(&status_mutex);
+    sleep(500);
+    status_lock();
     if ( cur_error_set < n_error_sets ) {
       cur_value = error_list[cur_error_set][cur_elt];
       if ( cur_value == 0 ) {
@@ -64,7 +82,7 @@ static void *status_thread(void *param) {
         if (++cur_status_set == n_status_sets) {
           if ( n_error_sets > 0 ) {
             cur_error_set = 0;
-            cur_value |= 0x10;
+            // cur_value |= 0x10;
           } else {
             cur_status_set = 0;
           }
@@ -86,16 +104,6 @@ static void *status_thread(void *param) {
   }
 }
 
-static void status_lock(void) {
-  int rv = pthread_mutex_lock(&status_mutex);
-  if ( rv != 0 ) set_status( 0x1F );
-}
-
-static void status_unlock(void) {
-  int rv = pthread_mutex_unlock(&status_mutex);
-  if ( rv != 0) set_status( 0x1E);
-}
-
 #endif /* __XMK__ */
 
 int status_init(void) {
@@ -104,6 +112,9 @@ int status_init(void) {
 	XGpio_Initialize(&LED, XPAR_XPS_GPIO_1_DEVICE_ID );
 	XGpio_SetDataDirection(&LED, 1, 0 );
   XGpio_DiscreteWrite(&LED,1,0x1F);
+	
+	XGpio_Initialize(&JP1, XPAR_XPS_GPIO_0_DEVICE_ID );
+	XGpio_SetDataDirection(&JP1, 1, 0xF );
 
   status_set( 0, s_init );
   
@@ -113,10 +124,6 @@ int status_init(void) {
   #else
     return 0;
   #endif
-}
-
-static void set_status( int val ) {
-  XGpio_DiscreteWrite(&LED,1,val);
 }
 
 /* if clear == 0, appends the specified codes */
@@ -155,4 +162,16 @@ void status_error( unsigned char *codes ) {
   #else
     set_status(codes[0] | 0x10 );
   #endif
+}
+
+int report_error( char *reason, unsigned char *codes ) {
+  status_error( codes );
+  print_mutex_lock();
+  safe_printf(("%s\r\n", reason));
+  print_mutex_unlock();
+  return 0;
+}
+
+unsigned int read_jp1(void) {
+	return XGpio_DiscreteRead(&JP1,1);
 }

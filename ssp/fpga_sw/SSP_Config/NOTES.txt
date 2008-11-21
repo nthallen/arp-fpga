@@ -1,0 +1,40 @@
+Without template:
+  uint8_t net_cfg.mac_address[6]; MA[0-5] [0-FF] hex %02X
+  uint8_t net_cfg.ip_address[4]; IP[0-3] [0-255] decimal %d
+  uint8_t net_cfg.ip_netmask[4]; NM[0-3] [0-255] decimal %d
+  uint8_t net_cfg.ip_gateway[4]; GW[0-3] [0-255] decimal %d
+
+  uint16_t serial; SN decimal %03d
+  uint16_t fab_year; FY  decimal >= 2008 %d
+  uint8_t fab_month; FM  decimal [1-12] %02d
+  uint8_t fab_day; FD decimal [1-31] %02d
+  uint16_t cfg_year; CY decimal >= 2008 %d
+  uint8_t cfg_month; CM decimal [1-12] %02d
+  uint8_t cfg_day; CD  decimal [1-31] %02d
+  char notes[80]; NT  text %s
+  submitted: SU
+
+I'm afraid a template system is overkill for a page with only a single form, but it's something to keep in mind. The current system as implemented has UI shortcomings:
+  It reports errors, but does not preserve the erroneous input so the user can
+  see the problem. To do so would require that I separately store the string value
+  for each variable along with a flag indicating whether the value was successfully
+  converted from string to integer or not. If not, the old (possibly non-numeric)
+  text should be displayed instead of converting the existing value.
+
+template system
+
+form fields have:
+  type
+  native representation
+  text representation
+  validation rules
+  conversion method
+  error status
+
+On GET/POST, before parsing the request, define the fields
+  assign text values to fields, invoke validation rules and conversion method
+
+On processing template
+  <tmpl_var field-name> generates the appropriate field definition
+  <tmpl_var error-name> generates the error message if defined
+  <tmpl_if var>stuff<tmpl_else>other stuff</tmpl_if>
