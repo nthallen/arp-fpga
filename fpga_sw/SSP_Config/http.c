@@ -6,6 +6,7 @@
 #include "http.h"
 #include "ssp_print.h"
 #include "ssp_eeprom.h"
+#include "daslogo_jpg.h"
 
 void obuf_flush( obuf_t *obuf ) {
   int bytes_written = lwip_send(obuf->sock, obuf->buf, obuf->index, 0);
@@ -16,17 +17,21 @@ void obuf_flush( obuf_t *obuf ) {
   obuf->index = 0;
 }
 
-void obuf_write( obuf_t *obuf, char *txt ) {
-  int nb = strlen(txt);
+void obuf_bwrite( obuf_t *obuf, char *txt, int nb ) {
   while ( nb > 0 ) {
     int free = obuf->bufsize - obuf->index;
     int nbf = free < nb ? free : nb;
-    strncpy( &obuf->buf[obuf->index], txt, nbf );
+    memcpy( &obuf->buf[obuf->index], txt, nbf );
     nb -= nbf;
     txt += nbf;
     obuf->index += nbf;
     if (obuf->index == obuf->bufsize) obuf_flush(obuf);
   }
+}
+
+void obuf_write( obuf_t *obuf, char *txt ) {
+  int nb = strlen(txt);
+  obuf_bwrite( obuf, txt, nb );
 }
 
 void val_error_start( obuf_t *obuf ) {
@@ -66,8 +71,10 @@ form_field_t fld_NM[4];
 form_field_t fld_GW[4];
 form_field_t fld_NT;
 
-// Should be called only once on startup. Allocates space for field structures. Return non-zero if any init fails
-int fields_init(void) {
+// Should be called only once on startup.
+// Allocates space for field structures.
+// Return non-zero if any init fails
+int fields_init( SSP_Config_t *cfg ) {
   int i, rv = 0;
   if ( field_init( &fld_SN, "SN", 6, FLD_TYPE_UD, 3, 0, 65535, 3, FLD_FLAG_LEFT ) ||
        field_init( &fld_FAB.Y, "FY", 4, FLD_TYPE_UD, 4, 2008, 2100, 1, 0 ) ||
@@ -76,7 +83,7 @@ int fields_init(void) {
        field_init( &fld_CFG.Y, "CY", 4, FLD_TYPE_UD, 4, 2008, 2100, 1, 0 ) ||
        field_init( &fld_CFG.M, "CM", 2, FLD_TYPE_UD, 2, 1, 12, 2, 0 ) ||
        field_init( &fld_CFG.D, "CD", 2, FLD_TYPE_UD, 2, 1, 31, 2, 0 ) ||
-       field_init( &fld_NT, "NT", 80, FLD_TYPE_STR, 40, 0, 0, 0, 0 ) )
+       field_init( &fld_NT, "NT", 80, FLD_TYPE_STR, 40, 0, 0, 0, FLD_FLAG_LEFT ) )
     rv = 1;
   for (i = 0; i < 6; i++ ) {
     char *name = strdup("MAn");
@@ -102,13 +109,10 @@ int fields_init(void) {
     if ( field_init( &fld_GW[i], name, 3, FLD_TYPE_UD, 3, 0, 255, 1, 0 ))
       rv = 1;
   }
-  return rv;
-}
-
-// Updates field structures with numbers from configuration.
-// It may make sense for this to be called only once on startup, or possibly on request.
-int fields_update( SSP_Config_t *cfg ) {
-  int i, rv = 0;
+  if ( rv ) {
+  	report_error("fields_init: out of memory", "\002\003\004" );
+	  return rv;
+  }
   if ( f_number( &fld_SN, cfg->serial ) ||
        f_number( &fld_FAB.Y, cfg->fab_date.year ) ||
        f_number( &fld_FAB.M, cfg->fab_date.month ) ||
@@ -127,7 +131,30 @@ int fields_update( SSP_Config_t *cfg ) {
          f_number( &fld_GW[i], cfg->net_cfg.ip_gateway[i] ) )
       rv = 1;
   }
-  return rv;
+  if ( rv )
+    report_error( "fields_init validation", "\002\003\005" );
+  return 0;
+}
+
+// Updates field structures with numbers from configuration.
+// It may make sense for this to be called only once on startup, or possibly on request.
+void fields_update( SSP_Config_t *cfg ) {
+  int i;
+  cfg->serial = fld_SN.value;
+  cfg->fab_date.year = fld_FAB.Y.value;
+  cfg->fab_date.month = fld_FAB.M.value;
+  cfg->fab_date.day = fld_FAB.D.value;
+  cfg->cfg_date.year = fld_CFG.Y.value;
+  cfg->cfg_date.month = fld_CFG.M.value;
+  cfg->cfg_date.day = fld_CFG.D.value;
+  strcpy( cfg->notes, fld_NT.string );
+  for (i = 0; i < 6; i++ )
+  	cfg->net_cfg.mac_address[i] = fld_MA[i].value;
+  for ( i = 0; i < 4; i++ ) {
+  	cfg->net_cfg.ip_address[i] = fld_IP[i].value;
+  	cfg->net_cfg.ip_netmask[i] = fld_NM[i].value;
+  	cfg->net_cfg.ip_gateway[i] = fld_GW[i].value;
+  }
 }
 
 // field_init allocates the specified string space
@@ -146,11 +173,33 @@ int field_init( form_field_t *fld, char *name, int str_len, int type,
   return(fld->string == NULL);
 }
 
+#define MAX_ESCAPE 30
 void param_output( obuf_t *obuf, char *param, char *value ) {
+	char escape[MAX_ESCAPE], *esc;
+	int i = 0;
   obuf_write( obuf, " " );
   obuf_write( obuf, param );
   obuf_write( obuf, "=\"" );
-  obuf_write( obuf, value );
+  // html escape value
+  for ( i = 0; ; ++value ) {
+  	esc = NULL;
+  	switch (*value) {
+  		case '&': esc = "&amp;"; break;
+  		case '"': esc = "&quot;"; break;
+  		case '\'': esc = "&apos;"; break;
+  		case '>': esc = "&gt;"; break;
+  		case '<': esc = "&lt;"; break;
+  		default: break;
+  	}
+  	if ( ( esc && i ) || (i+1 == MAX_ESCAPE) || (i && *value == '\0') ) {
+			escape[i] = '\0';
+			obuf_write(obuf, escape);
+			i = 0;
+  	}
+  	if ( *value == '\0' ) break;
+  	else if ( esc ) obuf_write(obuf, esc );
+  	else escape[i++] = *value;
+  }
   obuf_write( obuf, "\"" );
 }
 
@@ -187,7 +236,7 @@ void ipflds_output( obuf_t *obuf, char *heading, form_field_t *fld ) {
   obuf_write( obuf, "  <td>" );
   field_output( obuf, &fld[0] );
   for ( i = 1; i < 4; i++ ) {
-    obuf_write( obuf, " .\r\n" );
+    obuf_write( obuf, " .\r\n      " );
     field_output( obuf, &fld[i] );
   }
   obuf_write( obuf, "</td></tr>\r\n" );
@@ -217,7 +266,7 @@ int f_string( form_field_t *fld, char *s ) {
       break;
     case FLD_TYPE_UH:
       for ( s = fld->string; isxdigit(*s); ++s ) {
-        fld->value = fld->value * 10 + tolower(*s) +
+        fld->value = fld->value * 16 + tolower(*s) +
           (isdigit(*s) ? 0 - '0' : 10 - 'a');
       }
       break;
@@ -331,11 +380,8 @@ int store_var( obuf_t *obuf, char *var, char *val ) {
     case 'N':
       if ( var[1] == 'M' && isdigit(var[2]) && var[3] == '\0')
         return ipaddr_in( obuf, fld_NM, var, val );
-      else if ( var[1] == 'T' && var[2] == '\0' ) {
-        strncpy( SSP_Config.notes, val, SSP_MAX_NOTE_LENGTH-1 );
-        SSP_Config.notes[SSP_MAX_NOTE_LENGTH-1] = '\0';
-        return 0;
-      }
+      else if ( var[1] == 'T' && var[2] == '\0' )
+      	return f_string( &fld_NT, val );
       break;
     case 'G':
       if ( var[1] == 'W' && isdigit(var[2]) && var[3] == '\0')
@@ -344,8 +390,11 @@ int store_var( obuf_t *obuf, char *var, char *val ) {
     case 'S':
       switch (var[1]) {
         case 'N':
-          if ( var[2] == '\0' && f_string( &fld_SN, val ) )
-            return val_error( obuf, "Serial Number out of range" );
+          if ( var[2] == '\0' ) {
+          	if ( f_string( &fld_SN, val ) )
+            	return val_error( obuf, "Serial Number out of range" );
+          	return 0;
+          }
           break;
         case 'U':
           if ( var[2] == '\0' )
@@ -373,7 +422,7 @@ int parse_get( obuf_t *obuf, char *URL ) {
   // look for question mark or NUL
   i = strcspn( URL, "?" );
   if ( URL[i] == '\0' ) return 0;
-  URL += i;
+  URL += i+1;
   while ( *URL != '\0' ) {
     char *var, *val;
     int rvi;
@@ -394,10 +443,54 @@ int parse_get( obuf_t *obuf, char *URL ) {
         *URL++ = '\0';
       val = NULL;
     }
+    //url_decode(var); // unnecessary due to our choice of field names
+    url_decode(val);
     rvi = store_var( obuf, var, val );
     if ( rvi > rv ) rv = rvi;
   }
   return rv;
+}
+
+int x2d( char c ) {
+	return ( c >= 'A') ? c - 'A' + 10 : c - '0';
+}
+
+void url_decode( char *in ) {
+	char *out = in;
+	if ( in == NULL ) return;
+	while (*in) {
+		if ( *in == '%' && isxdigit(in[1]) && isxdigit(in[2]) ) {
+			*out++ = x2d(in[1])*16 + x2d(in[2]);
+			in += 3;
+		} else if ( *in == '+' ) {
+			*out++ = ' ';
+			++in;
+		} else *out++ = *in++;
+	}
+	*out = '\0';
+}
+
+// I need:
+// HTTP/1.1 200 OK
+// Content-type: image/jpg
+// Content-length: %d
+// Expires: Thu, 01 Dec 2009 16:00:00 GMT
+// Connection: close
+//
+static void process_http_image(obuf_t *obuf, char *type, char *img, int imgsize) {
+  int rv, i;
+  // Output http header, header, banner
+  obuf_write( obuf,
+    "HTTP/1.1 200 OK\r\n"
+    "Content-type: " );
+  obuf_write( obuf, type );
+  obuf_write( obuf,
+  	"\r\n"
+    "Connection: close\r\n"
+    "Content-length: " );
+  obuf_write( obuf, ntoa(imgsize, 10, 1) );
+  obuf_write( obuf, "\r\n\r\n" );
+  obuf_bwrite( obuf, img, imgsize );
 }
 
 // I need:
@@ -405,20 +498,13 @@ int parse_get( obuf_t *obuf, char *URL ) {
 // Content-type: text/html
 // Connection: close
 //
-static void process_http_form(int sock, char *URL, char *buf, int bufsize) {
-  obuf_t obuf;
+static void process_http_form(obuf_t *obuf, char *URL) {
   int rv, i;
-
-  // Initialize output buffer
-  obuf.buf = buf;
-  obuf.bufsize = bufsize;
-  obuf.index = 0;
-  obuf.sock = sock;
   
   // Output http header, header, banner
-  obuf_write( &obuf,
+  obuf_write( obuf,
     "HTTP/1.1 200 OK\r\n"
-    "Content-type: text/html; charset=utf-8\r\n"
+    "Content-Type: text/html; charset=utf-8\r\n"
     "Connection: close\r\n\r\n"
     "<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\"\r\n"
     "   \"http://www.w3.org/TR/html4/loose.dtd\">\r\n"
@@ -428,65 +514,92 @@ static void process_http_form(int sock, char *URL, char *buf, int bufsize) {
     "<style type=\"text/css\">\r\n"
     "<!--\r\n"
     "body { background-color: cyan }\r\n"
+    "h1 { margin-top: 4px; margin-bottom: 0px }\r\n"
+    "h2 { margin-top: 0px; margin-bottom: 15px }\r\n"
+    "h1, h2 { color: #000099 }\r\n"
     "th { text-align: right }\r\n"
     "td { font-weight: bold }\r\n"
-    "input { background-color: #CCFFFF }\r\n"
+    ".invalid { color: red }\r\n"
+    "input { background-color: #CCFFFF; text-align: center }\r\n"
+		"input.l { text-align: left }\r\n"
+		"input.err { background-color: #FFCCCC }\r\n"
+		".form {\r\n"
+		"  border: 1px solid black;\r\n"
+		"  float: left;\r\n"
+		"  padding: 10px;\r\n"
+		"}\r\n"
+		".copyright {\r\n"
+		"  font-size: x-small;\r\n"
+		"  clear: both;\r\n"
+		"}\r\n"
     "-->\r\n"
     "</style>\r\n"
     "</head>\r\n"
     "<body>\r\n"
-    "<!-- img src=\"daslogo.jpg\" width=\"600\" height=\"100\" alt=\"Anderson Group Data Acquisition Systems Logo\" -->\r\n"
+    "<img name=\"daslogo\" src=\"daslogo.jpg\" width=\"600\" height=\"100\" alt=\"Anderson Group Data Acquisition Logo\" usemap=\"#daq_map\" border=\"0\">\r\n"
+    "<map name=\"daq_map\" id=\"daq_map\">\r\n"
+    "\r\n"
+    "<area href=\"http://www.harvard.edu/\" shape=\"rect\" coords=\"10, 11, 91, 35\" alt=\"Harvard Home Page\" >\r\n"
+    "<area href=\"http://www.arp.harvard.edu/\" shape=\"rect\" coords=\"91, 6, 246, 43\" alt=\"Anderson Group Home Page\" >\r\n"
+    "<area href=\"http://www.arp.harvard.edu/eng/das/\" shape=\"rect\" coords=\"30, 47, 273, 79\" alt=\"Anderson Group Data Acquisition Home Page\" >\r\n"
+    "</map>\r\n"
     "<h1>Scalable Signal Processor</h1>\r\n"
-    "<h2>Configuration Utility</h2>\r\n" );
+    "<h2>Configuration Utility</h2>\r\n"
+    "<div class=\"form\">\r\n" );
 
   // Parse request to update field values. Output validation errors to obuf
-  rv = parse_get(&obuf, URL);
+  rv = parse_get(obuf, URL);
 
   // if submit, run validation checks. if OK, write to EEPROM
   if ( rv == 1 ) {
-    obuf_write( &obuf, "<p>Received submit</p>\r\n" );
+  	fields_update( &SSP_Config );
+  	if ( EE_WriteConfig( &SSP_Config ) ) {
+  		val_error( obuf, "Write returned an error" );
+  	} else {
+  		obuf_write( obuf, "<p><b>Write was successful</b></p>\r\n" );
     // Output any useful status information
+  	}
   } else if ( rv == 2 ) {
-    val_error( &obuf, "Input Validation Failed" );
+    val_error( obuf, "Input Validation Failed" );
   }
   // Output form
-  obuf_write( &obuf,
+  obuf_write( obuf,
     "<form action=\"/\" method=\"GET\">\r\n"
     "<table>\r\n"
     "<tr><th>SSP Board Serial Number:</th>\r\n"
     "  <td>ARP_SSP_" );
-  field_output( &obuf, &fld_SN );
-  obuf_write( &obuf, "</td></tr>\r\n"
+  field_output( obuf, &fld_SN );
+  obuf_write( obuf, "</td></tr>\r\n"
     "<tr><th>Fabrication Date:</th>\r\n"
     "  <td>" );
-  date_output( &obuf, &fld_FAB );
-  obuf_write( &obuf, "</td></tr>\r\n"
+  date_output( obuf, &fld_FAB );
+  obuf_write( obuf, "</td></tr>\r\n"
     "<tr><th>Configuration Date:</th>\r\n"
     "  <td>" );
-  date_output( &obuf, &fld_CFG );
-  obuf_write( &obuf, "</td></tr>\r\n"
+  date_output( obuf, &fld_CFG );
+  obuf_write( obuf, "</td></tr>\r\n"
     "<tr><th>MAC Address:</th>\r\n"
     "  <td>" );
-  field_output( &obuf, &fld_MA[0] );
+  field_output( obuf, &fld_MA[0] );
   for ( i = 1; i < 6; i++ ) {
-    obuf_write( &obuf, " :\r\n"
+    obuf_write( obuf, " :\r\n"
       "      " );
-    field_output( &obuf, &fld_MA[i] );
+    field_output( obuf, &fld_MA[i] );
   }
-  obuf_write( &obuf, "</td></tr>\r\n" );
-  ipflds_output( &obuf, "IP Address", fld_IP );
-  ipflds_output( &obuf, "IP Netmask", fld_NM );
-  ipflds_output( &obuf, "IP Gateway", fld_GW );
-  obuf_write( &obuf, "<tr><th>Notes:</th>\r\n"
+  obuf_write( obuf, "</td></tr>\r\n" );
+  ipflds_output( obuf, "IP Address", fld_IP );
+  ipflds_output( obuf, "IP Netmask", fld_NM );
+  ipflds_output( obuf, "IP Gateway", fld_GW );
+  obuf_write( obuf, "<tr><th>Notes:</th>\r\n"
     "  <td>" );
-  field_output( &obuf, &fld_NT );
-  obuf_write( &obuf, "</td></tr>\r\n"
+  field_output( obuf, &fld_NT );
+  obuf_write( obuf, "</td></tr>\r\n"
     "<tr><th>Configuration Length:</th><td>" );
-  obuf_write( &obuf, ntoa( SSP_Config.hdr.n_bytes, 10, 1 ) );
-  obuf_write( &obuf, "</td></tr>\r\n"
+  obuf_write( obuf, ntoa( SSP_Config.hdr.n_bytes, 10, 1 ) );
+  obuf_write( obuf, "</td></tr>\r\n"
     "<tr><th>Configuration Checksum:</th><td>" );
-  obuf_write( &obuf, ntoa( SSP_Config.hdr.checksum, 10, 1 ) );
-  obuf_write( &obuf, "</td></tr>\r\n"
+  obuf_write( obuf, ntoa( SSP_Config.hdr.checksum, 10, 1 ) );
+  obuf_write( obuf, "</td></tr>\r\n"
     "<tr><th>Configuration Version:</th><td>0</td></tr>\r\n"
     "<tr><td colspan=\"2\" align=\"center\">"
     "<input type=\"submit\" name=\"SU\" value=\"submit\"></td></tr>\r\n"
@@ -494,17 +607,20 @@ static void process_http_form(int sock, char *URL, char *buf, int bufsize) {
     "</form>\r\n" );
 
   // Output footer
-  obuf_write( &obuf,
+  obuf_write( obuf,
+    "</div>\r\n"
+    "<p class=\"copyright\">&copy; 2008 President and Fellows of Harvard College</p>\r\n"
     "</body>\r\n"
     "</html>\r\n" );
-  obuf_flush(&obuf);
+  obuf_flush(obuf);
 }
 
-void process_http(int sock, char *receiveBuffer, char *sendBuffer) {
+void process_http(int sock, char*receiveBuffer, char*sendBuffer) {
   char *methodPtr;
   char *dataPtr;
   char *typePtr;
   int bytesReceived;
+  obuf_t obuf;
   
   // Read the request from the socket into the receive buffer
   bytesReceived = lwip_read(sock, receiveBuffer, RECV_BUFFER_LENGTH);
@@ -517,8 +633,18 @@ void process_http(int sock, char *receiveBuffer, char *sendBuffer) {
   print_mutex_lock();
   safe_printf(("Processing %s %s request for %s\r\n", typePtr, methodPtr, dataPtr));
   print_mutex_unlock();
+
+  // Initialize output buffer
+  obuf.buf = sendBuffer;
+  obuf.bufsize = SEND_BUFFER_LENGTH;
+  obuf.index = 0;
+  obuf.sock = sock;
   
   // Should distinguish between form requests and other objects here
-  if(!strcmp(methodPtr, "GET"))
-    process_http_form(sock, dataPtr, sendBuffer, SEND_BUFFER_LENGTH);
+  if(!strcmp(methodPtr, "GET")) {
+  	if ( !strcmp(dataPtr, "/daslogo.jpg" ) )
+  		process_http_image( &obuf, "image/jpg", daslogo_jpg, daslogo_jpg_size );
+    else
+      process_http_form( &obuf, dataPtr );
+  }
 }

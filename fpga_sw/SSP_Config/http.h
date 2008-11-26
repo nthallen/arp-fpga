@@ -33,12 +33,14 @@ extern char *ntoa( int value, int radix, int zeros );
 extern void process_http(int sock, char*recv_buf, char*send_buf);
 extern void obuf_flush( obuf_t *obuf );
 extern void obuf_write( obuf_t *obuf, char *txt );
+extern void obuf_bwrite( obuf_t *obuf, char *txt, int nb );
 extern int field_init( form_field_t *fld, char *name, int str_len, int type,
                 int size, int minval, int maxval, int zeros, int flags );
 extern int f_string( form_field_t *fld, char *s );
 extern int f_number( form_field_t *fld, unsigned int val );
-extern int fields_init(void);
-extern int fields_update(SSP_Config_t *cfg);
+extern int fields_init(SSP_Config_t *cfg);
+extern void fields_update(SSP_Config_t *cfg);
+void url_decode( char *in );
 
 #define RECV_BUFFER_LENGTH 1460
 #define SEND_BUFFER_LENGTH 1460
