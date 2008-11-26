@@ -59,10 +59,7 @@ thread_return_t main_main(void* arg) {
   EE_print_config(&SSP_Config, rv==0 ?
         "Configuration loaded successfully:\r\n" :
         "Existing configuration invalid or unreadable:\r\n");
-  if ( fields_init() )
-    report_error( "fields_init: out of memory", "\002\003\004" );
-  if ( fields_update(&SSP_Config) )
-    report_error( "fields_update", "\002\003\005" );
+  if ( fields_init(&SSP_Config) ) return 0;
   
   sleep(100);
   lwip_init(); // starts two more threads

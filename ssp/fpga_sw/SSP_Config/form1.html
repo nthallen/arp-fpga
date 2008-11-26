@@ -7,18 +7,37 @@
 <style type="text/css">
 <!--
 body { background-color: cyan }
+h1 { margin-top: 4px; margin-bottom: 0px }
+h2 { margin-top: 0px; margin-bottom: 15px }
+h1, h2 { color: #000099 }
 th { text-align: right }
 td { font-weight: bold }
 input { background-color: #CCFFFF; text-align: center }
 input.l { text-align: left }
 input.err { background-color: #FFCCCC }
+.form {
+   border: 1px solid black;
+   float: left;
+   padding: 10px;
+ }
+ .copyright {
+    font-size: x-small;
+    clear: both;
+  }
 -->
 </style>
 </head>
 <body>
-<!-- img src="daslogo.jpg" width="600" height="100" alt="Anderson Group Data Acquisition Systems Logo" -->
+<img name="daslogo" src="daslogo.jpg" width="600" height="100" alt="Anderson Group Data Acquisition Logo" usemap="#daq_map" border="0">
+<map name="daq_map" id="daq_map">
+
+<area href="http://www.harvard.edu/" shape="rect" coords="10, 11, 91, 35" alt="Harvard Home Page" >
+<area href="http://www.arp.harvard.edu/" shape="rect" coords="91, 6, 246, 43" alt="Anderson Group Home Page" >
+<area href="http://www.arp.harvard.edu/eng/das/" shape="rect" coords="30, 47, 273, 79" alt="Anderson Group Data Acquisition Home Page" >
+</map>
 <h1>Scalable Signal Processor</h1>
 <h2>Configuration Utility</h2>
+<div class="form">
 <form action="/" method="GET">
 <table>
 <tr><th>SSP Board Serial Number:</th>
@@ -61,6 +80,7 @@ input.err { background-color: #FFCCCC }
 <tr><td colspan="2" align="center"><input type="submit" name="SU" value="submit"></td></tr>
 </table>
 </form>
-
+</div>
+<p class="copyright">&copy; 2008 President and Fellows of Harvard College</p>
 </body>
 </html>
