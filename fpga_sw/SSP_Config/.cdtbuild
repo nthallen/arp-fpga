@@ -8,6 +8,7 @@
 <tool superClass="mb.xygwin.exec.debug.com.xilinx.mdt.edk.build.tool.xygwin.mb.c.compiler" id="mb.xygwin.exec.debug.com.xilinx.mdt.edk.build.tool.xygwin.mb.c.compiler.58944689" name="MicroBlaze C Compiler">
 <option superClass="xygwin.mb.c.compiler.debugging.level" id="xygwin.mb.c.compiler.debugging.level.275694339" value="xygwin.mb.c.debugging.level.default" valueType="enumerated"/>
 <option superClass="xygwin.mb.c.compiler.general.optimization.level" id="xygwin.mb.c.compiler.general.optimization.level.1586726433" value="xygwin.mb.c.optimization.level.none" valueType="enumerated"/>
+<option superClass="com.xilinx.mdt.edk.managedbuilder.mb.mbspec.appmode" id="com.xilinx.mdt.edk.managedbuilder.mb.mbspec.appmode.1928426610"/>
 </tool>
 <tool superClass="mb.xygwin.exec.debug.com.xilinx.mdt.edk.build.tool.xygwin.mb.cpp.compiler" id="mb.xygwin.exec.debug.com.xilinx.mdt.edk.build.tool.xygwin.mb.cpp.compiler.638461670" name="MicroBlaze C++ Compiler"/>
 <tool superClass="com.xilinx.mdt.edk.build.tool.xygwin.mb.c.link" id="com.xilinx.mdt.edk.build.tool.xygwin.mb.c.link.1065391331" name="MicroBlaze C Linker">
@@ -15,7 +16,7 @@
 <listOptionValue value="lwip4" builtIn="false"/>
 <listOptionValue value="xilkernel" builtIn="false"/>
 </option>
-<option superClass="com.xilinx.mdt.edk.managedbuilder.mb.linkerscript" id="com.xilinx.mdt.edk.managedbuilder.mb.linkerscript.1541398826" valueType="includePath">
+<option superClass="com.xilinx.mdt.edk.managedbuilder.mb.linkerscript" id="com.xilinx.mdt.edk.managedbuilder.mb.linkerscript.1158361040" valueType="includePath">
 <listOptionValue value="../SSP_Config.ld" builtIn="false"/>
 </option>
 </tool>
@@ -27,14 +28,21 @@
 <toolChain superClass="mb.xygwin.exec.release.toolchain" id="mb.xygwin.exec.release.toolchain.2020050388" name="Release.toolchain">
 <tool superClass="mb.xygwin.exec.release.com.xilinx.mdt.edk.build.tool.xygwin.mb.c.compiler" id="mb.xygwin.exec.release.com.xilinx.mdt.edk.build.tool.xygwin.mb.c.compiler.749258684" name="MicroBlaze C Compiler">
 <option superClass="com.xilinx.mdt.edk.managedbuilder.mb.mbspec.appmode" id="com.xilinx.mdt.edk.managedbuilder.mb.mbspec.appmode.1746481086"/>
+<option superClass="xygwin.mb.c.compiler.debugging.level" id="xygwin.mb.c.compiler.debugging.level.941566304" value="xygwin.mb.c.debugging.level.none" valueType="enumerated"/>
+<option superClass="xygwin.mb.c.compiler.general.optimization.level" id="xygwin.mb.c.compiler.general.optimization.level.1031016442" value="xygwin.mb.c.optimization.level.most" valueType="enumerated"/>
 </tool>
 <tool superClass="mb.xygwin.exec.release.com.xilinx.mdt.edk.build.tool.xygwin.mb.cpp.compiler" id="mb.xygwin.exec.release.com.xilinx.mdt.edk.build.tool.xygwin.mb.cpp.compiler.2035269703" name="MicroBlaze C++ Compiler"/>
 <tool superClass="com.xilinx.mdt.edk.build.tool.xygwin.mb.c.link" id="com.xilinx.mdt.edk.build.tool.xygwin.mb.c.link.654415532" name="MicroBlaze C Linker">
-<option superClass="com.xilinx.mdt.edk.managedbuilder.mb.linkerscript" id="com.xilinx.mdt.edk.managedbuilder.mb.linkerscript.1984131545" valueType="includePath">
+<option superClass="xygwin.mb.c.link.libs" id="xygwin.mb.c.link.libs.542560793" valueType="libs">
+<listOptionValue value="lwip4" builtIn="false"/>
+<listOptionValue value="xilkernel" builtIn="false"/>
+</option>
+<option superClass="com.xilinx.mdt.edk.managedbuilder.mb.linkerscript" id="com.xilinx.mdt.edk.managedbuilder.mb.linkerscript.1777942900" valueType="includePath">
 <listOptionValue value="../SSP_Config.ld" builtIn="false"/>
 </option>
 </tool>
 <tool superClass="com.xilinx.mdt.edk.build.tool.xygwin.mb.cpp.link" id="com.xilinx.mdt.edk.build.tool.xygwin.mb.cpp.link.1827668268" name="MicroBlaze C++ Linker"/>
+<macros expandEnvironmentMacros="true"/>
 </toolChain>
 </configuration>
 <configuration id="mb.xygwin.exec.profile.1693630392" name="Profile" description="" parent="mb.xygwin.exec.profile" artifactName="SSP_Config" artifactExtension="elf" cleanCommand="rm -rf">
@@ -44,12 +52,13 @@
 </tool>
 <tool superClass="mb.xygwin.exec.profile.com.xilinx.mdt.edk.build.tool.xygwin.mb.cpp.compiler" id="mb.xygwin.exec.profile.com.xilinx.mdt.edk.build.tool.xygwin.mb.cpp.compiler.539675764" name="MicroBlaze C++ Compiler"/>
 <tool superClass="com.xilinx.mdt.edk.build.tool.xygwin.mb.c.link" id="com.xilinx.mdt.edk.build.tool.xygwin.mb.c.link.1040329080" name="MicroBlaze C Linker">
-<option superClass="com.xilinx.mdt.edk.managedbuilder.mb.linkerscript" id="com.xilinx.mdt.edk.managedbuilder.mb.linkerscript.2078827248" valueType="includePath">
+<option superClass="com.xilinx.mdt.edk.managedbuilder.mb.linkerscript" id="com.xilinx.mdt.edk.managedbuilder.mb.linkerscript.1851590851" valueType="includePath">
 <listOptionValue value="../SSP_Config.ld" builtIn="false"/>
 </option>
 </tool>
 <tool superClass="com.xilinx.mdt.edk.build.tool.xygwin.mb.cpp.link" id="com.xilinx.mdt.edk.build.tool.xygwin.mb.cpp.link.1363184476" name="MicroBlaze C++ Linker"/>
 </toolChain>
 </configuration>
+<macros/>
 </project>
 </ManagedProjectBuildInfo>
