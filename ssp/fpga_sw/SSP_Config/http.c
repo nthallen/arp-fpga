@@ -511,6 +511,7 @@ static void process_http_form(obuf_t *obuf, char *URL) {
     "<html>\r\n"
     "<head>\r\n"
     "<title>SSP Configuration Utility</title>\r\n"
+    "<meta http-equiv=\"Content-Type\" content=\"text/html;charset=utf-8\" >\r\n"
     "<style type=\"text/css\">\r\n"
     "<!--\r\n"
     "body { background-color: cyan }\r\n"
@@ -594,14 +595,11 @@ static void process_http_form(obuf_t *obuf, char *URL) {
     "  <td>" );
   field_output( obuf, &fld_NT );
   obuf_write( obuf, "</td></tr>\r\n"
-    "<tr><th>Configuration Length:</th><td>" );
+    "<tr><td colspan=\"2\" align=\"center\">Length: " );
   obuf_write( obuf, ntoa( SSP_Config.hdr.n_bytes, 10, 1 ) );
-  obuf_write( obuf, "</td></tr>\r\n"
-    "<tr><th>Configuration Checksum:</th><td>" );
+  obuf_write( obuf, " Checksum: " );
   obuf_write( obuf, ntoa( SSP_Config.hdr.checksum, 10, 1 ) );
-  obuf_write( obuf, "</td></tr>\r\n"
-    "<tr><th>Configuration Version:</th><td>0</td></tr>\r\n"
-    "<tr><td colspan=\"2\" align=\"center\">"
+  obuf_write( obuf, " Version: 0 "
     "<input type=\"submit\" name=\"SU\" value=\"submit\"></td></tr>\r\n"
     "</table>\r\n"
     "</form>\r\n" );
