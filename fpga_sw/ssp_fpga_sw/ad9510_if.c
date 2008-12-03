@@ -248,7 +248,9 @@ void AD9510_Init(int ChEn, int divisor) {
 	    if (ChEn) ChEn = 1;
 	    ChEn &= 0x7;
 	  #else
-      if (ChEn) ChEn |= 1;
+      // Channel 1 is always required to provide the clock to the trigger circuit
+      // Channel 6 is required to drive the QCLI
+      if (ChEn) ChEn |= 0x41;
 	    ChEn &= 0x67; // Channels 3, 4 & 7 are unused
 	  #endif
 	  // AD9510 Serial Port Configuration leave as default
@@ -275,15 +277,19 @@ void AD9510_Init(int ChEn, int divisor) {
 	    ad9510_Write(&Spi, lvds_cfg);
 	  }
 	  // Dividers
-	  if ( divisor <= 1 ) {
-	    div_code_0 = 0;
-	    div_code_1 = DIVIDER_BYPASS;
-	  } else {
-	    if (divisor > 32 ) divisor = 32;
-	    div_code_0 = ((divisor/2-1)<<4) + ((divisor+1)/2-1);
-	    div_code_1 = 0;
-	  }
 	  for ( ch = 0; ch <= 7; ch++ ) {
+      int dvsr = divisor;
+      if (ChEn & (1<<ch)) {
+        if ( ch == 6 ) dvsr = 25; // 4 MHz to QCLI
+      } else dvsr = 0;
+  	  if ( dvsr <= 1 ) {
+  	    div_code_0 = 0;
+  	    div_code_1 = DIVIDER_BYPASS;
+  	  } else {
+  	    if (dvsr > 32 ) dvsr = 32;
+  	    div_code_0 = ((dvsr/2-1)<<4) + ((dvsr+1)/2-1);
+  	    div_code_1 = 0;
+  	  }
 	    ad9510_Write(&Spi, 0x4800 + 0x200*ch + div_code_0 );
 	    ad9510_Write(&Spi, 0x4900 + 0x200*ch + div_code_1 );
 	    // could possibly reduce power a bit more by bypassing divider for disabled channels
