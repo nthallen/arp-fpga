@@ -23,6 +23,15 @@ int main(void) {
   return 0;
 }
 
+// Configuration options are selected via JP[3:0] which is SW1[1:4]
+// SW1[4] is the LSB, so the options are:
+// SW1  1  2  3  4  IP
+//      0  0  0  0  10.0.0.200
+//      0  0  0  1  10.0.0.201
+//      0  0  1  0  10.0.0.202
+//      0  0  1  1  192.168.0.200
+//      0  1  0  0  192.168.0.201
+//      1  1  1  1  Use stored configuration
 SSP_Config_t SSP_Config;
 net_config_t cfg_opts[N_CFG_OPTS] = {
   { { 0,0xA,0x35,0x55,0x55,0x55 },
