@@ -143,9 +143,26 @@ set(handles.CAOVF, 'visible','off');
 set(handles.PAOOR, 'visible','off');
 PAOOR = 0;
 CAOVF = 0;
+if ~exist('CPCI14','dir')
+  mkdir('CPCI14');
+end
+if ~exist('CPCI14/ssp.log','file')
+  ssp_log_fd = fopen('CPCI14/ssp.log','a');
+  if ssp_log_fd < 0
+    error('Unable to create CPCI14/ssp.log');
+  end
+  fclose(ssp_log_fd);
+end
+ssp_log_fd = fopen('CPCI14/ssp.log', 'r');
+if ( ssp_log_fd < 0 )
+  errordlg('Could not read CPCI14/ssp.log');
+  return;
+end
+fseek(ssp_log_fd, 0, 'eof'); % seek to the end
+
 system(cmd);
 pause(1);
-% files = dir('LOG/ssp_*.lock');
+% files = dir('CPCI14/ssp_*.lock');
 % if length(files) > 1
 %   errordlg('More than one lock file found');
 %   return;
@@ -168,85 +185,93 @@ index = handles.data.index;
 SN = -1;
 while 1
   handles = guidata(hObject);
-  path = mlf_path( 'LOG', index );
-  lockfile = sprintf('LOG/ssp_%d.lock', index);
+  path = mlf_path( 'CPCI14', index );
+  lockfile = sprintf('CPCI14/ssp_%d.lock', index);
   if exist( path, 'file' ) && ~exist( lockfile, 'file')
-    S = load(path);
-    if length(S) > 12
-      D = S(12:end);
-      hdr = struct( 'N', index, 'NWordsHdr', S(1), ...
-        'FormatVersion', S(2), ...
-        'NChannels', S(3), ...
-        'NSamples', S(4), ...
-        'NCoadd', S(5), ...
-        'NAvg', S(6)+1, ...
-        'NSkL', S(7), ...
-        'NSkP', S(8), ...
-        'ScanNum', S(9), ...
-        'Spare', S(10), ...
-        'OVF', S(11));
-      if length(D) ~= hdr.NChannels*hdr.NSamples;
-        error('Incorrect length of scan: cpci: %d NS:%d NCh:%d len:%d', ...
-          i, NS, hdr.NChannels, length(D));
-      end
-      if hdr.NChannels ~= NCh(NE)
-        error('Incorrect NChannels: %d/%d', hdr.NChannels, NCh(NE) );
-      end
-      if hdr.NSamples ~= NS
-        error('Incorrect NSamples: %d/%d', hdr.NSamples, NS );
-      end
-      if hdr.NAvg ~= NA
-        error('Incorrect NAvg: %d/%d', hdr.NAvg, NA );
-      end
-      if hdr.NCoadd ~= NC
-        error('Incorrect NCoadd: %d/%d', hdr.NCoadd, NC );
-      end
-      D = reshape(D,hdr.NChannels,NS)'/(hdr.NAvg * hdr.NCoadd);
-      newSN = hdr.ScanNum;
-      if SN >= 0
-        dSN = newSN-SN;
-        set(handles.dSN,'string',sprintf('%d',dSN));
-      end
-      SN = newSN;
-      if ~handles.data.logging
-        delete(path);
-      end
-
-      axes(handles.axes1);
-      if get(handles.FFT,'Value')
-        F = abs(fft(D.*W));
-        loglog(f_fft, F(x2,:)*2/NS);
-        ylim([.8/(hdr.NAvg*hdr.NCoadd) 32768]);
-        set(gca,'ygrid','on');
-      else
-        plot(D,'*');
-        ylim([-32767 32768]);
-        xlim([1 length(D)]);
-      end
-      title(sprintf('Index %d', index));
-      index = index+1;
-      
-      new_PAOOR = bitand(hdr.OVF,448) ~= 0;
-      if new_PAOOR ~= PAOOR
-        if new_PAOOR
-          set( handles.PAOOR,'visible','on');
-        else
-          set( handles.PAOOR,'visible','off');
-        end
-        PAOOR = new_PAOOR;
-      end
-      
-      new_CAOVF = bitand(hdr.OVF,7) ~= 0;
-      if new_CAOVF ~= CAOVF
-        if new_CAOVF
-          set( handles.CAOVF,'visible','on');
-        else
-          set( handles.CAOVF,'visible','off');
-        end
-        CAOVF = new_CAOVF;
-      end
+    D = loadbin(path);
+    fseek(ssp_log_fd, ftell(ssp_log_fd), 'bof');
+    hdrline = fgetl(ssp_log_fd);
+    H = sscanf(hdrline,'%g');
+    if length(H) < 13
+      error('Short header');
     end
-  elseif handles.data.stopped && ~exist('LOG/ssp_log.pid','file')
+    hdr = struct( 'N', index, 'LN', H(2), 'T', H(1), ...
+      'NWordsHdr', H(3), ...
+      'FormatVersion', H(4), ...
+      'NChannels', H(5), ...
+      'NSamples', H(6), ...
+      'NCoadd', H(7), ...
+      'NAvg', H(8)+1, ...
+      'NSkL', H(9), ...
+      'NSkP', H(10), ...
+      'ScanNum', H(11), ...
+      'Spare', H(12), ...
+      'OVF', H(13));
+    if size(D,1) ~= hdr.NSamples
+      error('Incorrect scan length: cpci: %d NS:%d NCh:%d len:%d', ...
+        index, NS, hdr.NChannels, size(D,1));
+    end
+    if hdr.NChannels ~= NCh(NE)
+      error('cpci %d: Header NChannels(%d) does not match request(%d)', ...
+        index, hdr.NChannels, NCh(NE) );
+    end
+    if size(D,2) ~= hdr.NChannels
+      error('cpci %d: Header NCh(%d) does not match array width(%d)', ...
+        index, hdr.NChannels, size(D,2));
+    end
+    if hdr.NSamples ~= NS
+      error('Incorrect NSamples: %d/%d', hdr.NSamples, NS );
+    end
+    if hdr.NAvg ~= NA
+      error('Incorrect NAvg: %d/%d', hdr.NAvg, NA );
+    end
+    if hdr.NCoadd ~= NC
+      error('Incorrect NCoadd: %d/%d', hdr.NCoadd, NC );
+    end
+    newSN = hdr.ScanNum;
+    if SN >= 0
+      dSN = newSN-SN;
+      set(handles.dSN,'string',sprintf('%d',dSN));
+    end
+    SN = newSN;
+    if ~handles.data.logging
+      delete(path);
+    end
+
+    axes(handles.axes1);
+    if get(handles.FFT,'Value')
+      F = abs(fft(D.*W));
+      loglog(f_fft, F(x2,:)*2/NS);
+      ylim([.8/(hdr.NAvg*hdr.NCoadd) 32768]);
+      set(gca,'ygrid','on');
+    else
+      plot(D,'*');
+      ylim([-32767 32768]);
+      xlim([1 length(D)]);
+    end
+    title(sprintf('Index %d', index));
+    index = index+1;
+
+    new_PAOOR = bitand(hdr.OVF,448) ~= 0;
+    if new_PAOOR ~= PAOOR
+      if new_PAOOR
+        set( handles.PAOOR,'visible','on');
+      else
+        set( handles.PAOOR,'visible','off');
+      end
+      PAOOR = new_PAOOR;
+    end
+
+    new_CAOVF = bitand(hdr.OVF,7) ~= 0;
+    if new_CAOVF ~= CAOVF
+      if new_CAOVF
+        set( handles.CAOVF,'visible','on');
+      else
+        set( handles.CAOVF,'visible','off');
+      end
+      CAOVF = new_CAOVF;
+    end
+  elseif handles.data.stopped && ~exist('CPCI14/ssp_log.pid','file')
     break;
   else
     pause( .1 );
