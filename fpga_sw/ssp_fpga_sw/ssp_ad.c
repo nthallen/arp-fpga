@@ -8,6 +8,9 @@
    tcpThread() manages TCP connections after accept()
 */
 #include "ssp_intr.h"
+#include "ssp_print.h"
+#include "ssp_status.h"
+#include "ssp_eeprom.h"
 #include "errno.h"
 #include "mb_interface.h"
 #include "ad9510_if.h"
@@ -18,6 +21,7 @@ typedef struct {
   struct sockaddr_in cliAddr;
 } tcpThreadContext_t;
 
+SSP_EE_Config_t SSP_EE_Config;
 static int err_rv = 1;
 sem_t udp_sem, tcp_sem, cfg_sem;
 static struct sockaddr_in udpCliAddr;
@@ -46,7 +50,16 @@ int main(void) {
 
 void* main_main(void* arg) {
   extern void lwip_init();
-  safe_print("\r\n\r\nSSP System Software V1.0\n");
+  int rv;
+  rv = status_init();
+  EE_Init();
+  rv = EE_ReadConfig(&SSP_EE_Config);
+  if ( rv != 0 ) EE_DefaultConfig(&SSP_EE_Config);
+  status_set( rv==0, "14", "Configuration set");
+  safe_print(("\r\n\r\nSSP System Software V1.1\r\n"));
+  EE_print_config(&SSP_EE_Config, rv==0 ?
+        "Configuration loaded successfully:\r\n" :
+        "Existing configuration invalid or unreadable:\r\n");
   sleep(100);
   lwip_init(); // starts two more threads
   sleep(100); // msecs to finish message
@@ -57,16 +70,16 @@ void* main_main(void* arg) {
   // if ( ethernet_init() ) return &err_rv;
   // xil_printf("ethernet initialized\n");
   if ( sem_init(&udp_sem, 0, 0) ) {
-    safe_print( "Unable to initialize udp_sem\n" );
+    report_error( "212", "Unable to initialize udp_sem" );
     return &err_rv;
   }
   if ( sem_init(&tcp_sem, 0, 0) ) {
-    safe_print( "Unable to initialize tcp_sem\n" );
+    report_error( "213", "Unable to initialize tcp_sem" );
     return &err_rv;
   }
   /* cfg_sem could be a mutex. */
   if ( sem_init(&cfg_sem, 0, 0) ) {
-    safe_print( "Unable to initialize cfg_sem\n" );
+    report_error( "214", "Unable to initialize cfg_sem\n" );
     return &err_rv;
   }
   sem_post( &cfg_sem ); // unlock the semaphore
@@ -143,7 +156,7 @@ void *udpThread(void *arg) {
 
   udp_socket = socket(AF_INET,SOCK_DGRAM,0);
   if ( udp_socket < 0 ) {
-    safe_print("cannot open udp socket\n");
+    report_error( "312", "cannot open udp socket\n");
     return &err_rv;
   }
 
@@ -155,10 +168,10 @@ void *udpThread(void *arg) {
   /* We'll leave configuration of the udpSrvrAddr to the tcpThread */
   rc = bind(udp_socket, (struct sockaddr *) &udpCliAddr, sizeof(udpCliAddr));
   if ( rc<0 ) {
-    safe_print("cannot bind UDP port\n");
+    report_error( "313", "cannot bind UDP port\n");
     return &err_rv;
   }
-  safe_print("udp_thread: UDP bound, awaiting semaphore\n");
+  status_set( 0, "3", "udp_thread: UDP bound, awaiting semaphore");
   for (;;) {
     int i; // for overrun check at the bottom
     //int status;
@@ -166,9 +179,7 @@ void *udpThread(void *arg) {
     // safe_print("udp_thread: waiting\n");
     if ( sem_wait( &udp_sem ) ) {
     	/* We never expect this to happen and know of no way to recover */
-      print_mutex_lock();
-      safe_printf(("Error %d from sem_wait() in udpThread\r\n", errno ));
-      print_mutex_unlock();
+      check_return( errno ? errno : 1, "31", "sem_wait(&udp_sem)" );
       return &err_rv;
     }
     if ( ssp_config.CC != UDPCMD_ENABLE ) {
@@ -181,18 +192,18 @@ void *udpThread(void *arg) {
 	    unsigned int scan_size;
 
     	if ( ssp_config.NE < 1 || ssp_config.NE > 7 ) {
-    		safe_print("Invalid NE configuration\n");
+        status_set( 1, "31", "Invalid NE configuration");
     		ssp_config.NE = 1;
     	}
     	if ( ssp_config.NS > SSP_MAX_SAMPLES ) {
-    		safe_print("NS exceeds SSP_MAX_SAMPLES\n");
+        status_set( 1, "312", "NS exceeds SSP_MAX_SAMPLES");
     		ssp_config.NS = SSP_MAX_SAMPLES;
     	}
     	xfr_enable();
     	ssp_config.EN = 1;
     	ssp_config.RV = 200; /* OK */
     	sem_post( &tcp_sem );
-    	safe_print("Enabled\n");
+      status_set( 1, "32", "Enabled" );
     	// Setup data transfer area (don't have to do this before enabling circuit
     	// because we are the thread that reads in the data)
     	// Need a buffer that holds 7+SSP_MAX_CHANNELS*SSP_MAX_SAMPLES words
@@ -211,7 +222,7 @@ void *udpThread(void *arg) {
     			n_channels = 3;
     			break;
     		default:
-    			safe_print("Cannot happen\n");
+    			report_error( "32", "Bad NE value: Cannot happen");
     			break;
     	}
     	scan_xmit_length = 7 + n_channels * ssp_config.NS;
@@ -225,13 +236,16 @@ void *udpThread(void *arg) {
 	    	if ( sem_trywait( &udp_sem ) ) {
 	    		// No command waiting: Look for data
 	    		if ( errno != EAGAIN ) {
-	    			safe_print("Error from sem_trywait\n");
+	    			report_errno( "321", "Error from sem_trywait" );
 	    		}
 	    		nw = ssp_read_fifo( &scan[words_read+1], words_remaining );
 	    		if ( nw == 0 ) {
 	    			sleep(100);
 	    			// yield();
 	    		} else if ( words_remaining == nw ) {
+            // Poke in divisor
+            scan[5] = 0x1234; // Test byte order
+            // scan[2] |= ssp_config.NF << 8;
             if ( scan_size > MAX_UDP_PAYLOAD )
               rc = sendfrags(udp_socket, scan, scan_size, 0, 
 		          (struct sockaddr *) &udpSrvrAddr, 
@@ -241,9 +255,7 @@ void *udpThread(void *arg) {
   		          (struct sockaddr *) &udpSrvrAddr, 
   		          sizeof(udpSrvrAddr));
 		        if ( rc<0 ) {
-		          print_mutex_lock();
-		          safe_printf(( "udpThread: cannot send data: %d\r\n", errno));
-		          print_mutex_unlock();
+              report_errno( "323", "udpThread: cannot send data");
 		          return &err_rv;
 		        }
 		        words_read = 0;
@@ -259,15 +271,15 @@ void *udpThread(void *arg) {
 	          case UDPCMD_DISABLE:
 	            xfr_disable();
 	            ssp_config.EN = 0;
-	            safe_print("Disabled\n");
+              status_set( 1, "34", "Disabled" );
 	            enabled = 0;
 	            break;
 	          case UDPCMD_TRIGGER:
 	            set_trigger( );
-	            safe_print("Trigger Reconfigured\n");
+              status_set( 0, "321", "Trigger Reconfigured");
 	            break;
 	          default:
-	            safe_print("Invalid UDPCMD\n");
+	            report_error( "321", "Invalid UDPCMD" );
 	            ssp_config.RV = 500;
 	            break;
 	        }
@@ -275,27 +287,30 @@ void *udpThread(void *arg) {
 	      }
 	    }
 	    for ( i = SSP_MAX_SCAN_LENGTH; i < SSP_MAX_SCAN_LENGTH+SCAN_GUARD; i++ ) {
+        int overrun = 0;
 	      if ( scan[i] ) {
 	        print_mutex_lock();
 	        safe_printf(("Overrun: scan[%d] = %d\r\n", i, scan[i]));
 	        print_mutex_unlock();
+          overrun = 1;
 	        break;
 	      }
+        if ( overrun) report_error( "323", "Overrun" );
 	    }
     }
   }
 }
   
 void *serverAppThread(void *arg) {
-   struct sockaddr_in servAddr, cliAddr;
-   int tcp_socket, new_sock;
-   tcpThreadContext_t *tcpThreadContext;
+  struct sockaddr_in servAddr, cliAddr;
+  int tcp_socket, new_sock;
+  tcpThreadContext_t *tcpThreadContext;
 
-   /* create socket */
-   tcp_socket = socket(AF_INET, SOCK_STREAM, 0);
-   if(tcp_socket<0) {
-     safe_print("serverAppThread: cannot open tcp_socket\n");
-     return &err_rv;
+  /* create socket */
+  tcp_socket = socket(AF_INET, SOCK_STREAM, 0);
+  if(tcp_socket<0) {
+    report_error( "412", "serverAppThread: cannot open tcp_socket" );
+    return &err_rv;
   }
 
   /* bind server port */
@@ -304,30 +319,30 @@ void *serverAppThread(void *arg) {
   servAddr.sin_port = htons(SSP_SERVER_PORT);
   
   if ( bind(tcp_socket, (struct sockaddr *) &servAddr, sizeof(servAddr))<0) {
-    safe_print("serverAppThread: cannot bind port\n");
+    report_error( "413", "serverAppThread: cannot bind port" );
     return &err_rv;
   }
 
   if ( listen(tcp_socket,5) < 0 ) {
-    safe_print("serverAppThread: listen failed\n");
+    report_error("414", "serverAppThread: listen failed" );
     return &err_rv;
   }
 
-  safe_print("serverAppThread: entering main loop\n");
+  status_set( 0, "4", "serverAppThread: entering main loop" );
   while(1) {
     int cliLen = sizeof(cliAddr);
     new_sock = accept(tcp_socket, (struct sockaddr *)&cliAddr, &cliLen);
     if ( new_sock<0 ) {
-      safe_print("serverAppThread: cannot accept connection\n");
+      report_error( "421", "serverAppThread: cannot accept connection" );
       return &err_rv;
     }
-    safe_print("serverAppThread: accepted connection\n");
+    status_set( 0, "412", "serverAppThread: accepted connection" );
     // This must be handled more robustly. Only one UDP client
     // can be supported at a time, but we probably need to allow
     // us to hijack the connection if we lose one for some reason
     tcpThreadContext = mem_malloc(sizeof(tcpThreadContext_t));
     if ( tcpThreadContext == 0 ) {
-      safe_print("memory allocation failure\n");
+      report_error( "423", "memory allocation failure" );
     } else {
       // Spawn a new thread to handle the data for the new connection
       // The example gave lower priorities as more connections
@@ -355,7 +370,7 @@ void *tcpThread( void *context ) {
     safe_printf(("tcpThread: received %d bytes: %s", n, rcv_msg));
     print_mutex_unlock();
     if ( n > SSP_MAX_CTRL_MSG ) {
-      safe_print("tcpThread: recv overflow!\n");
+      report_error( "512", "tcpThread: recv overflow!" );
       break;
     } else if ( n <= 0 ) break;
     else {
@@ -380,52 +395,50 @@ void *tcpThread( void *context ) {
     }
   }
   close(my_sock);
-  safe_print("tcpThread: socket closed, exiting thread\n");
-  // xfr_disable();
+  status_set( 0, "512", "tcpThread: socket closed, exiting thread" );
   mem_free(tcpThreadContext);
   return &err_rv;
 }
 
-static void define_ip4addr( struct ip_addr *dest, int a, int b, int c, int d ) {
-  IP4_ADDR( dest, a, b, c, d );
+static void define_ip4addr( struct ip_addr *dest, unsigned char *addr ) {
+  IP4_ADDR( dest, addr[0], addr[1], addr[2], addr[3] );
 }
 
 int ethernet_init(void) {
     struct ip_addr ipaddr, netmask, gateway;
     struct netif *server_netif;
-    unsigned char mac_addr[] = { SSP_MAC_ADDRESS };
+    unsigned char *mac_addr = SSP_EE_Config.net_cfg.mac_address;
     sleep(100);
-    define_ip4addr(&ipaddr, SSP_IP_ADDRESS );
-    define_ip4addr(&netmask, SSP_IP_NETMASK );
-    define_ip4addr(&gateway, SSP_IP_GATEWAY );
+    define_ip4addr(&ipaddr, SSP_EE_Config.net_cfg.ip_address );
+    define_ip4addr(&netmask, SSP_EE_Config.net_cfg.ip_netmask );
+    define_ip4addr(&gateway, SSP_EE_Config.net_cfg.ip_gateway );
     
     // Set up the lwIP network interface
-    print_mutex_lock();
+    // Printed elsewhere
+/*  print_mutex_lock();
     safe_printf(("MAC Address: %02x:%02x:%02x:%02x:%02x:%02x\r\n", SSP_MAC_ADDRESS ));
     safe_printf(("IP Address: %d.%d.%d.%d\r\n", SSP_IP_ADDRESS ));
     safe_printf(("IP Netmask: %d.%d.%d.%d\r\n", SSP_IP_NETMASK ));
     safe_printf(("IP Gateway: %d.%d.%d.%d\r\n", SSP_IP_GATEWAY ));
-    print_mutex_unlock();
-    
+    print_mutex_unlock(); */    
     // Allocate and configure the server's netif
     server_netif = malloc(sizeof(struct netif)); 
     if (server_netif == NULL) {
-        safe_print("ERROR: netif_add(): Out of memory for default netif\n\r");
-        return 1;
+      report_error( "341", "ERROR: netif_add(): Out of memory for default netif" );
+      return 1;
     }
     xemac_add(server_netif, &ipaddr, &netmask, &gateway,
               mac_addr, EMAC_BASEADDR );
     sleep(100);
-    //safe_print("netif_added\n");
     netif_set_default(server_netif);
     sleep(100);
-    //safe_print("default added\n");
 
   	/* specify that the network if is up */
   	netif_set_up(server_netif);
 
   	/* start packet receive thread - required for lwIP operation */
   	sys_thread_new((void *)&xemacif_input_thread, server_netif, 1);
+    status_set( 0, "341", "ethernet_init completed" );
 
     return 0;
 }
@@ -434,14 +447,10 @@ int ethernet_init(void) {
  * if status is non-zero, reports and error
  * returns status
  */
-int check_fifo_status( int status, char *where ) {
-  if ( status ) {
-    print_mutex_lock();
-    safe_printf(("ERROR: status = %d while %s\r\n", status, where ));
-    print_mutex_unlock();
-  }
-  return status;
-}
+// int check_fifo_status( int status, char *where ) {
+  // check_return( status, "xx", where );
+  // return status;
+// }
 
 static int enq_udpcmd( int cmdcode ) {
   ssp_config.CC = cmdcode;
@@ -503,7 +512,7 @@ static unsigned int parse_cmds( char *cmd, tcpThreadContext_t *tcpThreadContext 
     if ( cmd[1] == 'N' ) {
     	if (ssp_config.EN) return(503); // busy
       if (!ssp_config.NP) {
-        safe_print("xfr_enable: udp_port not initialized\n");
+        report_error( "523", "xfr_enable: udp_port not initialized\n");
         return 400;
       }
       memcpy((char *)&udpSrvrAddr, (char *)&tcpThreadContext->cliAddr,
@@ -513,7 +522,7 @@ static unsigned int parse_cmds( char *cmd, tcpThreadContext_t *tcpThreadContext 
     } else if ( cmd[1] == 'X' ) {
     	if (ssp_config.EN) return(503); // busy
       app_done = 1;
-      safe_print("Received Exit\n");
+      status_set( 1, "8421", "Received Exit" );
       return 410;
     }
   } else if ( cmd[0] == 'D' ) {
@@ -547,7 +556,7 @@ static unsigned int parse_cmds( char *cmd, tcpThreadContext_t *tcpThreadContext 
         ssp_config.NF = limit_range( "NF", newval, 1, 32 );
         break;
   		default:
-	  		safe_print("tcpThread: unrecognized N command\n");
+	  		report_error( "521", "tcpThread: unrecognized N command" );
 	  		return 400;
  		}
   	return 200;

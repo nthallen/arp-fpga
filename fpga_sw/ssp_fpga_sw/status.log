@@ -1,0 +1,99 @@
+ssp_eeprom: 1
+12: ssp_eeprom.c:    check_return( rv, "12", "XIic_SetAddress" );
+131: ssp_eeprom.c:      check_return( rv, "131", "XIic_SetAddress" );
+13: ssp_eeprom.c:  check_return( rv, "13", "XIic_SetAddress" );
+141: ssp_eeprom.c:  check_return( rv, "141", "XIic_SelfTest" );
+142: ssp_eeprom.c:    check_return( rv, "142", "XIntc_Initialize" );
+143: ssp_eeprom.c:    check_return( rv, "143", "XIntc_Start" );
+145: ssp_eeprom.c:    check_return( rv, "145", "XIntc_Connect" );
+146: ssp_eeprom.c:    check_return( rv, "146", "register_int_handler" );
+147: ssp_eeprom.c:  check_return( rv, "147", "XIic_Start" );
+14: ssp_eeprom.c:  check_return( rv, "14", "XIic_Initialize" );
+151: ssp_eeprom.c:  if ( check_return( rv, "151", "EE_Read 2" ) ) return 1;
+15: ssp_eeprom.c:  if ( check_return( rv, "15", "EE_Read" ) ) return 1;
+161: ssp_eeprom.c:    return check_return( rv, "161", "EE_Write" );
+16: ssp_eeprom.c:	    report_error( "16", "EE_WriteConfig config too large" );
+
+main_main: 2
+212: ssp_ad.c:    report_error( "212", "Unable to initialize udp_sem" );
+213: ssp_ad.c:    report_error( "213", "Unable to initialize tcp_sem" );
+214: ssp_ad.c:    report_error( "214", "Unable to initialize cfg_sem\n" );
+
+udpThread: 3
+312: ssp_ad.c:    report_error( "312", "cannot open udp socket\n");
+313: ssp_ad.c:    report_error( "313", "cannot bind UDP port\n");
+31: ssp_ad.c:      check_return( errno ? errno : 1, "31", "sem_wait(&udp_sem)" );
+321: ssp_ad.c:	            report_error( "321", "Invalid UDPCMD" );
+323: ssp_ad.c:        if ( overrun) report_error( "323", "Overrun" );
+32: ssp_ad.c:    			report_error( "32", "Bad NE value: Cannot happen");
+341: ssp_ad.c:      report_error( "341", "ERROR: netif_add(): Out of memory for default netif" );
+
+sg_mutex: 35
+351: ssp_intr.c:  check_return( rv, "351", "pthread_mutex_lock(&sg_mutex)" );
+352: ssp_intr.c:  check_return( rv, "352", "pthread_mutex_unlock(&sg_mutex)" );
+
+serverAppThread: 4
+412: ssp_ad.c:    report_error( "412", "serverAppThread: cannot open tcp_socket" );
+413: ssp_ad.c:    report_error( "413", "serverAppThread: cannot bind port" );
+414: ssp_ad.c:    report_error("414", "serverAppThread: listen failed" );
+421: ssp_ad.c:      report_error( "421", "serverAppThread: cannot accept connection" );
+423: ssp_ad.c:      report_error( "423", "memory allocation failure" );
+
+tcpThread: 5
+512: ssp_ad.c:    report_error( "512", "tcpThread: recv overflow!" );
+515: ssp_ad.c     report_error( "523", "xfr_enable: udp_port not initialized\n");
+521: ssp_ad.c:	  report_error( "521", "tcpThread: unrecognized N command" );
+
+SPI: 6
+612: ad9510_if.c:    if ( check_return(Status, "612", "XSpi_Initialize()" ))
+613: ad9510_if.c:    if ( check_return( Status, "613", "SPI: SetupInterruptSystem()" ))
+614: ad9510_if.c:    if ( check_return( Status, "614", "XSpi_SetOptions()" ))
+615: ad9510_if.c:    if ( check_return( Status, "615", "XSpi_SetSlaveSelect()" ))
+61: ad9510_if.c:    if ( check_return( Status, "61", "sem_init(&spi_sem)"))
+621: ad9510_if.c:  if ( check_return( rc, "621", "XSpi_Transfer()")) return;
+623: ad9510_if.c:  check_return( rc, "623", "sem_wait(&spi_sem)" );
+624: ad9510_if.c:	  if ( check_return( Status, "624", "XSpi_SetSlaveSelect(AD9510_SS_ADDR)" ))
+
+Scan_HW: 7
+712
+713
+714
+715
+716
+721
+723
+724
+725
+726
+727
+728
+729
+72J
+72K
+
+
+
+S121: ssp_eeprom.c:  status_set( 1, "121", "EE_ReadConfig invalid size" );
+S123: ssp_eeprom.c:  status_set( 1, "123", "Invalid Checksum" );
+S12: ssp_eeprom.c:  status_set( 1, "12", "EE_ReadConfig" );
+S13: ssp_eeprom.c:	 status_set( 1, "13", "EE_WriteConfig" );
+S14: ssp_ad.c:  status_set( rv==0, "14", "Configuration set");
+S1: ssp_status.c:  status_set( 0, "1", "Init" );
+
+S312: ssp_ad.c:  status_set( 1, "312", "NS exceeds SSP_MAX_SAMPLES");
+S31: ssp_ad.c:  status_set( 1, "31", "Invalid NE configuration");
+S321: ssp_ad.c:  status_set( 0, "321", "Trigger Reconfigured");
+S32: ssp_ad.c:  status_set( 1, "32", "Enabled" );
+S341: ssp_ad.c:  status_set( 0, "341", "ethernet_init completed" );
+S34: ssp_ad.c:  status_set( 1, "34", "Disabled" );
+S351: ssp_intr.c:  	 status_set( 0, "351", "FIFO non-empty during init\n");
+S3: ssp_ad.c:  status_set( 0, "3", "udp_thread: UDP bound, awaiting semaphore");
+
+S412: ssp_ad.c:  status_set( 0, "412", "serverAppThread: accepted connection" );
+S4: ssp_ad.c:  status_set( 0, "4", "serverAppThread: entering main loop" );
+
+S512: ssp_ad.c:  status_set( 0, "512", "tcpThread: socket closed, exiting thread" );
+
+S712: ssp_intr.c: status_set( 0, "712", "FIFO non-empty during init\n");
+
+S8421: ssp_ad.c:      status_set( 1, "8421", "Received Exit" );

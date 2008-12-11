@@ -1,3 +1,4 @@
+#include "ssp_print.h"
 #include "ssp_intr.h"
 #include <stdio.h>
 #include <pthread.h>
