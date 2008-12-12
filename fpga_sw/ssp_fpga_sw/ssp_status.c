@@ -55,12 +55,14 @@ static void set_status( int val ) {
 }
 
 static void status_lock(void) {
-  int rv = pthread_mutex_lock(&status_mutex);
+  int rv;
+  rv = pthread_mutex_lock(&status_mutex);
   if ( rv != 0 ) set_status( 0x1F );
 }
 
 static void status_unlock(void) {
-  int rv = pthread_mutex_unlock(&status_mutex);
+  int rv;
+  rv = pthread_mutex_unlock(&status_mutex);
   if ( rv != 0) set_status( 0x1E);
 }
 
@@ -148,12 +150,12 @@ void status_set( int clear, unsigned char *codes, char *reason) {
         cur_status_set = 1; // future n_status_sets
       }
       n_status_sets = 0;
-    } else {
-      if (n_status_sets >= MAX_STATUS_SETS) return;
-      if (cur_status_set >= n_status_sets)
-        ++cur_status_set;
+    } else if (n_status_sets < MAX_STATUS_SETS &&
+          cur_status_set >= n_status_sets) {
+      ++cur_status_set;
     }
-    status_list[n_status_sets++] = codes;
+    if ( n_status_sets < MAX_STATUS_SETS )
+	    status_list[n_status_sets++] = codes;
     status_unlock();
   #else
     set_status(codes[0]);
