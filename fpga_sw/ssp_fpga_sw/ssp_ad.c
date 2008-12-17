@@ -244,7 +244,7 @@ void *udpThread(void *arg) {
 	    			// yield();
 	    		} else if ( words_remaining == nw ) {
             // Poke in divisor
-            scan[5] = 0x1234; // Test byte order
+            // scan[5] = 0x1234; // Test byte order
             // scan[2] |= ssp_config.NF << 8;
             if ( scan_size > MAX_UDP_PAYLOAD )
               rc = sendfrags(udp_socket, scan, scan_size, 0, 
