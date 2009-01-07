@@ -28,6 +28,8 @@
 #include "nortlib.h"
 #include "mlf.h"
 
+FILE *hdr_fp;
+
 int verbosity = 1;
 
 /* If index == 0, this is a cleanup operation */
@@ -36,14 +38,14 @@ void move_lock( unsigned long index ) {
   static int initialized = 0;
   char oldname[80], newname[80];
   
-  sprintf( newname, "LOG/ssp_%lu.lock", index == 0L ? prev_index+1 : index );
+  sprintf( newname, LOGROOT "/ssp_%lu.lock", index == 0L ? prev_index+1 : index );
   if ( ! initialized ) {
     FILE *fp = fopen( newname, "w" );
     fprintf( fp, "lock file\n" );
     fclose(fp);
     initialized = 1;
   } else {
-    sprintf( oldname, "LOG/ssp_%lu.lock", prev_index );
+    sprintf( oldname, LOGROOT "/ssp_%lu.lock", prev_index );
     if ( index == 0 ) {
       unlink(oldname);
       unlink(newname);
@@ -72,30 +74,61 @@ static int raw_length;
 
 static void output_scan( long int *scan, mlf_def_t *mlf ) {
   int j;
-  FILE *ofp = mlf_next_file(mlf);
+  FILE *ofp;
   ssp_scan_header_t *hdr = (ssp_scan_header_t *)scan;
+  long int *idata = scan+hdr->NWordsHdr;
+  float *fdata = (float *)idata;
   time_t now;
   static time_t last_rpt = 0;
+  float divisor = 1/(hdr->NCoadd * (float)(hdr->NAvg+1));
+  int my_scan_length = hdr->NSamples * hdr->NChannels;
 
-  fprintf( ofp, "%u\n%u\n%u\n%u\n%u\n%u\n%u\n%u\n",
-    hdr->NWordsHdr, hdr->FormatVersion, hdr->NChannels, hdr->NSamples,
-    hdr->NCoadd, hdr->NAvg, hdr->NSkL, hdr->NSkP );
-  fprintf( ofp, "%lu\n%lu\n%lu\n", hdr->ScanNum, hdr->Spare,
-    (unsigned long)scan[raw_length-1] );
-  for ( j = 6; j < raw_length-1; j++ ) {
-    fprintf( ofp, "%ld\n", scan[j] );
+  // scan is guaranteed to be raw_length words long. Want to verify that NSamples*NChannels + NWordsHdr + 1 == raw_length
+  if ( hdr->NWordsHdr != scan0 ) {
+    nl_error( 2, "NWordsHdr(%u) != %u", hdr->NWordsHdr, scan0 );
+    return;
+  }
+  if ( my_scan_length + 7 != raw_length ) {
+    nl_error( 2, "Header reports NS:%u NC:%u -- raw_length is %d",
+      hdr->NSamples, hdr->NChannels, raw_length );
+    return;
+  }
+  ofp = mlf_next_file(mlf);
+  now = time(NULL);
+
+  fprintf( hdr_fp, "%ld %lu %u %u %u %u %u %u %u %u %lu %lu %lu\n",
+    now, mlf->index,
+    hdr->NWordsHdr, hdr->FormatVersion, hdr->NChannels,
+    hdr->NSamples, hdr->NCoadd, hdr->NAvg, hdr->NSkL, hdr->NSkP,
+    hdr->ScanNum, hdr->Spare, (unsigned long)scan[raw_length-1] );
+  fflush(hdr_fp);
+  
+  { unsigned long n_l;
+    n_l = hdr->NSamples;
+    fwrite( &n_l, sizeof(unsigned long), 1, ofp );
+    n_l = hdr->NChannels;
+    fwrite( &n_l, sizeof(unsigned long), 1, ofp );
+  }
+
+  for ( j = my_scan_length-1; j >= 0; j-- ) {
+    fdata[j] = idata[j]*divisor;
+  }
+  { int NCh = hdr->NChannels;
+    for ( j = 0; j <= NCh; j++ ) {
+      int k;
+      for ( k = j; k <= my_scan_length; k += NCh ) {
+        fwrite( fdata+k, sizeof(float), 1, ofp );
+      }
+    }
   }
   fclose(ofp);
   move_lock(mlf->index+1);
-  now = time(NULL);
   if ( difftime(now, last_rpt) > 5 ) {
     nl_error( 0, "Recorded Scan %lu", mlf->index );
     last_rpt = now;
   }
   
   // Perform some sanity checks on the inbound scan
-  if ( scan[0] != scan0 )
-    nl_error( 1, "%lu: scan[0] = %08lX (not %d)\n", mlf->index, scan[0], scan0 );
   if ( scan[1] != scan1 )
     nl_error( 1, "%lu: scan[1] = %08lX (not %08lX)\n", mlf->index, scan[1], scan1 );
   if ( scan[5] != scan5 )
@@ -112,7 +145,7 @@ int main( int argc, char **argv ) {
   int scan_size, n_channels;
   char *ssp_hostname;
 
-  mlf_def_t *mlf = mlf_init( 3, 60, 1, "LOG", "dat", NULL );
+  mlf_def_t *mlf = mlf_init( 3, 60, 1, LOGROOT, "dat", NULL );
   nl_error( 0, "SSP_CLIENT_BUF_LENGTH = %d", SSP_CLIENT_BUF_LENGTH );
   ssp_hostname = getenv("SSP_HOSTNAME");
   if ( ssp_hostname == 0 ) ssp_hostname = "10.0.0.200";
@@ -122,6 +155,9 @@ int main( int argc, char **argv ) {
     fprintf( fp, "%d\n", getpid() );
     fclose(fp);
   }
+  hdr_fp = fopen( HDR_LOG, "a" );
+  if ( hdr_fp == 0 ) nl_error( 3, "Unable to write " HDR_LOG );
+
   move_lock(1L);
   if ( sigsetjmp( env, 1 ) == 0 ) {
     int i;
