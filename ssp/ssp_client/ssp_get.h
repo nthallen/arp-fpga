@@ -7,6 +7,7 @@
 #include <arpa/inet.h>
 #include <netdb.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <unistd.h> /* close() */
 #include <string.h> /* memset() */
 #include <errno.h>
@@ -22,6 +23,7 @@ extern int tcp_close(void);
 #define RECV_BUF_SIZE SSP_MAX_CTRL_MSG
 
 extern int verbosity;
-#define PID_FILE "LOG/ssp_log.pid"
-
+#define LOGROOT "CPCI14"
+#define PID_FILE LOGROOT "/ssp_log.pid"
+#define HDR_LOG LOGROOT "/ssp.log"
 #endif
