@@ -11,9 +11,9 @@
 <vnodes>
 <v t="ntallen.20080228100701" a="E"><vh>SSP Documentation</vh>
 <v t="ntallen.20080228100842" a="E"><vh>IIP Development Notes</vh>
-<v t="ntallen.20080228100842.1"><vh>Design Issues</vh>
+<v t="ntallen.20080228100842.1" a="E"><vh>Design Issues</vh>
 <v t="ntallen.20080228100842.2"><vh>Multiple Clocks</vh></v>
-<v t="ntallen.20080228100842.3" a="E"><vh>Implement Coadd and N Channels</vh>
+<v t="ntallen.20080228100842.3"><vh>Implement Coadd and N Channels</vh>
 <v t="ntallen.20080311125846"><vh>Remaining Work</vh></v>
 <v t="ntallen.20080313122934"><vh>Using StateCAD with Sysgen</vh></v>
 </v>
@@ -25,8 +25,15 @@
 </v>
 <v t="ntallen.20080228100842.8"><vh>V3</vh></v>
 </v>
+<v t="ntallen.20081031104332" a="E"><vh>Network Configuration</vh>
+<v t="ntallen.20081031104332.1"><vh>Configuration Contents</vh></v>
+<v t="ntallen.20081031104332.2" a="E"><vh>Configuration Initialization Strategy</vh>
+<v t="ntallen.20081031104332.3"><vh>FPGA Configuration Tool Operation</vh></v>
+<v t="ntallen.20081118114833" a="TV"><vh>TCP for web</vh></v>
 </v>
-<v t="ntallen.20080228100842.9"><vh>Knowledge Base</vh>
+</v>
+</v>
+<v t="ntallen.20080228100842.9" a="E"><vh>Knowledge Base</vh>
 <v t="ntallen.20080228100842.10" a="E"><vh>Software Versions</vh>
 <v t="ntallen.20080228100842.11"><vh>LwIP</vh></v>
 <v t="ntallen.20080228100842.12"><vh>Cygwin compatability</vh></v>
@@ -110,7 +117,7 @@
 <v t="ntallen.20080305165613"><vh>ShiftOut Logic</vh></v>
 </v>
 </v>
-<v t="ntallen.20080930110904" a="TV"><vh>SSP_V1p (ML401)</vh>
+<v t="ntallen.20080930110904"><vh>SSP_V1p (ML401)</vh>
 <v t="ntallen.20080930110904.1"><vh>SSP_PMT_Input</vh></v>
 <v t="ntallen.20080930104722.1"><vh>arp_ssp V2.00c</vh></v>
 <v t="ntallen.20080403140406"><vh>ssp_ad_preaddr V2.00b</vh>
@@ -127,6 +134,7 @@
 <v t="ntallen.20080305165613"><vh>ShiftOut Logic</vh></v>
 </v>
 </v>
+<v t="ntallen.20081031104332.4"><vh>SSP_Devel(SSP)</vh></v>
 </v>
 <v t="ntallen.20080228100842.46"><vh>IP</vh>
 <v t="ntallen.20080228100842.47"><vh>ssp_ad_scan</vh>
@@ -171,10 +179,10 @@
 </v>
 </v>
 </v>
-<v t="ntallen.20080228100842.57"><vh>LwIP</vh>
-<v t="ntallen.20080228100842.58"><vh>Debugging</vh>
+<v t="ntallen.20080228100842.57" a="E"><vh>LwIP</vh>
+<v t="ntallen.20080228100842.58" a="E"><vh>Debugging</vh>
 <v t="ntallen.20080228100842.59"><vh>sys_arch.c</vh></v>
-<v t="ntallen.20080228100842.60"><vh>xadapter.c</vh>
+<v t="ntallen.20080228100842.60" a="E"><vh>xadapter.c</vh>
 <v t="ntallen.20080228100842.61"><vh>The Problem</vh></v>
 </v>
 <v t="ntallen.20080228100842.62"><vh>netif/xemacif.h</vh></v>
@@ -205,6 +213,9 @@
 </v>
 </v>
 <v t="ntallen.20080228133017.7" a="E"><vh>Software</vh>
+<v t="ntallen.20081114110138" a="E"><vh>SSP_Config</vh>
+<v t="ntallen.20081114110138.1"><vh>Threads</vh></v>
+</v>
 <v t="ntallen.20080331101629" a="E"><vh>Server V2.0</vh>
 <v t="ntallen.20080331101629.1"><vh>Threads</vh></v>
 <v t="ntallen.20080331101629.2" a="E"><vh>Commands</vh>
@@ -948,5 +959,58 @@ To read from the 24LC04B, we must first select the address within the memory blo
 
 Also note that as a general feature of the Xilinx driver libraries, there is a basic undocumented assumption that device instance structures are allocated statically and hence initialized to zero. The *_Initialize() functions (at least for XIntc and XIic) check a 'Started' field and refuse to initialize the device if that field is non-zero. This is counter-intuitive. The purpose of these functions is to initialize these structures, but they assume the structure has already been initialized.
 </t>
+<t tx="ntallen.20081031104332">Building separate ACE files for each board doesn't make sense. What we want to do is store board-specific configuration options in the EEPROM. I have figured out how to read and write the EEPROM, so now the question is what to store there and how to initialize it.</t>
+<t tx="ntallen.20081031104332.1">We will start with a basic configuration with version 0. Each time information is added, the version will be incremented, and the added information will have a well-defined default in case reading from an earlier version.
+
+Configuration Length: 2 bytes: number of bytes total
+Configuration checksum: 2 bytes: of some sort
+Configuration Version: 2 bytes: Start at zero. Increment each time data is added
+MAC Address: 6 bytes
+IP Address: 4 bytes
+Netmask: 4 bytes
+Gateway: 4 bytes
+SSP Board Serial Number: ARP_SSP_%05d 2 bytes
+Fab Date: YYYY/MM/DD 4 bytes
+Configuration Date: YYYY/MM/DD 4 bytes
+HW Configuration Notes: As much as it takes
+
+PROM holds 4Kbits or 512 bytes in two banks of 256.</t>
+<t tx="ntallen.20081031104332.2">On the FPGA, use configuration address 0 for the network configuration tool. Create an ACE file to run the configuration tool which will read the EEPROM, read the dip switches, and accept TCP connections to report the current configuration and/or set new configuration contents.</t>
+<t tx="ntallen.20081031104332.3">Build device with support for Ethernet, IIC, GPIO (dip switches and/or LEDs)
+Build software with xilkernel, lwip
+
+Program will read the EEPROM to determine the current configuration
+Program will read dip switches to decide on the network configuration to use:
+    0: Use default MAC Addr/IP Addr #0 (10.0.0.200)
+    1: Use default MAC Addr/IP Addr #1 (10.0.1.200)
+    ...
+    15: Use current EEPROM configuration
+
+Accept tcp connections on port 80(?)
+Support read and write operations. Read reports the current contents in the current format. Write updates the contents and then reports it back. This could be enhanced to do HTTP pretty easily. That would obviate the need to write a configuration client tool.</t>
+<t tx="ntallen.20081031104332.4">Using this project to test out various peripherals
+</t>
+<t tx="ntallen.20081114110138"></t>
+<t tx="ntallen.20081114110138.1">main_main,2:
+    The startup thread as specified in software platform settings. Invokes lwip_init(), which ultimately runs tcpip_init() which starts the tcpip_thread and then runs ready waiting for tcpip_thread's initialization to complete. As such, main_main needs to run at a lower priority than tcpip_thread or it will never complete. In round robin scheduling, the tcpip_thread should complete its initialization before tcpip_init() hits its busy loop.
+
+tcpip_thread, TCPIP_THREAD_PRIO (1):
+    Started by lwip_init(). Services messages in the tcpip mbox (outbound processing) Uses sys_mbox_fetch() to wait for messages.
+
+xemacif_input_thread, 5: (note that ssp_fpga_sw has this set to 1 now since it no longer runs ready)
+    Started by serverAppThread. Monitors incoming queue and dispatches packets to the appropriate processor. Currently runs ready or with a yield(), but should use a semaphore signaled from the incoming interrupt. (I patched the LwIP library to use a semaphore)
+
+ServerAppThread,1:
+    Started by main_main. Initializes ethernet and starts xemacif_input_thread.    
+    listens for new TCP connections. Starts a new tcpThread on each new connection
+
+tcpThread, 4: (ssp_fpga_sw has this set to 1)
+    Services a TCP connection. Reads commands, queues command requests and formats replies.
+    </t>
+<t tx="ntallen.20081118114833">To optimize use of TCP, we would like to invoke the send() function with full buffers matched to the maximum TCP payload size whenever possible. The maximum TCP payload should be:
+    MTU: 1500
+    IP Header: 20
+    TCP Header: 20
+    Maximum TCP Payload: 1500-20-20 = 1460</t>
 </tnodes>
 </leo_file>
