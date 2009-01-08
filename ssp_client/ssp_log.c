@@ -88,6 +88,10 @@ static void output_scan( long int *scan, mlf_def_t *mlf ) {
     nl_error( 2, "NWordsHdr(%u) != %u", hdr->NWordsHdr, scan0 );
     return;
   }
+  if ( hdr->FormatVersion > 1 ) {
+    nl_error( 2, "Unsupported FormatVersion: %u", hdr->FormatVersion );
+    return;
+  }
   if ( my_scan_length + 7 != raw_length ) {
     nl_error( 2, "Header reports NS:%u NC:%u -- raw_length is %d",
       hdr->NSamples, hdr->NChannels, raw_length );
@@ -96,11 +100,12 @@ static void output_scan( long int *scan, mlf_def_t *mlf ) {
   ofp = mlf_next_file(mlf);
   now = time(NULL);
 
-  fprintf( hdr_fp, "%ld %lu %u %u %u %u %u %u %u %u %lu %lu %lu\n",
+  fprintf( hdr_fp, "%ld %lu %u %u %u %u %u %u %u %u %u %lu %.4f %.4f %lu\n",
     now, mlf->index,
-    hdr->NWordsHdr, hdr->FormatVersion, hdr->NChannels,
+    hdr->NWordsHdr, hdr->FormatVersion, hdr->NChannels, hdr->NF,
     hdr->NSamples, hdr->NCoadd, hdr->NAvg, hdr->NSkL, hdr->NSkP,
-    hdr->ScanNum, hdr->Spare, (unsigned long)scan[raw_length-1] );
+    hdr->ScanNum, (hdr->T_HtSink & 0xFFE0)/256.,
+    (hdr->T_FPGA>>3)/16., (unsigned long)scan[raw_length-1] );
   fflush(hdr_fp);
   
   { unsigned long n_l;
@@ -129,9 +134,9 @@ static void output_scan( long int *scan, mlf_def_t *mlf ) {
   }
   
   // Perform some sanity checks on the inbound scan
-  if ( scan[1] != scan1 )
+  if ( (scan[1] & 0xFFFF00FF) != scan1 )
     nl_error( 1, "%lu: scan[1] = %08lX (not %08lX)\n", mlf->index, scan[1], scan1 );
-  if ( scan[5] != scan5 )
+  if ( hdr->FormatVersion == 0 && scan[5] != scan5 )
     nl_error( 1, "%lu: scan[5] = %08lX (not %08lX)\n", mlf->index, scan[5], scan5 );
 }
 
