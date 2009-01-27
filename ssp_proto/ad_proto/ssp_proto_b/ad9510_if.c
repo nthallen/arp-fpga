@@ -25,6 +25,7 @@
 #include "xio.h"
 #include "ssp_ad.h"
 #include "ssp_intr.h"
+#include "ssp_status.h"
 #include "ad9510_if.h"
 
 /************************** Constant Definitions ******************************/
@@ -95,15 +96,15 @@ sem_t spi_sem;
  * processing
  */
 
-static int check_status( int Status, char *reason ) {
-	if (Status != XST_SUCCESS) {
-	  print_mutex_lock();
-	  safe_printf(("AD9510: %s\r\n"));
-	  print_mutex_unlock();
-	  return 1;
-	}
-	return 0;
-}
+// static int check_status( int Status, char *reason ) {
+	// if (Status != XST_SUCCESS) {
+	  // print_mutex_lock();
+	  // safe_printf(("AD9510: %s\r\n"));
+	  // print_mutex_unlock();
+	  // return 1;
+	// }
+	// return 0;
+// }
 	
 /******************************************************************************/
 /** Main function
@@ -124,16 +125,16 @@ int SPI_system_init(void) {
 // Initialize Devices and Ports:
 // SPI device
     Status = sem_init( &spi_sem, 0, 0 );
-    if ( check_status( Status, "Initializing spi_sem"))
+    if ( check_return( Status, "61", "sem_init(&spi_sem)"))
       return Status;
     Status = XSpi_Initialize(&Spi, SPI_DEVICE_ID);
-    if ( check_status(Status, "Could not initialize SPI" ))
+    if ( check_return(Status, "612", "XSpi_Initialize()" ))
       return Status;
 
 // Connect the SPI driver to the interrupt subsystem such that
 // interrupts can occur.  This function is application specific.
     Status = SetupInterruptSystem(&Spi);
-    if ( check_status( Status, "Could not connect handler" ))
+    if ( check_return( Status, "613", "SPI: SetupInterruptSystem()" ))
       return Status;
 	
 // Setup the handler for the SPI that will be called from the interrupt
@@ -146,13 +147,13 @@ int SPI_system_init(void) {
 // the slave select signal does not toggle for every byte of a transfer,
 // this must be done before the slave select is set
     Status = XSpi_SetOptions(&Spi, XSP_MASTER_OPTION | XSP_MANUAL_SSELECT_OPTION);
-    if ( check_status( Status, "Could not set SPI Driver Options" ))
+    if ( check_return( Status, "614", "XSpi_SetOptions()" ))
       return Status;
 
 // Select the slave on the SPI bus, the AD9510 device so that it can be
 // read and written using the SPI bus
     Status = XSpi_SetSlaveSelect(&Spi, AD9510_SS_ADDR);
-    if ( check_status( Status, "Could not SetSlaveSelect" ))
+    if ( check_return( Status, "615", "XSpi_SetSlaveSelect()" ))
       return Status;
 
 // Start the SPI driver so that interrupts and the device are enabled
@@ -191,10 +192,10 @@ static void ad9510_Write(XSpi *SpiPtr, Xuint16 dat)
 	//TransferInProgress = XTRUE;
 
 	rc = XSpi_Transfer(SpiPtr, buf, XNULL, 0x3);		// Send Write Cmd, Addr, Data
-  if ( check_status( rc, "Calling XSpi_Transfer")) return;
+  if ( check_return( rc, "621", "XSpi_Transfer()")) return;
 	
   rc = sem_wait( &spi_sem );
-  check_status( rc, "Write sem_wait" );
+  check_return( rc, "623", "sem_wait(&spi_sem)" );
 }
 
 /*****************************************************************************/
@@ -238,7 +239,7 @@ void AD9510_Init(int ChEn, int divisor) {
     
     XSpi_ClearStats(&Spi);
 	  XStatus Status = XSpi_SetSlaveSelect(&Spi, AD9510_SS_ADDR);
-	  if ( check_status( Status, "Could not SetSlaveSelect" ))
+	  if ( check_return( Status, "624", "XSpi_SetSlaveSelect(AD9510_SS_ADDR)" ))
 	    return;
 
     #ifdef SSP_PROTO_A

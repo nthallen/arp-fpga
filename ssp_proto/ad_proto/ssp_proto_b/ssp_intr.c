@@ -1,4 +1,5 @@
 #include "ssp_intr.h"
+#include "ssp_status.h"
 #include "ad9510_if.h"
 #include "sys/intr.h"
 #include "pthread.h"
@@ -8,20 +9,17 @@ static pthread_mutex_t sg_mutex = PTHREAD_MUTEX_INITIALIZER;
 // return 1 on success
 static int sg_mutex_lock(void) {
   int rv = pthread_mutex_lock(&sg_mutex);
-  if ( rv ) {
-    safe_printf(("\r\nmutex lock failed: %d\r\n", rv ));
-    return 0;
-  } else return 1;
+  check_return( rv, "351", "pthread_mutex_lock(&sg_mutex)" );
+  return !rv;
 }
 
 static void sg_mutex_unlock(void) {
   int rv = pthread_mutex_unlock(&sg_mutex);
-  if ( rv ) {
-    safe_printf(("\r\nmutex unlock failed: %d\r\n", rv ));
-  }
+  check_return( rv, "352", "pthread_mutex_unlock(&sg_mutex)" );
 }
 
-static void set_ssp_control( unsigned int mask, unsigned int val, char *where ) {
+static void set_ssp_control( unsigned int mask, unsigned int val,
+            char *codes, char *where ) {
   static unsigned int control = ~SSP_CONTROL_MASK | SSP_RESET_MASK;
   unsigned int new_control;
   int status;
@@ -30,7 +28,7 @@ static void set_ssp_control( unsigned int mask, unsigned int val, char *where ) 
   if ( new_control != control ) {
     status = ssp_ll_control(new_control);
     control = new_control;
-    check_fifo_status( status, where );
+    check_return( status, codes, where );
   }
   sg_mutex_unlock();
 }
@@ -39,7 +37,7 @@ static void set_ssp_netsamples( unsigned int val ) {
   int status;
   sg_mutex_lock();
   status = ssp_ll_netsamples(val);
-  check_fifo_status( status, "Setting NetSamples" );
+  check_return( status, "717", "Setting NetSamples" );
   sg_mutex_unlock();
 }
 
@@ -47,7 +45,7 @@ static void set_ssp_navg( unsigned int val ) {
   int status;
   sg_mutex_lock();
   status = ssp_ll_navg(val);
-  check_fifo_status( status, "Setting Navg" );
+  check_return( status, "718", "Setting Navg" );
   sg_mutex_unlock();
 }
 
@@ -55,7 +53,7 @@ static void set_ssp_ncoadd( unsigned int val ) {
   int status;
   sg_mutex_lock();
   status = ssp_ll_ncoadd(val);
-  check_fifo_status( status, "Setting Navg" );
+  check_return( status, "719", "Setting Navg" );
   sg_mutex_unlock();
 }
 
@@ -66,9 +64,9 @@ int ssp_read_fifo( unsigned int *buf, unsigned int nwords ) {
   
   sg_mutex_lock();
   status = ssp_ll_empty(&is_empty);
-  if ( ! check_fifo_status( status, "Reading Empty" ) && !is_empty ) {
+  if ( ! check_return( status, "71J", "Reading Empty" ) && !is_empty ) {
     status = ssp_ll_pctfull(&n_words_ready);
-    if ( !check_fifo_status( status, "Reading PercentFull" ) ) {
+    if ( !check_return( status, "71K", "Reading PercentFull" ) ) {
 		  if ( n_words_ready < nwords )
 		  	nwords = n_words_ready+1;
 		  n_words_ready = ssp_ad_scan_sm_0_ArrayRead(SSP_AD_SCAN_SM_0_SRCSIGNAL,
@@ -110,7 +108,7 @@ int ssp_read_pctfull( void ) {
 //}
 
 void xfr_disable(void) {
-  set_ssp_control( SSP_RESET_MASK, SSP_RESET_MASK, "Reseting circuit" );
+  set_ssp_control( SSP_RESET_MASK, SSP_RESET_MASK, "712", "Reseting circuit" );
   AD9510_Init( 0, 1 );
 }
 
@@ -120,30 +118,28 @@ void xfr_enable(void) {
   
   for ( i = SSP_MAX_SCAN_LENGTH; i < SSP_MAX_SCAN_LENGTH+SCAN_GUARD; i++ )
     scan[i] = 0;
-  set_ssp_control( SSP_RESET_MASK, SSP_RESET_MASK, "Reseting circuit" );
+  set_ssp_control( SSP_RESET_MASK, SSP_RESET_MASK, "713", "Reseting circuit" );
   AD9510_Init( ssp_config.NE, ssp_config.NF );
   set_ssp_netsamples( ssp_config.NS );
   set_ssp_navg( ssp_config.NA-1 );
   set_ssp_ncoadd( ssp_config.NC );
   
-  set_ssp_control( SSP_NE_MASK, ssp_config.NE << SSP_NE_LSB, "During init" );
+  set_ssp_control( SSP_NE_MASK, ssp_config.NE << SSP_NE_LSB, "714", "During init" );
   set_trigger();
 
   // Verify that fifo is empty
   status = ssp_ll_empty(&is_empty);
-  check_fifo_status( status, "Reading Empty during init" );
+  check_return( status, "721", "Reading Empty during init" );
   if ( !is_empty )
-  	safe_print("FIFO non-empty during init\n");
-  
-
-  set_ssp_control( SSP_RESET_MASK, 0, "Enabling Circuit" );
+  	status_set( 0, "712", "FIFO non-empty during init\n");
+  set_ssp_control( SSP_RESET_MASK, 0, "715", "Enabling Circuit" );
 }
 
 void set_trigger( void ) {
 	int status;
   sg_mutex_lock();
   status = ssp_ll_triggerlevel(ssp_config.TL);
-  check_fifo_status( status, "Setting TriggerLevel" );
+  check_return( status, "723", "Setting TriggerLevel" );
   sg_mutex_unlock();
-  set_ssp_control( SSP_TRIG_MASK, ssp_config.TrigConfig, "Setting Trigger Config" );
+  set_ssp_control( SSP_TRIG_MASK, ssp_config.TrigConfig, "716", "Setting Trigger Config" );
 }
