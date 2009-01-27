@@ -1,3 +1,4 @@
+#include "ssp_print.h"
 #include "ssp_intr.h"
 #include <stdio.h>
 #include <pthread.h>
@@ -32,7 +33,8 @@ void safe_print( char *text ) {
 }
 
 #else
-void xil_printf( const char *fmt, ... ) {}
-void print( char *txt ) {}
-
+  void xil_printf( const char *fmt, ... ) {}
+  void print( char *txt ) {}
+  char inbyte(void) { return 0; }
+  void outbyte(char c) {}
 #endif /* PRINT_ENABLE */
