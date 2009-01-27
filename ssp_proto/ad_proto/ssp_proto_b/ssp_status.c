@@ -42,6 +42,12 @@ static int n_error_sets = 0;
 static int cur_error_set = 0;
 static int cur_elt = 0;
 
+#ifdef XPAR_XPS_GPIO_1_DEVICE_ID
+  #define HAVE_LEDS 1
+#else
+  #define HAVE_LEDS 0
+#endif
+
 static unsigned char s_ready[] = { 1, 2, 4, 8, 0 };
 
 XGpio JP1, LED;
@@ -51,7 +57,9 @@ static pthread_mutex_t status_mutex = PTHREAD_MUTEX_INITIALIZER;
 static pthread_t status_tid;
 
 static void set_status( int val ) {
-  XGpio_DiscreteWrite(&LED,1,val);
+	#if HAVE_LEDS
+    XGpio_DiscreteWrite(&LED,1,val);
+  #endif
 }
 
 static void status_lock(void) {
@@ -121,9 +129,11 @@ static void *status_thread(void *param) {
 int status_init(void) {
   int rv;
   // initialize the GPIO hardware
-	XGpio_Initialize(&LED, XPAR_XPS_GPIO_1_DEVICE_ID );
-	XGpio_SetDataDirection(&LED, 1, 0 );
-  XGpio_DiscreteWrite(&LED,1,0x1F);
+  #if HAVE_LEDS
+		XGpio_Initialize(&LED, XPAR_XPS_GPIO_1_DEVICE_ID );
+		XGpio_SetDataDirection(&LED, 1, 0 );
+	  XGpio_DiscreteWrite(&LED,1,0x1F);
+  #endif
 	
 	XGpio_Initialize(&JP1, XPAR_XPS_GPIO_0_DEVICE_ID );
 	XGpio_SetDataDirection(&JP1, 1, 0xF );
