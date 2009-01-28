@@ -18,6 +18,8 @@
 
  PORT fpga_0_RS232_Uart_RX_pin = fpga_0_RS232_Uart_RX, DIR = I
  PORT fpga_0_RS232_Uart_TX_pin = fpga_0_RS232_Uart_TX, DIR = O
+ PORT fpga_0_IIC_EEPROM_Scl_pin = fpga_0_IIC_EEPROM_Scl, DIR = IO
+ PORT fpga_0_IIC_EEPROM_Sda_pin = fpga_0_IIC_EEPROM_Sda, DIR = IO
  PORT fpga_0_Ethernet_MAC_PHY_rst_n_pin = fpga_0_Ethernet_MAC_PHY_rst_n, DIR = O
  PORT fpga_0_Ethernet_MAC_PHY_crs_pin = fpga_0_Ethernet_MAC_PHY_crs, DIR = I
  PORT fpga_0_Ethernet_MAC_PHY_col_pin = fpga_0_Ethernet_MAC_PHY_col, DIR = I
@@ -51,6 +53,7 @@
  PORT SSP_DATA_OOR_P_pin = SSP_DATA_OOR_P, DIR = I
  PORT SSP_PMT_Input_0_PMT_pin = SSP_PMT_Input_0_PMT, DIR = I
  PORT SSP_PMT_Input_1_PMT_pin = SSP_PMT_Input_1_PMT, DIR = I
+ PORT xps_gpio_0_GPIO_in_pin = xps_gpio_0_GPIO_in, DIR = I, VEC = [0:7]
 
 
 BEGIN microblaze
@@ -262,7 +265,7 @@ BEGIN xps_intc
  PARAMETER C_HIGHADDR = 0x8180ffff
  BUS_INTERFACE SPLB = mb_plb
  PORT Irq = Interrupt
- PORT Intr = xps_spi_0_IP2INTC_Irpt&xps_timer_1_Interrupt&Ethernet_MAC_IP2INTC_Irpt
+ PORT Intr = xps_spi_0_IP2INTC_Irpt&xps_timer_1_Interrupt&Ethernet_MAC_IP2INTC_Irpt&IIC_EEPROM_IIC2INTC_Irpt
 END
 
 BEGIN ssp_trigger
@@ -390,5 +393,32 @@ BEGIN SSP_PMT_Input
  PORT RESET = SSP_Reset
  PORT PMT = SSP_PMT_Input_1_PMT
  PORT CLK = SSP_DATA_VALID
+END
+
+BEGIN xps_iic
+ PARAMETER INSTANCE = IIC_EEPROM
+ PARAMETER HW_VER = 1.00.a
+ PARAMETER C_CLK_FREQ = 100000000
+ PARAMETER C_IIC_FREQ = 100000
+ PARAMETER C_TEN_BIT_ADR = 0
+ PARAMETER C_BASEADDR = 0x81600000
+ PARAMETER C_HIGHADDR = 0x8160ffff
+ BUS_INTERFACE SPLB = mb_plb
+ PORT Scl = fpga_0_IIC_EEPROM_Scl
+ PORT Sda = fpga_0_IIC_EEPROM_Sda
+ PORT IIC2INTC_Irpt = IIC_EEPROM_IIC2INTC_Irpt
+END
+
+BEGIN xps_gpio
+ PARAMETER INSTANCE = xps_gpio_0
+ PARAMETER HW_VER = 1.00.a
+ PARAMETER C_GPIO_WIDTH = 8
+ PARAMETER C_IS_DUAL = 0
+ PARAMETER C_IS_BIDIR = 0
+ PARAMETER C_ALL_INPUTS = 1
+ PARAMETER C_BASEADDR = 0x81420000
+ PARAMETER C_HIGHADDR = 0x8142ffff
+ BUS_INTERFACE SPLB = mb_plb
+ PORT GPIO_in = xps_gpio_0_GPIO_in
 END
 
