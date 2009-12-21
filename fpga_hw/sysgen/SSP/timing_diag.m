@@ -1,0 +1,12 @@
+mdl = timing;
+mdl = timing(mdl, 'signal', 'sys_clk', 'clock', 10);
+mdl = timing(mdl, 'signal', 'EOS','init',0);
+mdl = timing(mdl, 'signal', 'PA_Reset','init',0);
+mdl = timing(mdl, 'signal', 'AllAck','init',0);
+mdl = timing(mdl, 'signal', 'AllReady','init',0);
+mdl = timing(mdl, 'signal', 'DV_clk', 'clock', 42);
+mdl = timing(mdl, 'signal', 'Trig_Reset', 'init', 0);
+mdl = timing(mdl, 'signal', 'PA_Rst', 'init', 0);
+mdl = timing(mdl, 'signal', 'Reset_Ack', 'init', 0);
+mdl = timing(mdl, 'transition', 'EOS', 1, 'after', 10, 'after', 'sys_clk', 1 );
+mdl = timing(mdl, 'transition', 'EOS', 0, 'after', 'EOS', 1, 'after', 'sys_clk', 1 );
