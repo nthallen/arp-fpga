@@ -14,15 +14,15 @@ USE ieee.std_logic_unsigned.all;
 
 ENTITY PosCtr IS
    PORT( 
-      ResetPos : IN     std_ulogic;
-      RdEn   : IN     std_ulogic;
-      PosEn  : IN     std_ulogic;
-      F8M    : IN     std_ulogic;
-      rst    : IN     std_logic;
-      Data   : INOUT  std_logic_vector ( 15 DOWNTO 0 );
-      Ld     : IN     std_ulogic;
-      ClkEn  : IN     std_ulogic;
-      DirOut : IN     std_ulogic
+      RdEn     : IN     std_ulogic;
+      PosEn    : IN     std_ulogic;
+      F8M      : IN     std_ulogic;
+      rst      : IN     std_ulogic;
+      Data     : INOUT  std_logic_vector ( 15 DOWNTO 0 );
+      Ld       : IN     std_ulogic;
+      ClkEn    : IN     std_ulogic;
+      DirOut   : IN     std_ulogic;
+      ResetPos : IN     std_ulogic
    );
 
 -- Declarations

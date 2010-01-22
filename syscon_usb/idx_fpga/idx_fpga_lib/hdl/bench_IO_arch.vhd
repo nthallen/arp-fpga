@@ -45,19 +45,6 @@ ARCHITECTURE arch OF bench_IO IS
   SIGNAL Step : std_ulogic;
   SIGNAL ZeroRef : std_logic;
   SIGNAL Data : std_logic_vector ( 15 DOWNTO 0 );
-  
-  Procedure CheckStatus( BitNo : IN natural; Val : IN std_logic; Tstr : IN string ) Is
-  Begin
-    --CfgEn <= '1';
-    WrEn <= '0';
-    RdEn <= '0';
-    wait for 1 us;
-    RdEn <= '1';
-    wait for 1 us;
-    assert Data(BitNo) = Val report "Status Readback test " & Tstr & " failed" severity error;
-    RdEn <= '0';
-    wait for 1 us;
-  End Procedure CheckStatus;
 
   COMPONENT IO IS
      PORT( 
@@ -108,7 +95,7 @@ BEGIN
       Data => Data
      );
 
-  Process
+  f8m_clk : Process
   Begin
     f8m <= '0';
     -- pragma synthesis_off
@@ -116,6 +103,166 @@ BEGIN
     f8m <= '1';
    wait for 62.5 ns;
     -- pragma synthesis_on
+  End Process;
+
+  test_proc: Process
+
+    Procedure CheckStatusBit( BitNo : IN natural; Val : IN std_logic; Tstr : IN string ) Is
+    Begin
+      --CfgEn <= '1';
+      WrEn <= '0';
+      RdEn <= '0';
+      CfgEn <= '1';
+      -- pragma synthesis_off
+      wait for 130 ns;
+      RdEn <= '1';
+      wait for 1 us;
+      assert Data(BitNo) = Val report "Status Readback test " & Tstr & " failed" severity error;
+      RdEn <= '0';
+      wait for 100 ns;
+      CfgEn <= '0';
+      wait for 100 ns;
+      -- pragma synthesis_on
+      return;
+    End Procedure CheckStatusBit;
+
+    Procedure CheckStatusWord( Val : IN std_logic_vector (15 downto 0);
+      Mask : IN std_logic_vector (15 downto 0);
+      Tstr : IN string ) Is
+    Begin
+      --CfgEn <= '1';
+      WrEn <= '0';
+      RdEn <= '0';
+      CfgEn <= '1';
+      -- pragma synthesis_off
+      wait for 130 ns;
+      RdEn <= '1';
+      wait for 1 us;
+      assert (Data AND Mask) = Val report "Status Readback test " & Tstr & " failed" severity error;
+      RdEn <= '0';
+      wait for 100 ns;
+      CfgEn <= '0';
+      wait for 100 ns;
+      -- pragma synthesis_on
+      return;
+    End Procedure CheckStatusWord;
+    
+    Procedure WriteCfg( CfgWd : std_logic_vector (15 downto 0) ) Is
+    Begin
+      WrEn <= '0';
+      RdEn <= '0';
+      CfgEn <= '1';
+      Data <= CfgWd;
+      -- pragma synthesis_off
+      wait for 100 ns;
+      WrEn <= '1';
+      wait for 1 us;
+      WrEn <= '0';
+      wait for 100 ns;
+      CfgEn <= '0';
+      Data <= (others => 'Z');
+      -- pragma synthesis_on
+      return;
+    End Procedure WriteCfg;
+    
+    Procedure ExerciseLimits( Pol : IN std_logic_vector (15 downto 0) ) Is
+    Begin
+      LimI <= '0';
+      LimO <= '0';
+      -- pragma synthesis_off
+      wait for 130 ns;
+      CheckStatusWord( X"0000" xor Pol, X"0003", "Lim00" );
+      LimI <= '1';
+      wait for 130 ns;
+      CheckStatusWord( X"0001" xor Pol, X"0003", "Lim01" );
+      LimO <= '1';
+      wait for 130 ns;
+      CheckStatusWord( X"0003" xor Pol, X"0003", "Lim11" );
+      LimI <= '0';
+      wait for 130 ns;
+      CheckStatusWord( X"0002" xor Pol, X"0003", "Lim10" );
+      -- pragma synthesis_on
+      return;
+    End Procedure;
+    
+    Procedure ExerciseSwapLimits( Pol : IN std_logic_vector (15 downto 0) ) Is
+    Begin
+      LimI <= '0';
+      LimO <= '0';
+      -- pragma synthesis_off
+      CheckStatusWord( X"0000" xor Pol, X"0003", "SLim00" );
+      LimI <= '1';
+      CheckStatusWord( X"0002" xor Pol, X"0003", "SLim01" );
+      LimO <= '1';
+      CheckStatusWord( X"0003" xor Pol, X"0003", "SLim11" );
+      LimI <= '0';
+      CheckStatusWord( X"0001" xor Pol, X"0003", "SLim10" );
+      -- pragma synthesis_on
+      return;
+    End Procedure;
+
+  Begin
+    CMDENBL <= '0';
+    KillB <= '0';
+    KillA <= '0';
+    LimO <= '0';
+    LimI <= '0';
+    Running <= '0';
+    DirOut <= '0';
+    StepClk <= '0';
+    WriteCfg( X"0020" );
+    CheckStatusWord( X"0000", X"0000", "Init" );
+    ExerciseLimits( X"0000" );
+    -- Swap Limit Switches
+    WriteCfg( X"0021" );
+    ExerciseSwapLimits( X"0000" );
+    -- Invert In Limit, no swap
+    WriteCfg( X"0060" );
+    ExerciseLimits( X"0001" );
+    -- Invert In Limit, swap
+    WriteCfg( X"0061" );
+    ExerciseSwapLimits( X"0001" );
+    -- Invert Out Limit, no swap
+    WriteCfg( X"00A0" );
+    ExerciseLimits( X"0002" );
+    -- Invert Out Limit, swap
+    WriteCfg( X"00A1" );
+    ExerciseSwapLimits( X"0002" );
+    -- Test zero reference logic
+    -- zero status on and off with and without polarity
+    -- ZeroRef under the same conditions with and without enable
+    ZR <= '0';
+    WriteCfg( X"0020" );
+    CheckStatusWord( X"0000", X"4000", "Zero0" );
+    assert ZeroRef = '0' report "ZeroRef Error" severity error;
+    ZR <= '1';
+    CheckStatusWord( X"4000", X"4000", "Zero1" );
+    assert ZeroRef = '1' report "ZeroRef Error" severity error;
+    ZR <= '0';
+    -- Zero disable
+    WriteCfg( X"0022" );
+    CheckStatusWord( X"0000", X"4000", "Zero2" );
+    assert ZeroRef = '1' report "ZeroRef Error" severity error;
+    ZR <= '1';
+    CheckStatusWord( X"4000", X"4000", "Zero1" );
+    assert ZeroRef = '1' report "ZeroRef Error" severity error;
+    -- Invert ZeroRef
+    ZR <= '1';
+    WriteCfg( X"1020" );
+    CheckStatusWord( X"0000", X"4000", "Zero0" );
+    assert ZeroRef = '0' report "ZeroRef Error" severity error;
+    ZR <= '0';
+    CheckStatusWord( X"4000", X"4000", "Zero1" );
+    assert ZeroRef = '1' report "ZeroRef Error" severity error;
+    ZR <= '1';
+    -- Zero disable
+    WriteCfg( X"1022" );
+    CheckStatusWord( X"0000", X"4000", "Zero2" );
+    assert ZeroRef = '1' report "ZeroRef Error" severity error;
+    ZR <= '0';
+    CheckStatusWord( X"4000", X"4000", "Zero1" );
+    assert ZeroRef = '1' report "ZeroRef Error" severity error;
+    wait;
   End Process;
 
 END ARCHITECTURE arch;

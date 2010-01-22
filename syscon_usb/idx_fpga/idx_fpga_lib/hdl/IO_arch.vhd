@@ -93,6 +93,9 @@ BEGIN
       InLimit <= InLim;
       OutLimit <= OutLim;
       ZeroRef <= ZRP or ZrefDisable;
+      Dir <= DirOut xor DirPolarity;
+      Run <= Running xor RunPolarity;
+      Step <= StepClk xor StepPolarity;
       if RdEn = '0' or CfgEn = '0' then
         StatusPort(7) <= CMDENBL;
         StatusPort(6) <= ZRP;
@@ -117,9 +120,6 @@ BEGIN
     end if;
   End Process;
   
-  Dir <= DirOut xor DirPolarity;
-  Run <= Running xor RunPolarity;
-  Step <= StepClk xor StepPolarity;
   
 END ARCHITECTURE arch;
 

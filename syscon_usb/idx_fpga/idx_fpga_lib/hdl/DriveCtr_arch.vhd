@@ -38,23 +38,23 @@ BEGIN
       if F8M'event AND F8M = '1' then
         if rst = '1' then
           Steps <= (others => '0');
-        elsif Ld = '1' then
-          if CtEn = '1' then
-            Steps <= Data;
-            DirOut <= DirOutIn;
+          ZeroCt <= '1';
+        elsif Ld = '1' and CtEn = '1' then
+          Steps <= Data;
+          DirOut <= DirOutIn;
+          if Data = X"0000" then
+            ZeroCt <= '1';
+          else
+            ZeroCt <= '0';
           end if;
         elsif ClkEn = '1' then
+          if Steps = X"0001" then
+            ZeroCt <= '1';
+          else
+            ZeroCt <= '0';
+          end if;
           Steps <= unsigned(Steps) - 1;
         end if;
-      end if;
-    END PROCESS;
-
-  PROCESS (Steps)
-    BEGIN
-      if unsigned(Steps) = 0 then
-        ZeroOut <= '1';
-      else
-        ZeroOut <= '0';
       end if;
     END PROCESS;
 
