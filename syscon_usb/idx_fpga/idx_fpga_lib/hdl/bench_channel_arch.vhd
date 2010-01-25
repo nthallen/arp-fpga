@@ -178,11 +178,47 @@ BEGIN
     verify( X"0002", X"008C", '1', '1');
     -- readback position and status and Run and Dir after the drive
     wait for 375 us;
-    verify( X"0007", X"0088", '0', '1');
-    -- program to drive out 1000 steps
+    verify( X"0007", X"008C", '1', '1');
+    wait for 50 us;
+    verify( X"0007", X"0084", '0', '1');
+    -- program to drive out 1024 steps
+    sbwr( "010", X"0200" );
     -- readback position and status during drive
+    wait for 60 us;
+    verify( X"0007", X"008C", '1', '1');
+    wait for 300 us;
     -- set the out limit
-    -- readback status
+    LimO <= '1';
+    wait for 125 us;
+    verify( X"000B", X"0086", '0', '1');
+    -- drive in a lot
+    sbwr( "000", X"1000" );
+    wait for 100 us;
+    -- reset out limit
+    LimO <= '0';
+    wait for 300 us;
+    -- set in limit
+    LimI <= '1';
+    wait for 200 us;
+    -- verify stop and position
+    verify( X"0005", X"0081", '0', '0');
+    -- drive out a lot
+    sbwr( "010", X"0010" );
+    -- clear in limit
+    wait for 300 us;
+    LimI <= '0';
+    wait for 400 us;
+    -- set zero ref
+    ZR <= '1';
+    wait for 1 us;
+    -- verify zero position
+    verify( X"0000", X"00CC", '1', '1' );
+    wait for 125 us;
+    -- clear zero ref
+    ZR <= '0';
+    wait for 350 us;
+    -- verify end position
+    verify( X"0006", X"0084", '0', '1');
     
     wait;
     -- pragma synthesis_on
