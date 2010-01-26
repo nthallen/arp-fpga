@@ -21,6 +21,14 @@ USE ieee.std_logic_1164.all;
 USE ieee.std_logic_arith.all;
 
 ENTITY bench_IO IS
+  PORT (
+    Dir_o : OUT std_ulogic;
+    InLimit_o : OUT std_ulogic;
+    OutLimit_o : OUT std_ulogic;
+    Run_o : OUT std_ulogic;
+    Step_o : OUT std_ulogic;
+    ZeroRef_o : OUT std_ulogic
+  );
 END ENTITY bench_IO;
 
 --
@@ -45,6 +53,8 @@ ARCHITECTURE arch OF bench_IO IS
   SIGNAL Step : std_ulogic;
   SIGNAL ZeroRef : std_logic;
   SIGNAL Data : std_logic_vector ( 15 DOWNTO 0 );
+  SIGNAL WrIn : std_ulogic;
+  SIGNAL Wrote : std_ulogic;
 
   COMPONENT IO IS
      PORT( 
@@ -104,16 +114,34 @@ BEGIN
    wait for 62.5 ns;
     -- pragma synthesis_on
   End Process;
+  
+  WrEnbl : Process (F8M) Is
+  Begin
+    if F8M'Event and F8M = '1' then
+      if WrIn = '1' then
+        if Wrote = '1' then
+          WrEn <= '0';
+        else
+          WrEn <= '1';
+          Wrote <= '1';
+        end if;
+      else
+        WrEn <= '0';
+        Wrote <= '0';
+      end if;
+    end if;
+  End Process;
+  
 
   test_proc: Process
 
+-- pragma synthesis_off
     Procedure CheckStatusBit( BitNo : IN natural; Val : IN std_logic; Tstr : IN string ) Is
     Begin
       --CfgEn <= '1';
-      WrEn <= '0';
+      WrIn <= '0';
       RdEn <= '0';
       CfgEn <= '1';
-      -- pragma synthesis_off
       wait for 130 ns;
       RdEn <= '1';
       wait for 1 us;
@@ -122,19 +150,19 @@ BEGIN
       wait for 100 ns;
       CfgEn <= '0';
       wait for 100 ns;
-      -- pragma synthesis_on
       return;
     End Procedure CheckStatusBit;
+-- pragma synthesis_on
 
+    -- pragma synthesis_off
     Procedure CheckStatusWord( Val : IN std_logic_vector (15 downto 0);
       Mask : IN std_logic_vector (15 downto 0);
       Tstr : IN string ) Is
     Begin
       --CfgEn <= '1';
-      WrEn <= '0';
+      WrIn <= '0';
       RdEn <= '0';
       CfgEn <= '1';
-      -- pragma synthesis_off
       wait for 130 ns;
       RdEn <= '1';
       wait for 1 us;
@@ -143,21 +171,21 @@ BEGIN
       wait for 100 ns;
       CfgEn <= '0';
       wait for 100 ns;
-      -- pragma synthesis_on
       return;
     End Procedure CheckStatusWord;
+-- pragma synthesis_on
     
     Procedure WriteCfg( CfgWd : std_logic_vector (15 downto 0) ) Is
     Begin
-      WrEn <= '0';
+      WrIn <= '0';
       RdEn <= '0';
       CfgEn <= '1';
       Data <= CfgWd;
       -- pragma synthesis_off
       wait for 100 ns;
-      WrEn <= '1';
+      WrIn <= '1';
       wait for 1 us;
-      WrEn <= '0';
+      WrIn <= '0';
       wait for 100 ns;
       CfgEn <= '0';
       Data <= (others => 'Z');
@@ -210,7 +238,9 @@ BEGIN
     Running <= '0';
     DirOut <= '0';
     StepClk <= '0';
+    ZR <= '0';
     WriteCfg( X"0020" );
+    -- pragma synthesis_off
     CheckStatusWord( X"0000", X"0000", "Init" );
     ExerciseLimits( X"0000" );
     -- Swap Limit Switches
@@ -233,37 +263,45 @@ BEGIN
     -- ZeroRef under the same conditions with and without enable
     ZR <= '0';
     WriteCfg( X"0020" );
-    CheckStatusWord( X"0000", X"4000", "Zero0" );
+    CheckStatusWord( X"0000", X"0040", "Zero0" );
     assert ZeroRef = '0' report "ZeroRef Error" severity error;
     ZR <= '1';
-    CheckStatusWord( X"4000", X"4000", "Zero1" );
+    CheckStatusWord( X"0040", X"0040", "Zero1" );
     assert ZeroRef = '1' report "ZeroRef Error" severity error;
     ZR <= '0';
     -- Zero disable
     WriteCfg( X"0022" );
-    CheckStatusWord( X"0000", X"4000", "Zero2" );
+    CheckStatusWord( X"0000", X"0040", "Zero2" );
     assert ZeroRef = '1' report "ZeroRef Error" severity error;
     ZR <= '1';
-    CheckStatusWord( X"4000", X"4000", "Zero1" );
+    CheckStatusWord( X"0040", X"0040", "Zero1b" );
     assert ZeroRef = '1' report "ZeroRef Error" severity error;
     -- Invert ZeroRef
     ZR <= '1';
     WriteCfg( X"1020" );
-    CheckStatusWord( X"0000", X"4000", "Zero0" );
+    CheckStatusWord( X"0000", X"0040", "Zero0b" );
     assert ZeroRef = '0' report "ZeroRef Error" severity error;
     ZR <= '0';
-    CheckStatusWord( X"4000", X"4000", "Zero1" );
+    CheckStatusWord( X"0040", X"0040", "Zero1d" );
     assert ZeroRef = '1' report "ZeroRef Error" severity error;
     ZR <= '1';
     -- Zero disable
     WriteCfg( X"1022" );
-    CheckStatusWord( X"0000", X"4000", "Zero2" );
+    CheckStatusWord( X"0000", X"0040", "Zero2c" );
     assert ZeroRef = '1' report "ZeroRef Error" severity error;
     ZR <= '0';
-    CheckStatusWord( X"4000", X"4000", "Zero1" );
+    CheckStatusWord( X"0040", X"0040", "Zero1d" );
     assert ZeroRef = '1' report "ZeroRef Error" severity error;
     wait;
+    -- pragma synthesis_on
   End Process;
+
+  Dir_o <= Dir;
+  InLimit_o <= InLimit;
+  OutLimit_o <= OutLimit;
+  Run_o <= Run;
+  Step_o <= Step;
+  ZeroRef_o <= ZeroRef;
 
 END ARCHITECTURE arch;
 

@@ -55,21 +55,6 @@ ARCHITECTURE arch OF IO IS
   SIGNAL OutLim : std_ulogic;
   SIGNAL ZRP : std_ulogic;
 BEGIN
-  CfgPort : Process ( WrEn ) is
-  Begin
-    if WrEn'Event AND WrEn = '1' then
-      if CfgEn = '1' AND Data(5) = '1' then
-        LimitSwap <= Data(0);
-        ZrefDisable <= Data(1);
-        StepPolarity <= Data(2);
-        DirPolarity <= Data(3);
-        RunPolarity <= Data(4);
-        InPolarity <= Data(6);
-        OutPolarity <= Data(7);
-        ZeroPolarity <= Data(12);
-      end if;
-    end if;
-  End Process;
   
   Limits : Process ( LimI, LimO, InPolarity, OutPolarity, LimitSwap ) Is
   Begin
@@ -105,6 +90,16 @@ BEGIN
         StatusPort(2) <= DirOut;
         StatusPort(1) <= OutLim;
         StatusPort(0) <= InLim;
+      end if;
+      if WrEn = '1' and CfgEn = '1' AND Data(5) = '1' then
+        LimitSwap <= Data(0);
+        ZrefDisable <= Data(1);
+        StepPolarity <= Data(2);
+        DirPolarity <= Data(3);
+        RunPolarity <= Data(4);
+        InPolarity <= Data(6);
+        OutPolarity <= Data(7);
+        ZeroPolarity <= Data(12);
       end if;
     end if;
     
