@@ -29,6 +29,8 @@ ARCHITECTURE arch OF bench_CtState IS
   SIGNAL rst : std_ulogic;
   SIGNAL Ld : std_ulogic;
   SIGNAL ClkEn : std_ulogic;
+  SIGNAL WrIn : std_ulogic;
+  SIGNAL Wrote : std_ulogic;
   COMPONENT CtState IS
     PORT (
       CtEn : IN std_ulogic;
@@ -69,27 +71,47 @@ BEGIN
     -- pragma synthesis_on
   End Process;
   
+  WrEnbl : Process (F8M, rst) Is
+  Begin
+    if rst = '1' then
+      WrEn <= '0';
+      Wrote <= '0';
+    elsif F8M'Event and F8M = '1' then
+      if WrIn = '1' then
+        if Wrote = '1' then
+          WrEn <= '0';
+        else
+          WrEn <= '1';
+          Wrote <= '1';
+        end if;
+      else
+        WrEn <= '0';
+        Wrote <= '0';
+      end if;
+    end if;
+  End Process;
+  
   test_proc : Process
   Begin
     rst <= '1';
     CtEn <= '0';
     PosEn <= '0';
-    WrEn <= '0';
+    WrIn <= '0';
     RdEn <= '0';
     StepClk <= '0';
     -- pragma synthesis_off
-    wait for 20 ns;
+    wait for 300 ns;
     rst <= '0';
     wait for 250 ns;
     -- writing
     PosEn <= '1';
     wait for 100 ns;
-    WrEn <= '1';
+    WrIn <= '1';
     wait for 500 ns;
     -- stepping
     StepClk <= '1';
     wait for 500 ns;
-    WrEn <= '0';
+    WrIn <= '0';
     wait for 100 ns;
     PosEn <= '0';
     wait for 200 ns;
@@ -98,10 +120,10 @@ BEGIN
     -- writing and stepping
     PosEn <= '1';
     wait for 200 ns;
-    WrEn <= '1';
+    WrIn <= '1';
     StepClk <= '1';
     wait for 1 us;
-    WrEn <= '0';
+    WrIn <= '0';
     wait for 200 ns;
     StepClk <= '0';
     PosEn <= '0';
