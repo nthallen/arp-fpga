@@ -15,6 +15,7 @@ USE ieee.std_logic_unsigned.all;
 ENTITY RateGen IS
    PORT(
       CfgEn : IN     std_ulogic;
+      F8M   : IN     std_ulogic;
       F4M   : IN     std_ulogic;
       WrEn  : IN     std_ulogic;
       rclk  : OUT    std_ulogic;
@@ -33,11 +34,11 @@ ARCHITECTURE arch OF RateGen IS
   signal Cnt : std_logic_vector (15 downto 0);
   signal rclk_int : std_ulogic;
 BEGIN
-  config_proc : process (WrEn,DivTmp,rst) is
+  config_proc : process (F8M,DivTmp,rst) is
   begin
     if rst = '1' then
       DivTmp <= X"0000";
-    elsif WrEn'Event and WrEn = '1' and CfgEn = '1' then
+    elsif F8M'Event and F8M = '1' and CfgEn = '1' and WrEn = '1' then
       case ratesel is
         when X"0" => DivTmp <= X"9366"; -- 53 Hz
         when X"1" => DivTmp <= X"61A7"; -- 80 Hz
@@ -61,12 +62,12 @@ BEGIN
     Divisor <= DivTmp;
   end process;
   
-  counter : process (F4M, rclk_int, rst) is
+  counter : process (F8M, rclk_int, rst) is
   begin
     if rst = '1' then
       rclk_int <= '0';
       Cnt <= X"0000";
-    elsif F4M'Event and F4M = '1' then
+    elsif F8M'Event and F8M = '1' and F4M = '1' then
       if Cnt = X"0000" then
         rclk_int <= not rclk_int;
         Cnt <= Divisor;

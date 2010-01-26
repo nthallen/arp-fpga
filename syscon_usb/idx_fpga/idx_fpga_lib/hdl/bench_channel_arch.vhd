@@ -5,6 +5,8 @@
 --          by - nort.UNKNOWN (NORT-NBX200T)
 --          at - 09:21:08 01/20/2010
 --
+-- About 5 us
+--
 -- using Mentor Graphics HDL Designer(TM) 2009.1 (Build 12)
 --
 LIBRARY ieee;
@@ -38,6 +40,8 @@ ARCHITECTURE arch OF bench_channel IS
    SIGNAL Run      : std_ulogic;
    SIGNAL Step     : std_ulogic;
    SIGNAL Data     : std_logic_vector( 15 DOWNTO 0 );
+   SIGNAL WrIn : std_ulogic;
+   SIGNAL Wrote : std_ulogic;
    COMPONENT channel
       PORT (
          CMDENBL  : IN     std_ulogic;
@@ -102,6 +106,23 @@ BEGIN
     end if;
   End Process;
   
+  WrEnbl : Process (F8M) Is
+  Begin
+    if F8M'Event and F8M = '1' then
+      if WrIn = '1' then
+        if Wrote = '1' then
+          WrEn <= '0';
+        else
+          WrEn <= '1';
+          Wrote <= '1';
+        end if;
+      else
+        WrEn <= '0';
+        Wrote <= '0';
+      end if;
+    end if;
+  End Process;
+  
   test_proc : Process
     procedure sbwr( Addr : IN std_ulogic_vector (2 downto 0);
                     Data_In : IN std_logic_vector (15 downto 0) ) is
@@ -111,10 +132,10 @@ BEGIN
       Data <= Data_in;
       -- pragma synthesis_off
       wait for 40 ns;
-      WrEn <= '1';
+      WrIn <= '1';
       wait for 1 us;
-      WrEn <= '0';
-      wait for 40 ns;
+      WrIn <= '0';
+      wait for 250 ns;
       ChanSel <= '0';
       Data <= (others => 'Z');
       -- pragma synthesis_on
@@ -153,7 +174,7 @@ BEGIN
     wait for 200 ns;
     -- pragma synthesis_on
     rst <= '0';
-    WrEn <= '0';
+    WrIn <= '0';
     RdEn <= '0';
     ChanSel <= '0';
     OpCd <= "000";
@@ -190,7 +211,7 @@ BEGIN
     -- set the out limit
     LimO <= '1';
     wait for 125 us;
-    verify( X"000B", X"0086", '0', '1');
+    verify( X"000C", X"0086", '0', '1');
     -- drive in a lot
     sbwr( "000", X"1000" );
     wait for 100 us;
@@ -201,7 +222,7 @@ BEGIN
     LimI <= '1';
     wait for 200 us;
     -- verify stop and position
-    verify( X"0005", X"0081", '0', '0');
+    verify( X"0007", X"0081", '0', '0');
     -- drive out a lot
     sbwr( "010", X"0010" );
     -- clear in limit
@@ -218,7 +239,7 @@ BEGIN
     ZR <= '0';
     wait for 350 us;
     -- verify end position
-    verify( X"0006", X"0084", '0', '1');
+    verify( X"0005", X"0084", '0', '1');
     
     wait;
     -- pragma synthesis_on

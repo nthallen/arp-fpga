@@ -39,6 +39,7 @@ BEGIN
         if rst = '1' then
           Steps <= (others => '0');
           ZeroCt <= '1';
+          DirOut <= '0';
         elsif Ld = '1' and CtEn = '1' then
           Steps <= Data;
           DirOut <= DirOutIn;
