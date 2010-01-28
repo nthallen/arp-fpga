@@ -9,8 +9,7 @@
 --
 LIBRARY ieee;
 USE ieee.std_logic_1164.all;
-USE ieee.std_logic_arith.all;
-USE ieee.std_logic_unsigned.all;
+USE ieee.numeric_std.all;
 
 ENTITY DriveCtr IS
    PORT( 
@@ -31,7 +30,7 @@ END DriveCtr ;
 
 -- Counter 
 ARCHITECTURE arch OF DriveCtr IS
-  SIGNAL Steps : std_logic_vector (15 downto 0);
+  SIGNAL Steps : unsigned (15 downto 0);
 BEGIN
   PROCESS (F8M)
     BEGIN
@@ -41,7 +40,7 @@ BEGIN
           ZeroCt <= '1';
           DirOut <= '0';
         elsif Ld = '1' and CtEn = '1' then
-          Steps <= Data;
+          Steps <= unsigned(Data);
           DirOut <= DirOutIn;
           if Data = X"0000" then
             ZeroCt <= '1';
@@ -54,7 +53,7 @@ BEGIN
           else
             ZeroCt <= '0';
           end if;
-          Steps <= unsigned(Steps) - 1;
+          Steps <= Steps - 1;
         end if;
       end if;
     END PROCESS;

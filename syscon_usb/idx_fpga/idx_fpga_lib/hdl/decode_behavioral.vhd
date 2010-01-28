@@ -9,20 +9,26 @@
 --
 LIBRARY ieee;
 USE ieee.std_logic_1164.all;
-USE ieee.std_logic_arith.all;
+USE ieee.numeric_std.all;
 
 ENTITY decode IS
+   GENERIC ( N_CHANNELS : positive );
    PORT( 
       Addr   : IN     std_ulogic_vector (15 DOWNTO 0);
       ExpRd  : IN     std_ulogic;
       ExpWr  : IN     std_ulogic;
+      F8M    : IN     std_ulogic;
+      rst    : IN     std_ulogic;
       ExpAck : OUT    std_ulogic;
-      RdEn   : OUT    std_ulogic;
       WrEn   : OUT    std_ulogic;
       BaseEn : OUT    std_ulogic;
       INTA   : OUT    std_ulogic;
-      Chan   : OUT    std_ulogic_vector (2 DOWNTO 1);
-      OpCd   : OUT    std_ulogic_vector (2 DOWNTO 0)
+      Chan   : OUT    std_ulogic_vector (N_CHANNELS-1 DOWNTO 0);
+      OpCd   : OUT    std_ulogic_vector (2 DOWNTO 0);
+      Data   : INOUT  std_logic_vector (15 DOWNTO 0);
+      iData  : INOUT  std_logic_vector (15 DOWNTO 0);
+      RdEn   : OUT    std_ulogic;
+      F4M    : OUT    std_ulogic
    );
 
 -- Declarations
@@ -31,46 +37,104 @@ END decode ;
 
 --
 ARCHITECTURE behavioral OF decode IS
-  SIGNAL Chan_int : std_ulogic_vector (3 downto 0);
+  subtype Chan_t is integer range 0 to N_CHANNELS;
+  SIGNAL Wrote : std_ulogic;
+  SIGNAL F4M_int : std_ulogic;
+  SIGNAL ACK_int : std_ulogic;
+  SIGNAL Chan_vec : std_ulogic_vector (Chan_t);
+  SIGNAL Chan_num : Chan_t;
+  SIGNAL Chan_sel : std_ulogic;
 BEGIN
-  process (Addr, Chan_int) is
+  process (Addr) is
   begin
-      if Addr = X"0040" then
-        Chan_int <= b"0001";
-      elsif Addr = X"0A00" then
-        Chan_int <= b"0010";
-      elsif Addr(15 DOWNTO 6) = B"0000101000" and Addr(0) = '0' then
-        case  Addr(5 DOWNTO 3) is
-          when B"001" =>
-            Chan_int <= b"0100";
-          when B"010" =>
-            Chan_int <= b"1000";
-          when others =>
-            Chan_int <= b"0000";
-        end case;
+    INTA <= '0';
+    BaseEn <= '0';
+    Chan_num <= 0;
+    if Addr = X"0040" then
+      INTA <= '1';
+    elsif Addr = X"0A00" then
+      BaseEn <= '1';
+    elsif Addr(15 DOWNTO 7) = B"000010100" and Addr(0) = '0' then
+      Chan_num <= to_integer(Addr(6 DOWNTO 3));
+    end if;
+    OpCd <= Addr(2 DOWNTO 0);
+  end process;
+
+  f4m_clk : Process (F8M, rst, F4M_int)
+  Begin
+    if rst = '1' then
+      F4M_int <= '0';
+    elsif F8M'Event and F8M = '1' then
+      F4M_int <= not F4M_int;
+    end if;
+    F4M <= F4M_int;
+  End Process;
+  
+  -- WrEn does not need to be qualified with ExpAck because there
+  -- are function-specific enables downstream.
+  WrEnbl : Process (F8M) Is
+  Begin
+    if F8M'Event and F8M = '1' then
+      if ExpWr = '1' then
+        if Wrote = '1' then
+          WrEn <= '0';
+        else
+          WrEn <= '1';
+          Wrote <= '1';
+        end if;
       else
-        Chan_int <= b"0000";
+        WrEn <= '0';
+        Wrote <= '0';
       end if;
-      INTA <= Chan_int(0);
-      BaseEn <= Chan_int(1);
-      Chan <= Chan_int(3 downto 2);
-      OpCd <= Addr(2 DOWNTO 0);
+    end if;
+  End Process;
+  
+  Chan_En : Process (Chan_num) Is
+  begin
+    Chan_vec <= (others => '0');
+    Chan_sel <= '0';
+    if Chan_num /= 0 and Chan_num <= N_CHANNELS then
+      Chan_vec(Chan_num) <= '1';
+      Chan_sel <= '1';
+    end if;
   end process;
   
-  process ( Chan_int, ExpRd, ExpWr ) is
+  Chan_out : Process (Chan_vec) Is
   begin
-    RdEn <= '0';
-    WrEn <= '0';
-    if (Chan_int /= b"0000") and ( ExpRd = '1' or ExpWr = '1') then
-      ExpAck <= '1';
-      if ExpRd = '1' then
-        RdEn <= '1';
+    Chan <= Chan_vec(Chan_vec'high downto 1);
+  end process;
+   
+  Ack : process ( F8M ) is
+  begin
+    if F8M'event and F8M = '1' then
+      if (Chan_sel = '1' or INTA = '1' or BaseEn = '1') then
+        if ExpRd = '1' then
+          RdEn <= '1';
+          ExpAck <= '1';
+        elsif ExpWr = '1' then
+          RdEn <= '0';
+          ExpAck <= '1';
+        else
+          RdEn <= '0';
+          ExpAck <= '0';
+        end if;
+      else
+        RdEn <= '0';
+        ExpAck <= '0';
       end if;
-      if ExpWr = '1' then
-        WrEn <= '1';
+    end if;
+  end process;
+  
+  DataBus : process (F8M) is
+  begin
+    if F8M'event and F8M = '1' then
+      if ExpRd = '1' and Chan_int /= b"0000" then
+        Data <= iData;
+        iData <= (others => 'Z');
+      else
+        Data <= ( others => 'Z' );
+        iData <= Data;
       end if;
-    else
-      ExpAck <= '0';
     end if;
   end process;
       

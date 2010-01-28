@@ -11,9 +11,6 @@
 --
 LIBRARY ieee;
 USE ieee.std_logic_1164.all;
-USE ieee.std_logic_arith.all;
---LIBRARY idx_fpga_lib;
---USE idx_fpga_lib.All;
 
 ENTITY bench_channel IS
   Port ( Dir_o : OUT std_ulogic;
