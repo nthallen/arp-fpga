@@ -27,13 +27,15 @@ ENTITY IO IS
       StepClk  : IN     std_ulogic;
       WrEn     : IN     std_ulogic;
       ZR       : IN     std_ulogic;
+      ZP       : IN     std_logic;
       Dir      : OUT    std_ulogic;
       InLimit  : OUT    std_ulogic;
       OutLimit : OUT    std_ulogic;
       Run      : OUT    std_ulogic;
       Step     : OUT    std_ulogic;
       ZeroRef  : OUT    std_logic;
-      Data     : INOUT  std_logic_vector ( 15 DOWNTO 0 )
+      RData    : OUT    std_logic_vector ( 15 DOWNTO 0 );
+      WData    : IN     std_logic_vector (7 DOWNTO 0)
    );
 
 -- Declarations
@@ -91,27 +93,29 @@ BEGIN
         StatusPort(1) <= OutLim;
         StatusPort(0) <= InLim;
       end if;
-      if WrEn = '1' and CfgEn = '1' AND Data(5) = '1' then
-        LimitSwap <= Data(0);
-        ZrefDisable <= Data(1);
-        StepPolarity <= Data(2);
-        DirPolarity <= Data(3);
-        RunPolarity <= Data(4);
-        InPolarity <= Data(6);
-        OutPolarity <= Data(7);
-        ZeroPolarity <= Data(12);
+      if WrEn = '1' and CfgEn = '1' AND WData(5) = '1' then
+        LimitSwap <= WData(0);
+        ZrefDisable <= WData(1);
+        StepPolarity <= WData(2);
+        DirPolarity <= WData(3);
+        RunPolarity <= WData(4);
+        InPolarity <= WData(6);
+        OutPolarity <= WData(7);
+        ZeroPolarity <= ZP;
       end if;
     end if;
     
   End Process;
   
-  ReadBack : Process ( RdEn, CfgEn, StatusPort) Is
+  ReadBack : Process ( F8M ) Is
   Begin
-    if RdEn = '1' and CfgEn = '1' then
-      Data(7 downto 0) <= StatusPort;
-      Data(15 downto 8) <= (others => '0');
-    else
-      Data <= (others => 'Z');
+    if F8M'event and F8M = '1' then
+      if RdEn = '1' and CfgEn = '1' then
+        RData(7 downto 0) <= StatusPort;
+        RData(15 downto 8) <= (others => '0');
+      else
+        RData <= (others => 'Z');
+      end if;
     end if;
   End Process;
   
