@@ -247,7 +247,7 @@ BEGIN
   
   Run_o <= Run;
   Dir_o <= Dir;
-  Step_o <= Step;  
+  Step_o <= Step;
      
 END ARCHITECTURE arch;
 

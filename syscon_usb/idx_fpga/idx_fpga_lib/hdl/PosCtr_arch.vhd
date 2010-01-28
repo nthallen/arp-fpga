@@ -18,11 +18,11 @@ ENTITY PosCtr IS
       PosEn    : IN     std_ulogic;
       F8M      : IN     std_ulogic;
       rst      : IN     std_ulogic;
-      Data     : INOUT  std_logic_vector ( 15 DOWNTO 0 );
       Ld       : IN     std_ulogic;
       ClkEn    : IN     std_ulogic;
       DirOut   : IN     std_ulogic;
-      ResetPos : IN     std_ulogic
+      ResetPos : IN     std_ulogic;
+      Data     : INOUT  std_logic_vector ( 15 DOWNTO 0 )
    );
 
 -- Declarations
@@ -54,12 +54,16 @@ BEGIN
       end if;
     END PROCESS;
   
-  PROCESS (RdEn, PosEn, Position)
+  PROCESS (F8M, rst)
     BEGIN
-      if RdEn = '1' and PosEn = '1' then
-        Data <= Position;
-      else
+      if rst = '1' then
         Data <= ( others => 'Z' );
+      elsif F8M'event AND F8M = '1' then
+        if RdEn = '1' and PosEn = '1' then
+          Data <= Position;
+        else
+          Data <= ( others => 'Z' );
+        end if;
       end if;
     END PROCESS;
 END ARCHITECTURE arch;
