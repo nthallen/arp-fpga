@@ -12,7 +12,7 @@ USE ieee.std_logic_1164.all;
 USE ieee.numeric_std.all;
 
 ENTITY decode IS
-   GENERIC ( N_CHANNELS : positive );
+   GENERIC ( N_CHANNELS : integer range 15 downto 1 := 1 );
    PORT( 
       Addr   : IN     std_ulogic_vector (15 DOWNTO 0);
       ExpRd  : IN     std_ulogic;
@@ -37,25 +37,30 @@ END decode ;
 
 --
 ARCHITECTURE behavioral OF decode IS
-  subtype Chan_t is integer range 0 to N_CHANNELS;
   SIGNAL Wrote : std_ulogic;
   SIGNAL F4M_int : std_ulogic;
-  SIGNAL ACK_int : std_ulogic;
-  SIGNAL Chan_vec : std_ulogic_vector (Chan_t);
-  SIGNAL Chan_num : Chan_t;
   SIGNAL Chan_sel : std_ulogic;
+  SIGNAL Chan_int : std_ulogic_vector(N_CHANNELS-1 downto 0);
+  SIGNAL Base_int : std_ulogic;
+  SIGNAL INTA_int : std_ulogic;
 BEGIN
   process (Addr) is
+    Variable Chan_num : unsigned(3 downto 0);
   begin
-    INTA <= '0';
-    BaseEn <= '0';
-    Chan_num <= 0;
+    INTA_int <= '0';
+    Base_int <= '0';
+    Chan_sel <= '0';
+    Chan_int <= (others => '0');
     if Addr = X"0040" then
-      INTA <= '1';
+      INTA_int <= '1';
     elsif Addr = X"0A00" then
-      BaseEn <= '1';
+      Base_int <= '1';
     elsif Addr(15 DOWNTO 7) = B"000010100" and Addr(0) = '0' then
-      Chan_num <= to_integer(Addr(6 DOWNTO 3));
+      Chan_num := unsigned(Addr(6 DOWNTO 3));
+      if Chan_num > 0 and Chan_num <= N_CHANNELS then
+        Chan_sel <= '1';
+        Chan_int(to_integer(Chan_num-1)) <= '1';
+      end if;
     end if;
     OpCd <= Addr(2 DOWNTO 0);
   end process;
@@ -88,26 +93,11 @@ BEGIN
       end if;
     end if;
   End Process;
-  
-  Chan_En : Process (Chan_num) Is
-  begin
-    Chan_vec <= (others => '0');
-    Chan_sel <= '0';
-    if Chan_num /= 0 and Chan_num <= N_CHANNELS then
-      Chan_vec(Chan_num) <= '1';
-      Chan_sel <= '1';
-    end if;
-  end process;
-  
-  Chan_out : Process (Chan_vec) Is
-  begin
-    Chan <= Chan_vec(Chan_vec'high downto 1);
-  end process;
    
   Ack : process ( F8M ) is
   begin
     if F8M'event and F8M = '1' then
-      if (Chan_sel = '1' or INTA = '1' or BaseEn = '1') then
+      if (Chan_sel = '1' or INTA_int = '1' or Base_int = '1') then
         if ExpRd = '1' then
           RdEn <= '1';
           ExpAck <= '1';
@@ -128,13 +118,16 @@ BEGIN
   DataBus : process (F8M) is
   begin
     if F8M'event and F8M = '1' then
-      if ExpRd = '1' and Chan_int /= b"0000" then
+      if ExpRd = '1' and (Chan_sel = '1' or INTA_int = '1' or Base_int = '1' ) then
         Data <= iData;
         iData <= (others => 'Z');
       else
         Data <= ( others => 'Z' );
         iData <= Data;
       end if;
+      BaseEn <= Base_int;
+      INTA <= INTA_int;
+      Chan <= Chan_int;
     end if;
   end process;
       

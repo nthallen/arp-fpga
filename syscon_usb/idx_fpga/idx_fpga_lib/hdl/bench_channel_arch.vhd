@@ -63,7 +63,7 @@ ARCHITECTURE arch OF bench_channel IS
    --FOR ALL : channel USE ENTITY idx_fpga_lib.channel;
   
 BEGIN
-  DUT : channel
+  DUT : entity channel
     PORT MAP (
        CMDENBL  => CMDENBL,
        ChanSel  => ChanSel,
