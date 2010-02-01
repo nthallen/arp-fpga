@@ -12,7 +12,9 @@ USE ieee.std_logic_1164.all;
 USE ieee.numeric_std.all;
 
 ENTITY decode IS
-   GENERIC ( N_CHANNELS : integer range 15 downto 1 := 1 );
+   GENERIC( 
+      N_CHANNELS : integer range 15 downto 1 := 1
+   );
    PORT( 
       Addr   : IN     std_ulogic_vector (15 DOWNTO 0);
       ExpRd  : IN     std_ulogic;
