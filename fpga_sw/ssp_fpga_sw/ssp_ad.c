@@ -1,4 +1,4 @@
-/* simeth main.c
+/* ssp_ad.c
 
    Basic organization:
    main() invokes xilkernel_main()
@@ -15,6 +15,7 @@
 #include "mb_interface.h"
 #include "ad9510_if.h"
 #include "sys/process.h"
+#include "sys/timer.h"
 
 typedef struct {
   int socket;
@@ -38,9 +39,9 @@ static unsigned int parse_cmds( char *cmd, tcpThreadContext_t *context );
 ssp_config_t ssp_config;
 
 int main(void) {
-  microblaze_init_icache_range(0, XPAR_MICROBLAZE_0_CACHE_BYTE_SIZE);
+  //microblaze_init_icache_range(0, XPAR_MICROBLAZE_0_CACHE_BYTE_SIZE);
   microblaze_enable_icache();
-  microblaze_init_dcache_range(0, XPAR_MICROBLAZE_0_DCACHE_BYTE_SIZE);
+  //microblaze_init_dcache_range(0, XPAR_MICROBLAZE_0_DCACHE_BYTE_SIZE);
   microblaze_enable_dcache();
   xilkernel_main();
   // xilkernel_main() will start whatever threads are specified
@@ -87,13 +88,13 @@ void* main_main(void* arg) {
   // Initialize the ssp_config as necessary
   ssp_config.NF = 1;
 
-  sys_thread_new((void *)&udpThread, 0, 5);
+  sys_thread_new("udpThread", (void *)&udpThread, 0, 0, 5);
     // run the UDP thread at the lowest priority for now
     // since it will run ready until we configure interrupts
   sem_wait(&udp_sem); // wait for ethernet initialization
   sleep(100);
   
-  sys_thread_new((void *)&serverAppThread, 0, 1);
+  sys_thread_new("serverAppThread",(void *)&serverAppThread, 0, 0, 1);
   // serverAppThread(0);
   // Since this is the end of the main_main() thread, we should
   // be able to simply call the serverAppThread and save the
@@ -132,7 +133,23 @@ int sendfrags( int udp_socket, int *bfr, int total_size, int flags,
   }
   return rc;
 }
-  
+
+static unsigned int temp_word;
+static void check_temps(void) {
+	unsigned short T_FPGA, T_HtSink;
+	static time_t last_check;
+	time_t this_check;
+
+	time(&this_check);
+	if ( this_check != last_check ) {
+		last_check = this_check;
+		T_FPGA = MAX6628_Read();
+		T_HtSink = MAX6661_Read();
+		temp_word = ((T_HtSink & 0xFF)<<24) | ((T_HtSink & 0xFF00)<<8) |
+				((T_FPGA & 0xFF) << 8) | (T_FPGA >> 8);
+	}
+}
+
 // udpThread() is responsible for fetching data from the FSL
 // and forwarding it to the UDP destination. Currently this is
 // a ready loop, but eventually it might await a message from
@@ -233,6 +250,7 @@ void *udpThread(void *arg) {
 	    while ( enabled ) {
 	    	unsigned int nw;
 	    	
+	    	check_temps();
 	    	if ( sem_trywait( &udp_sem ) ) {
 	    		// No command waiting: Look for data
 	    		if ( errno != EAGAIN ) {
@@ -243,9 +261,12 @@ void *udpThread(void *arg) {
 	    			sleep(100);
 	    			// yield();
 	    		} else if ( words_remaining == nw ) {
+	    			// Update Version: HW version is 0. HW/SW version is 1
+	    			scan[1] |= 0x100;
             // Poke in divisor
-            // scan[5] = 0x1234; // Test byte order
-            // scan[2] |= ssp_config.NF << 8;
+            scan[2] |= ssp_config.NF << 16;
+            // Poke in the temperatures
+            scan[6] = temp_word;
             if ( scan_size > MAX_UDP_PAYLOAD )
               rc = sendfrags(udp_socket, scan, scan_size, 0, 
 		          (struct sockaddr *) &udpSrvrAddr, 
@@ -300,7 +321,7 @@ void *udpThread(void *arg) {
     }
   }
 }
-  
+
 void *serverAppThread(void *arg) {
   struct sockaddr_in servAddr, cliAddr;
   int tcp_socket, new_sock;
@@ -330,7 +351,7 @@ void *serverAppThread(void *arg) {
 
   status_set( 0, "4", "serverAppThread: entering main loop" );
   while(1) {
-    int cliLen = sizeof(cliAddr);
+    socklen_t cliLen = sizeof(cliAddr);
     new_sock = accept(tcp_socket, (struct sockaddr *)&cliAddr, &cliLen);
     if ( new_sock<0 ) {
       report_error( "421", "serverAppThread: cannot accept connection" );
@@ -349,7 +370,7 @@ void *serverAppThread(void *arg) {
       // are made.
       memcpy((char *)&tcpThreadContext->cliAddr, (char *)&cliAddr, cliLen );
       tcpThreadContext->socket = new_sock;
-      sys_thread_new((void *)&tcpThread, (void *)tcpThreadContext, 1);
+      sys_thread_new("tcpThread", (void *)&tcpThread, (void *)tcpThreadContext, 0, 1);
     }
   }    
 }
@@ -437,7 +458,7 @@ int ethernet_init(void) {
   	netif_set_up(server_netif);
 
   	/* start packet receive thread - required for lwIP operation */
-  	sys_thread_new((void *)&xemacif_input_thread, server_netif, 1);
+  	sys_thread_new("xemacif_input_thread", (void *)&xemacif_input_thread, server_netif, 0, 1);
     status_set( 0, "341", "ethernet_init completed" );
 
     return 0;

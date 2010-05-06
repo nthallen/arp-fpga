@@ -18,6 +18,66 @@ static void sg_mutex_unlock(void) {
   check_return( rv, "352", "pthread_mutex_unlock(&sg_mutex)" );
 }
 
+xc_status_t ssp_ll_pctfull(uint32_t *value) {
+  static uint32_t *pctfull =
+   (uint32_t*)XPAR_SSP_AD_SCAN_PLBW_0_MEMMAP_SRCSIGNAL_PERCENTFULL;
+  *value = *pctfull;
+  return XC_SUCCESS;
+}
+
+xc_status_t ssp_ll_empty(uint32_t *value) {
+  static uint32_t *empty =
+   (uint32_t*)XPAR_SSP_AD_SCAN_PLBW_0_MEMMAP_SRCSIGNAL_EMPTY;
+  *value = *empty;
+  return XC_SUCCESS;
+}
+
+xc_status_t ssp_ll_control(uint32_t value) {
+  static uint32_t *control =
+   (uint32_t*)XPAR_SSP_AD_SCAN_PLBW_0_MEMMAP_CONTROL;
+  *control = value;
+  return XC_SUCCESS;
+}
+
+xc_status_t ssp_ll_netsamples(uint32_t value) {
+  static uint32_t *netsamples =
+   (uint32_t*)XPAR_SSP_AD_SCAN_PLBW_0_MEMMAP_NETSAMPLES;
+  *netsamples = value;
+  return XC_SUCCESS;
+}
+
+xc_status_t ssp_ll_triggerlevel(uint32_t value) {
+  static uint32_t *triggerlevel =
+   (uint32_t*)XPAR_SSP_AD_SCAN_PLBW_0_MEMMAP_NETSAMPLES;
+  *triggerlevel = value;
+  return XC_SUCCESS;
+}
+
+xc_status_t ssp_ll_navg(uint32_t value) {
+  static uint32_t *navg =
+   (uint32_t*)XPAR_SSP_AD_SCAN_PLBW_0_MEMMAP_NAVG;
+  *navg = value;
+  return XC_SUCCESS;
+}
+
+xc_status_t ssp_ll_ncoadd(uint32_t value) {
+  static uint32_t *ncoadd =
+   (uint32_t*)XPAR_SSP_AD_SCAN_PLBW_0_MEMMAP_NCOADD;
+  *ncoadd = value;
+  return XC_SUCCESS;
+}
+
+int ssp_ArrayRead( unsigned int nw, uint32_t *buf ) {
+  static uint32_t *srcsignal = (uint32_t*)
+    XPAR_SSP_AD_SCAN_PLBW_0_MEMMAP_SRCSIGNAL;
+  int nr;
+  
+  for (nr = 0; nr < nw; ++nr) {
+  	*buf++ = *srcsignal;
+  }
+  return nr;
+}
+
 static void set_ssp_control( unsigned int mask, unsigned int val,
             char *codes, char *where ) {
   static unsigned int control = ~SSP_CONTROL_MASK | SSP_RESET_MASK;
@@ -59,28 +119,26 @@ static void set_ssp_ncoadd( unsigned int val ) {
 
 /* Reads up to nwords from the fifo */
 int ssp_read_fifo( unsigned int *buf, unsigned int nwords ) {
-  int status;
-  unsigned int n_words_ready = 0, is_empty;
+  xc_status_t status;
+  uint32_t n_words_ready = 0, is_empty;
   
   sg_mutex_lock();
   status = ssp_ll_empty(&is_empty);
   if ( ! check_return( status, "71J", "Reading Empty" ) && !is_empty ) {
     status = ssp_ll_pctfull(&n_words_ready);
     if ( !check_return( status, "71K", "Reading PercentFull" ) ) {
-		  if ( n_words_ready < nwords )
-		  	nwords = n_words_ready+1;
-		  n_words_ready = ssp_ad_scan_sm_0_ArrayRead(SSP_AD_SCAN_SM_0_SRCSIGNAL,
-		         SSP_AD_SCAN_SM_0_SRCSIGNAL_DOUT,
-		         nwords, buf );
+	  if ( n_words_ready < nwords )
+	  	nwords = n_words_ready+1;
+	  n_words_ready = ssp_ArrayRead( nwords, (uint32_t*)buf );
     }
   }
   sg_mutex_unlock();
   return n_words_ready;
 }
 
-int ssp_read_pctfull( void ) {
-  int status;
-  unsigned int words;
+uint32_t ssp_read_pctfull( void ) {
+  xc_status_t status;
+  uint32_t words;
   sg_mutex_lock();
   status = ssp_ll_pctfull(&words);
   sg_mutex_unlock();
@@ -113,8 +171,9 @@ void xfr_disable(void) {
 }
 
 void xfr_enable(void) {
-  int i, status;
-  unsigned int is_empty;
+  int i;
+  xc_status_t status;
+  uint32_t is_empty;
   
   for ( i = SSP_MAX_SCAN_LENGTH; i < SSP_MAX_SCAN_LENGTH+SCAN_GUARD; i++ )
     scan[i] = 0;

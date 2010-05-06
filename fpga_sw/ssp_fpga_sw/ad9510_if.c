@@ -68,6 +68,8 @@
 
 // AD9510 Slave Select Address on SPI bus
 #define AD9510_SS_ADDR			0x01
+#define MAX6661_SS_ADDR     0x02
+#define MAX6628_SS_ADDR     0x04
 
 /**************************** Type Definitions ********************************/
 
@@ -92,22 +94,8 @@ static XSpi Spi;					// SPI device struct instance
 // static volatile Xboolean TransferInProgress;
 sem_t spi_sem;
 
-/* the following variable tracks any errors that occur during interrupt
- * processing
- */
-
-// static int check_status( int Status, char *reason ) {
-	// if (Status != XST_SUCCESS) {
-	  // print_mutex_lock();
-	  // safe_printf(("AD9510: %s\r\n"));
-	  // print_mutex_unlock();
-	  // return 1;
-	// }
-	// return 0;
-// }
-	
 /******************************************************************************/
-/** Main function
+/** SPI_system_init()
 *
 * @param    None
 *
@@ -118,9 +106,6 @@ sem_t spi_sem;
 *******************************************************************************/
 int SPI_system_init(void) {
     XStatus Status;
-	//unsigned char byte;						// SPI xferred byte
-	//Xuint8 ad9510RegAddr, ad9510RegVal=1;	// AD9510 Register address and value
-	//Xuint32 SlaveSel;						// SPI Slave Select Register Contents
    
 // Initialize Devices and Ports:
 // SPI device
@@ -355,6 +340,51 @@ static Xuint8 ad9510_Read(XSpi *SpiPtr, Xuint8 SPIaddr)
 	return ibuf[2];
 }
 #endif
+
+int MAX6628_Read(void) {
+	int rc;
+  XStatus Status;
+	Xint16 temp;
+  XSpi_ClearStats(&Spi);
+  Status = XSpi_SetSlaveSelect(&Spi, MAX6628_SS_ADDR);
+  if ( check_return( Status, "624", "XSpi_SetSlaveSelect(MAX6628_SS_ADDR)" ))
+    return 0x7FFF;
+	rc = XSpi_Transfer(&Spi, (u8 *)&temp, (u8 *)&temp, 2);
+  if ( check_return( rc, "621", "XSpi_Transfer()")) return 0x7FFF;
+  rc = sem_wait( &spi_sem );
+  check_return( rc, "623", "sem_wait(&spi_sem)" );
+  Status = XSpi_SetSlaveSelect(&Spi, 0);
+  if ( check_return( Status, "624", "XSpi_SetSlaveSelect(0)" ))
+    return 0x7FFF;
+  return temp;
+}
+
+int MAX6661_Read(void) {
+	int rc;
+  XStatus Status;
+	Xint16 temp;
+  u8 buf[2];
+  XSpi_ClearStats(&Spi);
+  Status = XSpi_SetSlaveSelect(&Spi, MAX6661_SS_ADDR);
+  if ( check_return( Status, "624", "XSpi_SetSlaveSelect(MAX6661_SS_ADDR)" ))
+    return 0x7FFF;
+  buf[0] = 0x83; // RRH  Read Remote Temp. High Byte
+	rc = XSpi_Transfer(&Spi, buf, buf, 2);
+  if ( check_return( rc, "621", "XSpi_Transfer()")) return 0x7FFF;
+  rc = sem_wait( &spi_sem );
+  check_return( rc, "623", "sem_wait(&spi_sem)" );
+  temp = buf[1] << 8;
+  buf[0] = 0x81; // RRL Read Remote Temp. Low Byte
+	rc = XSpi_Transfer(&Spi, buf, buf, 2);
+  if ( check_return( rc, "621", "XSpi_Transfer()")) return 0x7FFF;
+  rc = sem_wait( &spi_sem );
+  check_return( rc, "623", "sem_wait(&spi_sem)" );
+  temp = temp | buf[0];
+  Status = XSpi_SetSlaveSelect(&Spi, 0);
+  if ( check_return( Status, "624", "XSpi_SetSlaveSelect(0)" ))
+    return 0x7FFF;
+  return (int) temp;
+}
 
 /****************************************************************************/
 /** SpiHandler
