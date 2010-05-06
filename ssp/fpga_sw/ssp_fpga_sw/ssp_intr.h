@@ -4,10 +4,11 @@
 #include "xmk.h"
 #include "semaphore.h"
 #include "xparameters.h"
-#include "ssp_ad_scan_sm_0.h"
+#include "ssp_ad_scan_plbw.h"
 #include <string.h>
 #include "lwip/tcpip.h"
 #include "lwip/sockets.h"
+#include "lwip/mem.h"
 #include "netif/xadapter.h"
 #include "xparameters.h"
 #include "ssp_ad.h"
@@ -49,23 +50,15 @@ extern unsigned int scan[];
 // extern signed short TriggerLevel;
 
 #define SG_INTR_ID XPAR_INTC_0_SSP_AD_SCAN_SM_0_VEC_ID
-#define ssp_ArrayRead( nw, buf ) ssp_ad_scan_sm_0_ArrayRead(SSP_AD_SCAN_SM_0_SRCSIGNAL, \
-         SSP_AD_SCAN_SM_0_SRCSIGNAL_DOUT, \
-         nw, buf )
-#define ssp_ll_pctfull(words) ssp_ad_scan_sm_0_Read(SSP_AD_SCAN_SM_0_SRCSIGNAL, \
-    SSP_AD_SCAN_SM_0_SRCSIGNAL_PERCENTFULL, words)
-#define ssp_ll_empty(val) ssp_ad_scan_sm_0_Read(SSP_AD_SCAN_SM_0_SRCSIGNAL, \
-    SSP_AD_SCAN_SM_0_SRCSIGNAL_EMPTY, val);
-#define ssp_ll_control(val) ssp_ad_scan_sm_0_Write(SSP_AD_SCAN_SM_0_CONTROL, \
-     SSP_AD_SCAN_SM_0_CONTROL_DIN, val)
-#define ssp_ll_netsamples(val) ssp_ad_scan_sm_0_Write(SSP_AD_SCAN_SM_0_NETSAMPLES, \
-     SSP_AD_SCAN_SM_0_NETSAMPLES_DIN, val)
-#define ssp_ll_triggerlevel(val) ssp_ad_scan_sm_0_Write(SSP_AD_SCAN_SM_0_TRIGGERLEVEL, \
-     SSP_AD_SCAN_SM_0_TRIGGERLEVEL_DIN, val)
-#define ssp_ll_navg(val) ssp_ad_scan_sm_0_Write(SSP_AD_SCAN_SM_0_NAVG, \
-     SSP_AD_SCAN_SM_0_NAVG_DIN, val)
-#define ssp_ll_ncoadd(val) ssp_ad_scan_sm_0_Write(SSP_AD_SCAN_SM_0_NCOADD, \
-     SSP_AD_SCAN_SM_0_NCOADD_DIN, val)
+
+int ssp_ArrayRead( unsigned int nw, uint32_t *buf );
+xc_status_t ssp_ll_pctfull(uint32_t *value);
+xc_status_t ssp_ll_empty(uint32_t *value);
+xc_status_t ssp_ll_control(uint32_t value);
+xc_status_t ssp_ll_netsamples(uint32_t value);
+xc_status_t ssp_ll_triggerlevel(uint32_t value);
+xc_status_t ssp_ll_navg(uint32_t value);
+xc_status_t ssp_ll_ncoadd(uint32_t value);
 
 #define EMAC_INTERRUPT_ID XPAR_XPS_INTC_0_ETHERNET_MAC_IP2INTC_IRPT_INTR
 #define EMAC_BASEADDR XPAR_EMACLITE_0_BASEADDR
