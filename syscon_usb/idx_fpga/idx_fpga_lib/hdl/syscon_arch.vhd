@@ -23,7 +23,7 @@ ENTITY syscon IS
     ExpWr : OUT std_ulogic;
     ExpData : INOUT std_logic_vector (15 DOWNTO 0);
     ExpAddr : OUT std_ulogic_vector (15 DOWNTO 0);
-    ExpAck : IN std_logic
+    ExpAck : INOUT std_logic
   );
 END ENTITY syscon;
 
@@ -89,5 +89,6 @@ BEGIN
   end process;
   
   ExpAddr <= Addr;
+  ExpAck <= 'L';
   
 END ARCHITECTURE arch;

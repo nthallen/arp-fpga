@@ -48,7 +48,7 @@ ARCHITECTURE sim OF bench_syscon IS
       ExpWr : OUT std_ulogic;
       ExpData : INOUT std_logic_vector (15 DOWNTO 0);
       ExpAddr : OUT std_ulogic_vector (15 DOWNTO 0);
-      ExpAck : IN std_logic
+      ExpAck : INOUT std_logic
     );
   END COMPONENT;
 BEGIN
@@ -82,7 +82,7 @@ BEGIN
     Addr <= (others => '0');
     Data <= (others => 'Z');
     ExpData <= (others => 'Z');
-    ExpAck <= '0';
+    ExpAck <= 'Z';
     -- pragma synthesis_off
     wait for 300 ns;
     Ctrl <= "01";
@@ -96,11 +96,33 @@ BEGIN
     assert Ack = '1' report "Ack should be asserted" severity error;
     Ctrl <= "00";
     ExpData <= (others => 'Z');
-    ExpAck <= '0';
+    ExpAck <= 'Z';
     wait for 300 ns;
     assert ExpRd = '0' report "ExpRd should have cleared" severity error;
     assert Done = '0' report "Done should not be asserted" severity error;
     assert Ack = '0' report "Ack should not be asserted" severity error;
+    
+    Data <= X"1234";
+    wait for 100 ns;
+    WrEn <= '1';
+    wait for 300 ns;
+    assert ExpWr = '1' report "ExpWr should be asserted" severity error;
+    assert Done = '0' report "Done should not be asserted" severity error;
+    assert To_X01(Ack) = '0' report "Ack should not be asserted" severity error;
+    ExpAck <= '1';
+    wait for 300 ns;
+    assert Ack = '1' report "Ack should be asserted" severity error;
+    wait for 600 ns;
+    ExpAck <= 'Z';
+    wait for 100 ns;
+    assert ExpWr = '0' report "ExpWr should be cleared" severity error;
+    assert Done = '1' report "Done should be asserted" severity error;
+    assert Ack = '1' report "Ack should be asserted" severity error;
+    WrEn <= '0';
+    wait for 100 ns;
+    assert Done = '0' report "Done should not be asserted" severity error;
+    assert To_X01(Ack) = '0' report "Ack should not be asserted" severity error;
+    wait;
    -- pragma synthesis_on
   End Process;
   
