@@ -42,9 +42,10 @@ ARCHITECTURE behavioral OF decode IS
   SIGNAL Wrote : std_ulogic;
   SIGNAL F4M_int : std_ulogic;
   SIGNAL Chan_sel : std_ulogic;
-  SIGNAL Chan_int : std_ulogic_vector(N_CHANNELS-1 downto 0);
+  SIGNAL Chan_int : std_ulogic_vector(15 downto 0);
   SIGNAL Base_int : std_ulogic;
   SIGNAL INTA_int : std_ulogic;
+  SIGNAL RdEn_int : std_ulogic;
 BEGIN
   process (Addr) is
     Variable Chan_num : unsigned(3 downto 0);
@@ -61,7 +62,7 @@ BEGIN
       Chan_num := unsigned(Addr(6 DOWNTO 3));
       if Chan_num > 0 and Chan_num <= N_CHANNELS then
         Chan_sel <= '1';
-        Chan_int(to_integer(Chan_num-1)) <= '1';
+        Chan_int(to_integer(Chan_num)) <= '1';
       end if;
     end if;
     OpCd <= Addr(2 DOWNTO 0);
@@ -101,17 +102,17 @@ BEGIN
     if F8M'event and F8M = '1' then
       if (Chan_sel = '1' or INTA_int = '1' or Base_int = '1') then
         if ExpRd = '1' then
-          RdEn <= '1';
+          RdEn_int <= '1';
           ExpAck <= '1';
         elsif ExpWr = '1' then
-          RdEn <= '0';
+          RdEn_int <= '0';
           ExpAck <= '1';
         else
-          RdEn <= '0';
+          RdEn_int <= '0';
           ExpAck <= '0';
         end if;
       else
-        RdEn <= '0';
+        RdEn_int <= '0';
         ExpAck <= '0';
       end if;
     end if;
@@ -121,17 +122,23 @@ BEGIN
   begin
     if F8M'event and F8M = '1' then
       if ExpRd = '1' and (Chan_sel = '1' or INTA_int = '1' or Base_int = '1' ) then
-        Data <= iData;
-        iData <= (others => 'Z');
-      else
+        if RdEn_int = '0' then
+          iData <= (others => 'Z');
+        else
+          Data <= iData;
+        end if;
+      elsif RdEn_int = '1' then
         Data <= ( others => 'Z' );
+      else
         iData <= Data;
       end if;
       BaseEn <= Base_int;
       INTA <= INTA_int;
-      Chan <= Chan_int;
+      Chan <= Chan_int(N_CHANNELS downto 1);
     end if;
   end process;
+  
+  RdEn <= RdEn_int;
       
 END ARCHITECTURE behavioral;
 

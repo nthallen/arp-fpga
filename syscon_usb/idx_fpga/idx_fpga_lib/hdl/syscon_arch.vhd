@@ -15,15 +15,19 @@ USE ieee.std_logic_unsigned.all;
 ENTITY syscon IS
   PORT (
     F8M : IN std_ulogic;
-    Ctrl : IN std_ulogic_vector (1 DOWNTO 0); -- Wr,Rd
+    Ctrl : IN std_ulogic_vector (4 DOWNTO 0); -- Rst, CE,CS,Wr,Rd
     Addr : IN std_ulogic_vector (15 DOWNTO 0);
-    Data : INOUT std_logic_vector (15 DOWNTO 0);
+    Data_i : OUT std_logic_vector (15 DOWNTO 0);
+    Data_o : IN std_logic_vector (15 DOWNTO 0);
     Status : OUT std_ulogic_vector (1 DOWNTO 0); -- Ack,Done
     ExpRd : OUT std_ulogic;
     ExpWr : OUT std_ulogic;
     ExpData : INOUT std_logic_vector (15 DOWNTO 0);
     ExpAddr : OUT std_ulogic_vector (15 DOWNTO 0);
-    ExpAck : INOUT std_logic
+    ExpAck : IN std_logic;
+	 CmdEnbl : OUT std_ulogic;
+	 CmdStrb : OUT std_ulogic;
+	 ExpReset : OUT std_ulogic
   );
 END ENTITY syscon;
 
@@ -34,28 +38,32 @@ ARCHITECTURE arch OF syscon IS
   SIGNAL Active : std_ulogic;
   alias RdEn is Ctrl(0);
   alias WrEn is Ctrl(1);
+  alias CS is Ctrl(2);
+  alias CE is Ctrl(3);
+  alias rst is Ctrl(4);
   alias Done is Status(0);
   alias Ack is Status(1);
 BEGIN
   rdwr : process (F8M) IS
   begin
     if F8M'Event and F8M = '1' then
-      if Ctrl = "00" then
+      if RdEn = '0' and WrEn = '0' then
         ExpRd <= '0';
         ExpWr <= '0';
         ExpData <= (others => 'Z');
         Cnt <= "0000";
         Active <= '0';
         Done <= '0';
+		    DataIn <= (others => '0');
         Ack <= '0';
       elsif Active = '0' then
-        if Ctrl = "01" or Ctrl = "10" then
+        if RdEn = '1' xor WrEn = '1' then -- exactly one
           ExpRd <= RdEn;
           ExpWr <= WrEn;
           Active <= '1';
           Cnt <= X"7";
-          if Ctrl(1) = '1' then
-            ExpData <= Data;
+          if WrEn = '1' then
+            ExpData <= Data_o;
           else
             ExpData <= (others => 'Z');
           end if;
@@ -65,30 +73,22 @@ BEGIN
           Done <= '1';
           ExpRd <= '0';
           ExpWr <= '0';
-          ExpData <= (others => 'Z');
+          --ExpData <= (others => 'Z');
         else
           Cnt <= Cnt - 1;
           Ack <= ExpAck;
-          if Ctrl(0) = '1' then
+          if RdEn = '1' then
             DataIn <= ExpData;
           end if;
         end if;
       end if;
     end if;
   end process;
-  
-  dbus : process (F8M) is
-  begin
-    if F8M'Event and F8M = '1' then
-      if Ctrl(0) = '1' then
-        Data <= DataIn;
-      else
-        Data <= (others => 'Z');
-      end if;
-    end if;
-  end process;
-  
+
+  Data_i <= DataIn;
   ExpAddr <= Addr;
-  ExpAck <= 'L';
+  CmdEnbl <= CE;
+  CmdStrb <= CS;
+  ExpReset <= rst;
   
 END ARCHITECTURE arch;
