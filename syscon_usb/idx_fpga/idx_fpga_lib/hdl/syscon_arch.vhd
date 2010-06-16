@@ -14,16 +14,16 @@ USE ieee.std_logic_unsigned.all;
 
 ENTITY syscon IS
   PORT (
-    F8M : IN std_ulogic;
-    Ctrl : IN std_ulogic_vector (4 DOWNTO 0); -- Rst, CE,CS,Wr,Rd
-    Addr : IN std_ulogic_vector (15 DOWNTO 0);
+    F8M : IN std_logic;
+    Ctrl : IN std_logic_vector (4 DOWNTO 0); -- Rst, CE,CS,Wr,Rd
+    Addr : IN std_logic_vector (15 DOWNTO 0);
     Data_i : OUT std_logic_vector (15 DOWNTO 0);
     Data_o : IN std_logic_vector (15 DOWNTO 0);
-    Status : OUT std_ulogic_vector (1 DOWNTO 0); -- Ack,Done
-    ExpRd : OUT std_ulogic;
-    ExpWr : OUT std_ulogic;
+    Status : OUT std_logic_vector (1 DOWNTO 0); -- Ack,Done
+    ExpRd : OUT std_logic;
+    ExpWr : OUT std_logic;
     ExpData : INOUT std_logic_vector (15 DOWNTO 0);
-    ExpAddr : OUT std_ulogic_vector (15 DOWNTO 0);
+    ExpAddr : OUT std_logic_vector (15 DOWNTO 0);
     ExpAck : IN std_logic;
 	 CmdEnbl : OUT std_ulogic;
 	 CmdStrb : OUT std_ulogic;
@@ -50,7 +50,7 @@ BEGIN
       if RdEn = '0' and WrEn = '0' then
         ExpRd <= '0';
         ExpWr <= '0';
-        ExpData <= (others => 'Z');
+        ExpData <= Data_o;
         Cnt <= "0000";
         Active <= '0';
         Done <= '0';
@@ -62,9 +62,7 @@ BEGIN
           ExpWr <= WrEn;
           Active <= '1';
           Cnt <= X"7";
-          if WrEn = '1' then
-            ExpData <= Data_o;
-          else
+          if RdEn = '1' then
             ExpData <= (others => 'Z');
           end if;
         end if;

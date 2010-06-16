@@ -11,11 +11,12 @@ LIBRARY ieee;
 USE ieee.std_logic_1164.all;
 USE ieee.std_logic_arith.all;
 USE ieee.std_logic_unsigned.all;
+USE ieee.numeric_std.all;
 
 ENTITY ChOpDec IS
    PORT( 
       ChanSel : IN     std_ulogic;
-      OpCd    : IN     std_ulogic_vector (2 DOWNTO 0);
+      OpCd    : IN     std_logic_vector (2 DOWNTO 0);
       CfgEn   : OUT    std_ulogic;
       CtEn    : OUT    std_ulogic;
       PosEn   : OUT    std_ulogic

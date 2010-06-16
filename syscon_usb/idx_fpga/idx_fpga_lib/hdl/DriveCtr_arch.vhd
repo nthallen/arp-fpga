@@ -14,7 +14,7 @@ USE ieee.numeric_std.all;
 ENTITY DriveCtr IS
    PORT( 
       CtEn     : IN     std_ulogic;
-      DirOutIn : IN     std_ulogic;
+      DirOutIn : IN     std_logic;
       DirOut   : OUT    std_ulogic;
       Ld       : IN     std_ulogic;
       ClkEn    : IN     std_ulogic;

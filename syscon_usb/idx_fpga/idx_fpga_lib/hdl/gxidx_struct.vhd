@@ -15,7 +15,7 @@ ENTITY gxidx IS
    );
    PORT( 
       rst         : IN     std_ulogic;
-      Addr        : IN     std_ulogic_vector (15 DOWNTO 0);
+      Addr        : IN     std_logic_vector (15 DOWNTO 0);
       CMDENBL     : IN     std_ulogic;
       ExpRd       : IN     std_ulogic;
       ExpWr       : IN     std_ulogic;
@@ -61,7 +61,7 @@ ARCHITECTURE struct OF gxidx IS
    SIGNAL Chan   : std_ulogic_vector(N_CHANNELS-1 DOWNTO 0);
    SIGNAL F4M    : std_ulogic;
    SIGNAL INTA   : std_ulogic;
-   SIGNAL OpCd   : std_ulogic_vector(2 DOWNTO 0);
+   SIGNAL OpCd   : std_logic_vector(2 DOWNTO 0);
    SIGNAL RdEn   : std_ulogic;
    SIGNAL WrEn   : std_ulogic;
    SIGNAL iData  : std_logic_vector(15 DOWNTO 0);
@@ -78,7 +78,7 @@ ARCHITECTURE struct OF gxidx IS
       KillB   : IN     std_ulogic ;
       LimI    : IN     std_ulogic ;
       LimO    : IN     std_ulogic ;
-      OpCd    : IN     std_ulogic_vector (2 DOWNTO 0);
+      OpCd    : IN     std_logic_vector (2 DOWNTO 0);
       RdEn    : IN     std_ulogic;
       WrEn    : IN     std_ulogic ;
       ZR      : IN     std_ulogic ;
@@ -95,7 +95,7 @@ ARCHITECTURE struct OF gxidx IS
       N_CHANNELS : integer range 15 downto 1 := 1
    );
    PORT (
-      Addr   : IN     std_ulogic_vector (15 DOWNTO 0);
+      Addr   : IN     std_logic_vector (15 DOWNTO 0);
       ExpRd  : IN     std_ulogic ;
       ExpWr  : IN     std_ulogic ;
       F8M    : IN     std_ulogic ;
@@ -105,7 +105,7 @@ ARCHITECTURE struct OF gxidx IS
       BaseEn : OUT    std_ulogic ;
       INTA   : OUT    std_ulogic ;
       Chan   : OUT    std_ulogic_vector (N_CHANNELS-1 DOWNTO 0);
-      OpCd   : OUT    std_ulogic_vector (2 DOWNTO 0);
+      OpCd   : OUT    std_logic_vector (2 DOWNTO 0);
       Data   : INOUT  std_logic_vector (15 DOWNTO 0);
       iData  : INOUT  std_logic_vector (15 DOWNTO 0);
       RdEn   : OUT    std_ulogic ;

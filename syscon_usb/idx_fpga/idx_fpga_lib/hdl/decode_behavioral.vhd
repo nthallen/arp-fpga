@@ -16,7 +16,7 @@ ENTITY decode IS
       N_CHANNELS : integer range 15 downto 1 := 1
    );
    PORT( 
-      Addr   : IN     std_ulogic_vector (15 DOWNTO 0);
+      Addr   : IN     std_logic_vector (15 DOWNTO 0);
       ExpRd  : IN     std_ulogic;
       ExpWr  : IN     std_ulogic;
       F8M    : IN     std_ulogic;
@@ -26,7 +26,7 @@ ENTITY decode IS
       BaseEn : OUT    std_ulogic;
       INTA   : OUT    std_ulogic;
       Chan   : OUT    std_ulogic_vector (N_CHANNELS-1 DOWNTO 0);
-      OpCd   : OUT    std_ulogic_vector (2 DOWNTO 0);
+      OpCd   : OUT    std_logic_vector (2 DOWNTO 0);
       Data   : INOUT  std_logic_vector (15 DOWNTO 0);
       iData  : INOUT  std_logic_vector (15 DOWNTO 0);
       RdEn   : OUT    std_ulogic;
@@ -121,15 +121,22 @@ BEGIN
   DataBus : process (F8M) is
   begin
     if F8M'event and F8M = '1' then
-      if ExpRd = '1' and (Chan_sel = '1' or INTA_int = '1' or Base_int = '1' ) then
+      if rst = '1' then
+        iData <= (others => 'Z');
+        Data <= (others => 'Z');
+      elsif ExpRd = '1' and (Chan_sel = '1' or INTA_int = '1' or Base_int = '1' ) then
         if RdEn_int = '0' then
           iData <= (others => 'Z');
+          Data <= (others => 'Z');
         else
+          --iData <= (others => 'Z');
           Data <= iData;
         end if;
       elsif RdEn_int = '1' then
         Data <= ( others => 'Z' );
+        iData <= ( others => 'Z' );
       else
+        --Data <= ( others => 'Z' );
         iData <= Data;
       end if;
       BaseEn <= Base_int;
@@ -137,7 +144,7 @@ BEGIN
       Chan <= Chan_int(N_CHANNELS downto 1);
     end if;
   end process;
-  
+
   RdEn <= RdEn_int;
       
 END ARCHITECTURE behavioral;
