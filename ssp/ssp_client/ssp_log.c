@@ -25,12 +25,14 @@
 #include <time.h>
 #include <math.h>
 #include <setjmp.h>
+#include "ringdown.h"
 #include "nortlib.h"
 #include "mlf.h"
 
 FILE *hdr_fp;
 
 int verbosity = 1;
+static int RD = 0;
 
 /* If index == 0, this is a cleanup operation */
 void move_lock( unsigned long index ) {
@@ -73,11 +75,11 @@ static long int scan0 = 6, scan1, scan5 = 0l;
 static int raw_length;
 
 static void output_scan( long int *scan, mlf_def_t *mlf ) {
-  int j;
+  int i, j;
   FILE *ofp;
   ssp_scan_header_t *hdr = (ssp_scan_header_t *)scan;
   long int *idata = scan+hdr->NWordsHdr;
-  float *fdata = (float *)idata;
+  float fdata[SSP_MAX_CHANNELS][SSP_MAX_SAMPLES];
   time_t now;
   static time_t last_rpt = 0;
   float divisor = 1/(hdr->NCoadd * (float)(hdr->NAvg+1));
@@ -100,12 +102,31 @@ static void output_scan( long int *scan, mlf_def_t *mlf ) {
   ofp = mlf_next_file(mlf);
   now = time(NULL);
 
-  fprintf( hdr_fp, "%ld %lu %u %u %u %u %u %u %u %u %u %lu %.4f %.4f %lu\n",
-    now, mlf->index,
-    hdr->NWordsHdr, hdr->FormatVersion, hdr->NChannels, hdr->NF,
-    hdr->NSamples, hdr->NCoadd, hdr->NAvg, hdr->NSkL, hdr->NSkP,
-    hdr->ScanNum, (hdr->T_HtSink & 0xFFE0)/256.,
-    (hdr->T_FPGA>>3)/16., (unsigned long)scan[raw_length-1] );
+  for ( j = 0; j < hdr->NChannels; ++j ) {
+    for ( i = 0; i < hdr->NSamples; ++i ) {
+      fdata[j][i] = idata[i * hdr->NChannels + j] * divisor;
+    }
+  }
+  if (RD) {
+    fprintf( hdr_fp, "%ld %lu %u %u %u %u %u %u %u %u %u %lu %.4f %.4f %lu",
+      now, mlf->index,
+      hdr->NWordsHdr, hdr->FormatVersion, hdr->NChannels, hdr->NF,
+      hdr->NSamples, hdr->NCoadd, hdr->NAvg, hdr->NSkL, hdr->NSkP,
+      hdr->ScanNum, (hdr->T_HtSink & 0xFFE0)/256.,
+      (hdr->T_FPGA>>3)/16., (unsigned long)scan[raw_length-1] );
+    for ( j = 0; j < hdr->NChannels; ++j ) {
+      Ringdown_t *rdf = ringdown_fit(hdr, fdata[0] + j*hdr->NSamples);
+      fprintf( hdr_fp, " %.3lf %.3lf %.4lf %.4lf", rdf->tau, rdf->dtau, rdf->b, rdf->a );
+    }
+    fprintf( hdr_fp, "\n" );
+  } else {
+    fprintf( hdr_fp, "%ld %lu %u %u %u %u %u %u %u %u %u %lu %.4f %.4f %lu\n",
+      now, mlf->index,
+      hdr->NWordsHdr, hdr->FormatVersion, hdr->NChannels, hdr->NF,
+      hdr->NSamples, hdr->NCoadd, hdr->NAvg, hdr->NSkL, hdr->NSkP,
+      hdr->ScanNum, (hdr->T_HtSink & 0xFFE0)/256.,
+      (hdr->T_FPGA>>3)/16., (unsigned long)scan[raw_length-1] );
+  }
   fflush(hdr_fp);
   
   { unsigned long n_l;
@@ -115,17 +136,7 @@ static void output_scan( long int *scan, mlf_def_t *mlf ) {
     fwrite( &n_l, sizeof(unsigned long), 1, ofp );
   }
 
-  for ( j = my_scan_length-1; j >= 0; j-- ) {
-    fdata[j] = idata[j]*divisor;
-  }
-  { int NCh = hdr->NChannels;
-    for ( j = 0; j <= NCh; j++ ) {
-      int k;
-      for ( k = j; k <= my_scan_length; k += NCh ) {
-        fwrite( fdata+k, sizeof(float), 1, ofp );
-      }
-    }
-  }
+  fwrite( fdata, hdr->NChannels*hdr->NSamples*sizeof(float), 1, ofp );
   fclose(ofp);
   move_lock(mlf->index+1);
   if ( difftime(now, last_rpt) > 5 ) {
@@ -148,6 +159,7 @@ int main( int argc, char **argv ) {
   int scan_length = 0;
   int NE = 0;
   int scan_size, n_channels;
+  int RD_n_skip, RD_n_off;
   char *ssp_hostname;
 
   mlf_def_t *mlf = mlf_init( 3, 60, 1, LOGROOT, "dat", NULL );
@@ -180,22 +192,33 @@ int main( int argc, char **argv ) {
     sprintf(cmdbuf, "NP:%d\r\n", udp_port );
     tcp_send(cmdbuf);
     for ( i = 1; i < argc; i++ ) {
-      sprintf( cmdbuf, "%s\r\n", argv[i] );
-      if ( strncmp( cmdbuf, "NS:", 3 ) == 0 ) {
-        scan_length = atoi(cmdbuf+3);
-        if ( scan_length < 1 || scan_length > SSP_MAX_SAMPLES )
-          nl_error( 3, "Invalid scan length: %d", scan_length );
-      } else if ( strncmp( cmdbuf, "NE:", 3 ) == 0 ) {
-        NE = atoi(cmdbuf+3);
-        if ( NE < 1 || NE > 7 )
-          nl_error( 3, "Invalid channel configuration: %d", NE );
-      } else if ( strncmp( cmdbuf, "IX:", 3 ) == 0 ) {
-      	index = strtoul(cmdbuf+3, NULL, 10);
-      	mlf_set_index(mlf, index);
-      	move_lock(index);
-        continue; // skip the send
+      if (strncmp( argv[i], "RD:", 3 ) == 0 ) {
+        char *ns = argv[i]+3;
+        if ( ! isdigit(*ns) ) nl_error(3, "Expected digit after RD: argument" );
+        RD_n_skip = atoi(ns);
+        while (isdigit(*ns)) ++ns;
+        if ( *ns != ',' ) nl_error(3, "Expected comma after RD:## argument" );
+        if ( ! isdigit(*++ns) ) nl_error(3, "Expected digit after RD:##, argument" );
+        RD_n_off = atoi(ns);
+        RD = 1;
+      } else {
+        sprintf( cmdbuf, "%s\r\n", argv[i] );
+        if ( strncmp( cmdbuf, "NS:", 3 ) == 0 ) {
+          scan_length = atoi(cmdbuf+3);
+          if ( scan_length < 1 || scan_length > SSP_MAX_SAMPLES )
+            nl_error( 3, "Invalid scan length: %d", scan_length );
+        } else if ( strncmp( cmdbuf, "NE:", 3 ) == 0 ) {
+          NE = atoi(cmdbuf+3);
+          if ( NE < 1 || NE > 7 )
+            nl_error( 3, "Invalid channel configuration: %d", NE );
+        } else if ( strncmp( cmdbuf, "IX:", 3 ) == 0 ) {
+          index = strtoul(cmdbuf+3, NULL, 10);
+          mlf_set_index(mlf, index);
+          move_lock(index);
+          continue; // skip the send
+        }
+        tcp_send(cmdbuf);
       }
-      tcp_send(cmdbuf);
     }
     if ( scan_length == 0 ) {
       scan_length = 1024;
@@ -215,6 +238,8 @@ int main( int argc, char **argv ) {
       case 7: n_channels = 3; break;
       default: nl_error( 4, "Invalid NE configuration" );
     }
+    if ( RD )
+      ringdown_setup( RD_n_skip, RD_n_off );
     raw_length = (7 + scan_length*n_channels);
     scan_size = raw_length*sizeof(long);
     scan1 = (scan_length << 16) + n_channels;
