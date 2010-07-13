@@ -22,7 +22,7 @@ function varargout = ssp_data(varargin)
 
 % Edit the above text to modify the response to help ssp_data
 
-% Last Modified by GUIDE v2.5 08-Jan-2009 12:31:21
+% Last Modified by GUIDE v2.5 08-Jul-2010 10:35:08
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -57,6 +57,10 @@ handles.output = hObject;
 handles.data.index = 1;
 handles.data.stopped = 1;
 handles.data.logging = 0;
+handles.data.rd_nskip = 10;
+handles.data.rd_noff = 5;
+handles.data.rd_cavlen = 10.00;
+handles.data.rd_show_loss = 0;
 set(handles.PAOOR, 'Visible','off');
 set(handles.CAOVF, 'Visible','off');
 NF = (1:32)';
@@ -129,8 +133,15 @@ f_fft = (x2-1)*handles.data.fsample/(NA*NS);
 W = (1 - (2*x/NS - 1).^2) * ones(1, NCh(NE)); % Welch window
 TC = TriggerSource_Command(handles);
 IX = handles.data.index;
-cmd = sprintf('start ssp_log NS:%d NA:%d NC:%d NF:%d NE:%d %s IX:%d', ...
-  NS, NA, NC, NF, NE, TC, IX);
+if get(handles.Ringdown,'Value')
+  RD = sprintf('RD:%d,%d ', handles.data.rd_nskip, ...
+      handles.data.rd_noff, handles.data.rd_cavlen );
+  set(handles.FFT, 'enable', 'off');
+else
+  RD = '';
+end
+cmd = sprintf('start ssp_log %sNS:%d NA:%d NC:%d NF:%d NE:%d %s IX:%d', ...
+  RD, NS, NA, NC, NF, NE, TC, IX);
 fprintf(1, '%s\n', cmd );
 set(handles.NS, 'enable', 'off');
 set(handles.NA, 'enable', 'off');
@@ -139,6 +150,7 @@ set(handles.NF, 'enable', 'off');
 set(handles.Ch0, 'enable', 'off');
 set(handles.Ch1, 'enable', 'off');
 set(handles.Ch2, 'enable', 'off');
+set(handles.Ringdown, 'enable', 'off'); % and disable FFT above
 set(handles.CAOVF, 'visible','off');
 set(handles.PAOOR, 'visible','off');
 PAOOR = 0;
@@ -311,6 +323,8 @@ set( handles.NF, 'enable', 'on');
 set( handles.Ch0, 'enable', 'on');
 set( handles.Ch1, 'enable', 'on');
 set( handles.Ch2, 'enable', 'on');
+set( handles.FFT, 'enable', 'on');
+set( handles.Ringdown, 'enable', 'on');
 handles.data.index = index;
 guidata(hObject,handles);
 
@@ -467,6 +481,10 @@ function FFT_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Hint: get(hObject,'Value') returns toggle state of FFT
+if get(hObject,'Value')
+  set(handles.Ringdown, 'Value', 0);
+  guidata(hObject, handles);
+end
 
 
 
@@ -591,3 +609,67 @@ function Ch2_Callback(hObject, eventdata, handles)
 % Hint: get(hObject,'Value') returns toggle state of Ch2
 
 
+% --- Executes on button press in Ringdown.
+function Ringdown_Callback(hObject, eventdata, handles)
+% hObject    handle to Ringdown (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of Ringdown
+if get(hObject,'Value')
+  set(handles.FFT,'Value',0);
+  guidata(hObject,handles);
+end
+
+function RingdownProp_Callback(hObject, eventdata, handles)
+if handles.data.stopped
+  set(handles.RDProps,'enable','on');
+else
+  set(handles.RDProps,'enable','off');
+end
+guidata(hObject,handles);
+
+% --------------------------------------------------------------------
+function RDProps_Callback(hObject, eventdata, handles)
+% hObject    handle to RingdownProp (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+ssk = sprintf('%d', handles.data.rd_nskip);
+soff = sprintf('%d', handles.data.rd_noff);
+slen = sprintf('%.2f', handles.data.rd_cavlen);
+result = inputdlg({'N Points to Skip', 'N Points Offset:', 'Cavity Length:' }, ...
+    'Ringdown Properties',1,{ssk, soff, slen});
+if length(result) == 3
+    nsk = round(str2double(result{1}));
+    noff = round(str2double(result{2}));
+    nlen = str2double(result{3});
+    warnings = {};
+    if nsk < 0
+        warnings = [ warnings 'NSkip value is invalid' ];
+    else
+        handles.data.rd_nskip = nsk;
+    end
+    if noff <= 0
+        warnings = [ warnings 'NOffset value is invalid' ];
+    else
+        handles.data.rd_noff = noff;
+    end
+    if nlen <= 0
+        warnings = [ warnings 'Cavity Length value is invalid' ];
+    else
+        handles.data.rd_cavlen = nlen;
+    end
+    if ~isempty(warnings)
+        warndlg(warnings,'rdwarn', 'replace');
+    end
+    guidata(hObject,handles);
+end
+
+% --- If Enable == 'on', executes on mouse press in 5 pixel border.
+% --- Otherwise, executes on mouse press in 5 pixel border or over RD_readout.
+function RD_readout_ButtonDownFcn(hObject, eventdata, handles)
+% hObject    handle to RD_readout (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+handles.data.rd_show_loss = ~handles.data.rd_show_loss;
+guidata(hObject,handles);
