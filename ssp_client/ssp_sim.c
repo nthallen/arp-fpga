@@ -181,8 +181,8 @@ double gasdev(void) {
     t = i*dt = (i * NF / 100 ) usec
  */
 int sim_scan( ssp_scan_header_t *hdr, long int *scan_buf, unsigned long def_status ) {
-  double A = 6000.;
-  double Z = -2000.;
+  double A = 40000.;
+  double Z = -20000.;
   double N = .02;
   double tau = 15.; // usecs
   double dt = hdr->NF/100.; // usecs
@@ -199,9 +199,9 @@ int sim_scan( ssp_scan_header_t *hdr, long int *scan_buf, unsigned long def_stat
   memset(&scan_buf[hdr->NWordsHdr], 0, hdr->NSamples * hdr->NChannels * sizeof(long));
   for ( chan = 0; chan < hdr->NChannels; ++chan ) {
     int NC = hdr->NChannels;
-    long int *scan = &scan_buf[hdr->NWordsHdr + chan];
     int sample, avg, coadd;
     for ( coadd = 0; coadd < hdr->NCoadd; ++coadd ) {
+      long int *scan = &scan_buf[hdr->NWordsHdr + chan];
       double t = 0.;
       for ( sample = 0; sample < hdr->NSamples; ++sample ) {
         for ( avg = 0; avg <= hdr->NAvg; ++avg ) {
@@ -219,6 +219,7 @@ int sim_scan( ssp_scan_header_t *hdr, long int *scan_buf, unsigned long def_stat
     tau -= 2.;
   }
   scan_buf[scan_words - 1] = def_status;
+  usleep( 1000000L/5000 );
   return(scan_words * sizeof(long));
 }
 
@@ -264,8 +265,9 @@ int main( int argc, char **argv ) {
         RD_n_skip = atoi(ns);
         while (isdigit((unsigned char)(*ns))) ++ns;
         if ( *ns != ',' ) nl_error(3, "Expected comma after RD:## argument" );
-        if ( ! isdigit((unsigned char)(*++ns)) )
-          nl_error(3, "Expected digit after RD:##, argument" );
+        ++ns;
+        if ( ! isdigit((unsigned char)(*ns)) )
+          nl_error(3, "Expected digit after RD:##, argument: '%c' in '%s'", *ns, argv[i] );
         RD_n_off = atoi(ns);
         RD = 1;
       } else {

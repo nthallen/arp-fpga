@@ -54,17 +54,22 @@ static void stop_log(void) {
 int main( int argc, char **argv ) {
   char cmdbuf[80];
   char *ssp_hostname;
+  int simulate = 0;
   int i;
 
   // open TCP connection to SSP board
   ssp_hostname = getenv("SSP_HOSTNAME");
   if ( ssp_hostname == 0 ) ssp_hostname = "10.0.0.200";
   else nl_error(0, "Addressing SSP %s", ssp_hostname );
-  tcp_create(ssp_hostname);
+  if ( strcmp(ssp_hostname, "simulator") == 0 )
+    simulate = 1;
+  else tcp_create(ssp_hostname);
   if ( argc > 1 ) {
     for ( i = 1; i < argc; i++ ) {
       snprintf( cmdbuf, 20, "%s\r\n", argv[i] );
-      while ( tcp_send( cmdbuf ) == 503 ) sleep(1);
+      if ( ! simulate ) {
+        while ( tcp_send( cmdbuf ) == 503 ) sleep(1);
+      }
       if ( strncmp( argv[i], "DA", 2) == 0 )
         stop_log();
     }
@@ -74,12 +79,12 @@ int main( int argc, char **argv ) {
       if ( fgets(cmdbuf, 20, stdin) == 0 ) break;
       if ( cmdbuf[0] == '\n' ) break;
       for (;;) {
-      	rv = tcp_send(cmdbuf);
+      	rv = simulate ? 200 : tcp_send(cmdbuf);
       	if ( rv == 503 && ++tries < 5 ) sleep(2);
       	else break;
       }
     }
   }
-  tcp_close();
+  if ( ! simulate ) tcp_close();
   return 0;
 }

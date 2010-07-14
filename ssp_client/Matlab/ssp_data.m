@@ -22,7 +22,7 @@ function varargout = ssp_data(varargin)
 
 % Edit the above text to modify the response to help ssp_data
 
-% Last Modified by GUIDE v2.5 08-Jul-2010 10:35:08
+% Last Modified by GUIDE v2.5 14-Jul-2010 15:02:00
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -61,6 +61,7 @@ handles.data.rd_nskip = 10;
 handles.data.rd_noff = 5;
 handles.data.rd_cavlen = 10.00;
 handles.data.rd_show_loss = 0;
+handles.data.closing = 0;
 set(handles.PAOOR, 'Visible','off');
 set(handles.CAOVF, 'Visible','off');
 NF = (1:32)';
@@ -90,13 +91,14 @@ function start_btn_Callback(hObject, eventdata, handles)
 % hObject    handle to start_btn (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-handles.data.stopped = ~handles.data.stopped;
-if handles.data.stopped
+if ~handles.data.stopped
   set(hObject,'enable','off');
+  handles.data.stopped = 1;
   system('start ssp_cmd DA');
   guidata(hObject, handles);
   return;
 end
+handles.data.stopped = 0;
 % could use the lock file to determine where to set index
 NF = get(handles.NF,'Value');
 handles.data.fsample = 100e6/NF;
@@ -135,7 +137,7 @@ TC = TriggerSource_Command(handles);
 IX = handles.data.index;
 if get(handles.Ringdown,'Value')
   RD = sprintf('RD:%d,%d ', handles.data.rd_nskip, ...
-      handles.data.rd_noff, handles.data.rd_cavlen );
+      handles.data.rd_noff );
   set(handles.FFT, 'enable', 'off');
 else
   RD = '';
@@ -172,6 +174,19 @@ if ( ssp_log_fd < 0 )
 end
 fseek(ssp_log_fd, 0, 'eof'); % seek to the end
 
+% setup for ringdown plots
+if get(handles.Ringdown, 'Value')
+    rdx = (1:NS)';
+    rdv = ((handles.data.rd_nskip+1):NS)';
+    rddt = get(handles.NF,'Value')/100;
+    rdt = rddt * (0:length(rdv)-1)';
+    rdlc = 1e12*handles.data.rd_cavlen/lightspeed;
+    set(handles.axes1,'HitTest','off');
+else
+    set( handles.RD_readout, 'visible', 'off');
+    set( handles.RD_units, 'visible','off');
+end
+
 system(cmd);
 pause(1);
 % files = dir('CPCI14/ssp_*.lock');
@@ -203,7 +218,14 @@ while 1
     D = loadbin(path);
     fseek(ssp_log_fd, ftell(ssp_log_fd), 'bof');
     hdrline = fgetl(ssp_log_fd);
-    H = sscanf(hdrline,'%g');
+    if isempty(hdrline)
+        break;
+    end
+    try
+        H = sscanf(hdrline,'%g');
+    catch
+        break;
+    end
     if length(H) < 13
       error('Short header');
     end
@@ -276,44 +298,85 @@ while 1
     end
 
     axes(handles.axes1);
-    if get(handles.FFT,'Value')
-      F = abs(fft(D.*W));
-      loglog(f_fft, F(x2,:)*2/NS);
-      ylim([.8/(hdr.NAvg*hdr.NCoadd) 32768]);
-      set(gca,'ygrid','on');
-    else
-      plot(D,'*');
-      ylim([-32767 32768]);
-      xlim([1 length(D)]);
+    if ~handles.data.stopped
+        if get(handles.FFT,'Value')
+            F = abs(fft(D.*W));
+            loglog(f_fft, F(x2,:)*2/NS);
+            ylim([.8/(hdr.NAvg*hdr.NCoadd) 32768]);
+            set(gca,'ygrid','on');
+        elseif get(handles.Ringdown, 'Value')
+            if length(H) ~= 15 + 4*hdr.NChannels
+                error('Incorrect header length');
+            end
+            F = zeros(length(rdv),size(D,2));
+            rdd = reshape(H(16:end),4,[])';
+            if any(any(isnan(rdd)))
+                plot(rdx,D);
+                set(handles.axes1,'HitTest', 'off');
+                set(handles.RD_readout,'String', 'NaN',...
+                    'visible','on');
+            else
+                for i=1:size(D,2)
+                    tau = rdd(i,1);
+                    dtau = rdd(i,2);
+                    b = rdd(i,3);
+                    a = rdd(i,4);
+                    z = a./(1-b);
+                    fit = exp(-rdt/tau);
+                    k = sum(fit.*(D(rdv,i)-z))/sum(fit.*fit);
+                    F(:,i) = k*fit + z;
+                end
+                plot(rdx,D,'*',rdv,F,'r');
+                set(handles.axes1,'HitTest','off');
+                xlim([1 length(D)]);
+                if handles.data.rd_show_loss
+                    set(handles.RD_readout,'String', ...
+                        sprintf('%.1f', rdlc/rdd(1,1) ), ...
+                        'visible','on' );
+                    set(handles.RD_units,'String','ppm','visible','on');
+                else
+                    str = sprintf('%.1f', rdd(1,1) );
+                    set(handles.RD_readout,'String', str, ...
+                        'visible','on' );
+                    set(handles.RD_units,'String', 'usec', ...
+                        'visible','on' );
+                end
+            end
+        else
+            plot(D,'*');
+            ylim([-32767 32768]);
+            xlim([1 length(D)]);
+        end
+
+        new_PAOOR = bitand(hdr.OVF,448) ~= 0;
+        if new_PAOOR ~= PAOOR
+            if new_PAOOR
+                set( handles.PAOOR,'visible','on');
+            else
+                set( handles.PAOOR,'visible','off');
+            end
+            PAOOR = new_PAOOR;
+        end
+
+        new_CAOVF = bitand(hdr.OVF,7) ~= 0;
+        if new_CAOVF ~= CAOVF
+            if new_CAOVF
+                set( handles.CAOVF,'visible','on');
+            else
+                set( handles.CAOVF,'visible','off');
+            end
+            CAOVF = new_CAOVF;
+        end
+        title(sprintf('Index %d', index));
     end
-    title(sprintf('Index %d', index));
     index = index+1;
-
-    new_PAOOR = bitand(hdr.OVF,448) ~= 0;
-    if new_PAOOR ~= PAOOR
-      if new_PAOOR
-        set( handles.PAOOR,'visible','on');
-      else
-        set( handles.PAOOR,'visible','off');
-      end
-      PAOOR = new_PAOOR;
-    end
-
-    new_CAOVF = bitand(hdr.OVF,7) ~= 0;
-    if new_CAOVF ~= CAOVF
-      if new_CAOVF
-        set( handles.CAOVF,'visible','on');
-      else
-        set( handles.CAOVF,'visible','off');
-      end
-      CAOVF = new_CAOVF;
-    end
   elseif handles.data.stopped && ~exist('CPCI14/ssp_log.pid','file')
     break;
   else
     pause( .1 );
   end
 end
+fclose(ssp_log_fd);
 set( handles.start_btn, 'String', 'Start');
 set( hObject, 'enable', 'on');
 set( handles.NS, 'enable', 'on');
@@ -372,7 +435,7 @@ function TriggerSource_Callback(hObject, eventdata, handles)
 % Hints: contents = get(hObject,'String') returns TriggerSource contents as cell array
 %        contents{get(hObject,'Value')} returns selected item from TriggerSource
 cmd = TriggerSource_Command(handles);
-if length(cmd)
+if ~isempty(cmd)
     fprintf(1,'Trigger command: "%s"\n', cmd);
     [status,result] = system(sprintf('ssp_cmd %s', cmd));
     if status ~= 0
@@ -673,3 +736,29 @@ function RD_readout_ButtonDownFcn(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 handles.data.rd_show_loss = ~handles.data.rd_show_loss;
 guidata(hObject,handles);
+
+
+% --- Executes when user attempts to close figure1.
+function figure1_CloseRequestFcn(hObject, eventdata, handles)
+% hObject    handle to figure1 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: delete(hObject) closes the figure
+if handles.data.stopped
+    if handles.data.closing || strcmp( get(handles.start_btn,'enable'), 'on' )
+        delete(hObject);
+    else
+        handles.data.closing = 1;
+        guidata(hObject,handles);
+    end
+end
+
+
+% --- If Enable == 'on', executes on mouse press in 5 pixel border.
+% --- Otherwise, executes on mouse press in 5 pixel border or over RD_units.
+function RD_units_ButtonDownFcn(hObject, eventdata, handles)
+% hObject    handle to RD_units (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+RD_readout_ButtonDownFcn(hObject, eventdata, handles);
