@@ -71,72 +71,76 @@ void sigint_handler(int sig) {
   siglongjmp(env,1);
 }
 
-static long int scan0 = 6, scan1, scan5 = 0l;
+static long int scan0 = 6, scan1;
+// static long scan5 = 0l;
 static int raw_length;
 
-static void output_scan( long int *scan, mlf_def_t *mlf ) {
+typedef struct {
+  ssp_scan_header_t hdr;
+  long int idata[SSP_CLIENT_BUF_LENGTH-6];
+} ssp_raw_scan;
+  
+static void output_scan( ssp_raw_scan *scan, mlf_def_t *mlf ) {
   int i, j;
   FILE *ofp;
-  ssp_scan_header_t *hdr = (ssp_scan_header_t *)scan;
-  long int *idata = scan+hdr->NWordsHdr;
   float fdata[SSP_MAX_CHANNELS][SSP_MAX_SAMPLES];
   time_t now;
   static time_t last_rpt = 0;
-  float divisor = 1/(hdr->NCoadd * (float)(hdr->NAvg+1));
-  int my_scan_length = hdr->NSamples * hdr->NChannels;
+  float divisor = 1/(scan->hdr.NCoadd * (float)(scan->hdr.NAvg+1));
+  int my_scan_length = scan->hdr.NSamples * scan->hdr.NChannels;
 
   // scan is guaranteed to be raw_length words long. Want to verify that NSamples*NChannels + NWordsHdr + 1 == raw_length
-  if ( hdr->NWordsHdr != scan0 ) {
-    nl_error( 2, "NWordsHdr(%u) != %u", hdr->NWordsHdr, scan0 );
+  if ( scan->hdr.NWordsHdr != scan0 ) {
+    nl_error( 2, "NWordsHdr(%u) != %u", scan->hdr.NWordsHdr, scan0 );
     return;
   }
-  if ( hdr->FormatVersion > 1 ) {
-    nl_error( 2, "Unsupported FormatVersion: %u", hdr->FormatVersion );
+  if ( scan->hdr.FormatVersion > 1 ) {
+    nl_error( 2, "Unsupported FormatVersion: %u", scan->hdr.FormatVersion );
     return;
   }
   if ( my_scan_length + 7 != raw_length ) {
     nl_error( 2, "Header reports NS:%u NC:%u -- raw_length is %d",
-      hdr->NSamples, hdr->NChannels, raw_length );
+      scan->hdr.NSamples, scan->hdr.NChannels, raw_length );
     return;
   }
   ofp = mlf_next_file(mlf);
   now = time(NULL);
 
-  for ( j = 0; j < hdr->NChannels; ++j ) {
-    for ( i = 0; i < hdr->NSamples; ++i ) {
-      fdata[j][i] = idata[i * hdr->NChannels + j] * divisor;
+  for ( j = 0; j < scan->hdr.NChannels; ++j ) {
+    for ( i = 0; i < scan->hdr.NSamples; ++i ) {
+      fdata[j][i] = scan->idata[i * scan->hdr.NChannels + j] * divisor;
     }
   }
   if (RD) {
     fprintf( hdr_fp, "%ld %lu %u %u %u %u %u %u %u %u %u %lu %.4f %.4f %lu",
       now, mlf->index,
-      hdr->NWordsHdr, hdr->FormatVersion, hdr->NChannels, hdr->NF,
-      hdr->NSamples, hdr->NCoadd, hdr->NAvg, hdr->NSkL, hdr->NSkP,
-      hdr->ScanNum, (hdr->T_HtSink & 0xFFE0)/256.,
-      (hdr->T_FPGA>>3)/16., (unsigned long)scan[raw_length-1] );
-    for ( j = 0; j < hdr->NChannels; ++j ) {
-      Ringdown_t *rdf = ringdown_fit(hdr, fdata[0] + j*hdr->NSamples);
+      scan->hdr.NWordsHdr, scan->hdr.FormatVersion, scan->hdr.NChannels, scan->hdr.NF,
+      scan->hdr.NSamples, scan->hdr.NCoadd, scan->hdr.NAvg, scan->hdr.NSkL, scan->hdr.NSkP,
+      scan->hdr.ScanNum, (scan->hdr.T_HtSink & 0xFFE0)/256.,
+      (scan->hdr.T_FPGA>>3)/16., (unsigned long)scan->idata[raw_length-7] );
+    for ( j = 0; j < scan->hdr.NChannels; ++j ) {
+      Ringdown_t *rdf = ringdown_fit(&scan->hdr, fdata[0] + j*scan->hdr.NSamples);
       fprintf( hdr_fp, " %.3lf %.3lf %.4lf %.4lf", rdf->tau, rdf->dtau, rdf->b, rdf->a );
     }
     fprintf( hdr_fp, "\n" );
   } else {
     fprintf( hdr_fp, "%ld %lu %u %u %u %u %u %u %u %u %u %lu %.4f %.4f %lu\n",
       now, mlf->index,
-      hdr->NWordsHdr, hdr->FormatVersion, hdr->NChannels, hdr->NF,
-      hdr->NSamples, hdr->NCoadd, hdr->NAvg, hdr->NSkL, hdr->NSkP,
-      hdr->ScanNum, (hdr->T_HtSink & 0xFFE0)/256.,
-      (hdr->T_FPGA>>3)/16., (unsigned long)scan[raw_length-1] );
+      scan->hdr.NWordsHdr, scan->hdr.FormatVersion, scan->hdr.NChannels, scan->hdr.NF,
+      scan->hdr.NSamples, scan->hdr.NCoadd, scan->hdr.NAvg, scan->hdr.NSkL, scan->hdr.NSkP,
+      scan->hdr.ScanNum, (scan->hdr.T_HtSink & 0xFFE0)/256.,
+      (scan->hdr.T_FPGA>>3)/16., (unsigned long)scan->idata[raw_length-7] );
   }
   fflush(hdr_fp);
   
   { unsigned long n_l;
-    n_l = hdr->NSamples;
+    n_l = scan->hdr.NSamples;
     fwrite( &n_l, sizeof(unsigned long), 1, ofp );
-    n_l = hdr->NChannels;
+    n_l = scan->hdr.NChannels;
     fwrite( &n_l, sizeof(unsigned long), 1, ofp );
   }
 
-  fwrite( fdata, hdr->NChannels*hdr->NSamples*sizeof(float), 1, ofp );
+  fwrite( fdata, scan->hdr.NChannels*scan->hdr.NSamples*sizeof(float), 1, ofp );
   fclose(ofp);
   move_lock(mlf->index+1);
   if ( difftime(now, last_rpt) > 5 ) {
@@ -145,10 +149,10 @@ static void output_scan( long int *scan, mlf_def_t *mlf ) {
   }
   
   // Perform some sanity checks on the inbound scan
-  if ( (scan[1] & 0xFFFF00FF) != scan1 )
-    nl_error( 1, "%lu: scan[1] = %08lX (not %08lX)\n", mlf->index, scan[1], scan1 );
-  if ( hdr->FormatVersion == 0 && scan[5] != scan5 )
-    nl_error( 1, "%lu: scan[5] = %08lX (not %08lX)\n", mlf->index, scan[5], scan5 );
+  //if ( (scan[1] & 0xFFFF00FF) != scan1 )
+  //  nl_error( 1, "%lu: scan[1] = %08lX (not %08lX)\n", mlf->index, scan[1], scan1 );
+  //if ( scan->hdr.FormatVersion == 0 && scan[5] != scan5 )
+  //  nl_error( 1, "%lu: scan[5] = %08lX (not %08lX)\n", mlf->index, scan[5], scan5 );
 }
 
 static long int scan_buf[SSP_CLIENT_BUF_LENGTH];
@@ -194,11 +198,11 @@ int main( int argc, char **argv ) {
     for ( i = 1; i < argc; i++ ) {
       if (strncmp( argv[i], "RD:", 3 ) == 0 ) {
         char *ns = argv[i]+3;
-        if ( ! isdigit(*ns) ) nl_error(3, "Expected digit after RD: argument" );
+        if ( ! isdigit((unsigned char)(*ns)) ) nl_error(3, "Expected digit after RD: argument" );
         RD_n_skip = atoi(ns);
-        while (isdigit(*ns)) ++ns;
+        while (isdigit((unsigned char)(*ns))) ++ns;
         if ( *ns != ',' ) nl_error(3, "Expected comma after RD:## argument" );
-        if ( ! isdigit(*++ns) ) nl_error(3, "Expected digit after RD:##, argument" );
+        if ( ! isdigit((unsigned char)(*++ns)) ) nl_error(3, "Expected digit after RD:##, argument" );
         RD_n_off = atoi(ns);
         RD = 1;
       } else {
@@ -255,7 +259,7 @@ int main( int argc, char **argv ) {
       if ( n < 0 )
         nl_error( 2, "Error from udp_receive: %d", errno );
       else if ( cur_word == 0 && !(*scan_buf & SSP_FRAG_FLAG) ) {
-        if ( n == scan_size ) output_scan(scan_buf, mlf);
+        if ( n == scan_size ) output_scan((ssp_raw_scan *)scan_buf, mlf);
         else nl_error( mlf->index ? 2 : 1,
           "Expected %d bytes, received %d", scan_size, n );
       } else if ( !( scan_buf[cur_word] & SSP_FRAG_FLAG ) ) {
@@ -288,7 +292,7 @@ int main( int argc, char **argv ) {
         if ( frag_hdr & SSP_LAST_FRAG_FLAG ) {
           if ( scan_OK ) {
             if ( cur_word == raw_length )
-              output_scan( scan_buf+1, mlf );
+              output_scan( (ssp_raw_scan *)(scan_buf+1), mlf );
             else nl_error( 2, "Scan length error: expected %d words, received %d",
               raw_length, cur_word );
           }
