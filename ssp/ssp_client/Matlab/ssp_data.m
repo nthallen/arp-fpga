@@ -67,6 +67,11 @@ set(handles.CAOVF, 'Visible','off');
 NF = (1:32)';
 MSPSstr = cellstr(num2str(100./NF,'%.2f'));
 set(handles.NF,'String',MSPSstr,'Value', 20);
+if strcmp(getenv('SSP_HOSTNAME'),'simulator')
+    handles.data.logcmd = 'ssp_sim';
+else
+    handles.data.logcmd = 'ssp_log';
+end
 
 % Update handles structure
 guidata(hObject, handles);
@@ -142,8 +147,8 @@ if get(handles.Ringdown,'Value')
 else
   RD = '';
 end
-cmd = sprintf('start ssp_log %sNS:%d NA:%d NC:%d NF:%d NE:%d %s IX:%d', ...
-  RD, NS, NA, NC, NF, NE, TC, IX);
+cmd = sprintf('start %s %sNS:%d NA:%d NC:%d NF:%d NE:%d %s IX:%d', ...
+  handles.data.logcmd, RD, NS, NA, NC, NF, NE, TC, IX);
 fprintf(1, '%s\n', cmd );
 set(handles.NS, 'enable', 'off');
 set(handles.NA, 'enable', 'off');
@@ -329,6 +334,8 @@ while 1
                 plot(rdx,D,'*',rdv,F,'r');
                 set(handles.axes1,'HitTest','off');
                 xlim([1 length(D)]);
+                ylim([min([min(min(D)) min(min(F))]) ...
+                      max([max(max(D)) max(max(F))]) ]);
                 if handles.data.rd_show_loss
                     set(handles.RD_readout,'String', ...
                         sprintf('%.1f', rdlc/rdd(1,1) ), ...
