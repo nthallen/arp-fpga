@@ -2,16 +2,17 @@
 <?xml-stylesheet ekr_test?>
 <leo_file>
 <leo_header file_format="2" tnodes="0" max_tnode_index="0" clone_windows="0"/>
-<globals body_outline_ratio="0.5">
-	<global_window_position top="67" left="10" height="519" width="741"/>
+<globals body_outline_ratio="0.5" body_secondary_ratio="0.5">
+	<global_window_position top="50" left="50" height="500" width="700"/>
 	<global_log_window_position top="0" left="0" height="0" width="0"/>
 </globals>
 <preferences/>
 <find_panel_settings/>
 <vnodes>
+<v t="ntallen.20100702124409.1475"><vh>@chapters</vh></v>
 <v t="ntallen.20080228100701" a="E"><vh>SSP Documentation</vh>
 <v t="ntallen.20080228100842" a="E"><vh>IIP Development Notes</vh>
-<v t="ntallen.20080228100842.1" a="E"><vh>Design Issues</vh>
+<v t="ntallen.20080228100842.1"><vh>Design Issues</vh>
 <v t="ntallen.20080228100842.2"><vh>Multiple Clocks</vh></v>
 <v t="ntallen.20080228100842.3"><vh>Implement Coadd and N Channels</vh>
 <v t="ntallen.20080311125846"><vh>Remaining Work</vh></v>
@@ -20,39 +21,39 @@
 <v t="ntallen.20080228100842.4"><vh>Back to benchmarks</vh></v>
 <v t="ntallen.20080228100842.5"><vh>Data Transfer Strategies</vh>
 <v t="ntallen.20080228100842.6"><vh>V1</vh></v>
-<v t="ntallen.20080228100842.7" a="E"><vh>V2</vh>
+<v t="ntallen.20080228100842.7"><vh>V2</vh>
 <v t="ntallen.20080311125846.1"><vh>V2a</vh></v>
 </v>
 <v t="ntallen.20080228100842.8"><vh>V3</vh></v>
 </v>
-<v t="ntallen.20081031104332" a="E"><vh>Network Configuration</vh>
+<v t="ntallen.20081031104332"><vh>Network Configuration</vh>
 <v t="ntallen.20081031104332.1"><vh>Configuration Contents</vh></v>
-<v t="ntallen.20081031104332.2" a="E"><vh>Configuration Initialization Strategy</vh>
+<v t="ntallen.20081031104332.2"><vh>Configuration Initialization Strategy</vh>
 <v t="ntallen.20081031104332.3"><vh>FPGA Configuration Tool Operation</vh></v>
-<v t="ntallen.20081118114833" a="TV"><vh>TCP for web</vh></v>
+<v t="ntallen.20081118114833"><vh>TCP for web</vh></v>
 </v>
 </v>
 </v>
-<v t="ntallen.20080228100842.9" a="E"><vh>Knowledge Base</vh>
-<v t="ntallen.20080228100842.10" a="E"><vh>Software Versions</vh>
+<v t="ntallen.20080228100842.9"><vh>Knowledge Base</vh>
+<v t="ntallen.20080228100842.10"><vh>Software Versions</vh>
 <v t="ntallen.20080228100842.11"><vh>LwIP</vh></v>
 <v t="ntallen.20080228100842.12"><vh>Cygwin compatability</vh></v>
 </v>
 <v t="ntallen.20080228100842.13"><vh>Do we need to have different pcores for different FPGA targets?</vh></v>
 <v t="ntallen.20080228100842.14"><vh>Xilkernel timer bug</vh></v>
 </v>
-<v t="ntallen.20080228100842.15" a="E"><vh>Document clearly what we need to build this app</vh>
-<v t="ntallen.20080228100842.14"><vh>Xilkernel timer bug</vh></v>
+<v t="ntallen.20080228100842.15"><vh>Document clearly what we need to build this app</vh>
+<v t="ntallen.20080228100842.14"></v>
 <v t="ntallen.20080502115342"><vh>System ACE File Generation</vh></v>
 <v t="ntallen.20080228100842.16"><vh>Sysgen Pcore Creation</vh>
-<v t="ntallen.20080228100842.13"><vh>Do we need to have different pcores for different FPGA targets?</vh></v>
-<v t="ntallen.20080228100842.17" a="E"><vh>Things to do after generation</vh>
+<v t="ntallen.20080228100842.13"></v>
+<v t="ntallen.20080228100842.17"><vh>Things to do after generation</vh>
 <v t="ntallen.20080228100842.18"><vh>Edit .mpd to mark interrupt</vh></v>
 <v t="ntallen.20080228100842.19"><vh>Edit .tcl to workaround bug</vh></v>
 <v t="ntallen.20080228100842.20"><vh>Edit src files to fix ArrayRead prototype</vh></v>
 </v>
 </v>
-<v t="ntallen.20080228100842.21" a="E"><vh>HW Components</vh>
+<v t="ntallen.20080228100842.21"><vh>HW Components</vh>
 <v t="ntallen.20080228100842.22"><vh>CPU: Microblaze</vh></v>
 <v t="ntallen.20080228100842.23"><vh>xps_spi</vh></v>
 <v t="ntallen.20080228100842.24"><vh>Ethernet</vh></v>
@@ -64,7 +65,7 @@
 <v t="ntallen.20081029142547"><vh>xps_iic</vh></v>
 <v t="ntallen.20080228100842.30"><vh>UCF</vh></v>
 </v>
-<v t="ntallen.20080228100842.31" a="E"><vh>SW Components</vh>
+<v t="ntallen.20080228100842.31"><vh>SW Components</vh>
 <v t="ntallen.20080228100842.32"><vh>xilkernel</vh></v>
 <v t="ntallen.20080228100842.33"><vh>LwIP</vh></v>
 <v t="ntallen.20080512113736"><vh>Libraries</vh></v>
@@ -77,8 +78,8 @@
 <v t="ntallen.20080228100842.39"><vh>UDP data</vh></v>
 </v>
 </v>
-<v t="ntallen.20080228100842.40" a="E"><vh>Revisions</vh>
-<v t="ntallen.20080228100842.41" a="E"><vh>XPS</vh>
+<v t="ntallen.20080228100842.40"><vh>Revisions</vh>
+<v t="ntallen.20080228100842.41"><vh>XPS</vh>
 <v t="ntallen.20080228100842.42"><vh>SSP_Proto_c3</vh>
 <v t="ntallen.20080228100842.43"><vh>ssp_ad_scan V2.01b</vh></v>
 <v t="ntallen.20080228100842.44"><vh>ssp_ad_preaddr V1.00a</vh></v>
@@ -87,7 +88,7 @@
 <v t="ntallen.20080717103941"><vh>SSP_Proto_402</vh></v>
 <v t="ntallen.20080930104722"><vh>SSP_V1 (ML401)</vh>
 <v t="ntallen.20080228133017.4"><vh>ssp_trigger V1.0a</vh></v>
-<v t="ntallen.20080930104722.1"><vh>arp_ssp V2.00c</vh></v>
+<v t="ntallen.20080930104722.1" a="M"><vh>arp_ssp V2.00c</vh></v>
 <v t="ntallen.20080403140406"><vh>ssp_ad_preaddr V2.00b</vh>
 <v t="ntallen.20080403140406.1"><vh>dual-clock FIFO</vh></v>
 <v t="ntallen.20080403140406.2"><vh>Handshaking</vh></v>
@@ -102,37 +103,17 @@
 </v>
 </v>
 <v t="ntallen.20080930110102"><vh>SSP_V1a (SSP)</vh>
-<v t="ntallen.20080930104722.1"><vh>arp_ssp V2.00c</vh></v>
-<v t="ntallen.20080403140406"><vh>ssp_ad_preaddr V2.00b</vh>
-<v t="ntallen.20080403140406.1"><vh>dual-clock FIFO</vh></v>
-<v t="ntallen.20080403140406.2"><vh>Handshaking</vh></v>
-<v t="ntallen.20080403140406.3"><vh>Handshaking - old plan</vh></v>
-<v t="ntallen.20080403140406.4"><vh>Rework Again?</vh></v>
-</v>
-<v t="ntallen.20080228133017.4"><vh>ssp_trigger V1.0a</vh></v>
-<v t="ntallen.20080228133017.6"><vh>ssp_ad_scan V3.00b</vh>
-<v t="ntallen.20080229125358.2"><vh>DStat</vh></v>
-<v t="ntallen.20080229125358.3"><vh>SampleCount</vh></v>
-<v t="ntallen.20080305130648"><vh>CoaddCount</vh></v>
-<v t="ntallen.20080305165613"><vh>ShiftOut Logic</vh></v>
-</v>
+<v t="ntallen.20080930104722.1" a="M"></v>
+<v t="ntallen.20080403140406"></v>
+<v t="ntallen.20080228133017.4"></v>
+<v t="ntallen.20080228133017.6"></v>
 </v>
 <v t="ntallen.20080930110904"><vh>SSP_V1p (ML401)</vh>
 <v t="ntallen.20080930110904.1"><vh>SSP_PMT_Input</vh></v>
-<v t="ntallen.20080930104722.1"><vh>arp_ssp V2.00c</vh></v>
-<v t="ntallen.20080403140406"><vh>ssp_ad_preaddr V2.00b</vh>
-<v t="ntallen.20080403140406.1"><vh>dual-clock FIFO</vh></v>
-<v t="ntallen.20080403140406.2"><vh>Handshaking</vh></v>
-<v t="ntallen.20080403140406.3"><vh>Handshaking - old plan</vh></v>
-<v t="ntallen.20080403140406.4"><vh>Rework Again?</vh></v>
-</v>
-<v t="ntallen.20080228133017.4"><vh>ssp_trigger V1.0a</vh></v>
-<v t="ntallen.20080228133017.6"><vh>ssp_ad_scan V3.00b</vh>
-<v t="ntallen.20080229125358.2"><vh>DStat</vh></v>
-<v t="ntallen.20080229125358.3"><vh>SampleCount</vh></v>
-<v t="ntallen.20080305130648"><vh>CoaddCount</vh></v>
-<v t="ntallen.20080305165613"><vh>ShiftOut Logic</vh></v>
-</v>
+<v t="ntallen.20080930104722.1" a="M"></v>
+<v t="ntallen.20080403140406"></v>
+<v t="ntallen.20080228133017.4"></v>
+<v t="ntallen.20080228133017.6"></v>
 </v>
 <v t="ntallen.20081031104332.4"><vh>SSP_Devel(SSP)</vh></v>
 </v>
@@ -140,19 +121,14 @@
 <v t="ntallen.20080228100842.47"><vh>ssp_ad_scan</vh>
 <v t="ntallen.20080228100842.48"><vh>ssp_ad_scan V2.00a</vh></v>
 <v t="ntallen.20080228100842.49"><vh>ssp_ad_scan V2.01a</vh></v>
-<v t="ntallen.20080228100842.43"><vh>ssp_ad_scan V2.01b</vh></v>
+<v t="ntallen.20080228100842.43"></v>
 <v t="ntallen.20080228100842.50"><vh>ssp_ad_scan V2.02a</vh>
 <v t="ntallen.20080228100842.51"><vh>Scan Logic</vh></v>
 </v>
-<v t="ntallen.20080228133017.6"><vh>ssp_ad_scan V3.00b</vh>
-<v t="ntallen.20080229125358.2"><vh>DStat</vh></v>
-<v t="ntallen.20080229125358.3"><vh>SampleCount</vh></v>
-<v t="ntallen.20080305130648"><vh>CoaddCount</vh></v>
-<v t="ntallen.20080305165613"><vh>ShiftOut Logic</vh></v>
-</v>
+<v t="ntallen.20080228133017.6"></v>
 </v>
 <v t="ntallen.20080228100842.52"><vh>ssp_ad_preaddr</vh>
-<v t="ntallen.20080228100842.44"><vh>ssp_ad_preaddr V1.00a</vh></v>
+<v t="ntallen.20080228100842.44"></v>
 <v t="ntallen.20080228100842.53"><vh>ssp_ad_preaddr V1.00b</vh></v>
 <v t="ntallen.20080228133017.5"><vh>ssp_ad_preaddr V2.00a</vh>
 <v t="ntallen.20080229125358.1"><vh>dual-clock FIFO</vh></v>
@@ -160,29 +136,24 @@
 <v t="ntallen.20080228140103"><vh>Handshaking - old plan</vh></v>
 <v t="ntallen.20080229125358"><vh>Rework Again?</vh></v>
 </v>
-<v t="ntallen.20080403140406"><vh>ssp_ad_preaddr V2.00b</vh>
-<v t="ntallen.20080403140406.1"><vh>dual-clock FIFO</vh></v>
-<v t="ntallen.20080403140406.2"><vh>Handshaking</vh></v>
-<v t="ntallen.20080403140406.3"><vh>Handshaking - old plan</vh></v>
-<v t="ntallen.20080403140406.4"><vh>Rework Again?</vh></v>
-</v>
+<v t="ntallen.20080403140406"></v>
 </v>
 <v t="ntallen.20080228100842.55"><vh>arp_ssp</vh>
 <v t="ntallen.20080228100842.56"><vh>arp_ssp V1.00a</vh></v>
-<v t="ntallen.20080228100842.45" a="M"><vh>arp_ssp V2.00a</vh></v>
-<v t="ntallen.20080930104722.1" a="M"><vh>arp_ssp V2.00c</vh></v>
+<v t="ntallen.20080228100842.45" a="M"></v>
+<v t="ntallen.20080930104722.1" a="M"></v>
 </v>
 <v t="ntallen.20080403141641"><vh>ssp_trigger</vh>
-<v t="ntallen.20080228133017.4"><vh>ssp_trigger V1.0a</vh></v>
+<v t="ntallen.20080228133017.4"></v>
 </v>
-<v t="ntallen.20080930110904.1"><vh>SSP_PMT_Input</vh></v>
+<v t="ntallen.20080930110904.1"></v>
 </v>
 </v>
 </v>
-<v t="ntallen.20080228100842.57" a="E"><vh>LwIP</vh>
-<v t="ntallen.20080228100842.58" a="E"><vh>Debugging</vh>
+<v t="ntallen.20080228100842.57"><vh>LwIP</vh>
+<v t="ntallen.20080228100842.58"><vh>Debugging</vh>
 <v t="ntallen.20080228100842.59"><vh>sys_arch.c</vh></v>
-<v t="ntallen.20080228100842.60" a="E"><vh>xadapter.c</vh>
+<v t="ntallen.20080228100842.60"><vh>xadapter.c</vh>
 <v t="ntallen.20080228100842.61"><vh>The Problem</vh></v>
 </v>
 <v t="ntallen.20080228100842.62"><vh>netif/xemacif.h</vh></v>
@@ -194,36 +165,33 @@
 <v t="ntallen.20080404114126"><vh>Debugging</vh></v>
 </v>
 <v t="ntallen.20080228133017" a="E"><vh>Documentation</vh>
-<v t="ntallen.20080228133017.1" a="E"><vh>Circuits</vh>
-<v t="ntallen.20080228133017.2" a="E"><vh>SSP V1</vh>
-<v t="ntallen.20080228100842.45" a="M"><vh>arp_ssp V2.00a</vh></v>
-<v t="ntallen.20080228133017.4"><vh>ssp_trigger V1.0a</vh></v>
-<v t="ntallen.20080228133017.5"><vh>ssp_ad_preaddr V2.00a</vh>
-<v t="ntallen.20080229125358.1"><vh>dual-clock FIFO</vh></v>
-<v t="ntallen.20080303084933"><vh>Handshaking</vh></v>
-<v t="ntallen.20080228140103"><vh>Handshaking - old plan</vh></v>
-<v t="ntallen.20080229125358"><vh>Rework Again?</vh></v>
-</v>
-<v t="ntallen.20080228133017.6" a="E"><vh>ssp_ad_scan V3.00b</vh>
-<v t="ntallen.20080229125358.2"><vh>DStat</vh></v>
-<v t="ntallen.20080229125358.3"><vh>SampleCount</vh></v>
-<v t="ntallen.20080305130648"><vh>CoaddCount</vh></v>
-<v t="ntallen.20080305165613"><vh>ShiftOut Logic</vh></v>
-</v>
+<v t="ntallen.20080228133017.1"><vh>Circuits</vh>
+<v t="ntallen.20080228133017.2"><vh>SSP V1</vh>
+<v t="ntallen.20080228100842.45" a="M"></v>
+<v t="ntallen.20080228133017.4"></v>
+<v t="ntallen.20080228133017.5"></v>
+<v t="ntallen.20080228133017.6"></v>
 </v>
 </v>
 <v t="ntallen.20080228133017.7" a="E"><vh>Software</vh>
-<v t="ntallen.20081114110138" a="E"><vh>SSP_Config</vh>
+<v t="ntallen.20081114110138"><vh>SSP_Config</vh>
 <v t="ntallen.20081114110138.1"><vh>Threads</vh></v>
 </v>
-<v t="ntallen.20080331101629" a="E"><vh>Server V2.0</vh>
+<v t="ntallen.20080331101629"><vh>Server V2.0</vh>
 <v t="ntallen.20080331101629.1"><vh>Threads</vh></v>
-<v t="ntallen.20080331101629.2" a="E"><vh>Commands</vh>
+<v t="ntallen.20080331101629.2"><vh>Commands</vh>
 <v t="ntallen.20080331114222"><vh>Inter-thread communication</vh></v>
 </v>
 <v t="ntallen.20080331131839"><vh>Data</vh></v>
 </v>
-<v t="ntallen.20080331101629.3"><vh>Client</vh></v>
+<v t="ntallen.20080331101629.3" a="E"><vh>Client</vh>
+<v t="ntallen.20100702124409.1476" a="E"><vh>cygwin</vh>
+<v t="ntallen.20100702124409.1477"><vh>ssp_cmd.exe</vh></v>
+<v t="ntallen.20100702124409.1478"><vh>ssp_log.exe</vh></v>
+<v t="ntallen.20100702124409.1480"><vh>Matlab: ssp_data.m</vh></v>
+</v>
+<v t="ntallen.20100702124409.1479"><vh>QNX6</vh></v>
+</v>
 </v>
 </v>
 <v t="ntallen.20080617120554" a="E"><vh>To Do</vh>
@@ -236,35 +204,6 @@
 <t tx="ntallen.20080228100701">@nocolor</t>
 <t tx="ntallen.20080228100842"></t>
 <t tx="ntallen.20080228100842.1"></t>
-<t tx="ntallen.20080228100842.2">The Multiple Subsystem bocks in Sysgen die catastrophically. How do we work around that?
-Must make the designs separate and interconnect manually. This is not ideal, since it makes it difficult to use things like FIFOs, but we can deal.</t>
-<t tx="ntallen.20080228100842.3">Full design for 3 channels as documented under SSP V1. Each component required:
-    Design
-    Simulation
-    Export from Sysgen
-    Import into XPS
-
-Then the system as a whole required:
-    Interconnect in XPS
-    Place and Route
-
-Based on P&amp;R results, we can see what size device we're going to need. It looks like the ideal choice will be the XC4VSX35, which has lots of RAM, but we can definitely fit the existing design into the XC4VLS25 which is on the ML401. The additional RAM will allow us to expand the application or simply allow for longer scans at higher resolution.
-    </t>
-<t tx="ntallen.20080228100842.4">Things to look into:
-    cache
-    barrel shifter
-    hardware multiply
-    hardware checksums
-    TEMAC vs EthernetLite
-    Raw vs Sockets
-</t>
-<t tx="ntallen.20080228100842.5"></t>
-<t tx="ntallen.20080228100842.6">HW: Don't start writing a scan unless the whole scan will fit in the FIFO
-SW: Dont' start reading a scan until EOS interrupt</t>
-<t tx="ntallen.20080228100842.7">HW: Still use a FIFO. Assume SW can keep up with the data transfer. If not, fail and require a reset to restart
-SW: Transfer data whenever a sufficient amount is ready</t>
-<t tx="ntallen.20080228100842.8">Figure out whether a real shared-memory approach exists with PLB. If so, keep the whole UDP packet in the shared memory and transfer when ready.</t>
-<t tx="ntallen.20080228100842.9"></t>
 <t tx="ntallen.20080228100842.10">4/01/2008:
     10.1 is out there....
     
@@ -313,6 +252,8 @@ PORT scanintr = "", DIR = O
 PORT scanintr = "", DIR = O, SIGIS = INTERRUPT, SENSITIVITY = EDGE_RISING
 </t>
 <t tx="ntallen.20080228100842.19">in 'proc generate', the last 'expand_Template' invocation fails when running libgen from inside the SDK. This line can either be commented out or modified to get an explicit path.</t>
+<t tx="ntallen.20080228100842.2">The Multiple Subsystem bocks in Sysgen die catastrophically. How do we work around that?
+Must make the designs separate and interconnect manually. This is not ideal, since it makes it difficult to use things like FIFOs, but we can deal.</t>
 <t tx="ntallen.20080228100842.20">As written, the prototype for _ArrayRead functions lists the buffer pointer as int **buf, which is one '*' too many. It works that way, but it's wrong, and it generates warnings in the compiler.</t>
 <t tx="ntallen.20080228100842.21"></t>
 <t tx="ntallen.20080228100842.22">Configure IP
@@ -370,6 +311,18 @@ Connect all ports.
  PORT scanintr = SSP_ScanIntr connect to intc
 </t>
 <t tx="ntallen.20080228100842.29">Make sure all the interrupts are connected</t>
+<t tx="ntallen.20080228100842.3">Full design for 3 channels as documented under SSP V1. Each component required:
+    Design
+    Simulation
+    Export from Sysgen
+    Import into XPS
+
+Then the system as a whole required:
+    Interconnect in XPS
+    Place and Route
+
+Based on P&amp;R results, we can see what size device we're going to need. It looks like the ideal choice will be the XC4VSX35, which has lots of RAM, but we can definitely fit the existing design into the XC4VLS25 which is on the ML401. The additional RAM will allow us to expand the application or simply allow for longer scans at higher resolution.
+    </t>
 <t tx="ntallen.20080228100842.30"></t>
 <t tx="ntallen.20080228100842.31"></t>
 <t tx="ntallen.20080228100842.32">sysintc_spec [opb_intc] [xps_intc]
@@ -408,6 +361,14 @@ What about status requests?
 What exactly is the collection interface?</t>
 <t tx="ntallen.20080228100842.38"></t>
 <t tx="ntallen.20080228100842.39"></t>
+<t tx="ntallen.20080228100842.4">Things to look into:
+    cache
+    barrel shifter
+    hardware multiply
+    hardware checksums
+    TEMAC vs EthernetLite
+    Raw vs Sockets
+</t>
 <t tx="ntallen.20080228100842.40"></t>
 <t tx="ntallen.20080228100842.41"></t>
 <t tx="ntallen.20080228100842.42">EDK 9.2i
@@ -438,6 +399,7 @@ The A/D clock goes high at the same time the data is updated, so the data should
 </t>
 <t tx="ntallen.20080228100842.48"></t>
 <t tx="ntallen.20080228100842.49"></t>
+<t tx="ntallen.20080228100842.5"></t>
 <t tx="ntallen.20080228100842.50">Addition of coadd circuitry and new pre adder interface
 </t>
 <t tx="ntallen.20080228100842.51">Processing of individual scans occurs independent of the enable input. When a trigger is detected, the BOS signal is asserted, the scan number is incremented, and write enables will begin. The enable input helps decide whether or not to begin a new coadd sequence, but once a coadd sequence is begun, it runs to completion unless interrupted by a reset.
@@ -456,6 +418,8 @@ Once we begin a coadd sequence, we continue accepting scans at least until the c
 
   sys_thread_new()
     358: In the case of no free threads, function returns an undefined pointer</t>
+<t tx="ntallen.20080228100842.6">HW: Don't start writing a scan unless the whole scan will fit in the FIFO
+SW: Dont' start reading a scan until EOS interrupt</t>
 <t tx="ntallen.20080228100842.60">xemacif_input_thread() needs to be started in lwip_sock_init()--actually later, after the interface has been initialized. As written, if it starts, it runs in a busy loop polling for new input in the pq. In Socket mode, there should be a semaphore associated with the pq.
 
 In LwIP v2.00 raw mode with interrupts, the interface input function is called as a handler when the interface interrupt signals an incoming packet. The interface input function reads the packet and passes it directly on to the higher level packet processing functions, which ultimately call the user functions.
@@ -494,6 +458,10 @@ Here's what I found today:
     I set a breakpoint there to see who was sending packets larger than 1514, and it turns out we get a 1518-byte packet for an ARP response (from etharp.c) This is because they reuse the inbound packet, and it has the raw max packet length from the driver (since--if I am not mistaken--the driver really can't know how long the packet is) I'm going to try adding:
     p-&gt;len = p-&gt;tot_len = sizeof(struct etharp_hdr);
     </t>
+<t tx="ntallen.20080228100842.7">HW: Still use a FIFO. Assume SW can keep up with the data transfer. If not, fail and require a reset to restart
+SW: Transfer data whenever a sufficient amount is ready</t>
+<t tx="ntallen.20080228100842.8">Figure out whether a real shared-memory approach exists with PLB. If so, keep the whole UDP packet in the shared memory and transfer when ready.</t>
+<t tx="ntallen.20080228100842.9"></t>
 <t tx="ntallen.20080228133017"></t>
 <t tx="ntallen.20080228133017.1"></t>
 <t tx="ntallen.20080228133017.2">Location: D:\Data\Xilinx\sysgen\SSP\ssp_proto\V2_2
@@ -908,8 +876,10 @@ On the receiving end, we should be able to predict fragmentation and be ready fo
 
 </t>
 <t tx="ntallen.20080617120554"></t>
-<t tx="ntallen.20080617120554.1"></t>
-<t tx="ntallen.20080617120554.2"></t>
+<t tx="ntallen.20080617120554.1">I believe this is done.
+</t>
+<t tx="ntallen.20080617120554.2">Also?
+</t>
 <t tx="ntallen.20080717103941"></t>
 <t tx="ntallen.20080930104722">Targeting ML401 for desktop testing
 
@@ -1012,5 +982,85 @@ tcpThread, 4: (ssp_fpga_sw has this set to 1)
     IP Header: 20
     TCP Header: 20
     Maximum TCP Payload: 1500-20-20 = 1460</t>
+<t tx="ntallen.20100702124409.1475"></t>
+<t tx="ntallen.20100702124409.1476">ssp_cmd.exe
+ssp_log.exe</t>
+<t tx="ntallen.20100702124409.1477">  ssp_cmd
+    Opens TCP command connection to 10.0.0.200 or the IP address specified in the
+    environment variable SSP_HOSTNAME. Sends the list of commands passed on
+    the command line. If the disable command (DA) is sent, attempts to shut down
+    ssp_log if it is running. Otherwise, ssp_cmd does not attempt to interpret the
+    commands.
+
+  Commands:
+    EN Enable
+    DA Disable
+    EX Quit
+    NS:xxxx N_Samples
+    NA:xxxx N_Avg
+    NC:xxxx N_Coadd
+    NP:xxxxx UDP Port Number
+    NE:x Channel Enable (1-7)
+    TU:[-]xxxxx Level Trigger Rising
+    TD:[-]xxxxx Level Trigger Falling
+    TS:x Trigger Source (0-3)
+    AE Autotrig Enable
+    AD Autotrig Disable
+  Return Values:
+    200 OK
+    500 Bad
+</t>
+<t tx="ntallen.20100702124409.1478">  ssp_log NS:%d NA:%d NC:%d NF:%d NE:%d TS:%d [TU|TD]:%d IX:%d'
+    Opens a UDP socket for receiving data
+    Opens TCP command connection to SSP board
+    Issues the configuration command, informing the SSP board
+      what UDP port to send data to
+    Reads some quantity of data from the UDP port
+    Issues the stop command
+
+  Commands:
+    NS:xxxx N_Samples
+    NC:xxxx N_Coadd
+    NA:xxxx N_Average
+    NF:xxxx Frequence Divisor
+    NE:xxxx Bit-mapped channel enable
+    TS:x    Trigger Source [0-3] (3 =&gt; external)
+    TU:xxx  Rising Trigger Level
+    TD:xxx  Falling Trigger Level
+    IX:xxxx Starting MLF file index
+
+ssp_log initiates communication with the SSP board. The default IP address is 10.0.0.200.
+It can be overridden with the environment variable SSP_HOSTNAME in order to target a
+different board.
+
+ssp_log issues the appropriate configuration commands to the SSP board, then issues the enable command 'EN'. It then records incoming scans until it receives a SIGHUP. As each scan is
+received and written, a status line is written to the header log file, CPCI14/ssp.log
+
+  fprintf( hdr_fp, "%ld %lu %u %u %u %u %u %u %u %u %u %lu %.4f %.4f %lu\n",
+    now, mlf-&gt;index,
+    hdr-&gt;NWordsHdr, hdr-&gt;FormatVersion, hdr-&gt;NChannels, hdr-&gt;NF,
+    hdr-&gt;NSamples, hdr-&gt;NCoadd, hdr-&gt;NAvg, hdr-&gt;NSkL, hdr-&gt;NSkP,
+    hdr-&gt;ScanNum, (hdr-&gt;T_HtSink &amp; 0xFFE0)/256.,
+    (hdr-&gt;T_FPGA&gt;&gt;3)/16., (unsigned long)scan[raw_length-1] );
+  fflush(hdr_fp);
+
+Before each file is written, a lock file is created in CPCI14/ssp_%d.lock. After the file is written, the lock file is renamed to the next index number.</t>
+<t tx="ntallen.20100702124409.1479"></t>
+<t tx="ntallen.20100702124409.1480">GUI that invokes ssp_cmd and ssp_log, then displays the data in realtime.
+
+GUI actually monitors the lock file to see if a new file is ready to be processed,
+then reads the header info from the log file:
+    index = 1
+    while true
+      if data file specified by index exists and corresponding lock file does not
+        read a line from the log file and process the data file
+        index &lt;= index + 1
+      else sleep .1 seconds
+    done
+
+    [Note that currently there is no check to make sure the header line matches
+     the log file index.]
+
+</t>
 </tnodes>
 </leo_file>
