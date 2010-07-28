@@ -69,7 +69,7 @@ Ringdown_t *ringdown_fit( ssp_scan_header_t *hdr, float *data ) {
         &bminus );
   rd_res.b = b;
   rd_res.a = a;
-  rd_res.tau = n * hdr->NF * .01 / log(b);
+  rd_res.tau = n * hdr->NF * (hdr->NAvg+1) * .01 / log(b);
   rd_res.dtau = rd_res.tau - ( n * hdr->NF * .01 / log(bplus) );
   return &rd_res;
 }
