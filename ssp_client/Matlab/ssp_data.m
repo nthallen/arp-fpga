@@ -183,7 +183,7 @@ fseek(ssp_log_fd, 0, 'eof'); % seek to the end
 if get(handles.Ringdown, 'Value')
     rdx = (1:NS)';
     rdv = ((handles.data.rd_nskip+1):NS)';
-    rddt = get(handles.NF,'Value')/100;
+    rddt = NF*NA/100;
     rdt = rddt * (0:length(rdv)-1)';
     rdlc = 1e12*handles.data.rd_cavlen/lightspeed;
     set(handles.axes1,'HitTest','off');
