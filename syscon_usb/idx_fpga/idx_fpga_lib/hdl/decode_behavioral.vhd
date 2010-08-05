@@ -13,7 +13,7 @@ USE ieee.numeric_std.all;
 
 ENTITY decode IS
    GENERIC( 
-      N_CHANNELS : integer range 15 downto 1 := 1
+      N_CHANNELS : integer range 15 DOWNTO 1 := 1
    );
    PORT( 
       Addr   : IN     std_logic_vector (15 DOWNTO 0);
@@ -23,15 +23,21 @@ ENTITY decode IS
       rst    : IN     std_ulogic;
       ExpAck : OUT    std_ulogic;
       WrEn   : OUT    std_ulogic;
-      BaseEn : OUT    std_ulogic;
       INTA   : OUT    std_ulogic;
       Chan   : OUT    std_ulogic_vector (N_CHANNELS-1 DOWNTO 0);
+      Run    : IN     std_ulogic_vector (N_CHANNELS-1 DOWNTO 0);
       OpCd   : OUT    std_logic_vector (2 DOWNTO 0);
       Data   : INOUT  std_logic_vector (15 DOWNTO 0);
       iData  : INOUT  std_logic_vector (15 DOWNTO 0);
       RdEn   : OUT    std_ulogic;
       F4M    : OUT    std_ulogic
    );
+   -- Data is the external data bus
+   -- iData is the internal data bus that goes to the channels
+   -- Addr,ExpRd,ExpWr,ExpAck all external.
+   -- RdEn, WrEn are our qualified versions
+   -- Chan is a vector of enable lines for the channels
+   -- OpCd is the low order 3 bits of Addr
 
 -- Declarations
 
@@ -42,13 +48,13 @@ ARCHITECTURE behavioral OF decode IS
   SIGNAL Wrote : std_ulogic;
   SIGNAL F4M_int : std_ulogic;
   SIGNAL Chan_sel : std_ulogic;
-  SIGNAL Chan_int : std_ulogic_vector(15 downto 0);
+  SIGNAL Chan_int : std_ulogic_vector(15 DOWNTO 0);
   SIGNAL Base_int : std_ulogic;
   SIGNAL INTA_int : std_ulogic;
   SIGNAL RdEn_int : std_ulogic;
 BEGIN
   process (Addr) is
-    Variable Chan_num : unsigned(3 downto 0);
+    Variable Chan_num : unsigned(3 DOWNTO 0);
   begin
     INTA_int <= '0';
     Base_int <= '0';
@@ -128,20 +134,21 @@ BEGIN
         if RdEn_int = '0' then
           iData <= (others => 'Z');
           Data <= (others => 'Z');
+        elsif Base_int = '1' then
+          Data(15 DOWNTO N_CHANNELS) <= ( others => '0' );
+          Data(N_CHANNELS-1 DOWNTO 0) <= To_StdLogicVector(Run);
         else
-          --iData <= (others => 'Z');
           Data <= iData;
         end if;
       elsif RdEn_int = '1' then
         Data <= ( others => 'Z' );
         iData <= ( others => 'Z' );
       else
-        --Data <= ( others => 'Z' );
         iData <= Data;
       end if;
-      BaseEn <= Base_int;
+      -- BaseEn <= Base_int;
       INTA <= INTA_int;
-      Chan <= Chan_int(N_CHANNELS downto 1);
+      Chan <= Chan_int(N_CHANNELS DOWNTO 1);
     end if;
   end process;
 

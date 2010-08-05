@@ -57,14 +57,14 @@ ARCHITECTURE struct OF gxidx IS
    -- Architecture declarations
 
    -- Internal signal declarations
-   SIGNAL BaseEn : std_ulogic;
-   SIGNAL Chan   : std_ulogic_vector(N_CHANNELS-1 DOWNTO 0);
-   SIGNAL F4M    : std_ulogic;
-   SIGNAL INTA   : std_ulogic;
-   SIGNAL OpCd   : std_logic_vector(2 DOWNTO 0);
-   SIGNAL RdEn   : std_ulogic;
-   SIGNAL WrEn   : std_ulogic;
-   SIGNAL iData  : std_logic_vector(15 DOWNTO 0);
+   SIGNAL Chan    : std_ulogic_vector(N_CHANNELS-1 DOWNTO 0);
+   SIGNAL F4M     : std_ulogic;
+   SIGNAL INTA    : std_ulogic;
+   SIGNAL OpCd    : std_logic_vector(2 DOWNTO 0);
+   SIGNAL RdEn    : std_ulogic;
+   SIGNAL WrEn    : std_ulogic;
+   SIGNAL iData   : std_logic_vector(15 DOWNTO 0);
+   SIGNAL Run_int : std_ulogic_vector (N_CHANNELS-1 DOWNTO 0);
 
 
    -- Component Declarations
@@ -102,9 +102,9 @@ ARCHITECTURE struct OF gxidx IS
       rst    : IN     std_ulogic ;
       ExpAck : OUT    std_ulogic ;
       WrEn   : OUT    std_ulogic ;
-      BaseEn : OUT    std_ulogic ;
       INTA   : OUT    std_ulogic ;
       Chan   : OUT    std_ulogic_vector (N_CHANNELS-1 DOWNTO 0);
+      Run    : IN     std_ulogic_vector (N_CHANNELS-1 DOWNTO 0);
       OpCd   : OUT    std_logic_vector (2 DOWNTO 0);
       Data   : INOUT  std_logic_vector (15 DOWNTO 0);
       iData  : INOUT  std_logic_vector (15 DOWNTO 0);
@@ -134,9 +134,9 @@ BEGIN
       rst    => rst,
       ExpAck => ExpAck,
       WrEn   => WrEn,
-      BaseEn => BaseEn,
       INTA   => INTA,
       Chan   => Chan,
+      Run    => Run_int,
       OpCd   => OpCd,
       Data   => Data,
       iData  => iData,
@@ -161,10 +161,12 @@ BEGIN
          ZR      => ZR(chno),
          rst     => rst,
          Dir     => Dir(chno),
-         Run     => Run(chno),
+         Run     => Run_int(chno),
          Step    => Step(chno),
          Data    => iData
       );
   end generate;
 
+  Run <= Run_int;
+  
 END struct;

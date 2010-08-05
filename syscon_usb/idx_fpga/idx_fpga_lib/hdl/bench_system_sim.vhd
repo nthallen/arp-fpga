@@ -19,10 +19,10 @@ ENTITY bench_system IS
     N_CHANNELS : integer range 15 downto 1 := 2
   );
   PORT (
-    Status_o : OUT std_ulogic_vector (1 DOWNTO 0); -- Ack,Done
+    Status_o : OUT std_logic_vector (1 DOWNTO 0); -- Ack,Done
     ExpRd_o : OUT std_ulogic;
     ExpWr_o : OUT std_ulogic;
-    ExpAddr_o : OUT std_ulogic_vector (15 DOWNTO 0);
+    ExpAddr_o : OUT std_logic_vector (15 DOWNTO 0);
     Data_i_o : OUT std_logic_vector (15 DOWNTO 0);
     ExpReset_o : OUT std_ulogic;
     CmdEnbl_o : OUT std_ulogic;
@@ -32,15 +32,15 @@ END ENTITY bench_system;
 
 --
 ARCHITECTURE sim OF bench_system IS
-  SIGNAL F8M : std_ulogic;
-  SIGNAL Ctrl : std_ulogic_vector (4 DOWNTO 0); -- Wr,Rd
-  SIGNAL Addr : std_ulogic_vector (15 DOWNTO 0);
+  SIGNAL F8M : std_logic;
+  SIGNAL Ctrl : std_logic_vector (4 DOWNTO 0); -- Wr,Rd
+  SIGNAL Addr : std_logic_vector (15 DOWNTO 0);
   SIGNAL Data_i : std_logic_vector (15 DOWNTO 0);
   SIGNAL Data_o : std_logic_vector (15 DOWNTO 0);
-  SIGNAL Status : std_ulogic_vector (1 DOWNTO 0); -- Ack,Done
-  SIGNAL ExpRd : std_ulogic;
-  SIGNAL ExpWr : std_ulogic;
-  SIGNAL ExpAddr : std_ulogic_vector (15 DOWNTO 0);
+  SIGNAL Status : std_logic_vector (1 DOWNTO 0); -- Ack,Done
+  SIGNAL ExpRd : std_logic;
+  SIGNAL ExpWr : std_logic;
+  SIGNAL ExpAddr : std_logic_vector (15 DOWNTO 0);
   SIGNAL ExpData : std_logic_vector (15 DOWNTO 0);
   SIGNAL ExpAck : std_logic;
   SIGNAL CmdEnbl : std_ulogic;
@@ -65,16 +65,16 @@ ARCHITECTURE sim OF bench_system IS
   
   COMPONENT syscon IS
     PORT (
-      F8M : IN std_ulogic;
-      Ctrl : IN std_ulogic_vector (4 DOWNTO 0); -- Wr,Rd
-      Addr : IN std_ulogic_vector (15 DOWNTO 0);
+      F8M : IN std_logic;
+      Ctrl : IN std_logic_vector (4 DOWNTO 0); -- Wr,Rd
+      Addr : IN std_logic_vector (15 DOWNTO 0);
       Data_i : OUT std_logic_vector (15 DOWNTO 0);
       Data_o : IN std_logic_vector (15 DOWNTO 0);
-      Status : OUT std_ulogic_vector (1 DOWNTO 0); -- Ack,Done
-      ExpRd : OUT std_ulogic;
-      ExpWr : OUT std_ulogic;
+      Status : OUT std_logic_vector (1 DOWNTO 0); -- Ack,Done
+      ExpRd : OUT std_logic;
+      ExpWr : OUT std_logic;
       ExpData : INOUT std_logic_vector (15 DOWNTO 0);
-      ExpAddr : OUT std_ulogic_vector (15 DOWNTO 0);
+      ExpAddr : OUT std_logic_vector (15 DOWNTO 0);
       ExpAck : INOUT std_logic;
        CmdEnbl : OUT std_ulogic;
       CmdStrb : OUT std_ulogic;
@@ -89,7 +89,7 @@ ARCHITECTURE sim OF bench_system IS
       );
       PORT (
          rst         : IN     std_ulogic;
-         Addr        : IN     std_ulogic_vector(15 DOWNTO 0);
+         Addr        : IN     std_logic_vector(15 DOWNTO 0);
          CMDENBL     : IN     std_ulogic;
          ExpRd       : IN     std_ulogic;
          ExpWr       : IN     std_ulogic;

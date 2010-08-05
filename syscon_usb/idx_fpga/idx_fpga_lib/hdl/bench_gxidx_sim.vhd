@@ -22,7 +22,7 @@ END ENTITY bench_gxidx;
 --
 ARCHITECTURE sim OF bench_gxidx IS
    SIGNAL rst         : std_ulogic;
-   SIGNAL Addr        : std_ulogic_vector(15 DOWNTO 0);
+   SIGNAL Addr        : std_logic_vector(15 DOWNTO 0);
    SIGNAL CMDENBL     : std_ulogic;
    SIGNAL ExpRd       : std_ulogic;
    SIGNAL ExpWr       : std_ulogic;
@@ -44,7 +44,7 @@ ARCHITECTURE sim OF bench_gxidx IS
       );
       PORT (
          rst         : IN     std_ulogic;
-         Addr        : IN     std_ulogic_vector(15 DOWNTO 0);
+         Addr        : IN     std_logic_vector(15 DOWNTO 0);
          CMDENBL     : IN     std_ulogic;
          ExpRd       : IN     std_ulogic;
          ExpWr       : IN     std_ulogic;
@@ -65,7 +65,7 @@ ARCHITECTURE sim OF bench_gxidx IS
    FOR ALL : gxidx USE ENTITY idx_fpga_lib.gxidx;
 BEGIN
    --  hds hds_inst
-   instanceName : gxidx
+   DUT : gxidx
       GENERIC MAP (
          N_CHANNELS => N_CHANNELS
       )
@@ -100,7 +100,7 @@ BEGIN
        End Process;
        
        test_proc : Process
-         procedure sbwr( Addr_In : IN std_ulogic_vector (15 downto 0);
+         procedure sbwr( Addr_In : IN std_logic_vector (15 downto 0);
                          Data_In : IN std_logic_vector (15 downto 0) ) is
          begin
            Addr <= Addr_In;
@@ -132,7 +132,7 @@ BEGIN
            -- pragma synthesis_off
            BaseAddr := X"0A00";
            BaseAddr := BaseAddr + 8*(ChNo+1);
-           Addr <= std_ulogic_vector(BaseAddr+4);
+           Addr <= std_logic_vector(BaseAddr+4);
            wait for 40 ns;
            ExpRd <= '1';
            wait for 1 us;
@@ -140,7 +140,7 @@ BEGIN
            assert Data = Pos report "Position Value Incorrect" severity error;
            ExpRd <= '0';
            wait for 40 ns;
-           Addr <= std_ulogic_vector(BaseAddr+6);
+           Addr <= std_logic_vector(BaseAddr+6);
            ExpRd <= '1';
            wait for 1 us;
            assert ExpAck = '1' report "No Acknowledge on status read" severity error;
@@ -162,7 +162,7 @@ BEGIN
            -- readback position and status
            verify( ChNo, X"0000", X"0080", '0', '0');
            -- program to drive out 7 steps
-           sbwr( std_ulogic_vector(BaseAddr+2), X"0007" );
+           sbwr( std_logic_vector(BaseAddr+2), X"0007" );
            -- readback position and status and verify Run and Dir during the drive
            -- pragma synthesis_off
            wait until Run'Event and Run(ChNo) = '1' for 63 us;
@@ -175,7 +175,7 @@ BEGIN
            wait for 75 us;
            verify( ChNo, X"0007", X"0084", '0', '1');
            -- program to drive out 1024 steps
-           sbwr( std_ulogic_vector(BaseAddr+2), X"0200" );
+           sbwr( std_logic_vector(BaseAddr+2), X"0200" );
            -- readback position and status during drive
            wait until Run'Event and Run(ChNo) = '1' for 63 us;
            verify( ChNo, X"0007", X"008C", '1', '1');
@@ -185,7 +185,7 @@ BEGIN
            wait for 140 us;
            verify( ChNo, X"000B", X"0086", '0', '1');
            -- drive in a lot
-           sbwr( std_ulogic_vector(BaseAddr), X"1000" );
+           sbwr( std_logic_vector(BaseAddr), X"1000" );
            wait until Run'Event and Run(ChNo) = '1' for 63 us;
            verify( ChNo, X"000B", X"008A", '1', '0');
            wait for 100 us;
@@ -198,7 +198,7 @@ BEGIN
            -- verify stop and position
            verify( ChNo, X"0005", X"0081", '0', '0');
            -- drive out a lot
-           sbwr( std_ulogic_vector(BaseAddr+2), X"0010" );
+           sbwr( std_logic_vector(BaseAddr+2), X"0010" );
            wait until Run'Event and Run(ChNo) = '1' for 63 us;
            verify( ChNo, X"0005", X"008D", '1', '1');
            -- clear in limit
@@ -242,58 +242,6 @@ BEGIN
          -- drive in zero to set direction
          sbwr( X"0A08", X"0000" );
          sbwr( X"0A10", X"0000" );
---         -- readback position and status
---         verify( 0, X"0000", X"0080", '0', '0');
---         -- program to drive out 7 steps
---         sbwr( X"0A0A", X"0007" );
---         -- readback position and status and verify Run and Dir during the drive
---         -- pragma synthesis_off
---         wait for 200 us;
---         verify( 0, X"0002", X"008C", '1', '1');
---         -- readback position and status and Run and Dir after the drive
---         wait for 375 us;
---         verify( 0, X"0007", X"008C", '1', '1');
---         wait for 50 us;
---         verify( 0, X"0007", X"0084", '0', '1');
---         -- program to drive out 1024 steps
---         sbwr( X"0A0A", X"0200" );
---         -- readback position and status during drive
---         wait for 60 us;
---         verify( 0, X"0007", X"008C", '1', '1');
---         wait for 300 us;
---         -- set the out limit
---         LimO(0) <= '1';
---         wait for 125 us;
---         verify( 0, X"000C", X"0086", '0', '1');
---         -- drive in a lot
---         sbwr( X"0A08", X"1000" );
---         wait for 100 us;
---         -- reset out limit
---         LimO(0) <= '0';
---         wait for 300 us;
---         -- set in limit
---         LimI(0) <= '1';
---         wait for 200 us;
---         -- verify stop and position
---         verify( 0, X"0007", X"0081", '0', '0');
---         -- drive out a lot
---         sbwr( X"0A0A", X"0010" );
---         -- clear in limit
---         wait for 300 us;
---         LimI(0) <= '0';
---         wait for 400 us;
---         -- set zero ref
---         ZR(0) <= '1';
---         wait for 1 us;
---         -- verify zero position
---         verify( 0, X"0000", X"00CC", '1', '1' );
---         wait for 125 us;
---         -- clear zero ref
---         ZR(0) <= '0';
---         wait for 500 us;
---         -- verify end position
---         verify( 0, X"0006", X"0084", '0', '1');
---         wait for 350 us;
          exercise(0);
          exercise(1);
          wait;
