@@ -11,16 +11,31 @@
 <vnodes>
 <v t="ntallen.20100519134237.1502"><vh>@chapters</vh></v>
 <v t="ntallen.20100519134237.1501" a="E"><vh>Syscon USB</vh>
-<v t="ntallen.20100601150619.1289"><vh>Todo</vh>
-<v t="ntallen.20100601150619.1290"><vh>Take syscon back to HDL Designer</vh></v>
+<v t="ntallen.20100601150619.1289" a="E"><vh>Todo</vh>
+<v t="ntallen.20100805085605.1308"><vh>Diagnose Slowness</vh></v>
+<v t="ntallen.20100805085605.1309"><vh>Implement timeout in subbusd</vh></v>
+<v t="ntallen.20100805085605.1305" a="E"><vh>Indexer Features</vh>
+<v t="ntallen.20100805085605.1307" a="E"><vh>Interrupts</vh>
+<v t="ntallen.20100816115707.1311"><vh>API: subbuslib</vh></v>
+<v t="ntallen.20100816115707.1312"><vh>Library implementation</vh></v>
+<v t="ntallen.20100816115707.1313" a="E"><vh>subbusd implementation</vh>
+<v t="ntallen.20100816115707.1314" a="E"><vh>USB</vh>
+<v t="ntallen.20100816115707.1316"><vh>subbusd</vh></v>
+<v t="ntallen.20100816115707.1317"><vh>syscon_usb</vh></v>
+<v t="ntallen.20100816115707.1318"><vh>DACS</vh></v>
 </v>
-<v t="ntallen.20100520123955.1247" a="E"><vh>Development Issues</vh>
+<v t="ntallen.20100816115707.1315"><vh>Syscon104</vh></v>
+</v>
+</v>
+</v>
+</v>
+<v t="ntallen.20100520123955.1247"><vh>Development Issues</vh>
 <v t="ntallen.20100519134237.1503"><vh>12.1 Upgrade</vh></v>
 <v t="ntallen.20100524120730.1249"><vh>ISE/XPS/SDK</vh>
 <v t="ntallen.20100524120730.1250"><vh>Bit Stream</vh></v>
 <v t="ntallen.20100524120730.1251"><vh>PROM</vh></v>
 </v>
-<v t="ntallen.20100524120730.1253" a="E"><vh>QNX</vh>
+<v t="ntallen.20100524120730.1253"><vh>QNX</vh>
 <v t="ntallen.20100602103230.1293"><vh>Library Strategy</vh></v>
 <v t="ntallen.20100602103230.1294"><vh>Alternate Strategy</vh></v>
 <v t="ntallen.20100602103230.1295"><vh>Driver?</vh></v>
@@ -30,6 +45,7 @@
 </v>
 <v t="ntallen.20100525090916.1257"><vh>Development Plan</vh>
 <v t="ntallen.20100525090916.1259"><vh>Document Serial Protocol</vh></v>
+<v t="ntallen.20100803111918.1303"><vh>IPC</vh></v>
 <v t="ntallen.20100525090916.1258"><vh>Update Syscon</vh>
 <v t="ntallen.20100525090916.1263"><vh>Read Operation</vh></v>
 <v t="ntallen.20100525090916.1264"><vh>Write Operation</vh></v>
@@ -128,11 +144,12 @@ The read logic is faulty, since it resets EXPRD before reading in the data (whic
 &lt;cmdline&gt; : &lt;cmd&gt; '\n'
 &lt;bit&gt; : '0' | '1'
 &lt;cmd&gt; :
-    R &lt;addr&gt;    // Read
-    W &lt;addr&gt; : &lt;data&gt;  // Write
-    C &lt;bit&gt;    // CMDENBL
-    S &lt;bit&gt;    // CMDSTRB
-    B          // Board Revision
+    R &lt;addr&gt;    // Read: response codes: RrE
+    W &lt;addr&gt; : &lt;data&gt;  // Write: response codes: WwE
+    C &lt;bit&gt;    // CMDENBL: response codes: CE
+    S &lt;bit&gt;    // CMDSTRB: response codes: SE
+    V          // Board Revision: response codes VE
+    ''         // NOP: response code: 0
 
 Responses:
     R &lt;data&gt; '\n'  // Read data with acknowledge asserted
@@ -140,7 +157,11 @@ Responses:
     W '\n'         // Write with acknowledge
     w '\n'         // Write without acknowledge
     S &lt;bit&gt; '\n'   // CMDSTRB value
-    C &lt;bit&gt; '\n'   // CMDENBL value</t>
+    C &lt;bit&gt; '\n'   // CMDENBL value
+    V &lt;version&gt; '\n' // Version string
+    I &lt;data&gt; '\n'  // Interrupt string
+    0 '\n'         // NOP
+    E &lt;digit&gt; '\n' // Error--not obviously associated with a specific request</t>
 <t tx="ntallen.20100525090916.1260"></t>
 <t tx="ntallen.20100525090916.1261"></t>
 <t tx="ntallen.20100525090916.1262"></t>
@@ -174,7 +195,6 @@ This could be handled via the processor reset: that's a discussion we need to ha
 
 </t>
 <t tx="ntallen.20100601150619.1289"></t>
-<t tx="ntallen.20100601150619.1290">Done never goes high...</t>
 <t tx="ntallen.20100602103230.1293">Shared objects:  oooo!
 
 Original implementation loaded the single library that happened to be there, and then could query it to figure out what it was.
@@ -217,5 +237,156 @@ Input data is still not registering.
 subbus_data_i (between system and syscon) shows non-zero data during ExpRd. It continues to the end of RdEn unless ExpAck is asserted (read_ack( 0, &amp;data ))
 </t>
 <t tx="ntallen.20100610083250.1301">Unexpected SEH</t>
+<t tx="ntallen.20100803111918.1303">Four components:
+    subbus_usb library
+    subbusd driver
+    serusb driver
+    syscon_subbus
+
+subbus_usb communicates with subbusd via IO_MSG messages:
+    These have a standard _io_msg hdr with type _IO_MSG
+    combine_len 0
+    mgrid SUBBUSD_MGRID
+    subtype 0
+    Sent via MsgSend or MsgSendv
+
+subbusd communicates with serusb driver via read/write
+serusb communicates with syscon_subbus via USB
+</t>
+<t tx="ntallen.20100805085605.1305"></t>
+<t tx="ntallen.20100805085605.1307">Need to figure out the whole architecture.
+Now that I have a dedicated driver, implementation on the QNX side should be
+pretty straightforward. Interrupt should cause syscon to issue an appropriate
+"I\d\n" string.
+
+QNX6 indexer code includes all the interrupt processing stuff that had been extracted
+into intserv. I would like indexer driver to work on either subbus architecture, so
+that means changes need to be pushed to the driver:
+    Create subbusd for syscon104
+        Copy subbusd, then copy in the libsubbus stuff to address the hardware
+    Promote libsubbus_usb to be libsubbus, i.e. all programs will use it
+    Incorporate intserv capabilities in both drivers
+
+Old architecture:
+    we did not know which boards would be plugged in when the interrupt circuit was laid out
+    Any board that could produce an interrupt (indexer, mainly) could be programmed to:
+        a) assert the interrupt
+        b) respond on one of four INTA addresses
+        c) respond by driving its status on one of 8 data bits
+    The interrupt driver would:
+        configure each board, given knowledge of the physical region
+        attach the single subbus hardware interrupt
+        respond to the interrupt with reads from any of the four INTA addresses in use
+        check which bits request service and map those back to original requestor
+    The regions were a way to support subbus expansion via a repeater where the
+    strategy of driving single lines on the databus would break down. The software
+    configuring the board had to know what region the board was in physically.
+DACS architecture:
+    we know going in exactly which components may request an interrupt, so we
+    can wire them directly into the acknowledge without configuration.
+    Move acknowledge responsibility into uBlaze. uBlaze will have a table
+    of bits and base addresses. When service is requested, it will read
+    from INTA address and report: IXXXX where XXXX is the board base address.
+    Alternately, it could report IB where B is the bit number and we could
+    pass the responsibility back to subbusd, but that would mean subbusd is
+    tightly coupled with a specific FPGA configuration. Requiring the uBlaze
+    code to be tightly coupled with the circuit makes more sense.
+</t>
+<t tx="ntallen.20100805085605.1308">Add another IO port to expose timing. 4 bits?
+Show:
+    start of receive to end of send
+    start of addressing HW
+    end of addressing HW
+
+Might need to do the same with the parallel port on the PC end.
+</t>
+<t tx="ntallen.20100805085605.1309"></t>
+<t tx="ntallen.20100816115707.1311">This API was actually handled by a separate driver in QNX4 known as IntSrv. Part of the idea was to support both "Experiment Interrupts" on the subbus and other interrupts to the processor itself, allowing unprivileged processes to receive proxies when interrupts arrived. I don't know if we'll need that capability going forward, but I plan to add the ExpInt stuff to the new subbus lib (currently named subbus_usb)
+
+These were previously called "IntSrv_Int_attach/detach" but I will change the prefix.
+
+int Subbus_Int_attach( char *cardID, unsigned short address,
+    						int region, struct sigevent event );
+
+  cardID is a application-selected name for the function that is being addressed.
+  address is the subbus base address for the specified function
+  region is reserved for a mechanism to support interrupts in disjoint bus segments.
+    Should be zero for subbus_usb, may be non-zero for syscon104
+    Wait, no, the application (e.g. idx64) should not need to know
+    what library is in use, so this value should be compatible.
+  event specifies how the application wants to be notified
+  
+  Returns 0 on success
+  Errors include interrupt already attached (but may check...)
+
+int Subbus_Int_detach( char *cardID );
+</t>
+<t tx="ntallen.20100816115707.1312">int Subbus_Int_attach( char *cardID, unsigned short address,
+    						int region, struct sigevent event );
+int Subbus_Int_detach( char *cardID );
+
+The library will package these requests and forward them to subbusd. The library is not responsible for handling the resulting events, as they need to be worked into the applications event loop.
+</t>
+<t tx="ntallen.20100816115707.1313">The interrupt implementation in subbusd is necessarily hardware dependent.
+I can reuse the bookkeeping code from QNX4/intserv</t>
+<t tx="ntallen.20100816115707.1314"></t>
+<t tx="ntallen.20100816115707.1315">The implementation here will match the existing implementation in intserv.</t>
+<t tx="ntallen.20100816115707.1316">int Subbus_Int_attach( char *cardID, unsigned short address, int region, struct sigevent event );
+int Subbus_Int_detach( char *cardID );
+
+For USB, subbusd will maintain some bookkeeping to associate a specific interrupt code with a specific event, and will send the syscon_usb information to configure the interrupt. When the associated "I" code is returned, subbusd will trigger the specified event.
+
+(Since subbusd_usb is tightly coupled with syscon_usb, we don't need to worry too much about making the protocol future-proof, anticipating all possible hardware implementations. For now, I think it should be sufficient
+to specify that I want to configure the board at address A with interrupt code N.)
+
+Functions required:
+    configure function at address A to respond with interrupt code N
+    disable interrupt N
+    disable all interrupts
+</t>
+<t tx="ntallen.20100816115707.1317">Functions required:
+    configure function at address A to respond with interrupt code N
+    disable interrupt N
+    disable all interrupts
+
+The software running on syscon_usb will know what functions are defined.
+"Interrupts" will actually be implemented via polling, since that is how
+the software runs anyway. All functions that have interrupt capability
+will have their interrupt status lines connected to a single interrupt
+status register. The bits of the status register are or-ed together
+to provide a single bit to signal interrupt activity to the processor.
+
+On each poll cycle, the interrupt status bit will be read.
+If it is non-zero, an INTA cycle will be produced, and the returned
+value will be the interrupt status register. An "I" code will be
+transmitted on the USB for each active bit in the status register.
+
+The software will have
+a table to map addresses to status bits. When a function is enabled,
+the hardware will be programmed (as in the description of idx64
+interrupt configuration) although the bit selection will not be
+configurable, since it will be firm-wired. The hardware will still
+respond to the specified INTA address (which should be 0x40 for all
+functions--doesn't even need to be configurable, really)
+</t>
+<t tx="ntallen.20100816115707.1318">In the firmware:
+    DACS:
+        Collect BdIntr outputs from boards, or them and deliver expintr bit as output
+        Respond to INTA by writing expintr vector
+        extend test bench
+    gxidx:
+        Add BdIntr output
+        extend test bench
+        decode:
+            Add BdIntr output
+            Add Ireq Input vector
+            Add logic mapping Ireq vector to BdIntr
+            extend test bench
+        channel:
+            +Add INTA input
+            +Add Ireq output
+            extend test bench
+        Intr:
+            Write test bench</t>
 </tnodes>
 </leo_file>
