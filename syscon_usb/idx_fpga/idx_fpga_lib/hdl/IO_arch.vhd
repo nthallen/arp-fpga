@@ -27,7 +27,7 @@ ENTITY IO IS
       StepClk  : IN     std_ulogic;
       WrEn     : IN     std_ulogic;
       ZR       : IN     std_ulogic;
-      ZP       : IN     std_logic;
+      KZP      : IN     std_logic_vector (2 DOWNTO 0);
       Dir      : OUT    std_ulogic;
       InLimit  : OUT    std_ulogic;
       OutLimit : OUT    std_ulogic;
@@ -52,6 +52,8 @@ ARCHITECTURE arch OF IO IS
   SIGNAL InPolarity : std_ulogic;
   SIGNAL OutPolarity : std_ulogic;
   SIGNAL ZeroPolarity : std_ulogic;
+  SIGNAL KillAPolarity : std_ulogic;
+  SIGNAL KillBPolarity : std_ulogic;
   SIGNAL StatusPort : std_logic_vector (7 downto 0);
   SIGNAL InLim : std_ulogic;
   SIGNAL OutLim : std_ulogic;
@@ -61,17 +63,17 @@ BEGIN
   Limits : Process ( LimI, LimO, InPolarity, OutPolarity, LimitSwap ) Is
   Begin
     if LimitSwap = '0' then
-      InLim <= LimI xor InPolarity;
-      OutLim <= LimO xor OutPolarity;
+      InLim <= LimI xnor InPolarity;
+      OutLim <= LimO xnor OutPolarity;
     else
-      InLim <= LimO xor InPolarity;
-      OutLim <= LimI xor OutPolarity;
+      InLim <= LimO xnor InPolarity;
+      OutLim <= LimI xnor OutPolarity;
     end if;
   End Process;
   
   Zeros : Process ( ZR, ZeroPolarity ) Is
   Begin
-    ZRP <= ZR xor ZeroPolarity;
+    ZRP <= ZR xnor ZeroPolarity;
   End Process;
 
   Status : Process ( F8M ) Is
@@ -86,8 +88,8 @@ BEGIN
       if RdEn = '0' or CfgEn = '0' then
         StatusPort(7) <= CMDENBL;
         StatusPort(6) <= ZRP;
-        StatusPort(5) <= KillB;
-        StatusPort(4) <= KillA;
+        StatusPort(5) <= KillB xnor KillBPolarity;
+        StatusPort(4) <= KillA xnor KillAPolarity;
         StatusPort(3) <= Running;
         StatusPort(2) <= DirOut;
         StatusPort(1) <= OutLim;
@@ -101,7 +103,9 @@ BEGIN
         RunPolarity <= WData(4);
         InPolarity <= WData(6);
         OutPolarity <= WData(7);
-        ZeroPolarity <= ZP;
+        ZeroPolarity <= KZP(0);
+        KillAPolarity <= KZP(1);
+        KillBPolarity <= KZP(2);
       end if;
     end if;
     

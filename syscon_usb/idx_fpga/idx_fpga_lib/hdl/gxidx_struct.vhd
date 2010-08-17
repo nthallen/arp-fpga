@@ -26,7 +26,7 @@ ENTITY gxidx IS
       LimO        : IN     std_ulogic_vector (N_CHANNELS-1 DOWNTO 0);
       ZR          : IN     std_ulogic_vector (N_CHANNELS-1 DOWNTO 0);
       ExpAck      : OUT    std_ulogic;
-      ExpIntr_Not : OUT    std_logic;
+      BdIntr      : OUT    std_ulogic;
       Dir         : OUT    std_ulogic_vector (N_CHANNELS-1 DOWNTO 0);
       Run         : OUT    std_ulogic_vector (N_CHANNELS-1 DOWNTO 0);
       Step        : OUT    std_ulogic_vector (N_CHANNELS-1 DOWNTO 0);
@@ -64,7 +64,8 @@ ARCHITECTURE struct OF gxidx IS
    SIGNAL RdEn    : std_ulogic;
    SIGNAL WrEn    : std_ulogic;
    SIGNAL iData   : std_logic_vector(15 DOWNTO 0);
-   SIGNAL Run_int : std_ulogic_vector (N_CHANNELS-1 DOWNTO 0);
+   SIGNAL Ireq    : std_ulogic_vector (N_CHANNELS-1 DOWNTO 0);
+   SIGNAL Running_int : std_ulogic_vector (N_CHANNELS-1 DOWNTO 0);
 
 
    -- Component Declarations
@@ -84,8 +85,10 @@ ARCHITECTURE struct OF gxidx IS
       ZR      : IN     std_ulogic ;
       rst     : IN     std_ulogic ;
       Dir     : OUT    std_ulogic ;
+      Ireq    : OUT    std_ulogic ;
       Run     : OUT    std_ulogic ;
       Step    : OUT    std_ulogic ;
+      Running : OUT    std_ulogic ;
       Data    : INOUT  std_logic_vector ( 15 DOWNTO 0 )
    );
    END COMPONENT;
@@ -95,21 +98,23 @@ ARCHITECTURE struct OF gxidx IS
       N_CHANNELS : integer range 15 downto 1 := 1
    );
    PORT (
-      Addr   : IN     std_logic_vector (15 DOWNTO 0);
-      ExpRd  : IN     std_ulogic ;
-      ExpWr  : IN     std_ulogic ;
-      F8M    : IN     std_ulogic ;
-      rst    : IN     std_ulogic ;
-      ExpAck : OUT    std_ulogic ;
-      WrEn   : OUT    std_ulogic ;
-      INTA   : OUT    std_ulogic ;
-      Chan   : OUT    std_ulogic_vector (N_CHANNELS-1 DOWNTO 0);
-      Run    : IN     std_ulogic_vector (N_CHANNELS-1 DOWNTO 0);
-      OpCd   : OUT    std_logic_vector (2 DOWNTO 0);
-      Data   : INOUT  std_logic_vector (15 DOWNTO 0);
-      iData  : INOUT  std_logic_vector (15 DOWNTO 0);
-      RdEn   : OUT    std_ulogic ;
-      F4M    : OUT    std_ulogic 
+      Addr    : IN     std_logic_vector (15 DOWNTO 0);
+      ExpRd   : IN     std_ulogic ;
+      ExpWr   : IN     std_ulogic ;
+      F8M     : IN     std_ulogic ;
+      rst     : IN     std_ulogic ;
+      ExpAck  : OUT    std_ulogic ;
+      WrEn    : OUT    std_ulogic ;
+      INTA    : OUT    std_ulogic ;
+      BdIntr  : OUT    std_ulogic ;
+      Chan    : OUT    std_ulogic_vector (N_CHANNELS-1 DOWNTO 0);
+      Running : IN     std_ulogic_vector (N_CHANNELS-1 DOWNTO 0);
+      Ireq    : IN     std_ulogic_vector (N_CHANNELS-1 DOWNTO 0);
+      OpCd    : OUT    std_logic_vector (2 DOWNTO 0);
+      Data    : INOUT  std_logic_vector (15 DOWNTO 0);
+      iData   : INOUT  std_logic_vector (15 DOWNTO 0);
+      RdEn    : OUT    std_ulogic ;
+      F4M     : OUT    std_ulogic 
    );
    END COMPONENT;
 
@@ -127,21 +132,23 @@ BEGIN
       N_CHANNELS => N_CHANNELS
     )
     PORT MAP (
-      Addr   => Addr,
-      ExpRd  => ExpRd,
-      ExpWr  => ExpWr,
-      F8M    => F8M,
-      rst    => rst,
-      ExpAck => ExpAck,
-      WrEn   => WrEn,
-      INTA   => INTA,
-      Chan   => Chan,
-      Run    => Run_int,
-      OpCd   => OpCd,
-      Data   => Data,
-      iData  => iData,
-      RdEn   => RdEn,
-      F4M    => F4M
+      Addr    => Addr,
+      ExpRd   => ExpRd,
+      ExpWr   => ExpWr,
+      F8M     => F8M,
+      rst     => rst,
+      ExpAck  => ExpAck,
+      WrEn    => WrEn,
+      INTA    => INTA,
+      BdIntr  => BdIntr,
+      Chan    => Chan,
+      Running => Running_int,
+      Ireq    => Ireq,
+      OpCd    => OpCd,
+      Data    => Data,
+      iData   => iData,
+      RdEn    => RdEn,
+      F4M     => F4M
     );
     
   channels : for chno in 0 to N_CHANNELS-1 generate
@@ -161,12 +168,14 @@ BEGIN
          ZR      => ZR(chno),
          rst     => rst,
          Dir     => Dir(chno),
-         Run     => Run_int(chno),
+         Ireq    => Ireq(chno),
+         Run     => Run(chno),
+         Running => Running_int(chno),
          Step    => Step(chno),
          Data    => iData
       );
   end generate;
 
-  Run <= Run_int;
+  --Run <= Run_int;
   
 END struct;

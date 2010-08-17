@@ -23,14 +23,15 @@ ARCHITECTURE sim OF bench_decode IS
   SIGNAL rst    :   std_ulogic;
   SIGNAL ExpAck :   std_ulogic;
   SIGNAL WrEn   :   std_ulogic;
-  SIGNAL INTA   :   std_ulogic;
   SIGNAL Chan   :   std_ulogic_vector (2-1 DOWNTO 0);
-  SIGNAL Run    :   std_ulogic_vector (2-1 DOWNTO 0);
+  SIGNAL Running :   std_ulogic_vector (2-1 DOWNTO 0);
   SIGNAL OpCd   :   std_logic_vector (2 DOWNTO 0);
   SIGNAL Data   :   std_logic_vector (15 DOWNTO 0);
   SIGNAL iData  :   std_logic_vector (15 DOWNTO 0);
   SIGNAL RdEn   :   std_ulogic;
   SIGNAL F4M    :   std_ulogic;
+  SIGNAL BdIntr :   std_ulogic;
+  SIGNAL Ireq   :   std_ulogic_vector (2-1 DOWNTO 0);
   COMPONENT decode IS
     GENERIC ( N_CHANNELS : integer range 15 downto 1 := 1 );
     PORT( 
@@ -41,9 +42,10 @@ ARCHITECTURE sim OF bench_decode IS
       rst    : IN     std_ulogic;
       ExpAck : OUT    std_ulogic;
       WrEn   : OUT    std_ulogic;
-      INTA   : OUT    std_ulogic;
+      BdIntr : OUT    std_ulogic;
       Chan   : OUT    std_ulogic_vector (N_CHANNELS-1 DOWNTO 0);
-      Run    : IN     std_ulogic_vector (N_CHANNELS-1 DOWNTO 0);
+      Running : IN     std_ulogic_vector (N_CHANNELS-1 DOWNTO 0);
+      Ireq    : IN     std_ulogic_vector (N_CHANNELS-1 DOWNTO 0);
       OpCd   : OUT    std_logic_vector (2 DOWNTO 0);
       Data   : INOUT  std_logic_vector (15 DOWNTO 0);
       iData  : INOUT  std_logic_vector (15 DOWNTO 0);
@@ -62,9 +64,10 @@ BEGIN
       rst => rst,
       ExpAck => ExpAck,
       WrEn => WrEn,
-      INTA => INTA,
+      BdIntr => BdIntr,
       Chan => Chan,
-      Run => Run,
+      Running => Running,
+      Ireq => Ireq,
       OpCd => OpCd,
       Data => Data,
       iData => iData,
@@ -82,12 +85,44 @@ BEGIN
   End Process;
   
   test_proc : Process
+    procedure sbwr( Addr_In : IN std_logic_vector (15 downto 0);
+                    Data_In : IN std_logic_vector (15 downto 0) ) is
+    begin
+      Addr <= Addr_In;
+      Data <= Data_in;
+      -- pragma synthesis_off
+      wait for 40 ns;
+      ExpWr <= '1';
+      wait for 1 us;
+      assert ExpAck = '1' report "No acknowledge on write" severity error;
+      ExpWr <= '0';
+      wait for 250 ns;
+      Data <= (others => 'Z');
+      -- pragma synthesis_on
+      return;
+    end procedure sbwr;
+    
+    procedure check_bdint( Ireq_In : IN std_ulogic_vector(1 downto 0);
+                           BdIntr_Out : IN std_ulogic ) is
+    begin
+      Ireq <= "00";
+      -- pragma synthesis_off
+      wait until F8M'Event and F8M = '1';
+      wait for 20ns;
+      assert BdIntr = '0' report "BdIntr asserted w/o request" severity error;
+      Ireq <= Ireq_In;
+      wait until F8M'Event and F8M = '1';
+      wait for 20ns;
+      assert BdIntr = BdIntr_Out report "BdIntr not set on request" severity error;
+      -- pragma synthesis_on
+    end procedure check_bdint;
+
   Begin
     Addr <= X"0000";
     ExpRd <= '0';
     ExpWr <= '0';
     rst <= '1';
-    Run <= "00";
+    Running <= "00";
     Data <= (others => 'Z');
     iData <= (others => 'Z');
     -- pragma synthesis_off
@@ -137,33 +172,46 @@ BEGIN
     wait for 30 ns;
     assert ExpAck = '1' report "ExpAck not set" severity error;
     wait for 970 ns;
-    assert Data(1 downto 0) = "00" report "Run misread" severity error;
+    assert Data(1 downto 0) = "00" report "Running misread" severity error;
     ExpRd <= '0';
     wait for 30ns;
     assert RdEn = '0' report "RdEn not cleared" severity error;
     assert ExpAck = '0' report "ExpAck not cleared" severity error;
-    Run <= "10";
+    Running <= "10";
     ExpRd <= '1';
     wait until RdEn = '1';
     wait for 30 ns;
     assert ExpAck = '1' report "ExpAck not set" severity error;
     wait for 970 ns;
-    assert Data(1 downto 0) = "10" report "Run misread" severity error;
+    assert Data(1 downto 0) = "10" report "Running misread" severity error;
     ExpRd <= '0';
     wait for 30ns;
     assert RdEn = '0' report "RdEn not cleared" severity error;
     assert ExpAck = '0' report "ExpAck not cleared" severity error;
-    Run <= "01";
+    Running <= "01";
     ExpRd <= '1';
     wait until RdEn = '1';
     wait for 30 ns;
     assert ExpAck = '1' report "ExpAck not set" severity error;
     wait for 970 ns;
-    assert Data(1 downto 0) = "01" report "Run misread" severity error;
+    assert Data(1 downto 0) = "01" report "Running misread" severity error;
     ExpRd <= '0';
     wait for 30ns;
     assert RdEn = '0' report "RdEn not cleared" severity error;
     assert ExpAck = '0' report "ExpAck not cleared" severity error;
+    
+    -- Test interrupt operation
+    assert BdIntr = '0' report "BdIntr asserted before config" severity error;
+    Ireq <= "00";
+    sbwr( X"0A00", X"0020" ); --enable interrupt 0x40
+    check_bdint( "01", '1' );
+    check_bdint( "10", '1' );
+    check_bdint( "11", '1' );
+    sbwr( X"0A00", X"0000" ); --disable interrupt
+    check_bdint( "01", '0' );
+    check_bdint( "10", '0' );
+    check_bdint( "11", '0' );
+   
     wait;
     -- pragma synthesis_on
   End Process;

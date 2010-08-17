@@ -28,7 +28,7 @@ ARCHITECTURE arch OF bench_channel IS
    SIGNAL KillB    : std_ulogic;
    SIGNAL LimI     : std_ulogic;
    SIGNAL LimO     : std_ulogic;
-   SIGNAL OpCd     : std_ulogic_vector(2 DOWNTO 0);
+   SIGNAL OpCd     : std_logic_vector(2 DOWNTO 0);
    SIGNAL RdEn     : std_ulogic;
    SIGNAL WrEn     : std_ulogic;
    SIGNAL ZR       : std_ulogic;
@@ -37,25 +37,31 @@ ARCHITECTURE arch OF bench_channel IS
    SIGNAL Run      : std_ulogic;
    SIGNAL Step     : std_ulogic;
    SIGNAL Data     : std_logic_vector( 15 DOWNTO 0 );
-   SIGNAL WrIn : std_ulogic;
-   SIGNAL Wrote : std_ulogic;
+   SIGNAL WrIn     : std_ulogic;
+   SIGNAL Wrote    : std_ulogic;
+   SIGNAL INTA     : std_ulogic;
+   SIGNAL Running  : std_ulogic;
+   SIGNAL Ireq     : std_ulogic;
    COMPONENT channel
       PORT (
          CMDENBL  : IN     std_ulogic;
          ChanSel  : IN     std_ulogic;
          F4M      : IN     std_ulogic;
          F8M      : IN     std_ulogic;
+         INTA     : IN     std_ulogic;
          KillA    : IN     std_ulogic;
          KillB    : IN     std_ulogic;
          LimI     : IN     std_ulogic;
          LimO     : IN     std_ulogic;
-         OpCd     : IN     std_ulogic_vector(2 DOWNTO 0);
+         OpCd     : IN     std_logic_vector(2 DOWNTO 0);
          RdEn     : IN     std_ulogic;
          WrEn     : IN     std_ulogic;
          ZR       : IN     std_ulogic;
          rst      : IN     std_logic;
          Dir      : OUT    std_ulogic;
+         Ireq     : OUT    std_ulogic;
          Run      : OUT    std_ulogic;
+         Running  : OUT    std_ulogic;
          Step     : OUT    std_ulogic;
          Data     : INOUT  std_logic_vector( 15 DOWNTO 0 )
       );
@@ -63,12 +69,13 @@ ARCHITECTURE arch OF bench_channel IS
    --FOR ALL : channel USE ENTITY idx_fpga_lib.channel;
   
 BEGIN
-  DUT : entity channel
+  DUT : channel
     PORT MAP (
        CMDENBL  => CMDENBL,
        ChanSel  => ChanSel,
        F4M      => F4M,
        F8M      => F8M,
+       INTA     => INTA,
        KillA    => KillA,
        KillB    => KillB,
        LimI     => LimI,
@@ -80,6 +87,8 @@ BEGIN
        rst      => rst,
        Dir      => Dir,
        Run      => Run,
+       Running  => Running,
+       Ireq     => Ireq,
        Step     => Step,
        Data     => Data
     );
@@ -121,7 +130,7 @@ BEGIN
   End Process;
   
   test_proc : Process
-    procedure sbwr( Addr : IN std_ulogic_vector (2 downto 0);
+    procedure sbwr( Addr : IN std_logic_vector (2 downto 0);
                     Data_In : IN std_logic_vector (15 downto 0) ) is
     begin
       ChanSel <= '1';
