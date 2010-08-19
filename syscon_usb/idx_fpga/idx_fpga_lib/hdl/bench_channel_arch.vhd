@@ -175,22 +175,32 @@ BEGIN
       return;
     end procedure verify;
   Begin
-    rst <= '1';
-    -- pragma synthesis_off
-    wait for 200 ns;
-    -- pragma synthesis_on
-    rst <= '0';
+    INTA <= '0';
     WrIn <= '0';
     RdEn <= '0';
     ChanSel <= '0';
     OpCd <= "000";
     CMDENBL <= '1';
-    ZR <= '0';
-    KillB <= '0';
-    KillA <= '0';
-    LimO <= '0';
-    LimI <= '0';
+    ZR <= '1';
+    KillB <= '1';
+    KillA <= '1';
+    LimO <= '1';
+    LimI <= '1';
     Data <= (others => 'Z');
+
+    rst <= '1';
+    -- pragma synthesis_off
+    wait for 200 ns;
+    -- pragma synthesis_on
+    rst <= '0';
+    wait for 600 ns;
+    
+    -- Pulse INTA to clear Ireq
+    INTA <= '1';
+    wait for 200 ns;
+    INTA <= '0';
+    wait for 200 ns;
+
     -- configure the channel for 16000 Hz
     sbwr( "110", X"0F20" );
     -- drive in zero to set direction
@@ -215,17 +225,17 @@ BEGIN
     verify( X"0007", X"008C", '1', '1');
     wait for 300 us;
     -- set the out limit
-    LimO <= '1';
+    LimO <= '0';
     wait for 125 us;
     verify( X"000C", X"0086", '0', '1');
     -- drive in a lot
     sbwr( "000", X"1000" );
     wait for 100 us;
     -- reset out limit
-    LimO <= '0';
+    LimO <= '1';
     wait for 300 us;
     -- set in limit
-    LimI <= '1';
+    LimI <= '0';
     wait for 200 us;
     -- verify stop and position
     verify( X"0007", X"0081", '0', '0');
@@ -233,19 +243,24 @@ BEGIN
     sbwr( "010", X"0010" );
     -- clear in limit
     wait for 300 us;
-    LimI <= '0';
+    LimI <= '1';
     wait for 400 us;
     -- set zero ref
-    ZR <= '1';
+    ZR <= '0';
     wait for 1 us;
     -- verify zero position
     verify( X"0000", X"00CC", '1', '1' );
     wait for 125 us;
     -- clear zero ref
-    ZR <= '0';
+    ZR <= '1';
     wait for 350 us;
     -- verify end position
     verify( X"0005", X"0084", '0', '1');
+    
+    -- verify INTA function
+    INTA <= '1';
+    wait for 200 ns;
+    INTA <= '0';
     
     wait;
     -- pragma synthesis_on

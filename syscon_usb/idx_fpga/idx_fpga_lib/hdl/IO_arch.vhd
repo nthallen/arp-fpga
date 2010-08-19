@@ -28,6 +28,7 @@ ENTITY IO IS
       WrEn     : IN     std_ulogic;
       ZR       : IN     std_ulogic;
       KZP      : IN     std_logic_vector (2 DOWNTO 0);
+      rst      : IN     std_logic;
       Dir      : OUT    std_ulogic;
       InLimit  : OUT    std_ulogic;
       OutLimit : OUT    std_ulogic;
@@ -79,33 +80,46 @@ BEGIN
   Status : Process ( F8M ) Is
   Begin
     if F8M'Event and F8M = '1' then
-      InLimit <= InLim;
-      OutLimit <= OutLim;
-      ZeroRef <= ZRP or ZrefDisable;
-      Dir <= DirOut xor DirPolarity;
-      Run <= Running xor RunPolarity;
-      Step <= StepClk xor StepPolarity;
-      if RdEn = '0' or CfgEn = '0' then
-        StatusPort(7) <= CMDENBL;
-        StatusPort(6) <= ZRP;
-        StatusPort(5) <= KillB xnor KillBPolarity;
-        StatusPort(4) <= KillA xnor KillAPolarity;
-        StatusPort(3) <= Running;
-        StatusPort(2) <= DirOut;
-        StatusPort(1) <= OutLim;
-        StatusPort(0) <= InLim;
-      end if;
-      if WrEn = '1' and CfgEn = '1' AND WData(5) = '1' then
-        LimitSwap <= WData(0);
-        ZrefDisable <= WData(1);
-        StepPolarity <= WData(2);
-        DirPolarity <= WData(3);
-        RunPolarity <= WData(4);
-        InPolarity <= WData(6);
-        OutPolarity <= WData(7);
-        ZeroPolarity <= KZP(0);
-        KillAPolarity <= KZP(1);
-        KillBPolarity <= KZP(2);
+      if rst = '1' then
+        LimitSwap <= '0';
+        ZrefDisable <= '0';
+        StepPolarity <= '0';
+        DirPolarity <= '0';
+        RunPolarity <= '0';
+        InPolarity <= '0';
+        OutPolarity <= '0';
+        ZeroPolarity <= '0';
+        KillAPolarity <= '0';
+        KillBPolarity <= '0';
+      else
+        InLimit <= InLim;
+        OutLimit <= OutLim;
+        ZeroRef <= ZRP or ZrefDisable;
+        Dir <= DirOut xor DirPolarity;
+        Run <= Running xor RunPolarity;
+        Step <= StepClk xor StepPolarity;
+        if RdEn = '0' or CfgEn = '0' then
+          StatusPort(7) <= CMDENBL;
+          StatusPort(6) <= ZRP;
+          StatusPort(5) <= KillB xnor KillBPolarity;
+          StatusPort(4) <= KillA xnor KillAPolarity;
+          StatusPort(3) <= Running;
+          StatusPort(2) <= DirOut;
+          StatusPort(1) <= OutLim;
+          StatusPort(0) <= InLim;
+        end if;
+        if WrEn = '1' and CfgEn = '1' AND WData(5) = '1' then
+          LimitSwap <= WData(0);
+          ZrefDisable <= WData(1);
+          StepPolarity <= WData(2);
+          DirPolarity <= WData(3);
+          RunPolarity <= WData(4);
+          InPolarity <= WData(6);
+          OutPolarity <= WData(7);
+          ZeroPolarity <= KZP(0);
+          KillAPolarity <= KZP(1);
+          KillBPolarity <= KZP(2);
+        end if;
       end if;
     end if;
     
