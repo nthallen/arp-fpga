@@ -15,11 +15,14 @@ LIBRARY idx_fpga_lib;
 USE idx_fpga_lib.All;
 
 ENTITY bench_syscon IS
+  GENERIC (
+    N_INTERRUPTS : integer range 15 downto 1 := 1
+  );
   PORT (
-    Status_o : OUT std_ulogic_vector (1 DOWNTO 0); -- Ack,Done
+    Status_o : OUT std_logic_vector (1 DOWNTO 0); -- Ack,Done
     ExpRd_o : OUT std_ulogic;
     ExpWr_o : OUT std_ulogic;
-    ExpAddr_o : OUT std_ulogic_vector (15 DOWNTO 0);
+    ExpAddr_o : OUT std_logic_vector (15 DOWNTO 0);
     Data_i_o : OUT std_logic_vector (15 DOWNTO 0);
     ExpReset_o : OUT std_ulogic;
     CmdEnbl_o : OUT std_ulogic;
@@ -30,16 +33,19 @@ END ENTITY bench_syscon;
 --
 ARCHITECTURE sim OF bench_syscon IS
   SIGNAL F8M : std_ulogic;
-  SIGNAL Ctrl : std_ulogic_vector (4 DOWNTO 0); -- Wr,Rd
-  SIGNAL Addr : std_ulogic_vector (15 DOWNTO 0);
+  SIGNAL Ctrl : std_logic_vector (4 DOWNTO 0); -- Wr,Rd
+  SIGNAL Addr : std_logic_vector (15 DOWNTO 0);
   SIGNAL Data_i : std_logic_vector (15 DOWNTO 0);
   SIGNAL Data_o : std_logic_vector (15 DOWNTO 0);
-  SIGNAL Status : std_ulogic_vector (1 DOWNTO 0); -- Ack,Done
+  SIGNAL Status : std_logic_vector (1 DOWNTO 0); -- Ack,Done
   SIGNAL ExpRd : std_ulogic;
   SIGNAL ExpWr : std_ulogic;
-  SIGNAL ExpAddr : std_ulogic_vector (15 DOWNTO 0);
+  SIGNAL ExpAddr : std_logic_vector (15 DOWNTO 0);
   SIGNAL ExpData : std_logic_vector (15 DOWNTO 0);
   SIGNAL ExpAck : std_logic;
+  SIGNAL BdIntr : std_ulogic_vector(N_INTERRUPTS-1 downto 0);
+  SIGNAL ExpIntr : std_logic;
+  SIGNAL INTA    : std_ulogic;
   SIGNAL CmdEnbl : std_ulogic;
   SIGNAL CmdStrb : std_ulogic;
   SIGNAL ExpReset : std_ulogic;
@@ -52,18 +58,24 @@ ARCHITECTURE sim OF bench_syscon IS
   alias Ack is Status(1);
   
   COMPONENT syscon IS
+    GENERIC(
+      N_INTERRUPTS : integer range 15 downto 0 := 1
+    );
     PORT (
-      F8M : IN std_ulogic;
-      Ctrl : IN std_ulogic_vector (4 DOWNTO 0); -- Wr,Rd
-      Addr : IN std_ulogic_vector (15 DOWNTO 0);
+      F8M : IN std_logic;
+      Ctrl : IN std_logic_vector (4 DOWNTO 0); -- Wr,Rd
+      Addr : IN std_logic_vector (15 DOWNTO 0);
       Data_i : OUT std_logic_vector (15 DOWNTO 0);
       Data_o : IN std_logic_vector (15 DOWNTO 0);
-      Status : OUT std_ulogic_vector (1 DOWNTO 0); -- Ack,Done
-      ExpRd : OUT std_ulogic;
-      ExpWr : OUT std_ulogic;
+      Status : OUT std_logic_vector (1 DOWNTO 0); -- Ack,Done
+      ExpRd : OUT std_logic;
+      ExpWr : OUT std_logic;
       ExpData : INOUT std_logic_vector (15 DOWNTO 0);
-      ExpAddr : OUT std_ulogic_vector (15 DOWNTO 0);
-      ExpAck : INOUT std_logic;
+      ExpAddr : OUT std_logic_vector (15 DOWNTO 0);
+      ExpAck : IN std_logic;
+      BdIntr : IN std_ulogic_vector(N_INTERRUPTS-1 downto 0);
+      ExpIntr : OUT std_logic;
+      INTA    : OUT std_ulogic;
    	  CmdEnbl : OUT std_ulogic;
 	    CmdStrb : OUT std_ulogic;
 	    ExpReset : OUT std_ulogic
@@ -72,6 +84,9 @@ ARCHITECTURE sim OF bench_syscon IS
   FOR ALL : syscon USE ENTITY idx_fpga_lib.syscon;
 BEGIN
   DUT : syscon
+     GENERIC MAP (
+       N_INTERRUPTS => N_INTERRUPTS
+     )
      PORT MAP (
         F8M      => F8M,
         Ctrl     => Ctrl,
@@ -84,6 +99,9 @@ BEGIN
         ExpData  => ExpData,
         ExpAddr  => ExpAddr,
         ExpAck   => ExpAck,
+        BdIntr   => BdIntr,
+        ExpIntr  => ExpIntr,
+        INTA     => INTA,
         CmdEnbl  => CmdEnbl,
         CmdStrb  => CmdStrb,
         ExpReset => ExpReset
@@ -106,6 +124,7 @@ BEGIN
     Data_o <= (others => '0');
     ExpData <= (others => 'Z');
     ExpAck <= '0';
+    BdIntr <= ( others => '0' );
     -- pragma synthesis_off
     wait for 300 ns;
     rst <= '1';
@@ -141,7 +160,7 @@ BEGIN
     wait for 300 ns;
     assert Ack = '1' report "Ack should be asserted" severity error;
     wait for 600 ns;
-    ExpAck <= 'Z';
+    ExpAck <= '0';
     wait for 100 ns;
     assert ExpWr = '0' report "ExpWr should be cleared" severity error;
     assert Done = '1' report "Done should be asserted" severity error;
