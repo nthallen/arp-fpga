@@ -26,6 +26,7 @@ ARCHITECTURE sim OF bench_gxidx IS
    SIGNAL CMDENBL     : std_ulogic;
    SIGNAL ExpRd       : std_ulogic;
    SIGNAL ExpWr       : std_ulogic;
+   SIGNAL INTA        : std_ulogic;
    SIGNAL F8M         : std_ulogic;
    SIGNAL KillA       : std_ulogic_vector(N_CHANNELS-1 DOWNTO 0);
    SIGNAL KillB       : std_ulogic_vector(N_CHANNELS-1 DOWNTO 0);
@@ -33,7 +34,7 @@ ARCHITECTURE sim OF bench_gxidx IS
    SIGNAL LimO        : std_ulogic_vector(N_CHANNELS-1 DOWNTO 0);
    SIGNAL ZR          : std_ulogic_vector(N_CHANNELS-1 DOWNTO 0);
    SIGNAL ExpAck      : std_ulogic;
-   SIGNAL ExpIntr_Not : std_logic;
+   SIGNAL BdIntr      : std_logic;
    SIGNAL Dir         : std_ulogic_vector(N_CHANNELS-1 DOWNTO 0);
    SIGNAL Run         : std_ulogic_vector(N_CHANNELS-1 DOWNTO 0);
    SIGNAL Step        : std_ulogic_vector(N_CHANNELS-1 DOWNTO 0);
@@ -48,6 +49,7 @@ ARCHITECTURE sim OF bench_gxidx IS
          CMDENBL     : IN     std_ulogic;
          ExpRd       : IN     std_ulogic;
          ExpWr       : IN     std_ulogic;
+         INTA        : IN     std_ulogic;
          F8M         : IN     std_ulogic;
          KillA       : IN     std_ulogic_vector(N_CHANNELS-1 DOWNTO 0);
          KillB       : IN     std_ulogic_vector(N_CHANNELS-1 DOWNTO 0);
@@ -55,7 +57,7 @@ ARCHITECTURE sim OF bench_gxidx IS
          LimO        : IN     std_ulogic_vector(N_CHANNELS-1 DOWNTO 0);
          ZR          : IN     std_ulogic_vector(N_CHANNELS-1 DOWNTO 0);
          ExpAck      : OUT    std_ulogic;
-         ExpIntr_Not : OUT    std_logic;
+         BdIntr      : OUT    std_ulogic;
          Dir         : OUT    std_ulogic_vector(N_CHANNELS-1 DOWNTO 0);
          Run         : OUT    std_ulogic_vector(N_CHANNELS-1 DOWNTO 0);
          Step        : OUT    std_ulogic_vector(N_CHANNELS-1 DOWNTO 0);
@@ -75,6 +77,7 @@ BEGIN
          CMDENBL     => CMDENBL,
          ExpRd       => ExpRd,
          ExpWr       => ExpWr,
+         INTA        => INTA,
          F8M         => F8M,
          KillA       => KillA,
          KillB       => KillB,
@@ -82,7 +85,7 @@ BEGIN
          LimO        => LimO,
          ZR          => ZR,
          ExpAck      => ExpAck,
-         ExpIntr_Not => ExpIntr_Not,
+         BdIntr      => BdIntr,
          Dir         => Dir,
          Run         => Run,
          Step        => Step,
@@ -151,6 +154,23 @@ BEGIN
            return;
          end procedure verify;
          
+         procedure check_intr_active is
+         begin
+           -- pragma synthesis_off
+           assert BdIntr = '1' report "BdIntr not observed" severity error;
+           wait until F8M'Event and F8M = '1';
+           INTA <= '1';
+           wait until F8M'Event and F8M = '1';
+           assert BdIntr = '1' report "BdIntr not active during INTA" severity error;
+           INTA <= '0';
+           wait until F8M'Event and F8M = '1';
+           wait until F8M'Event and F8M = '1';
+           wait until F8M'Event and F8M = '1';
+           wait until F8M'Event and F8M = '1';
+           assert BdIntr = '0' report "BdIntr not cleared by INTA" severity error;
+           -- pragma synthesis_on
+         end procedure check_intr_active;
+         
          procedure exercise(ChNo : integer range 14 downto 0) is
            -- pragma synthesis_off
            Variable BaseAddr : unsigned (15 downto 0);
@@ -174,6 +194,7 @@ BEGIN
            verify( ChNo, X"0007", X"008C", '1', '1');
            wait for 75 us;
            verify( ChNo, X"0007", X"0084", '0', '1');
+           check_intr_active;
            -- program to drive out 1024 steps
            sbwr( std_logic_vector(BaseAddr+2), X"0200" );
            -- readback position and status during drive
@@ -184,6 +205,7 @@ BEGIN
            LimO(ChNo) <= '1';
            wait for 140 us;
            verify( ChNo, X"000B", X"0086", '0', '1');
+           check_intr_active;
            -- drive in a lot
            sbwr( std_logic_vector(BaseAddr), X"1000" );
            wait until Run'Event and Run(ChNo) = '1' for 63 us;
@@ -197,6 +219,7 @@ BEGIN
            wait for 200 us;
            -- verify stop and position
            verify( ChNo, X"0005", X"0081", '0', '0');
+           check_intr_active;
            -- drive out a lot
            sbwr( std_logic_vector(BaseAddr+2), X"0010" );
            wait until Run'Event and Run(ChNo) = '1' for 63 us;
@@ -217,17 +240,14 @@ BEGIN
            wait for 400 us;
            -- verify end position
            verify( ChNo, X"0005", X"0084", '0', '1');
+           check_intr_active;
            -- pragma synthesis_on
            return;
          end procedure exercise;
        Begin
-         rst <= '1';
-         -- pragma synthesis_off
-         wait for 200 ns;
-         -- pragma synthesis_on
-         rst <= '0';
          ExpWr <= '0';
          ExpRd <= '0';
+         INTA <= '0';
          Addr <= X"0000";
          CMDENBL <= '1';
          ZR <= "00";
@@ -236,9 +256,24 @@ BEGIN
          LimO <= "00";
          LimI <= "00";
          Data <= (others => 'Z');
+         rst <= '1';
+         -- pragma synthesis_off
+         wait for 200 ns;
+         -- pragma synthesis_on
+         rst <= '0';
+         wait for 400 ns;
+         -- pulse INTA to clear
+         INTA <= '1';
+         wait for 200 ns;
+         INTA <= '0';
+         wait for 200 ns;
          -- configure the channels for 16000 Hz
-         sbwr( X"0A0E", X"0F20" );
-         sbwr( X"0A16", X"0F20" );
+         -- set all limits true in high
+         sbwr( X"0A0E", X"7FE0" ); -- was 0F20
+         sbwr( X"0A16", X"7FE0" ); -- was 0F20
+         -- enable interrupts
+         sbwr( X"0A00", X"0020" );
+         
          -- drive in zero to set direction
          sbwr( X"0A08", X"0000" );
          sbwr( X"0A10", X"0000" );

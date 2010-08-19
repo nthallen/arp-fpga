@@ -19,6 +19,7 @@ ENTITY gxidx IS
       CMDENBL     : IN     std_ulogic;
       ExpRd       : IN     std_ulogic;
       ExpWr       : IN     std_ulogic;
+      INTA        : IN     std_ulogic;
       F8M         : IN     std_ulogic;
       KillA       : IN     std_ulogic_vector (N_CHANNELS-1 DOWNTO 0);
       KillB       : IN     std_ulogic_vector (N_CHANNELS-1 DOWNTO 0);
@@ -59,7 +60,6 @@ ARCHITECTURE struct OF gxidx IS
    -- Internal signal declarations
    SIGNAL Chan    : std_ulogic_vector(N_CHANNELS-1 DOWNTO 0);
    SIGNAL F4M     : std_ulogic;
-   SIGNAL INTA    : std_ulogic;
    SIGNAL OpCd    : std_logic_vector(2 DOWNTO 0);
    SIGNAL RdEn    : std_ulogic;
    SIGNAL WrEn    : std_ulogic;
@@ -70,27 +70,28 @@ ARCHITECTURE struct OF gxidx IS
 
    -- Component Declarations
    COMPONENT channel
-   PORT (
-      CMDENBL : IN     std_ulogic ;
-      ChanSel : IN     std_ulogic ;
-      F4M     : IN     std_ulogic ;
-      F8M     : IN     std_ulogic ;
-      KillA   : IN     std_ulogic ;
-      KillB   : IN     std_ulogic ;
-      LimI    : IN     std_ulogic ;
-      LimO    : IN     std_ulogic ;
-      OpCd    : IN     std_logic_vector (2 DOWNTO 0);
-      RdEn    : IN     std_ulogic;
-      WrEn    : IN     std_ulogic ;
-      ZR      : IN     std_ulogic ;
-      rst     : IN     std_ulogic ;
-      Dir     : OUT    std_ulogic ;
-      Ireq    : OUT    std_ulogic ;
-      Run     : OUT    std_ulogic ;
-      Step    : OUT    std_ulogic ;
-      Running : OUT    std_ulogic ;
-      Data    : INOUT  std_logic_vector ( 15 DOWNTO 0 )
-   );
+      PORT (
+         CMDENBL  : IN     std_ulogic;
+         ChanSel  : IN     std_ulogic;
+         F4M      : IN     std_ulogic;
+         F8M      : IN     std_ulogic;
+         INTA     : IN     std_ulogic;
+         KillA    : IN     std_ulogic;
+         KillB    : IN     std_ulogic;
+         LimI     : IN     std_ulogic;
+         LimO     : IN     std_ulogic;
+         OpCd     : IN     std_logic_vector(2 DOWNTO 0);
+         RdEn     : IN     std_ulogic;
+         WrEn     : IN     std_ulogic;
+         ZR       : IN     std_ulogic;
+         rst      : IN     std_logic;
+         Dir      : OUT    std_ulogic;
+         Ireq     : OUT    std_ulogic;
+         Run      : OUT    std_ulogic;
+         Running  : OUT    std_ulogic;
+         Step     : OUT    std_ulogic;
+         Data     : INOUT  std_logic_vector( 15 DOWNTO 0 )
+      );
    END COMPONENT;
    
    COMPONENT decode
@@ -105,7 +106,6 @@ ARCHITECTURE struct OF gxidx IS
       rst     : IN     std_ulogic ;
       ExpAck  : OUT    std_ulogic ;
       WrEn    : OUT    std_ulogic ;
-      INTA    : OUT    std_ulogic ;
       BdIntr  : OUT    std_ulogic ;
       Chan    : OUT    std_ulogic_vector (N_CHANNELS-1 DOWNTO 0);
       Running : IN     std_ulogic_vector (N_CHANNELS-1 DOWNTO 0);
@@ -139,7 +139,6 @@ BEGIN
       rst     => rst,
       ExpAck  => ExpAck,
       WrEn    => WrEn,
-      INTA    => INTA,
       BdIntr  => BdIntr,
       Chan    => Chan,
       Running => Running_int,
@@ -156,6 +155,7 @@ BEGIN
       PORT MAP (
          CMDENBL => CMDENBL,
          ChanSel => Chan(chno),
+         INTA    => INTA,
          F4M     => F4M,
          F8M     => F8M,
          KillA   => KillA(chno),
