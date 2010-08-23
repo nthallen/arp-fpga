@@ -13,7 +13,8 @@ USE ieee.numeric_std.all;
 
 ENTITY decode IS
    GENERIC( 
-      N_CHANNELS : integer range 15 DOWNTO 1 := 1
+      N_CHANNELS : integer range 15 DOWNTO 1 := 1;
+      BASE_ADDR : std_logic_vector (15 DOWNTO 0) := X"0A00"
    );
    PORT( 
       Addr    : IN     std_logic_vector (15 DOWNTO 0);
@@ -61,9 +62,9 @@ BEGIN
     Base_int <= '0';
     Chan_sel <= '0';
     Chan_int <= (others => '0');
-    if Addr = X"0A00" then
+    if Addr = BASE_ADDR then
       Base_int <= '1';
-    elsif Addr(15 DOWNTO 7) = B"000010100" and Addr(0) = '0' then
+    elsif Addr(15 DOWNTO 7) = BASE_ADDR(15 DOWNTO 7) and Addr(0) = '0' then
       Chan_num := unsigned(Addr(6 DOWNTO 3));
       if Chan_num > 0 and Chan_num <= N_CHANNELS then
         Chan_sel <= '1';
@@ -156,7 +157,7 @@ BEGIN
     if F8M'event and F8M = '1' then
       if rst = '1' then
         Intr_En <= '0';
-      elsif WrEn_int = '1' and Addr = X"0A00" then
+      elsif WrEn_int = '1' and Addr = BASE_ADDR then
         Intr_En <= Data(5);
       end if;
       intr_int := '0';

@@ -14,7 +14,8 @@ USE ieee.std_logic_unsigned.all;
 
 ENTITY syscon IS
   GENERIC(
-    N_INTERRUPTS : integer range 15 downto 0 := 1
+    N_INTERRUPTS : integer range 15 downto 0 := 1;
+    N_BOARDS : integer range 15 downto 0 := 1
   );
   PORT (
     F8M : IN std_logic;
@@ -22,14 +23,13 @@ ENTITY syscon IS
     Addr : IN std_logic_vector (15 DOWNTO 0);
     Data_i : OUT std_logic_vector (15 DOWNTO 0);
     Data_o : IN std_logic_vector (15 DOWNTO 0);
-    Status : OUT std_logic_vector (1 DOWNTO 0); -- Ack,Done
+    Status : OUT std_logic_vector (2 DOWNTO 0); -- ExpIntr,Ack,Done
     ExpRd : OUT std_logic;
     ExpWr : OUT std_logic;
     ExpData : INOUT std_logic_vector (15 DOWNTO 0);
     ExpAddr : OUT std_logic_vector (15 DOWNTO 0);
-    ExpAck : IN std_logic;
+    ExpAck : IN std_logic_vector (N_BOARDS-1 DOWNTO 0);
     BdIntr : IN std_ulogic_vector(N_INTERRUPTS-1 downto 0);
-    ExpIntr : OUT std_logic;
     INTA    : OUT std_ulogic;
 	  CmdEnbl : OUT std_ulogic;
 	  CmdStrb : OUT std_ulogic;
@@ -50,9 +50,11 @@ ARCHITECTURE arch OF syscon IS
   alias rst is Ctrl(4);
   alias Done is Status(0);
   alias Ack is Status(1);
+  alias ExpIntr is Status(2);
 BEGIN
   rdwr : process (F8M) IS
     Variable intr_int: std_ulogic;
+    Variable ack_int: std_ulogic;
   begin
     if F8M'Event and F8M = '1' then
       if RdEn = '0' and WrEn = '0' then
@@ -89,7 +91,13 @@ BEGIN
           --ExpData <= (others => 'Z');
         else
           Cnt <= Cnt - 1;
-          Ack <= ExpAck;
+          ack_int := INTA_int;
+          for i in N_BOARDS-1 DOWNTO 0 loop
+            if ExpAck(i) = '1' then
+              ack_int := '1';
+            end if;
+          end loop;
+          Ack <= ack_int;
           if RdEn = '1' then
             if INTA_int = '1' then
               DataIn(15 downto N_INTERRUPTS) <= ( others => '0' );

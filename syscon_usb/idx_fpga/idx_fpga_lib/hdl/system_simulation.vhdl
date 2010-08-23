@@ -13,8 +13,7 @@ ENTITY system IS
 		fpga_0_rst_1_sys_rst_pin : IN std_logic;
 		fpga_0_clk_1_sys_clk_pin : IN std_logic;
 		xps_epc_0_FTDI_RXF_pin : IN std_logic_vector(0 to 0);
-		xps_gpio_subbus_intr_pin : IN std_logic_vector(0 to 0);
-		xps_gpio_subbus_status_pin : IN std_logic_vector(1 downto 0);
+		xps_gpio_subbus_status_pin : IN std_logic_vector(2 downto 0);
 		xps_gpio_subbus_data_i_pin : IN std_logic_vector(15 downto 0);    
 		xps_epc_0_PRH_Data : INOUT std_logic_vector(7 downto 0);      
 		xps_epc_0_PRH_Rd_n_pin : OUT std_logic;
@@ -32,7 +31,7 @@ architecture Simulation of system is
   SIGNAL Data_i : std_logic_vector (15 DOWNTO 0);
   SIGNAL Data_o : std_logic_vector (15 DOWNTO 0);
   SIGNAL Ctrl : std_logic_vector (4 DOWNTO 0);
-  SIGNAL Status : std_logic_vector (1 DOWNTO 0); -- Ack,Done
+  SIGNAL Status : std_logic_vector (2 DOWNTO 0); -- ExpIntr,Ack,Done
   alias RdEn is Ctrl(0);
   alias WrEn is Ctrl(1);
   alias CS is Ctrl(2);
@@ -40,6 +39,7 @@ architecture Simulation of system is
   alias rst is Ctrl(4);
   alias Done is Status(0);
   alias Ack is Status(1);
+  alias ExpIntr is Status(2);
 
 begin
   testproc: Process

@@ -16,10 +16,11 @@ USE idx_fpga_lib.All;
 
 ENTITY bench_syscon IS
   GENERIC (
-    N_INTERRUPTS : integer range 15 downto 1 := 1
+    N_INTERRUPTS : integer range 15 downto 1 := 1;
+    N_BOARDS : integer range 15 downto 1 := 1
   );
   PORT (
-    Status_o : OUT std_logic_vector (1 DOWNTO 0); -- Ack,Done
+    Status_o : OUT std_logic_vector (2 DOWNTO 0); -- ExpIntr,Ack,Done
     ExpRd_o : OUT std_ulogic;
     ExpWr_o : OUT std_ulogic;
     ExpAddr_o : OUT std_logic_vector (15 DOWNTO 0);
@@ -37,14 +38,13 @@ ARCHITECTURE sim OF bench_syscon IS
   SIGNAL Addr : std_logic_vector (15 DOWNTO 0);
   SIGNAL Data_i : std_logic_vector (15 DOWNTO 0);
   SIGNAL Data_o : std_logic_vector (15 DOWNTO 0);
-  SIGNAL Status : std_logic_vector (1 DOWNTO 0); -- Ack,Done
+  SIGNAL Status : std_logic_vector (2 DOWNTO 0); -- ExpIntr,Ack,Done
   SIGNAL ExpRd : std_ulogic;
   SIGNAL ExpWr : std_ulogic;
   SIGNAL ExpAddr : std_logic_vector (15 DOWNTO 0);
   SIGNAL ExpData : std_logic_vector (15 DOWNTO 0);
-  SIGNAL ExpAck : std_logic;
+  SIGNAL ExpAck : std_logic_vector( N_BOARDS-1 DOWNTO 0);
   SIGNAL BdIntr : std_ulogic_vector(N_INTERRUPTS-1 downto 0);
-  SIGNAL ExpIntr : std_logic;
   SIGNAL INTA    : std_ulogic;
   SIGNAL CmdEnbl : std_ulogic;
   SIGNAL CmdStrb : std_ulogic;
@@ -56,10 +56,12 @@ ARCHITECTURE sim OF bench_syscon IS
   alias rst is Ctrl(4);
   alias Done is Status(0);
   alias Ack is Status(1);
+  alias ExpIntr is Status(2);
   
   COMPONENT syscon IS
     GENERIC(
-      N_INTERRUPTS : integer range 15 downto 0 := 1
+      N_INTERRUPTS : integer range 15 downto 0 := 1;
+      N_BOARDS : integer range 15 downto 1 := 1
     );
     PORT (
       F8M : IN std_logic;
@@ -67,14 +69,13 @@ ARCHITECTURE sim OF bench_syscon IS
       Addr : IN std_logic_vector (15 DOWNTO 0);
       Data_i : OUT std_logic_vector (15 DOWNTO 0);
       Data_o : IN std_logic_vector (15 DOWNTO 0);
-      Status : OUT std_logic_vector (1 DOWNTO 0); -- Ack,Done
+      Status : OUT std_logic_vector (2 DOWNTO 0); -- ExpIntr,Ack,Done
       ExpRd : OUT std_logic;
       ExpWr : OUT std_logic;
       ExpData : INOUT std_logic_vector (15 DOWNTO 0);
       ExpAddr : OUT std_logic_vector (15 DOWNTO 0);
-      ExpAck : IN std_logic;
-      BdIntr : IN std_ulogic_vector(N_INTERRUPTS-1 downto 0);
-      ExpIntr : OUT std_logic;
+      ExpAck : IN std_logic_vector(N_BOARDS-1 DOWNTO 0);
+      BdIntr : IN std_ulogic_vector(N_INTERRUPTS-1 DOWNTO 0);
       INTA    : OUT std_ulogic;
    	  CmdEnbl : OUT std_ulogic;
 	    CmdStrb : OUT std_ulogic;
@@ -85,7 +86,8 @@ ARCHITECTURE sim OF bench_syscon IS
 BEGIN
   DUT : syscon
      GENERIC MAP (
-       N_INTERRUPTS => N_INTERRUPTS
+       N_INTERRUPTS => N_INTERRUPTS,
+       N_BOARDS => N_BOARDS
      )
      PORT MAP (
         F8M      => F8M,
@@ -100,7 +102,6 @@ BEGIN
         ExpAddr  => ExpAddr,
         ExpAck   => ExpAck,
         BdIntr   => BdIntr,
-        ExpIntr  => ExpIntr,
         INTA     => INTA,
         CmdEnbl  => CmdEnbl,
         CmdStrb  => CmdStrb,
@@ -123,7 +124,7 @@ BEGIN
     Addr <= (others => '0');
     Data_o <= (others => '0');
     ExpData <= (others => 'Z');
-    ExpAck <= '0';
+    ExpAck <= "0";
     BdIntr <= ( others => '0' );
     -- pragma synthesis_off
     wait for 300 ns;
@@ -135,10 +136,10 @@ BEGIN
     wait for 200 ns;
     assert ExpRd = '1' report "ExpRd expected" severity error;
     ExpData <= X"55AA";
-    ExpAck <= '1';
+    ExpAck <= "1";
     wait until Done = '1';
     ExpData <= (others => 'Z');
-    ExpAck <= '0';
+    ExpAck <= "0";
     wait for 1000 ns;
     assert ExpRd = '0' report "ExpRd should have cleared" severity error;
     assert Done = '1' report "Done should be asserted" severity error;
@@ -156,11 +157,11 @@ BEGIN
     assert ExpWr = '1' report "ExpWr should be asserted" severity error;
     assert Done = '0' report "Done should not be asserted" severity error;
     assert To_X01(Ack) = '0' report "Ack should not be asserted" severity error;
-    ExpAck <= '1';
+    ExpAck <= "1";
     wait for 300 ns;
     assert Ack = '1' report "Ack should be asserted" severity error;
     wait for 600 ns;
-    ExpAck <= '0';
+    ExpAck <= "0";
     wait for 100 ns;
     assert ExpWr = '0' report "ExpWr should be cleared" severity error;
     assert Done = '1' report "Done should be asserted" severity error;
@@ -169,6 +170,38 @@ BEGIN
     wait for 100 ns;
     assert Done = '0' report "Done should not be asserted" severity error;
     assert To_X01(Ack) = '0' report "Ack should not be asserted" severity error;
+
+    -- Interrupt testing
+    assert ExpIntr = '0' report "ExpIntr should not be asserted" severity error;
+    BdIntr <= "1";
+    Addr <= X"0040";
+    wait for 150 ns;
+    assert ExpIntr = '1' report "ExpInter should be asserted" severity error;
+    RdEn <= '1';
+    wait for 500 ns;
+    assert INTA = '1' report "INTA not asserted" severity error;
+    wait for 700 ns;
+    assert INTA = '0' report "INTA asserted too long" severity error;
+    assert Data_i = X"0001" report "Data value during INTA wrong" severity error;
+    assert Done = '1' report "Done should be asserted" severity error;
+    assert Ack = '1' report "Ack should be asserted" severity error;
+    RdEn <= '0';
+    wait for 200 ns;
+
+    BdIntr <= "0";
+    Addr <= X"0040";
+    wait for 150 ns;
+    assert ExpIntr = '0' report "ExpIntr should not be asserted" severity error;
+    RdEn <= '1';
+    wait for 500 ns;
+    assert INTA = '1' report "INTA not asserted" severity error;
+    wait for 700 ns;
+    assert INTA = '0' report "INTA asserted too long" severity error;
+    assert Data_i = X"0000" report "Data value during INTA wrong" severity error;
+    assert Done = '1' report "Done should be asserted" severity error;
+    assert Ack = '1' report "Ack should be asserted" severity error;
+    RdEn <= '0';
+    wait for 200 ns;
     wait;
    -- pragma synthesis_on
   End Process;

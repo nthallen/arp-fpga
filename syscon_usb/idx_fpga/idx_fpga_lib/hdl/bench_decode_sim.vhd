@@ -33,7 +33,10 @@ ARCHITECTURE sim OF bench_decode IS
   SIGNAL BdIntr :   std_ulogic;
   SIGNAL Ireq   :   std_ulogic_vector (2-1 DOWNTO 0);
   COMPONENT decode IS
-    GENERIC ( N_CHANNELS : integer range 15 downto 1 := 1 );
+    GENERIC (
+      N_CHANNELS : integer range 15 downto 1 := 1;
+      BASE_ADDR : std_logic_vector (15 DOWNTO 0) := X"0A00"
+    );
     PORT( 
       Addr   : IN     std_logic_vector (15 DOWNTO 0);
       ExpRd  : IN     std_ulogic;
@@ -55,7 +58,7 @@ ARCHITECTURE sim OF bench_decode IS
  END COMPONENT;
 BEGIN
   DUT : decode
-    Generic Map ( N_CHANNELS => 2 )
+    Generic Map ( N_CHANNELS => 2, BASE_ADDR => X"0A00" )
     Port Map (
       Addr => Addr,
       ExpRd => ExpRd,

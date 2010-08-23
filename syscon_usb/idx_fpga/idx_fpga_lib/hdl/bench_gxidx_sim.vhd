@@ -15,7 +15,8 @@ USE idx_fpga_lib.All;
 
 ENTITY bench_gxidx IS
   GENERIC (
-    N_CHANNELS : integer range 15 downto 1 := 2
+    N_CHANNELS : integer range 15 downto 1 := 2;
+    BASE_ADDR : std_logic_vector (15 DOWNTO 0) := X"0A00"
   );
 END ENTITY bench_gxidx;
 
@@ -41,7 +42,8 @@ ARCHITECTURE sim OF bench_gxidx IS
    SIGNAL Data        : std_logic_vector(15 DOWNTO 0);
    COMPONENT gxidx
       GENERIC (
-         N_CHANNELS : integer range 15 downto 1 := 2
+        N_CHANNELS : integer range 15 downto 1 := 2;
+        BASE_ADDR : std_logic_vector (15 DOWNTO 0) := X"0A00"
       );
       PORT (
          rst         : IN     std_ulogic;
@@ -69,7 +71,8 @@ BEGIN
    --  hds hds_inst
    DUT : gxidx
       GENERIC MAP (
-         N_CHANNELS => N_CHANNELS
+         N_CHANNELS => N_CHANNELS,
+         BASE_ADDR => BASE_ADDR
       )
       PORT MAP (
          rst         => rst,
@@ -169,6 +172,7 @@ BEGIN
            wait until F8M'Event and F8M = '1';
            assert BdIntr = '0' report "BdIntr not cleared by INTA" severity error;
            -- pragma synthesis_on
+           return;
          end procedure check_intr_active;
          
          procedure exercise(ChNo : integer range 14 downto 0) is
@@ -259,7 +263,6 @@ BEGIN
          rst <= '1';
          -- pragma synthesis_off
          wait for 200 ns;
-         -- pragma synthesis_on
          rst <= '0';
          wait for 400 ns;
          -- pulse INTA to clear

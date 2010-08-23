@@ -11,7 +11,8 @@ USE ieee.std_logic_1164.all;
 
 ENTITY gxidx IS
    GENERIC( 
-      N_CHANNELS : integer range 15 downto 1 := 2
+      N_CHANNELS : integer range 15 downto 1 := 2;
+      BASE_ADDR : std_logic_vector (15 DOWNTO 0) := X"0A00"
    );
    PORT( 
       rst         : IN     std_ulogic;
@@ -96,7 +97,8 @@ ARCHITECTURE struct OF gxidx IS
    
    COMPONENT decode
    GENERIC (
-      N_CHANNELS : integer range 15 downto 1 := 1
+      N_CHANNELS : integer range 15 downto 1 := 1;
+      BASE_ADDR : std_logic_vector (15 DOWNTO 0) := X"0A00"
    );
    PORT (
       Addr    : IN     std_logic_vector (15 DOWNTO 0);
@@ -129,7 +131,8 @@ BEGIN
 
   decode_i : decode
     GENERIC MAP (
-      N_CHANNELS => N_CHANNELS
+      N_CHANNELS => N_CHANNELS,
+      BASE_ADDR => BASE_ADDR
     )
     PORT MAP (
       Addr    => Addr,
