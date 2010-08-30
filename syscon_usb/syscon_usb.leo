@@ -14,7 +14,7 @@
 <v t="ntallen.20100601150619.1289" a="E"><vh>Todo</vh>
 <v t="ntallen.20100805085605.1308"><vh>Diagnose Slowness</vh></v>
 <v t="ntallen.20100805085605.1309"><vh>Implement timeout in subbusd</vh></v>
-<v t="ntallen.20100805085605.1305" a="E"><vh>Indexer Features</vh>
+<v t="ntallen.20100805085605.1305"><vh>Indexer Features</vh>
 <v t="ntallen.20100805085605.1307" a="E"><vh>Interrupts</vh>
 <v t="ntallen.20100816115707.1311"><vh>API: subbuslib</vh></v>
 <v t="ntallen.20100816115707.1312"><vh>Library implementation</vh></v>
@@ -28,6 +28,7 @@
 </v>
 </v>
 </v>
+<v t="ntallen.20100827154528.1331"><vh>subbus (here for visibility)</vh></v>
 </v>
 <v t="ntallen.20100520123955.1247"><vh>Development Issues</vh>
 <v t="ntallen.20100519134237.1503"><vh>12.1 Upgrade</vh></v>
@@ -38,18 +39,18 @@
 <v t="ntallen.20100524120730.1253"><vh>QNX</vh>
 <v t="ntallen.20100602103230.1293"><vh>Library Strategy</vh></v>
 <v t="ntallen.20100602103230.1294"><vh>Alternate Strategy</vh></v>
-<v t="ntallen.20100602103230.1295"><vh>Driver?</vh></v>
+<v t="ntallen.20100602103230.1295"><vh>Driver? The winner!</vh></v>
 <v t="ntallen.20100607110403.1299"><vh>sbtest</vh></v>
 <v t="ntallen.20100610083250.1301"><vh>Simulation problem</vh></v>
 </v>
 </v>
-<v t="ntallen.20100525090916.1257"><vh>Development Plan</vh>
+<v t="ntallen.20100525090916.1257" a="E"><vh>Development Plan</vh>
 <v t="ntallen.20100525090916.1259"><vh>Document Serial Protocol</vh></v>
 <v t="ntallen.20100803111918.1303"><vh>IPC</vh></v>
-<v t="ntallen.20100525090916.1258"><vh>Update Syscon</vh>
+<v t="ntallen.20100525090916.1258" a="E"><vh>Update Syscon</vh>
 <v t="ntallen.20100525090916.1263"><vh>Read Operation</vh></v>
 <v t="ntallen.20100525090916.1264"><vh>Write Operation</vh></v>
-<v t="ntallen.20100527162821.1273"><vh>Implemented syscon VHDL module</vh>
+<v t="ntallen.20100527162821.1273" a="E"><vh>Implemented syscon VHDL module</vh>
 <v t="ntallen.20100527162821.1274"><vh>Done: Update XPS Proj</vh></v>
 <v t="ntallen.20100527162821.1275"><vh>Update SDK Proj</vh></v>
 <v t="ntallen.20100527162821.1278"><vh>Update ISE Proj</vh>
@@ -63,6 +64,10 @@
 <v t="ntallen.20100525090916.1260"><vh>Implement Subbus Library</vh></v>
 <v t="ntallen.20100525090916.1261"><vh>Implement Design with Indexer</vh></v>
 <v t="ntallen.20100525090916.1262"><vh>A/D VHDL</vh></v>
+</v>
+<v t="ntallen.20100823102718.1327" a="E"><vh>Documentation</vh>
+<v t="ntallen.20100525090916.1259"></v>
+<v t="ntallen.20100824101804.1329"><vh>Document API</vh></v>
 </v>
 </v>
 </vnodes>
@@ -149,7 +154,14 @@ The read logic is faulty, since it resets EXPRD before reading in the data (whic
     C &lt;bit&gt;    // CMDENBL: response codes: CE
     S &lt;bit&gt;    // CMDSTRB: response codes: SE
     V          // Board Revision: response codes VE
+    B          // Board Logical Reset: response: 0? ###
+    I &lt;digit&gt; : &lt;addr&gt; // Define and enable Interrupt: response: i &lt;digit&gt;
+    I &lt;digit&gt;  // Undefine and disable Interrupt: response: i &lt;digit&gt;
     ''         // NOP: response code: 0
+    D          // Read switches: response: D&lt;data&gt; | E&lt;digit&gt; (no switches)
+    F &lt;data&gt;   // Set failure: response: F | E
+    F          // Read failure: response F &lt;data&gt; | E
+    T          // Tick to reset 2-minute timeout: No response
 
 Responses:
     R &lt;data&gt; '\n'  // Read data with acknowledge asserted
@@ -160,8 +172,20 @@ Responses:
     C &lt;bit&gt; '\n'   // CMDENBL value
     V &lt;version&gt; '\n' // Version string
     I &lt;data&gt; '\n'  // Interrupt string
+    i &lt;digit&gt; '\n' // Acknowledge Interrupt config command
     0 '\n'         // NOP
-    E &lt;digit&gt; '\n' // Error--not obviously associated with a specific request</t>
+    D &lt;data&gt; '\n'  // Switch data
+    E &lt;digit&gt; '\n' // Error--not obviously associated with a specific request
+    F &lt;data&gt; '\n'  // Failure status
+
+B - Board Logical Reset: issue hardware reset to syscon, disable all interrupts.
+    Does *not* reset the two-minute timer. (that's what "tick" does.) The reason for
+    making the distinction is that the board reset will be issued when subbusd
+    starts up, whereas tick will be issued by the actual data acquisition
+    functions, indicating that the entire instrument is up and running. There
+    is a lot that can go wrong between those two events, including spontaneous
+    reboots, and we don't want the startup of subbusd to prematurely indicate
+    that all is well.</t>
 <t tx="ntallen.20100525090916.1260"></t>
 <t tx="ntallen.20100525090916.1261"></t>
 <t tx="ntallen.20100525090916.1262"></t>
@@ -220,6 +244,8 @@ The executables could be segregated by hardware or by name
 
 An alternate flavor of the subbus-usb library could use different names for the interface functions, which would allow for linking both into the same app. That would most likely be implemented by (optional) macros that recast the function names, so by recompiling, an app could use the same names, but access the alternate library.</t>
 <t tx="ntallen.20100602103230.1295">I probably need a driver to arbitrate access to the serial device, though I can try to get away with the existing subbus library's arbitration scheme.
+
+First implemented driver to arbitrate access to the serial device, but it also helps solve the interrupt problem clearly and also makes the linking of applications unambiguous without playing games. There is only one libsubbus which communicates with the subbus driver. There can be multiple subbus drivers (and will be at least two), but any application that addresses the subbus will be able to operate using either without recompilation.
 </t>
 <t tx="ntallen.20100607110403.1299">Currently I can control cmdenbl and direction, which suggests that addresses are working,
 but I always read back zeros. Changing cmdenbl should produce a 0x8000 from the channel status
@@ -371,22 +397,42 @@ functions--doesn't even need to be configurable, really)
 </t>
 <t tx="ntallen.20100816115707.1318">In the firmware:
     DACS:
-        Collect BdIntr outputs from boards, or them and deliver expintr bit as output
-        Respond to INTA by writing expintr vector
+        System:
+            +Need ExpIntr Bit input: added to status
+        Syscon:
+            +Collect BdIntr outputs from boards, or them and deliver expintr bit as output
+            +Respond to INTA by writing expintr vector
+            +Provide INTA output
+            +extend test bench
+                +Test that reading from 0x40 generates INTA and Data_i shows BdIntr values
+                +Test that non-zero value on BdIntr generates non-zero value on ExpIntr
+            +Need to provide N_BOARDS generic and make ExpAck a vector
         extend test bench
     gxidx:
-        Add BdIntr output
-        extend test bench
+        +Add BdIntr output
+        +Add INTA input, pass through to channels
+        +extend test bench
         decode:
-            Add BdIntr output
-            Add Ireq Input vector
-            Add logic mapping Ireq vector to BdIntr
-            extend test bench
+            +Add Interrupt enable logic
+            +Add BdIntr output
+            +Add Ireq Input vector
+            +Add logic mapping Ireq vector to BdIntr
+            +Eliminate INTA output/decoding
+            +extend test bench
+            +Make base address GENERIC
         channel:
             +Add INTA input
             +Add Ireq output
-            extend test bench
+            +Add Running output
+            +extend test bench
         Intr:
-            Write test bench</t>
+            Write test bench: HDS doesn't like that--do it at channel level instead</t>
+<t tx="ntallen.20100823102718.1327"></t>
+<t tx="ntallen.20100824101804.1329">Generating doxygen documentation in source code.</t>
+<t tx="ntallen.20100827154528.1331">Make sure subbusd/serusb returns SBS_ACK and SBS_NACK status
+Interrupt functions should have a way to return to client on error without enqueuing command to serusb.
+Need to implement interrupt attach/detach functions
+Need to implement timeout and error returns
+</t>
 </tnodes>
 </leo_file>
