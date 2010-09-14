@@ -2,6 +2,7 @@
 #define SSP_INTR_H_INCLUDED
 
 #include "xmk.h"
+#include "sys/intr.h"
 #include "semaphore.h"
 #include "xparameters.h"
 #include "ssp_ad_scan_plbw.h"

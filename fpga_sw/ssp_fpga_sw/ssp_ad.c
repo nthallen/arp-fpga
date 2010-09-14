@@ -103,7 +103,7 @@ void* main_main(void* arg) {
   return &err_rv;
 }
 
-int sendfrags( int udp_socket, int *bfr, int total_size, int flags,
+int sendfrags( int udp_socket, unsigned int *bfr, int total_size, int flags,
         struct sockaddr *to, socklen_t tolen ) {
   int rc, bytes_remaining, word_offset = 0;
   int frag_size, frag_words;

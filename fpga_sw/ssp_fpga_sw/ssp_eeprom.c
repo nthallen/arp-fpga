@@ -48,7 +48,7 @@ static void Iic_SendHandler(void *CallBackRef, int ByteCount ) {
 /* Iic_Write() writes n_bytes of data from buf to the Iic device.
  * The first byte of buf is the address inside the device. */
 int Iic_Write( XIic *Iicp, unsigned char *rbuf, int n_bytes ) {
-	int rv, cnt = 0;
+	int rv;
   send_complete = 0;
   status_events = 0;
   rv = XIic_MasterSend( Iicp, rbuf, n_bytes );
@@ -72,35 +72,37 @@ int Iic_Write( XIic *Iicp, unsigned char *rbuf, int n_bytes ) {
 }
 
 // Deail with block boundaries
-int EE_Write( unsigned addr, unsigned char *rbuf, int n_bytes ) {
-	unsigned char pbuf[EE_PAGE_SIZE+1];
-	int rv;
-	
-  if ( addr > EE_TOTAL_SIZE ) return XST_FAILURE;
-  if ( addr + n_bytes > EE_TOTAL_SIZE ) n_bytes = EE_TOTAL_SIZE - addr;
-  rv = XIic_SetAddress( &Iic, XII_ADDR_TO_SEND_TYPE, ADDR_24LC04B +
-    (addr < EE_BLOCK_SIZE ? 0 : 1));
-  check_return( rv, "13", "XIic_SetAddress" );
-	while (n_bytes > 0) {
-		int i;
-		int p_bytes = EE_PAGE_SIZE - (addr & (EE_PAGE_SIZE-1));
-		if ( n_bytes < p_bytes ) p_bytes = n_bytes;
+#ifndef EE_READ_ONLY
+	int EE_Write( unsigned addr, unsigned char *rbuf, int n_bytes ) {
+		unsigned char pbuf[EE_PAGE_SIZE+1];
+		int rv;
 
-		pbuf[0] = addr & (EE_BLOCK_SIZE-1);
-		for ( i = 1; i <= p_bytes; i++ ) {
-			pbuf[i] = *rbuf++;
+	  if ( addr > EE_TOTAL_SIZE ) return XST_FAILURE;
+	  if ( addr + n_bytes > EE_TOTAL_SIZE ) n_bytes = EE_TOTAL_SIZE - addr;
+	  rv = XIic_SetAddress( &Iic, XII_ADDR_TO_SEND_TYPE, ADDR_24LC04B +
+		(addr < EE_BLOCK_SIZE ? 0 : 1));
+	  check_return( rv, "13", "XIic_SetAddress" );
+		while (n_bytes > 0) {
+			int i;
+			int p_bytes = EE_PAGE_SIZE - (addr & (EE_PAGE_SIZE-1));
+			if ( n_bytes < p_bytes ) p_bytes = n_bytes;
+	
+			pbuf[0] = addr & (EE_BLOCK_SIZE-1);
+			for ( i = 1; i <= p_bytes; i++ ) {
+				pbuf[i] = *rbuf++;
+			}
+			i = Iic_Write(&Iic, pbuf, p_bytes+1);
+			if ( i != XST_SUCCESS ) return i;
+			n_bytes -= p_bytes;
+			addr += p_bytes;
+		if ( n_bytes > 0 && addr == EE_BLOCK_SIZE ) {
+		  rv = XIic_SetAddress( &Iic, XII_ADDR_TO_SEND_TYPE, ADDR_24LC04B + 1 );
+		  check_return( rv, "131", "XIic_SetAddress" );
 		}
-		i = Iic_Write(&Iic, pbuf, p_bytes+1);
-		if ( i != XST_SUCCESS ) return i;
-		n_bytes -= p_bytes;
-		addr += p_bytes;
-    if ( n_bytes > 0 && addr == EE_BLOCK_SIZE ) {
-      rv = XIic_SetAddress( &Iic, XII_ADDR_TO_SEND_TYPE, ADDR_24LC04B + 1 );
-      check_return( rv, "131", "XIic_SetAddress" );
-    }
+		}
+		return XST_SUCCESS;
 	}
-	return XST_SUCCESS;
-}
+#endif
 
 static int EE_SetReadAddress( XIic *Iicp, unsigned char addr ) {
 	return Iic_Write( Iicp, &addr, 1 );
@@ -109,7 +111,7 @@ static int EE_SetReadAddress( XIic *Iicp, unsigned char addr ) {
 /* This needs to be expanded to deal with the two pages of memory and note the limited size of memory
  */
 int EE_Read( unsigned addr, unsigned char *rbuf, int n_bytes ) {
-	int rv, cnt = 0;
+	int rv;
   recv_complete = 0;
   status_events = 0;
   if ( addr > EE_TOTAL_SIZE ) return XST_FAILURE;
@@ -135,8 +137,8 @@ int EE_Read( unsigned addr, unsigned char *rbuf, int n_bytes ) {
 }
 
 int EE_Init(void) {
-	int cnt, i, rv;
-	unsigned char rbuf[RBUFSIZE+1];
+	int rv;
+	//unsigned char rbuf[RBUFSIZE+1];
 	
   rv = XIic_Initialize(&Iic, XPAR_IIC_EEPROM_DEVICE_ID );
   check_return( rv, "14", "XIic_Initialize" );
@@ -174,7 +176,7 @@ int EE_Init(void) {
 }
  
 // Fletcher16 checksum algorithm from http://en.wikipedia.org/wiki/Fletcher%27s_checksum
-static uint16_t fletcher16( uint8_t *data, size_t len ) {
+static uint16_t fletcher16( uint8_tn *data, size_t len ) {
   uint16_t sum1 = 0xff, sum2 = 0xff;
 
   while (len) {
@@ -207,7 +209,7 @@ int EE_ReadConfig( SSP_EE_Config_t *cfg ) {
   }
   rv = EE_Read( 0, (unsigned char *)cfg, cfg->hdr.n_bytes );
   if ( check_return( rv, "151", "EE_Read 2" ) ) return 1;
-  check = fletcher16( (uint8_t *)&cfg->version, cfg->hdr.n_bytes - sizeof(cfg->hdr));
+  check = fletcher16( (uint8_tn *)&cfg->version, cfg->hdr.n_bytes - sizeof(cfg->hdr));
   if ( check != cfg->hdr.checksum ) {
     status_set( 1, "123", "Invalid Checksum" );
     return 1;
@@ -215,14 +217,14 @@ int EE_ReadConfig( SSP_EE_Config_t *cfg ) {
   return 0;
 }
 
-static void store_IP4( uint8_t *addr, uint8_t a, uint8_t b, uint8_t c, uint8_t d ) {
+static void store_IP4( uint8_tn *addr, uint8_t a, uint8_t b, uint8_t c, uint8_t d ) {
   addr[0] = a;
   addr[1] = b;
   addr[2] = c;
   addr[3] = d;
 }
 
-static void store_mac( uint8_t *addr, uint8_t a, uint8_t b, uint8_t c,
+static void store_mac( uint8_tn *addr, uint8_t a, uint8_t b, uint8_t c,
                       uint8_t d, uint8_t e, uint8_t f ) {
   addr[0] = a;
   addr[1] = b;
@@ -248,7 +250,7 @@ void EE_DefaultConfig(SSP_EE_Config_t *cfg) {
   cfg->notes[0] = '\0';
   cfg->hdr.n_bytes = offsetof(SSP_EE_Config_t,notes) + 1;
   cfg->hdr.checksum =
-    fletcher16( (uint8_t *)&cfg->version, cfg->hdr.n_bytes - sizeof(cfg->hdr));
+    fletcher16( (uint8_tn *)&cfg->version, cfg->hdr.n_bytes - sizeof(cfg->hdr));
 }
 
 #ifndef EE_READ_ONLY

@@ -40,6 +40,7 @@ typedef struct {
 extern int EE_ReadConfig( SSP_EE_Config_t *cfg );
 extern int EE_WriteConfig( SSP_EE_Config_t *cfg );
 extern void EE_print_config( SSP_EE_Config_t *cfg, char *heading );
+extern void EE_DefaultConfig(SSP_EE_Config_t *cfg);
 extern SSP_EE_Config_t SSP_EE_Config;
 #define EE_READ_ONLY 1
 

@@ -2,12 +2,12 @@
 #define SSP_STATUS_H
 
 extern int status_init(void);
-extern void status_set( int clear, unsigned char *codes, char *reason);
-extern void status_error( unsigned char *codes );
+extern void status_set( int clear, char *codes, char *reason);
+extern void status_error( char *codes );
 extern unsigned int read_jp1(void);
-int report_error( unsigned char *codes, char *reason );
-int check_return( int rv, unsigned char *codes, char *where );
-int report_errno( unsigned char *codes, char *reason );
+int report_error( char *codes, char *reason );
+int check_return( int rv, char *codes, char *where );
+int report_errno( char *codes, char *reason );
 
 /*
   Status sequences:
