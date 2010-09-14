@@ -34,15 +34,13 @@
 
 #define MAX_STATUS_SETS 6
 #define MAX_ERROR_SETS 6
-static unsigned char *status_list[MAX_STATUS_SETS];
+static char *status_list[MAX_STATUS_SETS];
 static int n_status_sets = 0;
 static int cur_status_set = 0;
-static unsigned char *error_list[MAX_ERROR_SETS];
+static char *error_list[MAX_ERROR_SETS];
 static int n_error_sets = 0;
 static int cur_error_set = 0;
 static int cur_elt = 0;
-
-static unsigned char s_ready[] = { 1, 2, 4, 8, 0 };
 
 XGpio JP1, LED;
 
@@ -119,7 +117,7 @@ static void *status_thread(void *param) {
 #endif /* __XMK__ */
 
 int status_init(void) {
-  int rv;
+  // int rv;
   // initialize the GPIO hardware
 	XGpio_Initialize(&LED, XPAR_XPS_GPIO_1_DEVICE_ID );
 	XGpio_SetDataDirection(&LED, 1, 0 );
@@ -139,7 +137,7 @@ int status_init(void) {
 }
 
 /* if clear == 0, appends the specified codes */
-void status_set( int clear, unsigned char *codes, char *reason) {
+void status_set( int clear, char *codes, char *reason) {
   #ifdef __XMK__
     status_lock();
     if ( clear ) {
@@ -165,7 +163,7 @@ void status_set( int clear, unsigned char *codes, char *reason) {
   print_mutex_unlock();
 }
 
-void status_error( unsigned char *codes ) {
+void status_error( char *codes ) {
   #ifdef __XMK__
     status_lock();
     if ( n_error_sets < MAX_ERROR_SETS ) {
@@ -180,7 +178,7 @@ void status_error( unsigned char *codes ) {
 }
 
 // return non-zero if error reported
-int check_return( int rv, unsigned char *codes, char *where ) {
+int check_return( int rv, char *codes, char *where ) {
 	if ( rv != XST_SUCCESS ) {
     print_mutex_lock();
 		safe_printf(("Error from %s: %d\r\n", where, rv));
@@ -191,7 +189,7 @@ int check_return( int rv, unsigned char *codes, char *where ) {
   return 0;
 }
 
-int report_error( unsigned char *codes, char *reason ) {
+int report_error( char *codes, char *reason ) {
   status_error( codes );
   print_mutex_lock();
   safe_printf(("%s\r\n", reason));
@@ -199,7 +197,7 @@ int report_error( unsigned char *codes, char *reason ) {
   return 0;
 }
 
-int report_errno( unsigned char *codes, char *reason ) {
+int report_errno( char *codes, char *reason ) {
   status_error( codes );
   print_mutex_lock();
   safe_printf(("Error from %s: errno %d\r\n", reason, errno));

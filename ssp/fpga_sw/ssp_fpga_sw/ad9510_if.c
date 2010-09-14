@@ -221,14 +221,13 @@ static void ad9510_Write(XSpi *SpiPtr, Xuint16 dat)
     
 ****************************************************************************/
 void AD9510_Init(int ChEn, int divisor) {
-	  int ch;
-	  unsigned short div_code_0, div_code_1;
-    XSpi_Stats Stats;
+  int ch;
+  unsigned short div_code_0, div_code_1;
     
-    XSpi_ClearStats(&Spi);
-	  XStatus Status = XSpi_SetSlaveSelect(&Spi, AD9510_SS_ADDR);
-	  if ( check_return( Status, "624", "XSpi_SetSlaveSelect(AD9510_SS_ADDR)" ))
-	    return;
+  XSpi_ClearStats(&Spi);
+  XStatus Status = XSpi_SetSlaveSelect(&Spi, AD9510_SS_ADDR);
+  if ( check_return( Status, "624", "XSpi_SetSlaveSelect(AD9510_SS_ADDR)" ))
+	return;
 
     #ifdef SSP_PROTO_A
 	    if (ChEn) ChEn = 1;
