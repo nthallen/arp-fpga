@@ -1,0 +1,86 @@
+## Copyright (c) 1995-2007 Xilinx, Inc.  All rights reserved.
+
+## You may copy and modify these files for your own internal use solely with
+## Xilinx programmable logic devices and  Xilinx EDK system or create IP
+## modules solely for Xilinx programmable logic devices and Xilinx EDK system.
+## No rights are granted to distribute any files unless they are distributed in
+## Xilinx programmable logic devices.
+
+BEGIN ssp_ad_scan_plbw
+
+## Peripheral Options
+OPTION RUN_NGCBUILD = TRUE
+OPTION IMP_NETLIST = TRUE
+OPTION STYLE = MIX
+OPTION HDL = MIXED
+OPTION IPTYPE = PERIPHERAL
+OPTION LAST_UPDATED = 11.3i
+OPTION USAGE_LEVEL = BASE_USER
+OPTION ARCH_SUPPORT_MAP = ( others=DEVELOPMENT )
+
+## Bus Interfaces
+BUS_INTERFACE BUS = SPLB, BUS_STD = PLBV46, BUS_TYPE = SLAVE
+
+## Generics for VHDL or Parameters for Verilog
+PARAMETER C_BASEADDR = 0xffffffff, DT = std_logic_vector(0 to 31), BUS = SPLB, ADDRESS = BASE, PAIR = C_HIGHADDR, MIN_SIZE = 0x1000, ASSIGNMENT = REQUIRE
+PARAMETER C_HIGHADDR = 0x00000000, DT = std_logic_vector(0 to 31), BUS = SPLB, ADDRESS = HIGH, PAIR = C_BASEADDR, ASSIGNMENT = REQUIRE
+PARAMETER C_SPLB_AWIDTH = 32, DT = INTEGER, ASSIGNMENT = CONSTANT, BUS = SPLB
+PARAMETER C_SPLB_DWIDTH = 32, DT = INTEGER, BUS = SPLB
+PARAMETER C_SPLB_P2P = 0, DT = INTEGER, ASSIGNMENT = CONSTANT, BUS = SPLB
+PARAMETER C_SPLB_MID_WIDTH = 1, DT = INTEGER, BUS = SPLB
+PARAMETER C_SPLB_NUM_MASTERS = 1, DT = INTEGER, BUS = SPLB
+PARAMETER C_SPLB_SUPPORT_BURSTS = 0, DT = INTEGER, ASSIGNMENT = CONSTANT, BUS = SPLB
+PARAMETER C_SPLB_NATIVE_DWIDTH = 32, DT = INTEGER, ASSIGNMENT = CONSTANT, BUS = SPLB
+
+# Memory Map Information
+# From Registers
+# To Registers
+PARAMETER C_MEMMAP_CONTROL = 0x800, DT = integer, ASSIGNMENT = CONSTANT
+PARAMETER C_MEMMAP_CONTROL_N_BITS = 8, DT = integer, ASSIGNMENT = CONSTANT
+PARAMETER C_MEMMAP_CONTROL_BIN_PT = 0, DT = integer, ASSIGNMENT = CONSTANT
+PARAMETER C_MEMMAP_NAVG = 0x804, DT = integer, ASSIGNMENT = CONSTANT
+PARAMETER C_MEMMAP_NAVG_N_BITS = 8, DT = integer, ASSIGNMENT = CONSTANT
+PARAMETER C_MEMMAP_NAVG_BIN_PT = 0, DT = integer, ASSIGNMENT = CONSTANT
+PARAMETER C_MEMMAP_NETSAMPLES = 0x808, DT = integer, ASSIGNMENT = CONSTANT
+PARAMETER C_MEMMAP_NETSAMPLES_N_BITS = 12, DT = integer, ASSIGNMENT = CONSTANT
+PARAMETER C_MEMMAP_NETSAMPLES_BIN_PT = 0, DT = integer, ASSIGNMENT = CONSTANT
+PARAMETER C_MEMMAP_TRIGGERLEVEL = 0x80C, DT = integer, ASSIGNMENT = CONSTANT
+PARAMETER C_MEMMAP_TRIGGERLEVEL_N_BITS = 16, DT = integer, ASSIGNMENT = CONSTANT
+PARAMETER C_MEMMAP_TRIGGERLEVEL_BIN_PT = 0, DT = integer, ASSIGNMENT = CONSTANT
+PARAMETER C_MEMMAP_NCOADD = 0x810, DT = integer, ASSIGNMENT = CONSTANT
+PARAMETER C_MEMMAP_NCOADD_N_BITS = 14, DT = integer, ASSIGNMENT = CONSTANT
+PARAMETER C_MEMMAP_NCOADD_BIN_PT = 0, DT = integer, ASSIGNMENT = CONSTANT
+# From FIFOs
+PARAMETER C_MEMMAP_SRCSIGNAL = 0x400, DT = integer, ASSIGNMENT = CONSTANT 
+PARAMETER C_MEMMAP_SRCSIGNAL_PERCENTFULL = 0x404, DT = integer, ASSIGNMENT = CONSTANT 
+PARAMETER C_MEMMAP_SRCSIGNAL_EMPTY = 0x408, DT = integer, ASSIGNMENT = CONSTANT 
+PARAMETER C_MEMMAP_SRCSIGNAL_N_BITS = 32, DT = integer, ASSIGNMENT = CONSTANT 
+PARAMETER C_MEMMAP_SRCSIGNAL_BIN_PT = 0, DT = integer, ASSIGNMENT = CONSTANT 
+PARAMETER C_MEMMAP_SRCSIGNAL_DEPTH = 512, DT = integer, ASSIGNMENT = CONSTANT
+# To FIFOs
+# Shared RAMs
+
+# Ports (Export flow)
+PORT splb_clk = "", BUS = SPLB, SIGIS = CLK, DIR = IN
+PORT pa_0_out = "", VEC = [0:(29-1)], DIR = IN
+PORT pa_1_out = "", VEC = [0:(29-1)], DIR = IN
+PORT pa_2_out = "", VEC = [0:(29-1)], DIR = IN
+PORT plb_abus = plb_abus, VEC = [0:(32-1)], BUS = SPLB, DIR = IN
+PORT plb_pavalid = plb_pavalid, BUS = SPLB, DIR = IN
+PORT plb_rnw = plb_rnw, BUS = SPLB, DIR = IN
+PORT plb_wrdbus = plb_wrdbus, VEC = [0:(C_SPLB_DWIDTH-1)], BUS = SPLB, DIR = IN
+PORT splb_rst = "SPLB_Rst", SIGIS = RST, DIR = IN, BUS = SPLB
+PORT navg = "", VEC = [0:(8-1)], DIR = OUT
+PORT pa_re = "", VEC = [0:(3-1)], DIR = OUT
+PORT pa_reset = "", DIR = OUT
+PORT sl_addrack = sl_addrack, BUS = SPLB, DIR = OUT
+PORT sl_rdcomp = sl_rdcomp, BUS = SPLB, DIR = OUT
+PORT sl_rddack = sl_rddack, BUS = SPLB, DIR = OUT
+PORT sl_rddbus = sl_rddbus, VEC = [0:(C_SPLB_DWIDTH-1)], BUS = SPLB, DIR = OUT
+PORT sl_wait = sl_wait, BUS = SPLB, DIR = OUT
+PORT sl_wrcomp = sl_wrcomp, BUS = SPLB, DIR = OUT
+PORT sl_wrdack = sl_wrdack, BUS = SPLB, DIR = OUT
+PORT trigconfig = "", VEC = [0:(4-1)], DIR = OUT
+PORT triggerlevel = "", VEC = [0:(16-1)], DIR = OUT
+
+END

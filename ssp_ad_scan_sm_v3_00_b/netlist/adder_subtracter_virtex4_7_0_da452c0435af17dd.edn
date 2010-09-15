@@ -1,0 +1,235 @@
+(edif test (edifVersion 2 0 0) (edifLevel 0) (keywordMap (keywordLevel 0))
+(status (written (timeStamp 2008 4 3 14 18 20)
+   (author "Xilinx, Inc.")
+   (program "Xilinx CORE Generator" (version "Xilinx CORE Generator 9.2.03i; Cores Update # 2"))))
+   (comment "                                                                                
+      This file is owned and controlled by Xilinx and must be used              
+      solely for design, simulation, implementation and creation of             
+      design files limited to Xilinx devices or technologies. Use               
+      with non-Xilinx devices or technologies is expressly prohibited           
+      and immediately terminates your license.                                  
+                                                                                
+      XILINX IS PROVIDING THIS DESIGN, CODE, OR INFORMATION 'AS IS'             
+      SOLELY FOR USE IN DEVELOPING PROGRAMS AND SOLUTIONS FOR                   
+      XILINX DEVICES.  BY PROVIDING THIS DESIGN, CODE, OR INFORMATION           
+      AS ONE POSSIBLE IMPLEMENTATION OF THIS FEATURE, APPLICATION               
+      OR STANDARD, XILINX IS MAKING NO REPRESENTATION THAT THIS                 
+      IMPLEMENTATION IS FREE FROM ANY CLAIMS OF INFRINGEMENT,                   
+      AND YOU ARE RESPONSIBLE FOR OBTAINING ANY RIGHTS YOU MAY REQUIRE          
+      FOR YOUR IMPLEMENTATION.  XILINX EXPRESSLY DISCLAIMS ANY                  
+      WARRANTY WHATSOEVER WITH RESPECT TO THE ADEQUACY OF THE                   
+      IMPLEMENTATION, INCLUDING BUT NOT LIMITED TO ANY WARRANTIES OR            
+      REPRESENTATIONS THAT THIS IMPLEMENTATION IS FREE FROM CLAIMS OF           
+      INFRINGEMENT, IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS           
+      FOR A PARTICULAR PURPOSE.                                                 
+                                                                                
+      Xilinx products are not intended for use in life support                  
+      appliances, devices, or systems. Use in such applications are             
+      expressly prohibited.                                                     
+                                                                                
+      (c) Copyright 1995-2007 Xilinx, Inc.                                      
+      All rights reserved.                                                      
+                                                                                
+   ")
+   (comment "Core parameters: ")
+       (comment "c_has_bypass_with_cin = false ")
+       (comment "c_a_type = 1 ")
+       (comment "c_has_sclr = false ")
+       (comment "c_sync_priority = 1 ")
+       (comment "c_has_aset = false ")
+       (comment "c_has_b_out = false ")
+       (comment "c_has_s = true ")
+       (comment "c_has_q = false ")
+       (comment "InstanceName = adder_subtracter_virtex4_7_0_da452c0435af17dd ")
+       (comment "c_family = virtex4 ")
+       (comment "c_bypass_enable = false ")
+       (comment "c_b_constant = false ")
+       (comment "c_has_ovfl = false ")
+       (comment "c_high_bit = 1 ")
+       (comment "c_latency = 0 ")
+       (comment "c_sinit_val = 0 ")
+       (comment "c_has_bypass = false ")
+       (comment "c_pipe_stages = 1 ")
+       (comment "c_has_sset = false ")
+       (comment "c_has_ainit = false ")
+       (comment "c_has_a_signed = false ")
+       (comment "c_has_q_c_out = false ")
+       (comment "c_b_type = 1 ")
+       (comment "c_has_add = false ")
+       (comment "c_has_sinit = false ")
+       (comment "c_has_b_in = false ")
+       (comment "c_has_b_signed = false ")
+       (comment "c_bypass_low = false ")
+       (comment "c_enable_rlocs = true ")
+       (comment "c_b_value = 0 ")
+       (comment "c_add_mode = 0 ")
+       (comment "c_has_aclr = false ")
+       (comment "c_out_width = 2 ")
+       (comment "c_ainit_val = 00 ")
+       (comment "c_low_bit = 0 ")
+       (comment "c_has_q_ovfl = false ")
+       (comment "c_has_q_b_out = false ")
+       (comment "c_has_c_out = false ")
+       (comment "c_b_width = 2 ")
+       (comment "c_a_width = 2 ")
+       (comment "c_sync_enable = 0 ")
+       (comment "c_has_ce = true ")
+       (comment "c_has_c_in = true ")
+   (external xilinxun (edifLevel 0)
+      (technology (numberDefinition))
+       (cell VCC (cellType GENERIC)
+           (view view_1 (viewType NETLIST)
+               (interface
+                   (port P (direction OUTPUT))
+               )
+           )
+       )
+       (cell GND (cellType GENERIC)
+           (view view_1 (viewType NETLIST)
+               (interface
+                   (port G (direction OUTPUT))
+               )
+           )
+       )
+       (cell LUT4 (cellType GENERIC)
+           (view view_1 (viewType NETLIST)
+               (interface
+                   (port I0 (direction INPUT))
+                   (port I1 (direction INPUT))
+                   (port I2 (direction INPUT))
+                   (port I3 (direction INPUT))
+                   (port O (direction OUTPUT))
+               )
+           )
+       )
+       (cell MUXCY (cellType GENERIC)
+           (view view_1 (viewType NETLIST)
+               (interface
+                   (port DI (direction INPUT))
+                   (port CI (direction INPUT))
+                   (port S (direction INPUT))
+                   (port O (direction OUTPUT))
+               )
+           )
+       )
+       (cell XORCY (cellType GENERIC)
+           (view view_1 (viewType NETLIST)
+               (interface
+                   (port LI (direction INPUT))
+                   (port CI (direction INPUT))
+                   (port O (direction OUTPUT))
+               )
+           )
+       )
+   )
+(library test_lib (edifLevel 0) (technology (numberDefinition (scale 1 (E 1 -12) (unit Time))))
+(cell adder_subtracter_virtex4_7_0_da452c0435af17dd
+ (cellType GENERIC) (view view_1 (viewType NETLIST)
+  (interface
+   (port ( array ( rename A "A(1:0)") 2 ) (direction INPUT))
+   (port ( array ( rename B "B(1:0)") 2 ) (direction INPUT))
+   (port ( rename C_IN "C_IN") (direction INPUT))
+   (port ( array ( rename S "S(1:0)") 2 ) (direction OUTPUT))
+   )
+  (contents
+   (instance VCC (viewRef view_1 (cellRef VCC  (libraryRef xilinxun))))
+   (instance GND (viewRef view_1 (cellRef GND  (libraryRef xilinxun))))
+   (instance BU3
+      (viewRef view_1 (cellRef LUT4 (libraryRef xilinxun)))
+      (property RLOC (string "x0y0"))
+      (property INIT (string "6666"))
+   )
+   (instance BU4
+      (viewRef view_1 (cellRef MUXCY (libraryRef xilinxun)))
+      (property RLOC (string "x0y0"))
+   )
+   (instance BU5
+      (viewRef view_1 (cellRef XORCY (libraryRef xilinxun)))
+      (property RLOC (string "x0y0"))
+   )
+   (instance BU7
+      (viewRef view_1 (cellRef LUT4 (libraryRef xilinxun)))
+      (property RLOC (string "x0y0"))
+      (property INIT (string "6666"))
+   )
+   (instance BU8
+      (viewRef view_1 (cellRef XORCY (libraryRef xilinxun)))
+      (property RLOC (string "x0y0"))
+   )
+   (net N0
+    (joined
+      (portRef G (instanceRef GND))
+      (portRef I2 (instanceRef BU3))
+      (portRef I3 (instanceRef BU3))
+      (portRef I2 (instanceRef BU7))
+      (portRef I3 (instanceRef BU7))
+    )
+   )
+   (net N2
+    (joined
+      (portRef S (instanceRef BU4))
+      (portRef LI (instanceRef BU5))
+      (portRef O (instanceRef BU3))
+    )
+   )
+   (net N5
+    (joined
+      (portRef O (instanceRef BU4))
+      (portRef CI (instanceRef BU8))
+    )
+   )
+   (net N7
+    (joined
+      (portRef LI (instanceRef BU8))
+      (portRef O (instanceRef BU7))
+    )
+   )
+   (net (rename N11 "A(0)")
+    (joined
+      (portRef (member A 1))
+      (portRef DI (instanceRef BU4))
+      (portRef I0 (instanceRef BU3))
+    )
+   )
+   (net (rename N12 "A(1)")
+    (joined
+      (portRef (member A 0))
+      (portRef I0 (instanceRef BU7))
+    )
+   )
+   (net (rename N13 "B(0)")
+    (joined
+      (portRef (member B 1))
+      (portRef I1 (instanceRef BU3))
+    )
+   )
+   (net (rename N14 "B(1)")
+    (joined
+      (portRef (member B 0))
+      (portRef I1 (instanceRef BU7))
+    )
+   )
+   (net (rename N15 "C_IN")
+    (joined
+      (portRef C_IN)
+      (portRef CI (instanceRef BU4))
+      (portRef CI (instanceRef BU5))
+    )
+   )
+   (net (rename N16 "S(0)")
+    (joined
+      (portRef (member S 1))
+      (portRef O (instanceRef BU5))
+    )
+   )
+   (net (rename N17 "S(1)")
+    (joined
+      (portRef (member S 0))
+      (portRef O (instanceRef BU8))
+    )
+   )
+))))
+(design adder_subtracter_virtex4_7_0_da452c0435af17dd (cellRef adder_subtracter_virtex4_7_0_da452c0435af17dd (libraryRef test_lib))
+  (property X_CORE_INFO (string "C_ADDSUB_V7_0, Coregen 9.2.03i_ip2"))
+  (property PART (string "xc4vfx12-sf363-12") (owner "Xilinx")))
+)

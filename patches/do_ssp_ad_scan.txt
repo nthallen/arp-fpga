@@ -1,0 +1,13 @@
+#! /bin/bash
+function nl_error {
+  echo do_spp_ad_scan: $* >&2
+  exit 1
+}
+[ -d data -a -d src ] || nl_error This does not look like the right directory
+[ -f src/proc.templatec.bak -o -f src/proc.templateh.bak ] &&
+  nl_error I think you have already applied this patch
+cd data
+patch <../../patches/ssp_ad_scan_sm_tcl.patch
+cd ../src
+echo Patching src proc.template.[ch]
+perl -i.bak -pe 's/\*\*/*/' proc.template[ch]

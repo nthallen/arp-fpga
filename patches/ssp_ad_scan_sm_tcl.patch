@@ -1,0 +1,55 @@
+*** ssp_ad_scan_sm_v3_00_a/data/ssp_ad_scan_sm_v2_1_0.tcl	Mon Mar 10 21:50:27 2008
+--- ssp_ad_scan_sm_v3_00_b/data/ssp_ad_scan_sm_v2_1_0.tcl	Fri Apr  4 08:42:12 2008
+***************
+*** 39,47 ****
+      set hw_inst_name [lindex $listvars 0]
+      set ipver [lindex $listvars 1]
+      set pcorename [lindex $listvars 2]
+! 
+      if {$numinsts > 1} {
+! 	expand_Template_File "../../../pcores/${pcorename}_v${ipver}/doc/html/api/multipleindex.template" "../../../pcores/${pcorename}_v${ipver}/doc/html/api/index.html" $hw_inst_name $muldocstr "" $pcorename 1
+      }
+  }
+      
+--- 39,47 ----
+      set hw_inst_name [lindex $listvars 0]
+      set ipver [lindex $listvars 1]
+      set pcorename [lindex $listvars 2]
+!     set userrep "c:/edk_user_repository/MyProcessorIPLib"
+      if {$numinsts > 1} {
+! 	expand_Template_File "${userrep}/pcores/${pcorename}_v${ipver}/doc/html/api/multipleindex.template" "${userrep}/pcores/${pcorename}_v${ipver}/doc/html/api/index.html" $hw_inst_name $muldocstr "" $pcorename 1
+      }
+  }
+      
+***************
+*** 69,82 ****
+       expand_Template_File "src/proc.templateh" "src/${hw_inst_name}.h" $hw_inst_name $ws $rs $pcorename 0
+       expand_Template_File "src/proc.templatec" "src/${hw_inst_name}.c" $hw_inst_name $ws $rs $pcorename 0
+       expand_Template_File "src/Makefile" "src/Makefile" $hw_inst_name $ws $rs $pcorename 0
+      
+       # Inflate template htm api index file
+       # This code for HTML currently has a bug. HTML is customized for only 1 pcore. MemMap info is
+       # correct, but function prefix and #include info is inaccurate.
+       if {$numtotalinsts > 1} {
+! 	 expand_Template_File "../../../pcores/${pcorename}_v${ipver}/doc/html/api/index.template" "../../../pcores/${pcorename}_v${ipver}/doc/html/api/${hw_inst_name}_index.html" $hw_inst_name $ws $rs $pcorename 1
+       } else {
+! 	 expand_Template_File "../../../pcores/${pcorename}_v${ipver}/doc/html/api/index.template" "../../../pcores/${pcorename}_v${ipver}/doc/html/api/index.html" $hw_inst_name $ws $rs $pcorename 1
+       }
+     
+       return [list $hw_inst_name $ipver $pcorename]
+--- 69,83 ----
+       expand_Template_File "src/proc.templateh" "src/${hw_inst_name}.h" $hw_inst_name $ws $rs $pcorename 0
+       expand_Template_File "src/proc.templatec" "src/${hw_inst_name}.c" $hw_inst_name $ws $rs $pcorename 0
+       expand_Template_File "src/Makefile" "src/Makefile" $hw_inst_name $ws $rs $pcorename 0
++      set userrep "c:/edk_user_repository/MyProcessorIPLib"
+      
+       # Inflate template htm api index file
+       # This code for HTML currently has a bug. HTML is customized for only 1 pcore. MemMap info is
+       # correct, but function prefix and #include info is inaccurate.
+       if {$numtotalinsts > 1} {
+! 	 expand_Template_File "${userrep}/pcores/${pcorename}_v${ipver}/doc/html/api/index.template" "${userrep}/pcores/${pcorename}_v${ipver}/doc/html/api/${hw_inst_name}_index.html" $hw_inst_name $ws $rs $pcorename 1
+       } else {
+! 	 expand_Template_File "${userrep}/pcores/${pcorename}_v${ipver}/doc/html/api/index.template" "${userrep}/pcores/${pcorename}_v${ipver}/doc/html/api/index.html" $hw_inst_name $ws $rs $pcorename 1
+       }
+     
+       return [list $hw_inst_name $ipver $pcorename]

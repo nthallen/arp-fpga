@@ -1,0 +1,112 @@
+///////////////////////////////////////////////////////////////-*-C-*-
+//
+// Copyright (c) 2006 Xilinx, Inc.  All rights reserved.
+//
+// Xilinx, Inc.  XILINX IS PROVIDING THIS DESIGN, CODE, OR INFORMATION
+// "AS IS" AS  A COURTESY TO YOU.  BY PROVIDING  THIS DESIGN, CODE, OR
+// INFORMATION  AS  ONE   POSSIBLE  IMPLEMENTATION  OF  THIS  FEATURE,
+// APPLICATION OR  STANDARD, XILINX  IS MAKING NO  REPRESENTATION THAT
+// THIS IMPLEMENTATION  IS FREE FROM  ANY CLAIMS OF  INFRINGEMENT, AND
+// YOU ARE  RESPONSIBLE FOR OBTAINING  ANY RIGHTS YOU MAY  REQUIRE FOR
+// YOUR  IMPLEMENTATION.   XILINX  EXPRESSLY  DISCLAIMS  ANY  WARRANTY
+// WHATSOEVER  WITH RESPECT  TO  THE ADEQUACY  OF THE  IMPLEMENTATION,
+// INCLUDING BUT NOT LIMITED TO ANY WARRANTIES OR REPRESENTATIONS THAT
+// THIS IMPLEMENTATION  IS FREE  FROM CLAIMS OF  INFRINGEMENT, IMPLIED
+// WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
+// 
+//////////////////////////////////////////////////////////////////////
+
+#ifndef __<HWINST>_ssp_ad_scan_EDK_Processor__
+#define __<HWINST>_ssp_ad_scan_EDK_Processor__
+#include "fsl.h"
+
+// -- FSL definitions --
+#define <HWINST>_NPUT(val) nputfsl(val,<WRITESLOTID>);
+#define <HWINST>_NGET(val) ngetfsl(val,<READSLOTID>);
+#define <HWINST>_NPUT_WITHSTATUS(val,status) \
+  asm volatile ("nput %1, rfsl<WRITESLOTID>\naddic %0,r0,0" : "=d" (status) : "d" (val))
+#define <HWINST>_NGET_WITHSTATUS(val,status) \
+  asm volatile ("nget %0, rfsl<READSLOTID>\naddic %1,r0,0" : "=d" (val), "=d" (status))
+
+#define DATAINVALIDMASK 1<<2
+#define FSLERRMASK 1<<4
+#define GENERAL_FSL_ERROR (FSLERRMASK | DATAINVALIDMASK)
+
+// -- Control Word Encodings --
+#define SG_SINGLEWRITE (0<<28)
+#define SG_ARRAYWRITE (1<<28)
+#define SG_SINGLEREAD (2<<28)
+#define SG_ARRAYREAD (3<<28)
+#define SG_WRITESTATUSREG (4<<28)
+#define SG_SETCOUNTER (SG_WRITESTATUSREG | (0<<22))
+
+// -- Shared mem/reg/fifo bank location --
+#define <HWINST>_CONTROL (1<<20)
+#define <HWINST>_NAVG (1<<20)
+#define <HWINST>_NETSAMPLES (1<<20)
+#define <HWINST>_TRIGGERLEVEL (1<<20)
+#define <HWINST>_NCOADD (1<<20)
+#define <HWINST>_SRCSIGNAL (2<<20)
+#define CONTROL_SIGNAL_BANK 0
+#define REG_BANK  (1<<20)
+#define FIFO_BANK (2<<20)
+
+// -- bank0 sm2mm addresses --
+#define <HWINST>_SRCSIGNAL_PERCENTFULL (2 << 20) | 0
+#define <HWINST>_SRCSIGNAL_EMPTY (2 << 20) | 1
+
+// -- bank0 mm2sm addresses --
+
+// -- bank1 sm2mm addresses --
+#define <HWINST>_CONTROL_DOUT 0
+#define <HWINST>_NAVG_DOUT 1
+#define <HWINST>_NETSAMPLES_DOUT 2
+#define <HWINST>_TRIGGERLEVEL_DOUT 3
+#define <HWINST>_NCOADD_DOUT 4
+
+// -- bank1 mm2sm addresses --
+#define <HWINST>_CONTROL_DIN 0
+#define <HWINST>_NAVG_DIN 1
+#define <HWINST>_NETSAMPLES_DIN 2
+#define <HWINST>_TRIGGERLEVEL_DIN 3
+#define <HWINST>_NCOADD_DIN 4
+
+// -- bank2 sm2mm addresses --
+#define <HWINST>_SRCSIGNAL_DOUT 0
+
+// -- bank2 mm2sm addresses --
+
+// -- Block info --
+#define <HWINST>_CONTROL_BITSIZE 8
+#define <HWINST>_CONTROL_BITPT 0
+#define <HWINST>_CONTROL_ARITHTYPE 1
+#define <HWINST>_NAVG_BITSIZE 8
+#define <HWINST>_NAVG_BITPT 0
+#define <HWINST>_NAVG_ARITHTYPE 1
+#define <HWINST>_NETSAMPLES_BITSIZE 12
+#define <HWINST>_NETSAMPLES_BITPT 0
+#define <HWINST>_NETSAMPLES_ARITHTYPE 1
+#define <HWINST>_TRIGGERLEVEL_BITSIZE 16
+#define <HWINST>_TRIGGERLEVEL_BITPT 0
+#define <HWINST>_TRIGGERLEVEL_ARITHTYPE 2
+#define <HWINST>_NCOADD_BITSIZE 14
+#define <HWINST>_NCOADD_BITPT 0
+#define <HWINST>_NCOADD_ARITHTYPE 1
+#define <HWINST>_SRCSIGNAL_BITSIZE 32
+#define <HWINST>_SRCSIGNAL_BITPT 0
+#define <HWINST>_SRCSIGNAL_ARITHTYPE 1
+#define <HWINST>_SRCSIGNAL_DEPTH 512
+
+// -- Function protos --
+int <hwinst>_Write(unsigned int memName, unsigned int addr, unsigned int val);
+int <hwinst>_ArrayWrite(unsigned int memName, unsigned int startAddr,
+            unsigned int transferLength, const unsigned int* valBuf);
+int <hwinst>_Read(unsigned int memName,unsigned int addr,unsigned int* val);
+int <hwinst>_ArrayRead(unsigned int memName, unsigned int startAddr,
+            unsigned int transferLength, unsigned int* valBuf);
+unsigned int <hwinst>_getMaxRetry();
+void <hwinst>_setMaxRetry(unsigned int val);
+void <hwinst>_flushReadFIFO();
+#endif
+
+

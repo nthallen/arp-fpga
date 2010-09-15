@@ -1,0 +1,202 @@
+///////////////////////////////////////////////////////////////-*-C-*-
+//
+// Copyright (c) 2006 Xilinx, Inc.  All rights reserved.
+//
+// Xilinx, Inc.  XILINX IS PROVIDING THIS DESIGN, CODE, OR INFORMATION
+// "AS IS" AS  A COURTESY TO YOU.  BY PROVIDING  THIS DESIGN, CODE, OR
+// INFORMATION  AS  ONE   POSSIBLE  IMPLEMENTATION  OF  THIS  FEATURE,
+// APPLICATION OR  STANDARD, XILINX  IS MAKING NO  REPRESENTATION THAT
+// THIS IMPLEMENTATION  IS FREE FROM  ANY CLAIMS OF  INFRINGEMENT, AND
+// YOU ARE  RESPONSIBLE FOR OBTAINING  ANY RIGHTS YOU MAY  REQUIRE FOR
+// YOUR  IMPLEMENTATION.   XILINX  EXPRESSLY  DISCLAIMS  ANY  WARRANTY
+// WHATSOEVER  WITH RESPECT  TO  THE ADEQUACY  OF THE  IMPLEMENTATION,
+// INCLUDING BUT NOT LIMITED TO ANY WARRANTIES OR REPRESENTATIONS THAT
+// THIS IMPLEMENTATION  IS FREE  FROM CLAIMS OF  INFRINGEMENT, IMPLIED
+// WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
+// 
+//////////////////////////////////////////////////////////////////////
+
+#include "<hwinst>.h"
+#include "xparameters.h"
+
+static unsigned int <hwinst>_retryVal = 100;
+
+// ------------------------------
+// ------------------------------
+// --- Write functions        ---
+// ------------------------------
+
+int <hwinst>_Write(unsigned int memName, unsigned int addr, unsigned int val) {
+  // Write the address first -- NB add can overwrite mask. 
+  // Assert addr < (2^20)
+
+  int mask = (SG_SINGLEWRITE | (memName ^ addr));
+  #ifdef <HWINST>_SG_ENABLE_FSL_ERROR_CHECK
+  int fslstatus;
+  #endif
+
+  #ifdef <HWINST>_SG_ENABLE_FSL_ERROR_CHECK
+    <HWINST>_NPUT_WITHSTATUS(mask,fslstatus);
+    if (fslstatus) return -1;
+    <HWINST>_NPUT_WITHSTATUS(val,fslstatus);
+    if (fslstatus) return -2;
+  #else
+    <HWINST>_NPUT(mask);
+    <HWINST>_NPUT(val);
+  #endif
+  return 0;
+}
+
+
+int <hwinst>_ArrayWrite(unsigned int memName,unsigned int startAddr,
+            unsigned int transferLength, const unsigned int* valBuf){
+	int mask;
+	int regmask;
+	int itemCnt;
+	int	lp;
+	int bank;
+
+  #ifdef <HWINST>_SG_ENABLE_FSL_ERROR_CHECK
+  int fslstatus;
+  #endif
+
+  if (memName==FIFO_BANK){
+    // Array writes to bank 2, i.e. FIFOs, so no need for address counter.
+    mask = (SG_SINGLEWRITE | (memName ^ startAddr));
+  }
+  else {
+    mask = (SG_ARRAYWRITE | (memName ^ startAddr));
+  }
+  regmask = (SG_SETCOUNTER | transferLength);
+	
+  #ifdef <HWINST>_SG_ENABLE_FSL_ERROR_CHECK
+    <HWINST>_NPUT_WITHSTATUS(regmask,fslstatus);
+    if (fslstatus) return -1;
+    <HWINST>_NPUT_WITHSTATUS(mask,fslstatus);
+    if (fslstatus) return -2;
+  #else
+    <HWINST>_NPUT(regmask);
+    <HWINST>_NPUT(mask);
+  #endif
+
+  for (lp=0; lp<transferLength;) {
+    #ifdef <HWINST>_SG_ENABLE_FSL_ERROR_CHECK
+      <HWINST>_NPUT_WITHSTATUS(valBuf[lp],fslstatus);
+      if (fslstatus == 0) lp++; else break;
+    #else
+      <HWINST>_NPUT(valBuf[lp++]);
+    #endif
+  }
+  return lp;
+}
+
+
+// ------------------------------
+// ------------------------------
+// --- Read  functions        ---
+// ------------------------------
+
+int <hwinst>_Read(unsigned int memName,unsigned int addr,unsigned int* val){
+  int mask = (SG_SINGLEREAD | (memName ^ addr));
+  #ifdef <HWINST>_SG_ENABLE_POLLING_FSL_DRIVERS
+  unsigned int retry = 0;
+  #endif
+  #ifdef <HWINST>_SG_ENABLE_FSL_ERROR_CHECK
+  int fslstatus;
+  #endif
+
+  #ifdef <HWINST>_SG_ENABLE_FSL_ERROR_CHECK
+    <HWINST>_NPUT_WITHSTATUS(mask,fslstatus);
+    if (fslstatus) return -1;
+    #ifdef <HWINST>_SG_ENABLE_POLLING_FSL_DRIVERS
+    do {
+    #endif	 
+    <HWINST>_NGET_WITHSTATUS(*val,fslstatus);
+    #ifdef <HWINST>_SG_ENABLE_POLLING_FSL_DRIVERS
+    } while( (fslstatus!=0) && (retry++ < <hwinst>_getMaxRetry()));
+    #endif
+    if (fslstatus) return -2;
+  #else
+    <HWINST>_NPUT(mask);
+    asm("nop");
+    asm("nop");	 	
+    <HWINST>_NGET(*val);
+  #endif
+
+  return 0;
+}
+
+int <hwinst>_ArrayRead(unsigned int memName,unsigned int startAddr,
+            unsigned int transferLength, unsigned int** valBuf) {
+  int lp, mask, itemCnt;
+  #ifdef <HWINST>_SG_ENABLE_POLLING_FSL_DRIVERS
+  unsigned int retry = 0;
+  #endif
+  #ifdef <HWINST>_SG_ENABLE_FSL_ERROR_CHECK
+  int fslstatus;
+  #endif
+    
+  // -- Write transferLength to memmap
+  mask = (SG_WRITESTATUSREG | SG_SETCOUNTER | transferLength);
+  #ifdef <HWINST>_SG_ENABLE_FSL_ERROR_CHECK
+  <HWINST>_NPUT_WITHSTATUS(mask,fslstatus);
+  if (fslstatus) return -1;
+  #else
+  <HWINST>_NPUT(mask);
+  #endif
+	
+  if (memName == FIFO_BANK){
+    mask = (SG_SINGLEREAD | (memName ^ startAddr));
+  }
+  else{
+    // Write command for multiple reads with addr increment
+    mask = (SG_ARRAYREAD | (memName ^ startAddr));
+  }
+	
+	
+  #ifdef <HWINST>_SG_ENABLE_FSL_ERROR_CHECK
+  <HWINST>_NPUT_WITHSTATUS(mask,fslstatus);
+  if (fslstatus) return -2;
+  #else
+  <HWINST>_NPUT(mask);
+  #endif
+	
+  // -- copy results from FSL to buffer --
+  for (lp=0; lp<transferLength; ) {
+  #ifdef <HWINST>_SG_ENABLE_FSL_ERROR_CHECK
+  #ifdef <HWINST>_SG_ENABLE_POLLING_FSL_DRIVERS
+  do {
+  #endif
+  <HWINST>_NGET_WITHSTATUS(valBuf[lp], fslstatus);
+  #ifdef <HWINST>_SG_ENABLE_POLLING_FSL_DRIVERS
+  } while( (fslstatus!=0) && (retry++ < <hwinst>_getMaxRetry()));
+  #endif
+  if (fslstatus == 0) lp++; else break; 
+  #else
+  <HWINST>_NGET(valBuf[lp++]);
+  #endif
+  }
+ 
+  return lp;
+}
+
+
+// ------------------------------
+// ------------------------------
+// --- Retry  settings        ---
+// ------------------------------
+unsigned int <hwinst>_getMaxRetry() {
+   return <hwinst>_retryVal;
+}
+
+void <hwinst>_setMaxRetry(unsigned int val){
+   <hwinst>_retryVal = val;
+}
+
+void <hwinst>_flushReadFIFO() {
+   int fslstatus;
+   unsigned int *val;
+   do {	 
+    <HWINST>_NGET_WITHSTATUS(val,fslstatus);
+   } while (fslstatus==0);
+}

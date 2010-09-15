@@ -1,0 +1,25 @@
+#############################################################
+# Copyright (c) 1995-2007 Xilinx, Inc.  All rights reserved.
+# 
+# You may copy and modify these files for your own internal
+# use solely with Xilinx programmable logic devices and
+# Xilinx EDK system or create IP modules solely for Xilinx
+# programmable logic devices and Xilinx EDK system.
+# No rights are granted to distribute any files unless they
+# are distributed in Xilinx programmable logic devices.
+#
+# Microprocessor Driver Definition (MDD) file
+# created by System Generator
+# May 28, 2008 11:06:38 AM
+#############################################################
+
+OPTION psf_version = 2.1.0;
+
+BEGIN DRIVER ssp_ad_scan_sm_v3_00_b
+  PARAM name=SG_USEPOLLING, DEFAULT=false, DESC="Enable polling mode for software drivers. Polling mode drivers allow pcores clocked at a lower clock rate than the MicroBlaze to function correctly.", TYPE=bool, GUI_PERMIT = ALL_USERS;
+  OPTION supported_peripherals = (ssp_ad_scan_sm_v3_00_b);
+  OPTION driver_state = ACTIVE;
+  OPTION depends = (common_v1_00_a);
+  OPTION DESC = "ssp_ad_scan_sm";
+  OPTION copyfiles = all;
+END DRIVER
