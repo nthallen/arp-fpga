@@ -1,0 +1,36 @@
+June 12, 2008
+  Source code changes in this project:
+    Support manual fragmentation of large scans on output to support
+        use with NICs that cannot reassemble well
+    Replaced busy loop on ad9510 programming with semaphore.
+      Now should consider making the sem_wait() be timed to prevent
+        lockup
+    Removed yield() from udpThread after lowering priority
+    Updated verbosity to display network configuration. Also
+        eliminated some less useful messages.
+    Parametrized MAC Address and IP Address in terms of SSP_BOARD_ID,
+      which can be specified in build config.
+    Removed definition of SSP_PROTO_A from headers for better
+      compatability: Now define it in build config
+  
+  Source code changes in LwIP:
+    Added semaphore implementation for receive queue processing in
+      xemacliteif.c
+    Removed yield() from xadapater.c
+  
+  Configuration Changes:
+    Adjusted priorities of all threads
+      added -DTCPIP_THREAD_PRIO=2 to build config
+      defined main_main priority as 4 in SW Platform Settings
+        (must be greater than TCPIP_THREAD_PRIO)
+    Include other build options in build config
+      SSP_BOARD_ID
+      SSP_PROTO_A
+    Remove yield() from xilkernel config
+    Increased number of threads to 16 (probably overkill)
+      Need a minimum of 5 (probably plus one for idle?) then an
+      additional thread for each TCP connection. If they are
+      cleaned up efficiently, that's great, but I don't want
+      to lose communications because I've run out of threads.
+    Reduced thread stack size from 8000 to 6000 without any
+      apparent problems.
