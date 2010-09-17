@@ -233,10 +233,19 @@ void AD9510_Init(int ChEn, int divisor) {
 	    if (ChEn) ChEn = 1;
 	    ChEn &= 0x7;
 	  #else
-      // Channel 1 is always required to provide the clock to the trigger circuit
-      // Channel 6 is required to drive the QCLI
-      if (ChEn) ChEn |= 0x41;
-	    ChEn &= 0x67; // Channels 3, 4 & 7 are unused
+		#ifdef SSP_PMT_V1AP
+		  // A/Ds 1 & 2 are unused, so never start their clocks
+	      // Channel 5 is always required, both for PMT inputs and
+	      // the trigger circuit
+	      // Channel 6 is required for Clock out (e.g. to QCLI)
+		  if (ChEn) ChEn |= 0x60;
+		  ChEn &= 0x61; // channesl 1, 2, 3, 4 & 7 are unused
+		#else // SSP_V1A
+		  // Channel 0 is always required to provide the clock to the trigger circuit
+		  // Channel 6 is required to drive the QCLI
+		  if (ChEn) ChEn |= 0x41;
+		  ChEn &= 0x67; // Channels 3, 4 & 7 are unused
+		#endif
 	  #endif
 	  // AD9510 Serial Port Configuration leave as default
 	  // PLL section leave in default power-down mode
