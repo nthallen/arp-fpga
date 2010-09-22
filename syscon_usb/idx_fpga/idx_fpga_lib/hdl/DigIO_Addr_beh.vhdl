@@ -19,30 +19,32 @@ ENTITY DigIO_Addr IS
   PORT (
     Addr : IN std_logic_vector (15 DOWNTO 0);
     ConnEn : OUT std_ulogic_vector (N_CONNECTORS-1 DOWNTO 0);
-    PortEn : OUT std_ulogic_vector (9 DOWNTO 0);
+    PortEnLB : OUT std_ulogic_vector (3 DOWNTO 0);
+    PortEnHB : OUT std_ulogic_vector (3 DOWNTO 0);
+    RS : OUT std_ulogic;
     BdEn : OUT std_ulogic
   );
 END ENTITY DigIO_Addr;
 
 --
 ARCHITECTURE beh OF DigIO_Addr IS
-  alias Port1 is PortEn(0);
-  alias Port2 is PortEn(1);
-  alias Port3 is PortEn(2);
-  alias Port4 is PortEn(3);
-  alias Port5 is PortEn(4);
-  alias Port6 is PortEn(5);
-  alias CfgLB is PortEn(6);
-  alias CfgHB is PortEn(7);
-  alias Reset is PortEn(8);
-  alias CfgCN is PortEn(9);
+  alias Port1 is PortEnLB(0);
+  alias Port3 is PortEnLB(1);
+  alias Port5 is PortEnLB(2);
+  alias CfgLB is PortEnLB(3);
+  alias Port2 is PortEnHB(0);
+  alias Port4 is PortEnHB(1);
+  alias Port6 is PortEnHB(2);
+  alias CfgHB is PortEnHB(3);
 BEGIN
   addr_decode : Process (Addr)
     variable ConnEned : std_ulogic;
     variable PortEned : std_ulogic;
   begin
     ConnEn <= ( others => '0');
-    PortEn <= ( others => '0');
+    PortEnLB <= ( others => '0');
+    PortEnHB <= ( others => '0');
+    RS <= '0';
     ConnEned := '0';
     PortEned := '0';
     for Conn_Num in 0 to N_CONNECTORS-1 loop
@@ -95,10 +97,11 @@ BEGIN
         CfgHB <= '1';
         PortEned := '1';
       when "1100" =>
-        Reset <= '1';
+        RS <= '1';
         PortEned := '1';
       when "1101" =>
-        CfgCN <= '1';
+        -- CfgCN <= '1';
+        -- We'll ack, but nothing to do
         PortEned := '1';
       when others =>
     end case;
