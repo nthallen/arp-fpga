@@ -13,7 +13,7 @@ USE ieee.std_logic_arith.all;
 LIBRARY idx_fpga_lib;
 USE idx_fpga_lib.All;
 
-ENTITY Digio_Conn IS
+ENTITY DigIO_Conn IS
   -- Actually only half a connectore
   PORT (
     D : INOUT std_logic_vector (7 DOWNTO 0);
@@ -27,10 +27,10 @@ ENTITY Digio_Conn IS
     RA : IN std_ulogic;
     Clk : IN std_ulogic
   );
-END ENTITY Digio_Conn;
+END ENTITY DigIO_Conn;
 
 --
-ARCHITECTURE beh OF Digio_Conn IS
+ARCHITECTURE beh OF DigIO_Conn IS
    COMPONENT DigIO_Port
       PORT (
          D       : INOUT  std_logic_vector(7 DOWNTO 0);
