@@ -17,12 +17,8 @@ ENTITY Digio_Conn IS
   -- Actually only half a connectore
   PORT (
     D : INOUT std_logic_vector (7 DOWNTO 0);
-    IO1 : INOUT std_logic_vector (7 DOWNTO 0);
-    Dir1 : OUT std_logic;
-    IO2 : INOUT std_logic_vector (7 DOWNTO 0);
-    Dir2 : OUT std_logic;
-    IO3 : INOUT std_logic_vector (7 DOWNTO 0);
-    Dir3 : OUT std_logic;
+    IO : INOUT std_logic_vector (23 DOWNTO 0);
+    Dir : OUT std_logic_vector (2 DOWNTO 0);
     RdEn : IN std_ulogic;
     WrEn : IN std_ulogic;
     ConnEn : IN std_ulogic;
@@ -56,13 +52,13 @@ BEGIN
    Port1 : DigIO_Port
       PORT MAP (
          D       => D,
-         IO      => IO1,
+         IO      => IO(7 DOWNTO 0),
          ConnEn  => ConnEn,
          PortEn  => PortEn(0),
          RS      => RS,
          RA      => RA,
          Dir_In  => D(4),
-         Dir_Out => Dir1,
+         Dir_Out => Dir(0),
          CfgEn   => PortEn(3),
          WrEn    => WrEn,
          RdEn    => RdEn,
@@ -71,13 +67,13 @@ BEGIN
    Port2 : DigIO_Port
      PORT MAP (
         D       => D,
-        IO      => IO2,
+        IO      => IO(15 DOWNTO 8),
         ConnEn  => ConnEn,
         PortEn  => PortEn(1),
         RS      => RS,
         RA      => RA,
         Dir_In  => D(1),
-        Dir_Out => Dir2,
+        Dir_Out => Dir(1),
         CfgEn   => PortEn(3),
         WrEn    => WrEn,
         RdEn    => RdEn,
@@ -86,13 +82,13 @@ BEGIN
    Port3 : DigIO_Port
      PORT MAP (
         D       => D,
-        IO      => IO3,
+        IO      => IO(23 DOWNTO 16),
         ConnEn  => ConnEn,
         PortEn  => PortEn(2),
         RS      => RS,
         RA      => RA,
         Dir_In  => D(0),
-        Dir_Out => Dir3,
+        Dir_Out => Dir(2),
         CfgEn   => PortEn(3),
         WrEn    => WrEn,
         RdEn    => RdEn,
