@@ -70,15 +70,11 @@ ARCHITECTURE beh OF DigIO IS
          BdEn   : IN     std_ulogic
       );
    END COMPONENT;
-   COMPONENT Digo_Conn
+   COMPONENT DigIO_Conn
       PORT (
          D      : INOUT  std_logic_vector(7 DOWNTO 0);
-         IO1    : INOUT  std_logic_vector(7 DOWNTO 0);
-         Dir1   : OUT    std_logic;
-         IO2    : INOUT  std_logic_vector(7 DOWNTO 0);
-         Dir2   : OUT    std_logic;
-         IO3    : INOUT  std_logic_vector(7 DOWNTO 0);
-         Dir3   : OUT    std_logic;
+         IO     : INOUT  std_logic_vector(23 DOWNTO 0);
+         Dir    : OUT    std_logic_vector(2 DOWNTO 0);
          RdEn   : IN     std_ulogic;
          WrEn   : IN     std_ulogic;
          ConnEn : IN     std_ulogic;
@@ -90,7 +86,7 @@ ARCHITECTURE beh OF DigIO IS
    END COMPONENT;
    FOR ALL : DigIO_Addr USE ENTITY idx_fpga_lib.DigIO_Addr;
    FOR ALL : DigIO_decode USE ENTITY idx_fpga_lib.DigIO_decode;
-   FOR ALL : Digo_Conn USE ENTITY idx_fpga_lib.Digo_Conn;
+   FOR ALL : DigIO_Conn USE ENTITY idx_fpga_lib.DigIO_Conn;
 BEGIN
 
    Dig_Addr : DigIO_Addr
@@ -121,23 +117,24 @@ BEGIN
          BdEn   => BdEn
       );
 
---   for i in N_CONNECTORS-1 to 0 generate
---   instanceName : Digo_Conn
---      PORT MAP (
---         D      => iData,
---         IO1    => IO1,
---         Dir1   => Dir1,
---         IO2    => IO2,
---         Dir2   => Dir2,
---         IO3    => IO3,
---         Dir3   => Dir3,
---         RdEn   => RdEn,
---         WrEn   => WrEn,
---         ConnEn => ConnEn,
---         PortEn => PortEn,
---         RS     => RS,
---         RA     => rst,
---         Clk    => F8m
---      );
+   connectors : for i in N_CONNECTORS-1 to 0 generate
+   instanceName : DigIO_Conn
+      PORT MAP (
+         D      => iData,
+         IO1    => IO1,
+         Dir1   => Dir1,
+         IO2    => IO2,
+         Dir2   => Dir2,
+         IO3    => IO3,
+         Dir3   => Dir3,
+         RdEn   => RdEn,
+         WrEn   => WrEn,
+         ConnEn => ConnEn,
+         PortEn => PortEn,
+         RS     => RS,
+         RA     => rst,
+         Clk    => F8m
+      );
+    end generate;
 END ARCHITECTURE beh;
 
