@@ -37,7 +37,7 @@ BEGIN
   Begin
     if Clk'Event AND Clk = '1' then
       if RA = '1' OR ( RS = '1' AND ConnEn = '1') then
-        Dir <= '0';
+        Dir <= '1';
       elsif WrEn = '1' AND ConnEn = '1' AND CfgEn = '1' then
         Dir <= Dir_In;
       end if;
@@ -57,7 +57,7 @@ BEGIN
   
   IObuf : Process (Dir, Dout)
   Begin
-    if Dir = '1' then
+    if Dir = '0' then
       IO <= Dout;
     else IO <= (others => 'Z');
     end if;

@@ -103,7 +103,7 @@ BEGIN
     PortEn <= '0';
     RS <= '0';
     RA <= '0';
-    Dir_In <= '0';
+    Dir_In <= '1';
     CfgEn <= '0';
     WrEn <= '0';
     RdEn <= '0';
@@ -123,7 +123,7 @@ BEGIN
     
     -- configure for output
     CfgEn <= '1';
-    Dir_in <= '1';
+    Dir_in <= '0';
     wait until Clk'Event AND Clk = '1';
     wait for 10 ns;
     WrEn <= '1';
@@ -158,7 +158,7 @@ BEGIN
     end loop;
    
     -- configure for input
-    Dir_in <= '0';
+    Dir_in <= '1';
     CfgEn <= '1';
     wait until Clk'Event AND Clk = '1';
     WrEn <= '1';
@@ -187,7 +187,7 @@ BEGIN
     
     -- test asynch reset
     IO <= (others => 'Z');
-    Dir_in <= '1';
+    Dir_in <= '0';
     CfgEn <= '1';
     wait until Clk'Event AND Clk = '1';
     WrEn <= '1';

@@ -26,14 +26,14 @@ ENTITY DigIO IS
     ExpAck  : OUT    std_ulogic;
     F8M     : IN     std_ulogic;
     rst     : IN     std_ulogic;
-    IO : INOUT std_logic_vector( N_CONNECTORS*6*8-1 DOWNTO 0);
-    Dirs : OUT std_logic_vector( N_CONNECTORS*6-1 DOWNTO 0)
+    IO      : INOUT std_logic_vector( N_CONNECTORS*6*8-1 DOWNTO 0);
+    Dir     : OUT std_logic_vector( N_CONNECTORS*6-1 DOWNTO 0)
   );
 END ENTITY DigIO;
 
 --
 ARCHITECTURE beh OF DigIO IS
-   SIGNAL ConnEn   : std_ulogic_vector(1 DOWNTO 0);
+   SIGNAL ConnEn   : std_ulogic_vector(N_CONNECTORS-1 DOWNTO 0);
    SIGNAL PortEnLB : std_ulogic_vector(3 DOWNTO 0);
    SIGNAL PortEnHB : std_ulogic_vector(3 DOWNTO 0);
    SIGNAL RS       : std_ulogic;
@@ -96,7 +96,7 @@ BEGIN
       )
       PORT MAP (
          Addr     => Addr,
-         ConnEn   => ConnEn ,
+         ConnEn   => ConnEn,
          PortEnLB => PortEnLB,
          PortEnHB => PortEnHB,
          RS       => RS,
@@ -117,24 +117,33 @@ BEGIN
          BdEn   => BdEn
       );
 
-   connectors : for i in N_CONNECTORS-1 to 0 generate
-   instanceName : DigIO_Conn
+  connectors : for i in N_CONNECTORS-1 DOWNTO 0 generate
+    LowByte : DigIO_Conn
+       PORT MAP (
+          D      => iData(7 DOWNTO 0),
+          IO     => IO(i*48+23 DOWNTO i*48),
+          Dir    => Dir(i*6+2 DOWNTO i*6),
+          RdEn   => RdEn,
+          WrEn   => WrEn,
+          ConnEn => ConnEn(i),
+          PortEn => PortEnLB,
+          RS     => RS,
+          RA     => rst,
+          Clk    => F8m
+       );
+    HighByte : DigIO_Conn
       PORT MAP (
-         D      => iData,
-         IO1    => IO1,
-         Dir1   => Dir1,
-         IO2    => IO2,
-         Dir2   => Dir2,
-         IO3    => IO3,
-         Dir3   => Dir3,
-         RdEn   => RdEn,
-         WrEn   => WrEn,
-         ConnEn => ConnEn,
-         PortEn => PortEn,
-         RS     => RS,
-         RA     => rst,
-         Clk    => F8m
+        D      => iData(15 DOWNTO 8),
+        IO     => IO(i*48+47 DOWNTO i*48+24),
+        Dir    => Dir(i*6+5 DOWNTO i*6+3),
+        RdEn   => RdEn,
+        WrEn   => WrEn,
+        ConnEn => ConnEn(i),
+        PortEn => PortEnHB,
+        RS     => RS,
+        RA     => rst,
+        Clk    => F8m
       );
-    end generate;
+  end generate;
 END ARCHITECTURE beh;
 

@@ -164,15 +164,15 @@ BEGIN
     -- pragma synthesis_off
     wait for 40 ns;
     write_conn( X"00", "0000", '1', '0' );
-    check_out( "ZZZZZZZZ", "ZZZZZZZZ", "ZZZZZZZZ", "000" );
-    write_conn( X"13", "1000", '0', '0' );
-    check_out( X"00", X"00", X"00", "111" );
+    check_out( "ZZZZZZZZ", "ZZZZZZZZ", "ZZZZZZZZ", "111" );
+    write_conn( X"00", "1000", '0', '0' );
+    check_out( X"00", X"00", X"00", "000" );
     write_conn( X"55", "0001", '0', '0' );
-    check_out( X"55", X"00", X"00", "111" );
+    check_out( X"55", X"00", X"00", "000" );
     write_conn( X"AA", "0010", '0', '0' );
-    check_out( X"55", X"AA", X"00", "111" );
-    write_conn( X"12", "1000", '0', '0' );
-    check_out( X"55", X"AA", "ZZZZZZZZ", "011" );
+    check_out( X"55", X"AA", X"00", "000" );
+    write_conn( X"01", "1000", '0', '0' );
+    check_out( X"55", X"AA", "ZZZZZZZZ", "100" );
     IO(23 DOWNTO 16) <= X"37";
     check_in( "0100", X"37" );
     wait;
