@@ -121,23 +121,23 @@ BEGIN
          BdEn   => BdEn
       );
 
-   for i in N_CONNECTORS-1 to 0 generate
-   instanceName : Digo_Conn
-      PORT MAP (
-         D      => iData,
-         IO1    => IO1,
-         Dir1   => Dir1,
-         IO2    => IO2,
-         Dir2   => Dir2,
-         IO3    => IO3,
-         Dir3   => Dir3,
-         RdEn   => RdEn,
-         WrEn   => WrEn,
-         ConnEn => ConnEn,
-         PortEn => PortEn,
-         RS     => RS,
-         RA     => rst,
-         Clk    => F8m
-      );
+--   for i in N_CONNECTORS-1 to 0 generate
+--   instanceName : Digo_Conn
+--      PORT MAP (
+--         D      => iData,
+--         IO1    => IO1,
+--         Dir1   => Dir1,
+--         IO2    => IO2,
+--         Dir2   => Dir2,
+--         IO3    => IO3,
+--         Dir3   => Dir3,
+--         RdEn   => RdEn,
+--         WrEn   => WrEn,
+--         ConnEn => ConnEn,
+--         PortEn => PortEn,
+--         RS     => RS,
+--         RA     => rst,
+--         Clk    => F8m
+--      );
 END ARCHITECTURE beh;
 
