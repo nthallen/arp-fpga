@@ -11,7 +11,7 @@ LIBRARY ieee;
 USE ieee.std_logic_1164.all;
 USE ieee.std_logic_arith.all;
 LIBRARY idx_fpga_lib;
-USE idx_fpga_lib.All;
+-- USE idx_fpga_lib.All;
 
 ENTITY ctr_synch IS
   PORT (
@@ -31,16 +31,15 @@ END ENTITY ctr_synch;
 
 --
 ARCHITECTURE beh OF ctr_synch IS
-  SIGNAL Rd0 : std_ulogic;
-  SIGNAL RdEdge : std_ulogic;
-  SIGNAL Latch : std_ulogic;
-  SIGNAL Latch0 : std_ulogic;
+  SIGNAL Rd0       : std_ulogic;
+  SIGNAL RdEdge    : std_ulogic;
+  SIGNAL Latch     : std_ulogic;
+  SIGNAL Latch0    : std_ulogic;
   SIGNAL LatchEdge : std_ulogic;
-  SIGNAL RS : std_ulogic;
-  SIGNAL RSS_int : std_ulogic;
-  SIGNAL L2_int : std_ulogic;
-  SIGNAL clk       : std_logic;
+  SIGNAL RS        : std_ulogic;
   SIGNAL L2        : std_ulogic;
+  SIGNAL RSS_int   : std_ulogic;
+  SIGNAL L2_int    : std_ulogic;
   COMPONENT ctr_latch
      PORT (
         clk    : IN     std_logic;
@@ -63,8 +62,17 @@ ARCHITECTURE beh OF ctr_synch IS
         RS        : OUT    std_ulogic
      );
   END COMPONENT;
+  COMPONENT ctr_latchx4
+     PORT (
+        LatchX4 : IN     std_logic;
+        RS      : IN     std_logic;
+        clk     : IN     std_logic;
+        Latch   : OUT    std_logic
+     );
+  END COMPONENT;
   FOR ALL : ctr_latch USE ENTITY idx_fpga_lib.ctr_latch;
   FOR ALL : ctr_resynch USE ENTITY idx_fpga_lib.ctr_resynch;
+  FOR ALL : ctr_latchx4 USE ENTITY idx_fpga_lib.ctr_latchx4;
 BEGIN
   ctr_latch_i : ctr_latch
     PORT MAP (
@@ -75,6 +83,14 @@ BEGIN
       cnten  => CntEn,
       regen  => RegEn
     );
+  --  hds hds_inst
+  ctr_latchx4_i : ctr_latchx4
+     PORT MAP (
+        LatchX4 => Lx4En,
+        RS      => RS,
+        clk     => Clk,
+        Latch   => Latch
+     );
   --  hds hds_inst
   ctr_resynch_i : ctr_resynch
      PORT MAP (
@@ -88,20 +104,42 @@ BEGIN
         RS        => RS
      );
 
-  RdDelay : process (Clk) is
+  Delay : process (Clk) is
   Begin
     if Clk'Event and Clk = '1' then
       Rd0 <= RdEn;
+      Latch0 <= Latch;
       if RdEn = '1' and Rd0 /= '1' then
         RdEdge <= '1';
       else
         RdEdge <= '0';
+      end if;
+      if Latch = '1' and Latch0 /= '1' then
+        LatchEdge <= '1';
+      else
+        LatchEdge <= '0';
       end if;
     end if;
   End Process;
 
   Status : process (Clk) is
   Begin
+    if Clk'Event and Clk = '1' then
+      if rst = '1' then
+        L2Stat <= '0';
+        L2_int <= '0';
+        ResynchStat <= '0';
+        RSS_int <= '0';
+      elsif RdEdge = '1' and StatEn = '1' then
+        ResynchStat <= RSS_int;
+        L2Stat <= L2_int;
+        RSS_int <= '0';
+        L2_int <= '0';
+      elsif RS = '1' then
+        RSS_int <= '1';
+        L2_int <= L2;
+      end if;
+    end if;
   End Process;
 
 END ARCHITECTURE beh;
