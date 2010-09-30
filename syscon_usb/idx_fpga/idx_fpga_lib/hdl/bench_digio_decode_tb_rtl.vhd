@@ -38,7 +38,7 @@ ARCHITECTURE rtl OF bench_DigIO_decode IS
 
 
    -- Component declarations
-   COMPONENT DigIO_decode
+   COMPONENT subbus_io
       PORT (
          Data   : INOUT  std_logic_vector(15 DOWNTO 0);
          ExpRd  : IN     std_ulogic;
@@ -55,12 +55,12 @@ ARCHITECTURE rtl OF bench_DigIO_decode IS
 
    -- embedded configurations
    -- pragma synthesis_off
-   FOR DUT : DigIO_decode USE ENTITY idx_fpga_lib.DigIO_decode;
+   FOR DUT : subbus_io USE ENTITY idx_fpga_lib.subbus_io;
    -- pragma synthesis_on
 
 BEGIN
 
-   DUT : DigIO_decode
+   DUT : subbus_io
       PORT MAP (
          Data   => Data,
          ExpRd  => ExpRd,

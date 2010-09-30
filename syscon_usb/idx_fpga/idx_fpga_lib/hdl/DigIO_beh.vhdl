@@ -56,7 +56,7 @@ ARCHITECTURE beh OF DigIO IS
          BdEn     : OUT    std_ulogic
       );
    END COMPONENT;
-   COMPONENT DigIO_decode
+   COMPONENT subbus_io
       PORT (
          Data   : INOUT  std_logic_vector(15 DOWNTO 0);
          ExpRd  : IN     std_ulogic;
@@ -85,7 +85,7 @@ ARCHITECTURE beh OF DigIO IS
       );
    END COMPONENT;
    FOR ALL : DigIO_Addr USE ENTITY idx_fpga_lib.DigIO_Addr;
-   FOR ALL : DigIO_decode USE ENTITY idx_fpga_lib.DigIO_decode;
+   FOR ALL : subbus_io USE ENTITY idx_fpga_lib.subbus_io;
    FOR ALL : DigIO_Conn USE ENTITY idx_fpga_lib.DigIO_Conn;
 BEGIN
 
@@ -103,7 +103,7 @@ BEGIN
          BdEn     => BdEn
       );
 
-   Dig_decode : DigIO_decode
+   Dig_decode : subbus_io
       PORT MAP (
          Data   => Data,
          ExpRd  => ExpRd,

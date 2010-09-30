@@ -11,7 +11,7 @@ LIBRARY ieee;
 USE ieee.std_logic_1164.all;
 USE ieee.std_logic_arith.all;
 
-ENTITY DigIO_decode IS
+ENTITY subbus_io IS
 PORT( 
   Data    : INOUT  std_logic_vector (15 DOWNTO 0);
   ExpRd   : IN     std_ulogic;
@@ -33,10 +33,10 @@ PORT(
   -- WrEn is unqualified, for use with downstream enables
   -- BdEn is 1 when Addr selects an element
 
-END ENTITY DigIO_decode;
+END ENTITY subbus_io;
 
 --
-ARCHITECTURE beh OF DigIO_decode IS
+ARCHITECTURE beh OF subbus_io IS
   SIGNAL Wrote : std_ulogic;
   SIGNAL RdEn_int : std_ulogic;
   SIGNAL WrEn_int : std_ulogic;
