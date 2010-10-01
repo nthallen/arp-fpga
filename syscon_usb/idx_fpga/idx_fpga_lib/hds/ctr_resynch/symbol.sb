@@ -20,7 +20,7 @@ appVersion "2009.2 (Build 10)"
 model (Symbol
 commonDM (CommonDM
 ldm (LogicalDM
-suid 8,0
+suid 9,0
 usingSuid 1
 emptyRow *1 (LEmptyRow
 )
@@ -62,17 +62,6 @@ tm "EolColHdrMgr"
 *14 (LogPort
 port (LogicalPort
 decl (Decl
-n "BdEn"
-t "std_ulogic"
-o 1
-suid 1,0
-)
-)
-uid 109,0
-)
-*15 (LogPort
-port (LogicalPort
-decl (Decl
 n "LatchEdge"
 t "std_ulogic"
 o 2
@@ -81,7 +70,7 @@ suid 2,0
 )
 uid 111,0
 )
-*16 (LogPort
+*15 (LogPort
 port (LogicalPort
 decl (Decl
 n "RdEdge"
@@ -92,7 +81,7 @@ suid 3,0
 )
 uid 113,0
 )
-*17 (LogPort
+*16 (LogPort
 port (LogicalPort
 decl (Decl
 n "StatEn"
@@ -103,7 +92,7 @@ suid 4,0
 )
 uid 115,0
 )
-*18 (LogPort
+*17 (LogPort
 port (LogicalPort
 decl (Decl
 n "clk"
@@ -114,7 +103,7 @@ suid 5,0
 )
 uid 117,0
 )
-*19 (LogPort
+*18 (LogPort
 port (LogicalPort
 decl (Decl
 n "rst"
@@ -125,7 +114,7 @@ suid 6,0
 )
 uid 119,0
 )
-*20 (LogPort
+*19 (LogPort
 port (LogicalPort
 m 1
 decl (Decl
@@ -137,7 +126,7 @@ suid 7,0
 )
 uid 121,0
 )
-*21 (LogPort
+*20 (LogPort
 port (LogicalPort
 m 1
 decl (Decl
@@ -148,6 +137,17 @@ suid 8,0
 )
 )
 uid 123,0
+)
+*21 (LogPort
+port (LogicalPort
+decl (Decl
+n "CtrsEn"
+t "std_ulogic"
+o 1
+suid 9,0
+)
+)
+uid 579,0
 )
 ]
 )
@@ -201,51 +201,51 @@ uid 71,0
 )
 *27 (MRCItem
 litem &14
-pos 0
-dimension 20
-uid 108,0
-)
-*28 (MRCItem
-litem &15
 pos 1
 dimension 20
 uid 110,0
 )
-*29 (MRCItem
-litem &16
+*28 (MRCItem
+litem &15
 pos 2
 dimension 20
 uid 112,0
 )
-*30 (MRCItem
-litem &17
+*29 (MRCItem
+litem &16
 pos 3
 dimension 20
 uid 114,0
 )
-*31 (MRCItem
-litem &18
+*30 (MRCItem
+litem &17
 pos 4
 dimension 20
 uid 116,0
 )
-*32 (MRCItem
-litem &19
+*31 (MRCItem
+litem &18
 pos 5
 dimension 20
 uid 118,0
 )
-*33 (MRCItem
-litem &20
+*32 (MRCItem
+litem &19
 pos 6
 dimension 20
 uid 120,0
 )
-*34 (MRCItem
-litem &21
+*33 (MRCItem
+litem &20
 pos 7
 dimension 20
 uid 122,0
+)
+*34 (MRCItem
+litem &21
+pos 0
+dimension 20
+uid 578,0
 )
 ]
 )
@@ -516,19 +516,19 @@ value "C:\\HDS\\idx_fpga\\idx_fpga_lib\\hds\\ctr_resynch"
 )
 (vvPair
 variable "date"
-value "09/30/2010"
+value "10/ 1/2010"
 )
 (vvPair
 variable "day"
-value "Thu"
+value "Fri"
 )
 (vvPair
 variable "day_long"
-value "Thursday"
+value "Friday"
 )
 (vvPair
 variable "dd"
-value "30"
+value "01"
 )
 (vvPair
 variable "entity_name"
@@ -576,7 +576,7 @@ value "$HDS_PROJECT_DIR/idx_fpga_lib/work"
 )
 (vvPair
 variable "mm"
-value "09"
+value "10"
 )
 (vvPair
 variable "module_name"
@@ -584,11 +584,11 @@ value "ctr_resynch"
 )
 (vvPair
 variable "month"
-value "Sep"
+value "Oct"
 )
 (vvPair
 variable "month_long"
-value "September"
+value "October"
 )
 (vvPair
 variable "p"
@@ -652,7 +652,7 @@ value "symbol"
 )
 (vvPair
 variable "time"
-value "12:45:43"
+value "11:34:08"
 )
 (vvPair
 variable "unit"
@@ -687,50 +687,6 @@ optionalChildren [
 uid 8,0
 optionalChildren [
 *68 (CptPort
-uid 124,0
-ps "OnEdgeStrategy"
-shape (Triangle
-uid 125,0
-ro 90
-va (VaSet
-vasetType 1
-fg "0,65535,0"
-)
-xt "14250,6625,15000,7375"
-)
-tg (CPTG
-uid 126,0
-ps "CptPortTextPlaceStrategy"
-stg "VerticalLayoutStrategy"
-f (Text
-uid 127,0
-va (VaSet
-font "arial,8,0"
-)
-xt "16000,6500,18200,7500"
-st "BdEn"
-blo "16000,7300"
-tm "CptPortNameMgr"
-)
-)
-dt (MLText
-uid 128,0
-va (VaSet
-font "Courier New,8,0"
-)
-xt "44000,2000,61500,2800"
-st "BdEn      : IN     std_ulogic  ;"
-)
-thePort (LogicalPort
-decl (Decl
-n "BdEn"
-t "std_ulogic"
-o 1
-suid 1,0
-)
-)
-)
-*69 (CptPort
 uid 129,0
 ps "OnEdgeStrategy"
 shape (Triangle
@@ -763,7 +719,8 @@ va (VaSet
 font "Courier New,8,0"
 )
 xt "44000,2800,61500,3600"
-st "LatchEdge : IN     std_ulogic  ;"
+st "LatchEdge : IN     std_ulogic  ;
+"
 )
 thePort (LogicalPort
 decl (Decl
@@ -774,7 +731,7 @@ suid 2,0
 )
 )
 )
-*70 (CptPort
+*69 (CptPort
 uid 134,0
 ps "OnEdgeStrategy"
 shape (Triangle
@@ -807,7 +764,8 @@ va (VaSet
 font "Courier New,8,0"
 )
 xt "44000,3600,61500,4400"
-st "RdEdge    : IN     std_ulogic  ;"
+st "RdEdge    : IN     std_ulogic  ;
+"
 )
 thePort (LogicalPort
 decl (Decl
@@ -818,7 +776,7 @@ suid 3,0
 )
 )
 )
-*71 (CptPort
+*70 (CptPort
 uid 139,0
 ps "OnEdgeStrategy"
 shape (Triangle
@@ -851,7 +809,8 @@ va (VaSet
 font "Courier New,8,0"
 )
 xt "44000,4400,61500,5200"
-st "StatEn    : IN     std_ulogic  ;"
+st "StatEn    : IN     std_ulogic  ;
+"
 )
 thePort (LogicalPort
 decl (Decl
@@ -862,7 +821,7 @@ suid 4,0
 )
 )
 )
-*72 (CptPort
+*71 (CptPort
 uid 144,0
 ps "OnEdgeStrategy"
 shape (Triangle
@@ -895,7 +854,8 @@ va (VaSet
 font "Courier New,8,0"
 )
 xt "44000,5200,61000,6000"
-st "clk       : IN     std_logic  ;"
+st "clk       : IN     std_logic  ;
+"
 )
 thePort (LogicalPort
 decl (Decl
@@ -906,7 +866,7 @@ suid 5,0
 )
 )
 )
-*73 (CptPort
+*72 (CptPort
 uid 149,0
 ps "OnEdgeStrategy"
 shape (Triangle
@@ -939,7 +899,8 @@ va (VaSet
 font "Courier New,8,0"
 )
 xt "44000,6000,61000,6800"
-st "rst       : IN     std_logic  ;"
+st "rst       : IN     std_logic  ;
+"
 )
 thePort (LogicalPort
 decl (Decl
@@ -950,7 +911,7 @@ suid 6,0
 )
 )
 )
-*74 (CptPort
+*73 (CptPort
 uid 154,0
 ps "OnEdgeStrategy"
 shape (Triangle
@@ -984,7 +945,8 @@ va (VaSet
 font "Courier New,8,0"
 )
 xt "44000,6800,61500,7600"
-st "L2        : OUT    std_ulogic  ;"
+st "L2        : OUT    std_ulogic  ;
+"
 )
 thePort (LogicalPort
 m 1
@@ -996,7 +958,7 @@ suid 7,0
 )
 )
 )
-*75 (CptPort
+*74 (CptPort
 uid 159,0
 ps "OnEdgeStrategy"
 shape (Triangle
@@ -1030,7 +992,8 @@ va (VaSet
 font "Courier New,8,0"
 )
 xt "44000,7600,60500,8400"
-st "RS        : OUT    std_ulogic "
+st "RS        : OUT    std_ulogic 
+"
 )
 thePort (LogicalPort
 m 1
@@ -1039,6 +1002,51 @@ n "RS"
 t "std_ulogic"
 o 8
 suid 8,0
+)
+)
+)
+*75 (CptPort
+uid 580,0
+ps "OnEdgeStrategy"
+shape (Triangle
+uid 581,0
+ro 90
+va (VaSet
+vasetType 1
+fg "0,65535,0"
+)
+xt "14250,12625,15000,13375"
+)
+tg (CPTG
+uid 582,0
+ps "CptPortTextPlaceStrategy"
+stg "VerticalLayoutStrategy"
+f (Text
+uid 583,0
+va (VaSet
+font "arial,8,0"
+)
+xt "16000,12500,18800,13500"
+st "CtrsEn"
+blo "16000,13300"
+tm "CptPortNameMgr"
+)
+)
+dt (MLText
+uid 584,0
+va (VaSet
+font "Courier New,8,0"
+)
+xt "44000,2000,61500,2800"
+st "CtrsEn    : IN     std_ulogic  ;
+"
+)
+thePort (LogicalPort
+decl (Decl
+n "CtrsEn"
+t "std_ulogic"
+o 1
+suid 9,0
 )
 )
 )
@@ -1710,6 +1718,6 @@ xt "42000,0,42000,0"
 tm "SyDeclarativeTextMgr"
 )
 )
-lastUid 554,0
+lastUid 584,0
 activeModelName "Symbol:CDM"
 )

@@ -17,7 +17,7 @@ ENTITY ctr_synch IS
   PORT (
     RdEn : IN std_ulogic;
     StatEn : IN std_ulogic;
-    BdEn : IN std_ulogic;
+    CtrsEn : IN std_ulogic;
     Lx4En : IN std_ulogic;
     Clk : IN std_ulogic;
     rst : IN std_ulogic;
@@ -52,7 +52,7 @@ ARCHITECTURE beh OF ctr_synch IS
   END COMPONENT;
   COMPONENT ctr_resynch
      PORT (
-        BdEn      : IN     std_ulogic;
+        CtrsEn      : IN     std_ulogic;
         LatchEdge : IN     std_ulogic;
         RdEdge    : IN     std_ulogic;
         StatEn    : IN     std_ulogic;
@@ -94,7 +94,7 @@ BEGIN
   --  hds hds_inst
   ctr_resynch_i : ctr_resynch
      PORT MAP (
-        BdEn      => BdEn,
+        CtrsEn    => CtrsEn,
         LatchEdge => LatchEdge,
         RdEdge    => RdEdge,
         StatEn    => StatEn,

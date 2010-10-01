@@ -28,7 +28,7 @@ ARCHITECTURE rtl OF bench_ctr_resynch IS
    -- Architecture declarations
 
    -- Internal signal declarations
-   SIGNAL BdEn      : std_ulogic;
+   SIGNAL CtrsEn      : std_ulogic;
    SIGNAL clk       : std_logic;
    SIGNAL L2        : std_ulogic;
    SIGNAL LatchEdge : std_ulogic;
@@ -42,7 +42,7 @@ ARCHITECTURE rtl OF bench_ctr_resynch IS
    -- Component declarations
    COMPONENT ctr_resynch
       PORT (
-         BdEn      : IN     std_ulogic;
+         CtrsEn    : IN     std_ulogic;
          clk       : IN     std_logic;
          L2        : OUT    std_ulogic;
          LatchEdge : IN     std_ulogic;
@@ -62,7 +62,7 @@ BEGIN
   
    DUT_ctr_resynch : ctr_resynch
     PORT MAP (
-       BdEn      => BdEn,
+       CtrsEn    => CtrsEn,
        clk       => clk,
        L2        => L2,
        LatchEdge => LatchEdge,
@@ -105,12 +105,10 @@ BEGIN
       wait until clk'event and clk = '1';
       RdEdge <= '1';
       StatEn <= '1';
-      BdEn <= '1';
       wait until clk'event and clk = '1';
       -- pragma synthesis_on
       RdEdge <= '0';
       StatEn <= '0';
-      BdEn <= '0';
       return;
     end;
     
@@ -119,18 +117,18 @@ BEGIN
       -- pragma synthesis_off
       wait until clk'event and clk = '1';
       RdEdge <= '1';
-      BdEn <= '1';
+      CtrsEn <= '1';
       wait until clk'event and clk = '1';
       -- pragma synthesis_on
       RdEdge <= '0';
-      BdEn <= '0';
+      CtrsEn <= '0';
       return;
     end;
   Begin
     Done <= '0';
     LatchEdge <= '0';
     RdEdge <= '0';
-    BdEn <= '0';
+    CtrsEn <= '0';
     StatEn <= '0';
     rst <= '1';
     -- pragma synthesis_off

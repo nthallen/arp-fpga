@@ -27,7 +27,7 @@ ARCHITECTURE rtl OF bench_ctr_synch IS
    -- Internal signal declarations
    SIGNAL RdEn        : std_ulogic;
    SIGNAL StatEn      : std_ulogic;
-   SIGNAL BdEn        : std_ulogic;
+   SIGNAL CtrsEn        : std_ulogic;
    SIGNAL Lx4En       : std_ulogic;
    SIGNAL Clk         : std_ulogic;
    SIGNAL rst         : std_ulogic;
@@ -45,7 +45,7 @@ ARCHITECTURE rtl OF bench_ctr_synch IS
       PORT (
          RdEn        : IN     std_ulogic;
          StatEn      : IN     std_ulogic;
-         BdEn        : IN     std_ulogic;
+         CtrsEn        : IN     std_ulogic;
          Lx4En       : IN     std_ulogic;
          Clk         : IN     std_ulogic;
          rst         : IN     std_ulogic;
@@ -68,7 +68,7 @@ BEGIN
       PORT MAP (
          RdEn        => RdEn,
          StatEn      => StatEn,
-         BdEn        => BdEn,
+         CtrsEn        => CtrsEn,
          Lx4En       => Lx4En,
          Clk         => Clk,
          rst         => rst,
@@ -125,14 +125,12 @@ BEGIN
         wait until clk'event and clk = '1';
         RdEn <= '1';
         StatEn <= '1';
-        BdEn <= '1';
         wait until clk'event and clk = '1';
         wait until clk'event and clk = '1';
         wait until clk'event and clk = '1';
         -- pragma synthesis_on
         RdEn <= '0';
         StatEn <= '0';
-        BdEn <= '0';
         return;
       end;
       
@@ -141,20 +139,20 @@ BEGIN
         -- pragma synthesis_off
         wait until clk'event and clk = '1';
         RdEn <= '1';
-        BdEn <= '1';
+        CtrsEn <= '1';
         wait until clk'event and clk = '1';
         wait until clk'event and clk = '1';
         wait until clk'event and clk = '1';
         -- pragma synthesis_on
         RdEn <= '0';
-        BdEn <= '0';
+        CtrsEn <= '0';
         return;
       end;
   Begin
     Done <= '0';
     RdEn <= '0';
     StatEn  <= '0';
-    BdEn    <= '0';
+    CtrsEn    <= '0';
     rst     <= '1';
     -- pragma synthesis_off
     wait for 300 ns;

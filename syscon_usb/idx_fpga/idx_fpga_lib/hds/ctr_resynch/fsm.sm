@@ -73,19 +73,19 @@ value "C:\\HDS\\idx_fpga\\idx_fpga_lib\\hds\\ctr_resynch"
 )
 (vvPair
 variable "date"
-value "09/30/2010"
+value "10/ 1/2010"
 )
 (vvPair
 variable "day"
-value "Thu"
+value "Fri"
 )
 (vvPair
 variable "day_long"
-value "Thursday"
+value "Friday"
 )
 (vvPair
 variable "dd"
-value "30"
+value "01"
 )
 (vvPair
 variable "entity_name"
@@ -133,7 +133,7 @@ value "$HDS_PROJECT_DIR/idx_fpga_lib/work"
 )
 (vvPair
 variable "mm"
-value "09"
+value "10"
 )
 (vvPair
 variable "module_name"
@@ -141,11 +141,11 @@ value "ctr_resynch"
 )
 (vvPair
 variable "month"
-value "Sep"
+value "Oct"
 )
 (vvPair
 variable "month_long"
-value "September"
+value "October"
 )
 (vvPair
 variable "p"
@@ -209,7 +209,7 @@ value "fsm"
 )
 (vvPair
 variable "time"
-value "12:45:43"
+value "11:34:08"
 )
 (vvPair
 variable "unit"
@@ -2002,8 +2002,7 @@ arrow 1
 start &2
 end &20
 ss 0
-cond "(RdEdge = '1' AND
-  BdEn = '1' AND StatEn /= '1' )
+cond "(RdEdge = '1' AND CtrsEn = '1'  )
 OR LatchEdge = '1'"
 tb (TransitionBlock
 uid 238,0
@@ -2016,7 +2015,7 @@ fg "65535,65535,65535"
 bg "0,0,0"
 lineColor "0,32768,49152"
 )
-xt "26230,12686,39030,16686"
+xt "26230,12686,40130,15686"
 )
 autoResize 1
 lineShape (Line
@@ -2036,9 +2035,8 @@ uid 241,0
 va (VaSet
 font "arial,8,0"
 )
-xt "26730,13186,38530,16186"
-st "(RdEdge = '1' AND
-  BdEn = '1' AND StatEn /= '1' )
+xt "26730,13186,39630,15186"
+st "(RdEdge = '1' AND CtrsEn = '1'  )
 OR LatchEdge = '1'"
 tm "Condition"
 )
@@ -2047,7 +2045,7 @@ uid 242,0
 va (VaSet
 font "arial,8,0"
 )
-xt "32630,16586,32630,16586"
+xt "33180,15586,33180,15586"
 tm "Actions"
 )
 )
@@ -2921,8 +2919,8 @@ tm "SmCompilerDirectivesTextMgr"
 ]
 associable 1
 )
-windowSize "126,274,1146,964"
-viewArea "-500,2840,71500,49010"
+windowSize "126,274,1147,964"
+viewArea "-500,2800,71590,51490"
 cachedDiagramExtent "0,-1000,69750,49000"
 hasePageBreakOrigin 1
 pageBreakOrigin "0,-2000"
@@ -3240,7 +3238,7 @@ stateOrder [
 name "csm"
 )
 ]
-lastUid 487,0
+lastUid 516,0
 commonDM (CommonDM
 ldm (LogicalDM
 emptyRow *62 (LEmptyRow
@@ -3301,7 +3299,7 @@ tm "SmEolColHdrMgr"
 *81 (LeafLogPort
 port (LogicalPort
 decl (Decl
-n "BdEn"
+n "CtrsEn"
 t "std_ulogic"
 o 6
 )
