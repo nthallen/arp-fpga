@@ -13,7 +13,7 @@ USE ieee.std_logic_arith.all;
 
 ENTITY ctr_lx4gen IS
   GENERIC (
-    PRE_DIVISOR : unsigned (19 DOWNTO 0) := X"1E848"
+    PRE_DIVISOR : unsigned (19 DOWNTO 0) := X"1E847"
   );
   PORT (
     F8M : IN std_ulogic;
@@ -68,6 +68,8 @@ BEGIN
           TrimCount <= TrimCount - 1;
           Lx4En <= '0';
         end if;
+      else
+        Lx4En <= '0';
       end if;
     end if;
   End Process;
