@@ -116,7 +116,7 @@ ENTITY ctr_ungated IS
    END COMPONENT;
    COMPONENT ctr_lx4gen
       GENERIC (
-         PRE_DIVISOR : unsigned (16 DOWNTO 0) := X"1E848"
+         PRE_DIVISOR : unsigned (19 DOWNTO 0) := X"1E848"
       );
       PORT (
          F8M     : IN     std_ulogic;
@@ -176,7 +176,7 @@ BEGIN
       );
    ctr_lx4gen_i : ctr_lx4gen
       GENERIC MAP (
-         PRE_DIVISOR => X"1E848"
+         PRE_DIVISOR => X"1E847"
       )
       PORT MAP (
          F8M     => F8M,
@@ -230,7 +230,9 @@ BEGIN
     DivReg : Process (F8M) is
     Begin
       if F8M'Event and F8M = '1' then
-        if WrEn = '1' and StatEn = '1' then
+        if rst = '1' then
+          Divisor <= X"F";
+        elsif WrEn = '1' and StatEn = '1' then
           Divisor <= unsigned(iData(11 DOWNTO 8));
         end if;
       end if;

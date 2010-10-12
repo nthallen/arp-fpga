@@ -43,6 +43,7 @@ ARCHITECTURE rtl OF bench_ctr_ugctr IS
    SIGNAL LatchX4 : std_logic;
    SIGNAL RS      : std_logic;
    SIGNAL Latch   : std_logic;
+   SIGNAL Period  : unsigned(19 DOWNTO 0);
    SIGNAL Done    : std_ulogic;
 
 
@@ -118,7 +119,7 @@ BEGIN
          OVF    => OVF,
          OVF16  => OVF16
       );
-   --  hds hds_inst
+
    lxrgen_i : ctr_lx4gen
       GENERIC MAP (
          PRE_DIVISOR => X"1E847"
@@ -129,7 +130,7 @@ BEGIN
          rst     => rst,
          Lx4En   => Lx4En
       );
-   --  hds hds_inst
+
    latch_i : ctr_latch
       PORT MAP (
          clk    => F8M,
@@ -139,7 +140,7 @@ BEGIN
          cnten  => CntEn,
          regen  => RegEn
       );
-   --  hds hds_inst
+
    latchx4_i : ctr_latchx4
       PORT MAP (
          LatchX4 => Lx4En,
@@ -163,16 +164,41 @@ BEGIN
       -- pragma synthesis_on
     End Process;
     
-    pmt_pluses : Process
+    pmt_pulses : Process
+      Variable cumdelay : unsigned(19 DOWNTO 0);
     Begin
       PMT <= '0';
       -- pragma synthesis_off
-      wait for 40 ns;
+      wait for 400 ns;
       while Done = '0' loop
+        -- This first section is tweaked to synchronize
+        -- the first pulse with the very start of the
+        -- integration period.
+        if RegEn = '1' OR CntClr = '1' then
+          wait until RegEn = '0' AND CntClr = '0';
+        end if;
+        wait for 5 ns;
         PMT <= '1';
         wait for 5 ns;
         PMT <= '0';
-        wait for 99995 ns; -- 10000 Hz
+        
+        -- Now a kluge to wait for a programmed amount of
+        -- time. Extra code to break out of these loops
+        -- when RegEn goes high so the next integration
+        -- period will start cleanly.
+        cumdelay := conv_unsigned(10,20);
+        while cumdelay+500 <= Period and RegEn = '0' loop
+          wait until RegEn = '1' for 500 ns;
+          cumdelay := cumdelay+500;
+        end loop;
+        while cumdelay+50 <= Period and RegEn = '0' loop
+          wait until RegEn = '1' for 50 ns;
+          cumdelay := cumdelay+50;
+        end loop;
+        while cumdelay+5 <= Period and RegEn = '0' loop
+          wait until RegEn = '1' for 5 ns;
+          cumdelay := cumdelay+5;
+        end loop;
       end loop;
       wait;
       -- pragma synthesis_on
@@ -180,14 +206,63 @@ BEGIN
     
    
     test_proc : Process
+      procedure confirm_count( low_byte : integer;
+          high_byte : integer;
+          ovf16_val : std_ulogic;
+          ovf_val : std_ulogic ) is
+      Begin
+        wait for 1000 ns;
+        assert Data = conv_std_logic_vector(low_byte,16)
+          report "Low byte incorrect" severity error;
+        HW_En <= '1';
+        wait for 1000 ns;
+        assert Data = conv_std_logic_vector(high_byte,16)
+          report "High byte incorrect" severity error;
+        HW_En <= '0';
+      End Procedure confirm_count;
+      
+      procedure confirm( cnt : integer ) is
+        Variable full_cnt : integer;
+        Variable low_word : integer;
+        Variable high_word : integer;
+        Variable ovf16 : std_ulogic;
+        Variable ovf : std_ulogic;
+      Begin
+        if cnt >= 2**20 then
+          ovf := '1';
+        else
+          ovf := '0';
+        end if;
+        full_cnt := cnt mod 2**20;
+        if full_cnt >= 2**16 then
+          ovf16 := '1';
+        else
+          ovf16 := '0';
+        end if;
+        high_word := full_cnt / 2**16;
+        low_word := full_cnt mod 2**16;
+        confirm_count( low_word, high_word, ovf16, ovf );
+      End Procedure confirm;
+
     Begin
       Done <= '0';
       Divisor <= X"F";
+      HW_En <= '0';
       rst <= '1';
+      Period <= conv_unsigned(100000,20); --10000 Hz
       -- pragma synthesis_off
       wait for 300 ns;
       rst <= '0';
-      wait for 4000 ms;
+      wait until RegEn'Event and RegEn = '1';
+      wait until RegEn'Event and RegEn = '1';
+      Period <= conv_unsigned(10000,20); --100000 Hz
+      confirm(10000);
+      wait until RegEn'Event and RegEn = '1';
+      Period <= conv_unsigned(500,20); -- 2 MHz
+      confirm(100000);
+      wait until RegEn'Event and RegEn = '1';
+      confirm(2000000);
+      wait for 1000 ns;
       Done <= '1';
       wait;
       -- pragma synthesis_on

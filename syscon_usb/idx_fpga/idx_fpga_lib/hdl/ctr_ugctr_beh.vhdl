@@ -53,7 +53,9 @@ BEGIN
               is_ovf := '0';
             end if;
           end loop;
-          OVF_reg <= is_ovf;
+          if is_ovf = '1' then
+            OVF_reg <= '1';
+          end if;
         end if;
       end if;
     end if;
