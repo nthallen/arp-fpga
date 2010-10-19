@@ -88,19 +88,19 @@ BEGIN
     Procedure check(DI : IN std_ulogic_vector(15 DOWNTO 0)) IS
       -- pragma synthesis_off
       Variable BN : integer;
-      -- pragma sysnthesis_on
+      -- pragma synthesis_on
     Begin
-      BN := 16;
       Start <= '1';
-      -- pragma syntheses_off
+      -- pragma synthesis_off
+      BN := 16;
       while BN > 0 loop
         wait until SCK'Event AND SCK = '1';
         Start <= '0';
         BN := BN-1;
         SDI <= DI(BN);
       end loop;
-      wait until RDY = '1';
-      wait until CLK'Event AND CLK = '1';
+      assert RDY = '1' report "RDY should be high" severity error;
+      wait until SCK'Event AND SCK = '1';
       wait until CLK'Event AND CLK = '1';
       assert DO = DI report "Read value incorrect" severity error;
       -- pragma synthesis_on

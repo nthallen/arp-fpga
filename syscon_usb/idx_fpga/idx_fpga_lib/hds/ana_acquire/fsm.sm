@@ -73,19 +73,19 @@ value "C:\\HDS\\idx_fpga\\idx_fpga_lib\\hds\\ana_acquire"
 )
 (vvPair
 variable "date"
-value "10/18/2010"
+value "10/19/2010"
 )
 (vvPair
 variable "day"
-value "Mon"
+value "Tue"
 )
 (vvPair
 variable "day_long"
-value "Monday"
+value "Tuesday"
 )
 (vvPair
 variable "dd"
-value "18"
+value "19"
 )
 (vvPair
 variable "entity_name"
@@ -209,7 +209,7 @@ value "fsm"
 )
 (vvPair
 variable "time"
-value "11:07:57"
+value "16:10:15"
 )
 (vvPair
 variable "unit"
@@ -302,14 +302,13 @@ shape (Rectangle
 uid 48,0
 va (VaSet
 vasetType 1
-transparent 1
+isHidden 1
 fg "65535,65535,65535"
 bg "0,0,0"
 lineColor "39936,56832,65280"
-lineWidth -1
-fillStyle 1
+lineWidth 2
 )
-xt "13730,4740,18730,5940"
+xt "16130,5240,16330,5440"
 )
 autoResize 1
 tline (Line
@@ -318,7 +317,7 @@ va (VaSet
 vasetType 3
 isHidden 1
 lineColor "39936,56832,65280"
-lineWidth -1
+lineWidth 2
 )
 xt "13830,4640,18630,4640"
 pts [
@@ -332,7 +331,7 @@ va (VaSet
 vasetType 3
 isHidden 1
 lineColor "39936,56832,65280"
-lineWidth -1
+lineWidth 2
 )
 xt "13830,3990,18630,3990"
 pts [
@@ -351,7 +350,7 @@ bg "0,0,0"
 lineColor "39936,56832,65280"
 lineWidth -1
 )
-xt "13380,4265,13730,4615"
+xt "11780,4265,12130,4615"
 )
 btri (Triangle
 uid 52,0
@@ -364,7 +363,7 @@ bg "0,0,0"
 lineColor "39936,56832,65280"
 lineWidth -1
 )
-xt "13380,1965,13730,2315"
+xt "11780,1965,12130,2315"
 )
 entryActions (MLText
 uid 53,0
@@ -380,7 +379,6 @@ va (VaSet
 font "arial,8,0"
 )
 xt "13830,4840,18630,5840"
-st "Start <= '0';"
 tm "Actions"
 )
 exitActions (MLText
@@ -1476,14 +1474,13 @@ shape (Rectangle
 uid 256,0
 va (VaSet
 vasetType 1
-transparent 1
+isHidden 1
 fg "65535,65535,65535"
 bg "0,0,0"
 lineColor "39936,56832,65280"
-lineWidth -1
-fillStyle 1
+lineWidth 2
 )
-xt "34920,25770,41020,26970"
+xt "37870,26270,38070,26470"
 )
 autoResize 1
 tline (Line
@@ -1492,7 +1489,7 @@ va (VaSet
 vasetType 3
 isHidden 1
 lineColor "39936,56832,65280"
-lineWidth -1
+lineWidth 2
 )
 xt "35020,25670,40920,25670"
 pts [
@@ -1506,7 +1503,7 @@ va (VaSet
 vasetType 3
 isHidden 1
 lineColor "39936,56832,65280"
-lineWidth -1
+lineWidth 2
 )
 xt "35020,25020,40920,25020"
 pts [
@@ -1525,7 +1522,7 @@ bg "0,0,0"
 lineColor "39936,56832,65280"
 lineWidth -1
 )
-xt "34570,25295,34920,25645"
+xt "33520,25295,33870,25645"
 )
 btri (Triangle
 uid 260,0
@@ -1538,7 +1535,7 @@ bg "0,0,0"
 lineColor "39936,56832,65280"
 lineWidth -1
 )
-xt "34570,22995,34920,23345"
+xt "33520,22995,33870,23345"
 )
 entryActions (MLText
 uid 261,0
@@ -1554,7 +1551,6 @@ va (VaSet
 font "arial,8,0"
 )
 xt "35020,25870,40920,26870"
-st "Start <= RdyIn;"
 tm "Actions"
 )
 exitActions (MLText
@@ -3105,7 +3101,7 @@ va (VaSet
 font "arial,8,0"
 )
 xt "28644,6330,36144,9330"
-st "Start <= '1' ;
+st "Start_cld <= '1' ;
 RdyOut_cld <= '0';
 RowN <= RowU+1;"
 tm "Actions"
@@ -3199,7 +3195,7 @@ va (VaSet
 font "arial,8,0"
 )
 xt "35704,18410,45904,21410"
-st "Start <= '0';
+st "Start_cld <= '0';
 NxtRow_cld <=
  std_ulogic_vector(RowN);"
 tm "Actions"
@@ -3264,19 +3260,18 @@ fg "65535,65535,65535"
 bg "0,0,0"
 lineColor "0,32768,49152"
 )
-xt "40940,22850,46340,24850"
+xt "40040,22850,47240,26650"
 )
 autoResize 1
 lineShape (Line
 uid 324,0
 va (VaSet
 vasetType 3
-isHidden 1
 )
-xt "43140,24750,43140,24750"
+xt "40540,24750,46740,24750"
 pts [
-"43140,24750"
-"43140,24750"
+"40540,24750"
+"46740,24750"
 ]
 )
 condition (MLText
@@ -3293,7 +3288,8 @@ uid 326,0
 va (VaSet
 font "arial,8,0"
 )
-xt "43640,24750,43640,24750"
+xt "40540,25150,46740,26150"
+st "Start_cld <= '1';"
 tm "Actions"
 )
 )
@@ -3383,7 +3379,7 @@ va (VaSet
 font "arial,8,0"
 )
 xt "51325,17950,64125,22950"
-st "Start <= '0';
+st "Start_cld <= '0';
 Addr_cld <= '0'
    & std_ulogic_vector(RowU) & '0'
    & std_ulogic_vector(Col);
@@ -4448,8 +4444,8 @@ tm "SmCompilerDirectivesTextMgr"
 ]
 associable 1
 )
-windowSize "128,102,1145,792"
-viewArea "1080,560,72810,46730"
+windowSize "128,102,1146,792"
+viewArea "1100,600,72920,49290"
 cachedDiagramExtent "0,-1000,68490,49000"
 hasePageBreakOrigin 1
 pageBreakOrigin "0,-2000"
@@ -4668,7 +4664,7 @@ Addr    OUT              (others => '0')  CLKD
 RdWrEn  OUT              '0'              CLKD   
 RdyOut  OUT              '1'              CLKD   
 NxtRow  OUT              (others => '0')  CLKD   
-Start   OUT                               COMB   
+Start   OUT              '0'              CLKD   
 Col     LOCAL            (others => '0')  CLKD   
 S5WE    OUT              (others => '0')  CLKD   
 RowU    LOCAL            (others => '0')  CLKD   
@@ -4781,7 +4777,7 @@ stateOrder [
 name "csm"
 )
 ]
-lastUid 603,0
+lastUid 632,0
 commonDM (CommonDM
 ldm (LogicalDM
 emptyRow *72 (LEmptyRow
@@ -4947,7 +4943,8 @@ o 10
 )
 )
 uid 168,0
-scheme 0
+scheme 1
+rstVal "'0'"
 )
 *100 (LeafLogPort
 port (LogicalPort

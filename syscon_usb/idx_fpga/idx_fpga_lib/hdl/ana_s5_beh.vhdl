@@ -14,18 +14,16 @@ LIBRARY ieee;
 USE ieee.std_logic_1164.all;
 USE ieee.std_logic_arith.all;
 LIBRARY idx_fpga_lib;
-USE idx_fpga_lib.All;
+-- USE idx_fpga_lib.All;
 
 ENTITY ana_s5 IS
   GENERIC (
     DEF_CFG : std_ulogic_vector(4 DOWNTO 0) := "10100"
   );
   PORT (
-    SDI : IN std_ulogic;
     SDO : OUT std_ulogic;
     SCK : OUT std_ulogic; -- 5 MHz max
     DI : IN std_ulogic_vector(4 DOWNTO 0);
-    DO : OUT std_ulogic_vector(4 DOWNTO 0);
     WE : IN std_ulogic;
     Start : IN std_ulogic;
     CLK : IN std_ulogic; -- 30 MHz max
@@ -40,11 +38,9 @@ ARCHITECTURE beh OF ana_s5 IS
   COMPONENT ana_s5s
      PORT (
         DI    : IN     std_ulogic_vector(4 DOWNTO 0);
-        SDI   : IN     std_ulogic;
         Start : IN     std_ulogic;
         clk   : IN     std_logic;
         rst   : IN     std_logic;
-        DO    : OUT    std_ulogic_vector(4 DOWNTO 0);
         RDY   : OUT    std_ulogic;
         SCK   : OUT    std_ulogic;
         SDO   : OUT    std_ulogic
@@ -63,18 +59,16 @@ BEGIN
       end if;
     end if;
   End Process;
-   --  hds hds_inst
-   ana_s5s_i : ana_s5s
-      PORT MAP (
-         DI    => DI,
-         SDI   => SDI,
-         Start => Start,
-         clk   => CLK,
-         rst   => RST,
-         DO    => DO,
-         RDY   => RDY,
-         SCK   => SCK,
-         SDO   => SDO
-      );
+  
+  ana_s5s_i : ana_s5s
+    PORT MAP (
+       DI    => RDI,
+       Start => Start,
+       clk   => CLK,
+       rst   => RST,
+       RDY   => RDY,
+       SCK   => SCK,
+       SDO   => SDO
+    );
 END ARCHITECTURE beh;
 
