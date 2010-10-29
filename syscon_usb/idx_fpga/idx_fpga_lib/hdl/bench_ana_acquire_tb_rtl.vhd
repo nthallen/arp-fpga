@@ -28,31 +28,35 @@ ARCHITECTURE rtl OF bench_ana_acquire IS
    -- Architecture declarations
 
    -- Internal signal declarations
-   SIGNAL Addr   : std_ulogic_vector(7 DOWNTO 0);
-   SIGNAL CLK    : std_logic;
+   SIGNAL Addr   : std_logic_vector(7 DOWNTO 0);
+   SIGNAL CLK    : std_ulogic;
    SIGNAL Conv   : std_ulogic;
    SIGNAL NxtRow : std_ulogic_vector(2 DOWNTO 0);
    SIGNAL RdWrEn : std_ulogic;
    SIGNAL RdyIn  : std_ulogic;
    SIGNAL RdyOut : std_ulogic;
-   SIGNAL RST    : std_logic;
+   SIGNAL RST    : std_ulogic;
    SIGNAL S5WE   : std_ulogic_vector(1 DOWNTO 0);
    SIGNAL Start  : std_ulogic;
    SIGNAL Done   : std_ulogic;
+   SIGNAL SDI    : std_ulogic_vector(1 DOWNTO 0);
+   SIGNAL CS5    : std_ulogic;
 
 
    -- Component declarations
    COMPONENT ana_acquire
       PORT (
-         Addr   : OUT    std_ulogic_vector(7 DOWNTO 0);
-         CLK    : IN     std_logic;
-         Conv   : IN     std_ulogic;
+         Addr   : OUT    std_logic_vector(7 DOWNTO 0);
+         CLK    : IN     std_ulogic;
+         Conv   : OUT    std_ulogic;
+         CS5    : OUT    std_ulogic;
          NxtRow : OUT    std_ulogic_vector(2 DOWNTO 0);
          RdWrEn : OUT    std_ulogic;
          RdyIn  : IN     std_ulogic;
          RdyOut : OUT    std_ulogic;
-         RST    : IN     std_logic;
+         RST    : IN     std_ulogic;
          S5WE   : OUT    std_ulogic_vector(1 DOWNTO 0);
+         SDI    : IN     std_ulogic_vector(1 DOWNTO 0);
          Start  : OUT    std_ulogic
       );
    END COMPONENT;
@@ -69,12 +73,14 @@ BEGIN
        Addr   => Addr,
        CLK    => CLK,
        Conv   => Conv,
+       CS5    => CS5,
        NxtRow => NxtRow,
        RdWrEn => RdWrEn,
        RdyIn  => RdyIn,
        RdyOut => RdyOut,
        RST    => RST,
        S5WE   => S5WE,
+       SDI    => SDI,
        Start  => Start
     );
 
@@ -112,18 +118,17 @@ BEGIN
 
   test_proc : Process
     Begin
+      SDI <= "00";
       Done <= '0';
-      Conv <= '0';
       RST <= '1';
       -- pragma synthesis_off
       wait for 200 ns;
       RST <= '0';
       for i in 1 to 10 loop
-        wait for 1 us;
-        Conv <= '1';
-        wait for 5 us;
-        Conv <= '0';
-        wait until RdyOut = '1';
+        SDI <= "00";
+        wait for 100 ns;
+        SDI <= "11";
+        wait until Conv <= '0';
       end loop;
       Done <= '1';
       wait;

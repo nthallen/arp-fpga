@@ -28,10 +28,10 @@ ARCHITECTURE rtl OF bench_ana_s16 IS
    -- Architecture declarations
 
    -- Internal signal declarations
-   SIGNAL CLK   : std_logic;
+   SIGNAL CLK   : std_ulogic;
    SIGNAL DO    : std_ulogic_vector(15 DOWNTO 0);
    SIGNAL RDY   : std_ulogic;
-   SIGNAL RST   : std_logic;
+   SIGNAL RST   : std_ulogic;
    SIGNAL SCK   : std_ulogic;
    SIGNAL SDI   : std_ulogic;
    SIGNAL Start : std_ulogic;
@@ -41,10 +41,10 @@ ARCHITECTURE rtl OF bench_ana_s16 IS
    -- Component declarations
    COMPONENT ana_s16
       PORT (
-         CLK   : IN     std_logic;
+         CLK   : IN     std_ulogic;
          DO    : OUT    std_ulogic_vector(15 DOWNTO 0);
          RDY   : OUT    std_ulogic;
-         RST   : IN     std_logic;
+         RST   : IN     std_ulogic;
          SCK   : OUT    std_ulogic;
          SDI   : IN     std_ulogic;
          Start : IN     std_ulogic

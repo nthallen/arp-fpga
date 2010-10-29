@@ -28,10 +28,11 @@ ARCHITECTURE rtl OF bench_ana_s5s_tb IS
    -- Architecture declarations
 
    -- Internal signal declarations
-   SIGNAL clk   : std_logic;
-   SIGNAL DI    : std_ulogic_vector(4 DOWNTO 0);
+   SIGNAL clk   : std_ulogic;
+   SIGNAL DI    : std_logic_vector(4 DOWNTO 0);
+   SIGNAL DO    : std_logic_vector(4 DOWNTO 0);
    SIGNAL RDY   : std_ulogic;
-   SIGNAL rst   : std_logic;
+   SIGNAL rst   : std_ulogic;
    SIGNAL SCK   : std_ulogic;
    SIGNAL SDO   : std_ulogic;
    SIGNAL Start : std_ulogic;
@@ -41,12 +42,13 @@ ARCHITECTURE rtl OF bench_ana_s5s_tb IS
    -- Component declarations
    COMPONENT ana_s5s
       PORT (
-         clk   : IN     std_logic;
-         DI    : IN     std_ulogic_vector(4 DOWNTO 0);
+         clk   : IN     std_ulogic;
+         DI    : IN     std_logic_vector(4 DOWNTO 0);
          RDY   : OUT    std_ulogic;
-         rst   : IN     std_logic;
+         rst   : IN     std_ulogic;
          SCK   : OUT    std_ulogic;
          SDO   : OUT    std_ulogic;
+         DO    : OUT    std_logic_vector(4 DOWNTO 0);
          Start : IN     std_ulogic
       );
    END COMPONENT;
@@ -66,6 +68,7 @@ BEGIN
          rst   => rst,
          SCK   => SCK,
          SDO   => SDO,
+         DO    => DO,
          Start => Start
       );
 
