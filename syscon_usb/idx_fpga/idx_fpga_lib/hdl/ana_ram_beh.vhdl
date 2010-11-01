@@ -10,8 +10,10 @@
 LIBRARY ieee;
 USE ieee.std_logic_1164.all;
 USE ieee.std_logic_arith.all;
+-- use IEEE.VITAL_Timing.all;
+-- use IEEE.VITAL_Primitives.all;
 Library UNISIM;
-use UNISIM.vcomponents.all;
+-- use UNISIM.vcomponents.all;
 
 ENTITY ana_ram IS
   PORT (
@@ -19,8 +21,9 @@ ENTITY ana_ram IS
     WR_ADDR : IN std_logic_vector(7 DOWNTO 0);
     RD_DATA : OUT std_logic_vector(31 DOWNTO 0);
     WR_DATA : IN std_logic_vector(31 DOWNTO 0);
-    WREN : IN std_ulogic;
+    WREN : IN std_ulogic_vector(1 DOWNTO 0);
     RDEN : IN std_ulogic;
+    OE : IN std_ulogic;
     CLK : IN std_ulogic;
     RST : IN std_ulogic
   );
@@ -36,6 +39,10 @@ ARCHITECTURE beh OF ana_ram IS
   SIGNAL DIPBDIP : std_logic_vector(1 downto 0);
   SIGNAL WEAWEL : std_logic_vector(1 downto 0);
   SIGNAL WEBWEU : std_logic_vector(1 downto 0);
+  SIGNAL WREN_int : std_ulogic;
+  SIGNAL RD_DATA_int : std_logic_vector(31 DOWNTO 0);
+  SIGNAL RDEN_dly : std_ulogic;
+  SIGNAL RDEN_int : std_ulogic;
 
   COMPONENT RAMB8BWER is
     generic (
@@ -124,6 +131,7 @@ ARCHITECTURE beh OF ana_ram IS
       ); 
   end component;
 
+  FOR ALL : RAMB8BWER USE ENTITY UNISIM.RAMB8BWER;
 BEGIN
 
    -- RAMB8BWER: 8K-bit Data and 1K-bit Parity Configurable Synchronous Block RAM
@@ -201,8 +209,8 @@ BEGIN
       WRITE_MODE_B => "READ_FIRST" 
    )
    port map (
-      DOADO => RD_DATA(15 DOWNTO 0),             -- 16-bit A port data/LSB data output
-      DOBDO => RD_DATA(31 DOWNTO 16),             -- 16-bit B port data/MSB data output
+      DOADO => RD_DATA_int(15 DOWNTO 0),             -- 16-bit A port data/LSB data output
+      DOBDO => RD_DATA_int(31 DOWNTO 16),             -- 16-bit B port data/MSB data output
       DOPADOP => DOPADOP,         -- 2-bit A port parity/LSB parity output
       DOPBDOP => DOPBDOP,         -- 2-bit B port parity/MSB parity output
       ADDRAWRADDR => ADDRAWRADDR, -- 13-bit A port address/Write address input
@@ -213,8 +221,8 @@ BEGIN
       DIBDI => WR_DATA(31 DOWNTO 16), -- 16-bit B port data/MSB data input
       DIPADIP => DIPADIP,         -- 2-bit A port parity/LSB parity input
       DIPBDIP => DIPBDIP,         -- 2-bit B port parity/MSB parity input
-      ENAWREN => WREN,            -- 1-bit A port enable/Write enable input
-      ENBRDEN => RDEN,            -- 1-bit B port enable/Read enable input
+      ENAWREN => WREN_int,            -- 1-bit A port enable/Write enable input
+      ENBRDEN => RDEN_int,            -- 1-bit B port enable/Read enable input
       REGCEA => '0',              -- 1-bit A port register enable input
       REGCEBREGCE => '0',         -- 1-bit B port register enable/Register enable input
       RSTA => RST,                -- 1-bit A port set/reset input
@@ -223,15 +231,47 @@ BEGIN
       WEBWEU => WEBWEU            -- 2-bit B port write enable input
    );
 
+  Wr_En : Process (WREN) IS
+  Begin
+    if WREN = "11" then
+      WREN_int <= '1';
+    else
+      WREN_int <= '0';
+    end if;
+  End Process;
+
+  Rd_En : Process ( CLK, RST, RDEN, RDEN_dly ) IS
+  Begin
+    if RST = '1' then
+      RDEN_dly <= '0';
+    elsif CLK'Event AND CLK = '1' then
+      RDEN_dly <= RDEN;
+    end if;
+    if RDEN = '1' AND RDEN_dly = '0' then
+      RDEN_int <= '1';
+    else
+      RDEN_int <= '0';
+    end if;
+  End Process;
+  
+  Out_En : Process (OE,RD_DATA_int) Is
+  Begin
+    if OE = '1' then
+      RD_DATA <= RD_DATA_int;
+    else
+      RD_DATA <= (others => 'Z');
+    end if;
+  End Process;
+
   ADDRAWRADDR(12 DOWNTO 5) <= WR_ADDR;
   ADDRAWRADDR(4 DOWNTO 0) <= (others => '0');
   ADDRBRDADDR(12 DOWNTO 5) <= RD_ADDR;
   ADDRBRDADDR(4 DOWNTO 0) <= (others => '0');
   DIPADIP <= (others => '0');
   DIPBDIP <= (others => '0');
-  WEAWEL(1) <= WREN;
-  WEAWEL(0) <= WREN;
-  WEBWEU(1) <= WREN;
-  WEBWEU(0) <= WREN;
+  WEAWEL(1) <= WREN_int;
+  WEAWEL(0) <= WREN_int;
+  WEBWEU(1) <= WREN_int;
+  WEBWEU(0) <= WREN_int;
 END ARCHITECTURE beh;
 

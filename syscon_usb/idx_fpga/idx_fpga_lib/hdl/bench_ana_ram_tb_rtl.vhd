@@ -10,8 +10,8 @@
 LIBRARY ieee;
 USE ieee.std_logic_1164.all;
 USE ieee.std_logic_arith.all;
-LIBRARY UNISIM;
-USE UNISIM.vcomponents.all;
+-- LIBRARY UNISIM;
+-- USE UNISIM.vcomponents.all;
 
 
 ENTITY bench_ana_ram IS
@@ -19,7 +19,7 @@ END bench_ana_ram;
 
 
 LIBRARY idx_fpga_lib;
-USE idx_fpga_lib.ALL;
+-- USE idx_fpga_lib.ALL;
 
 
 ARCHITECTURE rtl OF bench_ana_ram IS
@@ -31,11 +31,14 @@ ARCHITECTURE rtl OF bench_ana_ram IS
    SIGNAL WR_ADDR : std_logic_vector(7 DOWNTO 0);
    SIGNAL RD_DATA : std_logic_vector(31 DOWNTO 0);
    SIGNAL WR_DATA : std_logic_vector(31 DOWNTO 0);
-   SIGNAL WREN    : std_ulogic;
+   SIGNAL WREN    : std_ulogic_vector(1 DOWNTO 0);
    SIGNAL RDEN    : std_ulogic;
    SIGNAL CLK     : std_ulogic;
    SIGNAL RST     : std_ulogic;
+   SIGNAL OE      : std_ulogic;
+   -- pragma synthesis_off
    SIGNAL Done : std_ulogic;
+   -- pragma synthesis_on
 
 
    -- Component declarations
@@ -45,8 +48,9 @@ ARCHITECTURE rtl OF bench_ana_ram IS
          WR_ADDR : IN     std_logic_vector(7 DOWNTO 0);
          RD_DATA : OUT    std_logic_vector(31 DOWNTO 0);
          WR_DATA : IN     std_logic_vector(31 DOWNTO 0);
-         WREN    : IN     std_ulogic;
+         WREN    : IN     std_ulogic_vector(1 DOWNTO 0);
          RDEN    : IN     std_ulogic;
+         OE      : IN     std_ulogic;
          CLK     : IN     std_ulogic;
          RST     : IN     std_ulogic
       );
@@ -67,6 +71,7 @@ BEGIN
          WR_DATA => WR_DATA,
          WREN    => WREN,
          RDEN    => RDEN,
+         OE      => OE,
          CLK     => CLK,
          RST     => RST
       );
@@ -90,10 +95,11 @@ BEGIN
   Begin
     Done <= '0';
     RDEN <= '0';
-    WREN <= '0';
+    WREN <= "00";
     RD_ADDR <= (others => '0');
     WR_ADDR <= (others => '0');
     WR_DATA <= (others => '0');
+    OE <= '1';
     RST <= '1';
     -- pragma synthesis_off
     wait until CLK'Event AND CLK = '1';
@@ -101,27 +107,40 @@ BEGIN
     wait until CLK'Event AND CLK = '1';
     WR_ADDR <= X"01";
     WR_DATA <= X"12345678";
-    WREN <= '1';
+    WREN <= "11";
     wait until CLK'Event AND CLK = '1';
-    WREN <= '0';
+    WREN <= "00";
     RD_ADDR <= X"01";
     RDEN <= '1';
     wait until CLK'Event AND CLK = '1';
     WR_DATA <= X"55555555";
-    WREN <= '1';
-    for i in 0 to 8 loop
+    WREN <= "11";
+    for i in 0 to 5 loop
       WR_ADDR <= std_logic_vector(conv_unsigned(i, 8));
       wait until CLK'Event AND CLK = '1';
     end loop;
     RDEN <= '0';
+    for i in 6 to 6 loop
+      WR_ADDR <= std_logic_vector(conv_unsigned(i, 8));
+      wait until CLK'Event AND CLK = '1';
+    end loop;
+    RDEN <= '1';
+    for i in 7 to 8 loop
+      WR_ADDR <= std_logic_vector(conv_unsigned(i, 8));
+      wait until CLK'Event AND CLK = '1';
+    end loop;
     WR_DATA <= X"AAAAAAAA";
     for i in 0 to 8 loop
       WR_ADDR <= std_logic_vector(conv_unsigned(i, 8));
       wait until CLK'Event AND CLK = '1';
     end loop;
     wait until CLK'Event AND CLK = '1';
-    -- pragma synthesis_on
+    OE <= '0';
+    wait until CLK'Event AND CLK = '1';
+    wait until CLK'Event AND CLK = '1';
+    wait until CLK'Event AND CLK = '1';
     Done <= '1';
     wait;
+    -- pragma synthesis_on
   End Process;
 END rtl;
