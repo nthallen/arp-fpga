@@ -11,6 +11,7 @@ LIBRARY ieee;
 USE ieee.std_logic_1164.all;
 USE ieee.std_logic_arith.all;
 USE ieee.std_logic_unsigned.all;
+LIBRARY idx_fpga_lib;
 
 ENTITY syscon IS
   GENERIC(
@@ -19,11 +20,11 @@ ENTITY syscon IS
   );
   PORT (
     F8M : IN std_logic;
-    Ctrl : IN std_logic_vector (4 DOWNTO 0); -- Rst, CE,CS,Wr,Rd
+    Ctrl : IN std_logic_vector (5 DOWNTO 0); -- Tick, Rst, CE,CS,Wr,Rd
     Addr : IN std_logic_vector (15 DOWNTO 0);
     Data_i : OUT std_logic_vector (15 DOWNTO 0);
     Data_o : IN std_logic_vector (15 DOWNTO 0);
-    Status : OUT std_logic_vector (2 DOWNTO 0); -- ExpIntr,Ack,Done
+    Status : OUT std_logic_vector (3 DOWNTO 0); -- 2SecTO, ExpIntr,Ack,Done
     ExpRd : OUT std_logic;
     ExpWr : OUT std_logic;
     ExpData : INOUT std_logic_vector (15 DOWNTO 0);
@@ -33,7 +34,9 @@ ENTITY syscon IS
     INTA    : OUT std_ulogic;
 	  CmdEnbl : OUT std_ulogic;
 	  CmdStrb : OUT std_ulogic;
-	  ExpReset : OUT std_ulogic
+	  ExpReset : OUT std_ulogic;
+	  Fail_In : IN std_ulogic;
+	  Fail_Out : OUT std_ulogic
   );
 END ENTITY syscon;
 
@@ -43,15 +46,46 @@ ARCHITECTURE arch OF syscon IS
   SIGNAL Cnt : std_logic_vector (3 DOWNTO 0);
   SIGNAL INTA_int : std_ulogic;
   SIGNAL Active : std_ulogic;
+  SIGNAL TwoMinuteTO : std_ulogic;
+  COMPONENT syscon_tick
+     GENERIC (
+        DEBUG_MULTIPLIER : integer := 100
+     );
+     PORT (
+        TickTock    : IN     std_ulogic;
+        CmdEnbl_cmd : IN     std_ulogic;
+        CmdEnbl     : OUT    std_ulogic;
+        TwoSecondTO : OUT    std_ulogic;
+        TwoMinuteTO : OUT    std_ulogic;
+        F8M         : IN     std_ulogic
+     );
+  END COMPONENT;
+  FOR ALL : syscon_tick USE ENTITY idx_fpga_lib.syscon_tick;
   alias RdEn is Ctrl(0);
   alias WrEn is Ctrl(1);
   alias CS is Ctrl(2);
   alias CE is Ctrl(3);
   alias rst is Ctrl(4);
+  alias TickTock is Ctrl(5);
   alias Done is Status(0);
   alias Ack is Status(1);
   alias ExpIntr is Status(2);
+  alias TwoSecondTO is Status(3);
 BEGIN
+
+  Tick : syscon_tick
+    GENERIC MAP (
+      DEBUG_MULTIPLIER => 100
+    )
+    PORT MAP (
+      TickTock    => TickTock,
+      CmdEnbl_cmd => CE,
+      CmdEnbl     => CmdEnbl,
+      TwoSecondTO => TwoSecondTO,
+      TwoMinuteTO => TwoMinuteTO,
+      F8M         => F8M
+    );
+
   rdwr : process (F8M) IS
     Variable intr_int: std_ulogic;
     Variable ack_int: std_ulogic;
@@ -118,12 +152,20 @@ BEGIN
       ExpIntr <= intr_int;
     end if;
   end process;
+  
+  Failer : Process (Fail_In, TwoMinuteTO) IS
+  Begin
+    if Fail_In = '1' OR TwoMinuteTO = '1' then
+      Fail_Out <= '1';
+    else
+      Fail_Out <= '0';
+    end if;
+  End Process;
 
   Data_i <= DataIn;
   ExpAddr <= Addr;
-  CmdEnbl <= CE;
   CmdStrb <= CS;
   ExpReset <= rst;
   INTA <= INTA_int;
-  
+
 END ARCHITECTURE arch;

@@ -10,6 +10,8 @@
 LIBRARY ieee;
 USE ieee.std_logic_1164.all;
 USE ieee.std_logic_arith.all;
+LIBRARY UNISIM;
+USE unisim.vcomponents.GSR;
 
 ENTITY syscon_tick IS
   GENERIC ( DEBUG_MULTIPLIER : integer := 100 );
@@ -19,8 +21,7 @@ ENTITY syscon_tick IS
     CmdEnbl : OUT std_ulogic; -- Goes to HW
     TwoSecondTO : OUT std_ulogic; -- Goes back in status
     TwoMinuteTO : OUT std_ulogic;
-    F8M : IN std_ulogic;
-    RST : IN std_ulogic
+    F8M : IN std_ulogic
   );
 END ENTITY syscon_tick;
 
@@ -33,9 +34,9 @@ ARCHITECTURE beh OF syscon_tick IS
   SIGNAL TwoMinTO : std_ulogic;
   SIGNAL TickCnt : unsigned(29 DOWNTO 0);
 BEGIN
-  SIC : Process (F8M, RST) IS
+  SIC : Process (F8M, GSR) IS
   Begin
-    if RST = '1' then
+    if GSR = '1' then
       TwoSecTO <= '1';
       TwoSecTOd <= '1';
       TwoMinTO <= '0';

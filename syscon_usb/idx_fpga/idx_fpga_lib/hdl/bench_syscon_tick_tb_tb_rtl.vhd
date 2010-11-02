@@ -10,6 +10,8 @@
 LIBRARY ieee;
 USE ieee.std_logic_1164.all;
 USE ieee.std_logic_arith.all;
+LIBRARY UNISIM;
+USE unisim.vcomponents.GSR;
 
 
 ENTITY bench_syscon_tick_tb IS
@@ -17,7 +19,6 @@ END bench_syscon_tick_tb;
 
 
 LIBRARY idx_fpga_lib;
--- USE idx_fpga_lib.ALL;
 
 
 ARCHITECTURE rtl OF bench_syscon_tick_tb IS
@@ -31,7 +32,6 @@ ARCHITECTURE rtl OF bench_syscon_tick_tb IS
    SIGNAL TwoSecondTO : std_ulogic;
    SIGNAL TwoMinuteTO : std_ulogic;
    SIGNAL F8M         : std_ulogic;
-   SIGNAL RST         : std_ulogic;
    SIGNAL Done        : std_ulogic;
 
 
@@ -44,8 +44,7 @@ ARCHITECTURE rtl OF bench_syscon_tick_tb IS
          CmdEnbl     : OUT    std_ulogic;
          TwoSecondTO : OUT    std_ulogic;
          TwoMinuteTO : OUT    std_ulogic;
-         F8M         : IN     std_ulogic;
-         RST         : IN     std_ulogic
+         F8M         : IN     std_ulogic
       );
    END COMPONENT;
 
@@ -64,8 +63,7 @@ BEGIN
          CmdEnbl     => CmdEnbl,
          TwoSecondTO => TwoSecondTO,
          TwoMinuteTO => TwoMinuteTO,
-         F8M         => F8M,
-         RST         => RST
+         F8M         => F8M
       );
 
 
@@ -73,7 +71,7 @@ BEGIN
   Begin
     F8M <= '0';
     -- pragma synthesis_off
-    wait for 20 ns;
+    wait for 500 ns;
     while Done = '0' loop
       F8M <= '1';
       wait for 63 ns;
@@ -87,12 +85,12 @@ BEGIN
   test_proc: Process
   Begin
     Done <= '0';
-    RST <= '1';
     TickTock <= '0';
     CmdEnbl_cmd <= '0';
+    GSR <= '1';
     -- pragma synthesis_off
     wait for 500 ns;
-    RST <= '0';
+    GSR <= '0';
     wait for 500 ns;
     TickTock <= '1';
     wait for 3 us;

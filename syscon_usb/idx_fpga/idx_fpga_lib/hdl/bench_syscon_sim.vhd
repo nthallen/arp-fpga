@@ -12,7 +12,6 @@ USE ieee.std_logic_1164.all;
 USE ieee.std_logic_arith.all;
 USE ieee.std_logic_unsigned.all;
 LIBRARY idx_fpga_lib;
-USE idx_fpga_lib.All;
 
 ENTITY bench_syscon IS
   GENERIC (
@@ -20,7 +19,7 @@ ENTITY bench_syscon IS
     N_BOARDS : integer range 15 downto 1 := 1
   );
   PORT (
-    Status_o : OUT std_logic_vector (2 DOWNTO 0); -- ExpIntr,Ack,Done
+    Status_o : OUT std_logic_vector (3 DOWNTO 0); -- ExpIntr,Ack,Done
     ExpRd_o : OUT std_ulogic;
     ExpWr_o : OUT std_ulogic;
     ExpAddr_o : OUT std_logic_vector (15 DOWNTO 0);
@@ -34,11 +33,11 @@ END ENTITY bench_syscon;
 --
 ARCHITECTURE sim OF bench_syscon IS
   SIGNAL F8M : std_ulogic;
-  SIGNAL Ctrl : std_logic_vector (4 DOWNTO 0); -- Wr,Rd
+  SIGNAL Ctrl : std_logic_vector (5 DOWNTO 0); -- Wr,Rd
   SIGNAL Addr : std_logic_vector (15 DOWNTO 0);
   SIGNAL Data_i : std_logic_vector (15 DOWNTO 0);
   SIGNAL Data_o : std_logic_vector (15 DOWNTO 0);
-  SIGNAL Status : std_logic_vector (2 DOWNTO 0); -- ExpIntr,Ack,Done
+  SIGNAL Status : std_logic_vector (3 DOWNTO 0); -- ExpIntr,Ack,Done
   SIGNAL ExpRd : std_ulogic;
   SIGNAL ExpWr : std_ulogic;
   SIGNAL ExpAddr : std_logic_vector (15 DOWNTO 0);
@@ -49,6 +48,8 @@ ARCHITECTURE sim OF bench_syscon IS
   SIGNAL CmdEnbl : std_ulogic;
   SIGNAL CmdStrb : std_ulogic;
   SIGNAL ExpReset : std_ulogic;
+  SIGNAL Fail_In : std_ulogic;
+  SIGNAL Fail_Out : std_ulogic;
   alias RdEn is Ctrl(0);
   alias WrEn is Ctrl(1);
   alias CS is Ctrl(2);
@@ -57,6 +58,7 @@ ARCHITECTURE sim OF bench_syscon IS
   alias Done is Status(0);
   alias Ack is Status(1);
   alias ExpIntr is Status(2);
+  SIGNAL SimDone : std_ulogic;
   
   COMPONENT syscon IS
     GENERIC(
@@ -65,11 +67,11 @@ ARCHITECTURE sim OF bench_syscon IS
     );
     PORT (
       F8M : IN std_logic;
-      Ctrl : IN std_logic_vector (4 DOWNTO 0); -- Wr,Rd
+      Ctrl : IN std_logic_vector (5 DOWNTO 0); -- Wr,Rd
       Addr : IN std_logic_vector (15 DOWNTO 0);
       Data_i : OUT std_logic_vector (15 DOWNTO 0);
       Data_o : IN std_logic_vector (15 DOWNTO 0);
-      Status : OUT std_logic_vector (2 DOWNTO 0); -- ExpIntr,Ack,Done
+      Status : OUT std_logic_vector (3 DOWNTO 0); -- ExpIntr,Ack,Done
       ExpRd : OUT std_logic;
       ExpWr : OUT std_logic;
       ExpData : INOUT std_logic_vector (15 DOWNTO 0);
@@ -79,7 +81,9 @@ ARCHITECTURE sim OF bench_syscon IS
       INTA    : OUT std_ulogic;
    	  CmdEnbl : OUT std_ulogic;
 	    CmdStrb : OUT std_ulogic;
-	    ExpReset : OUT std_ulogic
+	    ExpReset : OUT std_ulogic;
+      Fail_In : IN std_ulogic;
+      Fail_Out : OUT std_ulogic
     );
   END COMPONENT;
   FOR ALL : syscon USE ENTITY idx_fpga_lib.syscon;
@@ -105,31 +109,39 @@ BEGIN
         INTA     => INTA,
         CmdEnbl  => CmdEnbl,
         CmdStrb  => CmdStrb,
-        ExpReset => ExpReset
+        ExpReset => ExpReset,
+        Fail_In  => Fail_In,
+        Fail_Out => Fail_Out
      );
 
   f8m_clk : Process
   Begin
     F8M <= '0';
     -- pragma synthesis_off
-   wait for 62.5 ns;
-    F8M <= '1';
-   wait for 62.5 ns;
+    wait for 20 ns;
+    while SimDone = '0' loop
+      F8M <= '1';
+      wait for 62 ns;
+      F8M <= '0';
+      wait for 63 ns;
+    end loop;
+    wait;
     -- pragma synthesis_on
   End Process;
 
   test_proc: Process
   Begin
-    Ctrl <= "00000";
+    SimDone <= '0';
+    Ctrl <= "000000";
     Addr <= (others => '0');
     Data_o <= (others => '0');
     ExpData <= (others => 'Z');
     ExpAck <= "0";
     BdIntr <= ( others => '0' );
+    Fail_In <= '0';
+    rst <= '1';
     -- pragma synthesis_off
     wait for 300 ns;
-    rst <= '1';
-    wait for 100 ns;
     rst <= '0';
     wait for 100 ns;
     RdEn <= '1';
@@ -202,6 +214,7 @@ BEGIN
     assert Ack = '1' report "Ack should be asserted" severity error;
     RdEn <= '0';
     wait for 200 ns;
+    SimDone <= '1';
     wait;
    -- pragma synthesis_on
   End Process;
