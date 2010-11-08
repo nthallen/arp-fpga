@@ -10,19 +10,27 @@ USE ieee.std_logic_1164.all;
 
 ENTITY system IS
 	PORT(
-		fpga_0_rst_1_sys_rst_pin : IN std_logic;
 		fpga_0_clk_1_sys_clk_pin : IN std_logic;
-		xps_epc_0_FTDI_RXF_pin : IN std_logic_vector(0 to 0);
-		xps_gpio_subbus_status_pin : IN std_logic_vector(2 downto 0);
-		xps_gpio_subbus_data_i_pin : IN std_logic_vector(15 downto 0);    
-		xps_epc_0_PRH_Data : INOUT std_logic_vector(7 downto 0);      
+		fpga_0_rst_1_sys_rst_pin : IN std_logic;
+    fpga_0_RS232_RX_pin : IN std_logic;
+    fpga_0_RS232_TX_pin : OUT std_logic;
+		fpga_0_Generic_IIC_Bus_Sda_pin : INOUT std_logic;
+		fpga_0_Generic_IIC_Bus_Scl_pin : INOUT std_logic;
+    clk_8_0000MHz_pin : OUT std_logic;
+    clk_30_0000MHz_pin : OUT std_logic;
+		xps_epc_0_PRH_Data_pin : INOUT std_logic_vector(7 downto 0);      
+		xps_epc_0_FTDI_RXF_pin : IN std_logic;
+		xps_epc_0_FTDI_WR_pin : OUT std_logic;
 		xps_epc_0_PRH_Rd_n_pin : OUT std_logic;
-		xps_gpio_HBled_O_pin : OUT std_logic_vector(0 to 0);
+		FTDI_SI_pin : OUT std_logic;
 		xps_gpio_subbus_addr_pin : OUT std_logic_vector(15 downto 0);
-		xps_epc_0_FTDI_WR_pin : OUT std_logic_vector(0 to 0);
-		xps_gpio_subbus_ctrl_pin : OUT std_logic_vector(4 downto 0);
-		clk_8_0000MHz_pin : OUT std_logic;
-		xps_gpio_subbus_data_o_pin : OUT std_logic_vector(15 downto 0)
+		xps_gpio_subbus_ctrl_pin : OUT std_logic_vector(5 downto 0);
+		xps_gpio_subbus_data_i_pin : IN std_logic_vector(15 downto 0);
+		xps_gpio_subbus_data_o_pin : OUT std_logic_vector(15 downto 0);
+		xps_gpio_subbus_status_pin : IN std_logic_vector(3 downto 0);
+		xps_gpio_subbus_leds_pin : OUT std_logic_vector(4 downto 0);
+    xps_gpio_subbus_leds_readback_pin : IN std_logic_vector(4 downto 0);    
+		xps_gpio_subbus_switches_pin : IN std_logic_vector(3 downto 0)
 		);
 END system;
 
@@ -30,8 +38,8 @@ architecture Simulation of system is
   SIGNAL Addr : std_logic_vector (15 DOWNTO 0);
   SIGNAL Data_i : std_logic_vector (15 DOWNTO 0);
   SIGNAL Data_o : std_logic_vector (15 DOWNTO 0);
-  SIGNAL Ctrl : std_logic_vector (4 DOWNTO 0);
-  SIGNAL Status : std_logic_vector (2 DOWNTO 0); -- ExpIntr,Ack,Done
+  SIGNAL Ctrl : std_logic_vector (5 DOWNTO 0);
+  SIGNAL Status : std_logic_vector (3 DOWNTO 0); -- ExpIntr,Ack,Done
   alias RdEn is Ctrl(0);
   alias WrEn is Ctrl(1);
   alias CS is Ctrl(2);
@@ -44,12 +52,11 @@ architecture Simulation of system is
 begin
   testproc: Process
   begin
-    xps_epc_0_PRH_Data <= (others => 'Z');
+    xps_epc_0_PRH_Data_pin <= (others => 'Z');
     xps_epc_0_PRH_Rd_n_pin <= '0';
-    xps_gpio_HBled_O_pin <= (others => '0');
-    xps_epc_0_FTDI_Wr_pin <= (others => '0');
+    xps_epc_0_FTDI_Wr_pin <= '0';
     Addr <= X"0000";
-    Ctrl <= "00000";
+    Ctrl <= "000000";
     Data_o <= X"5555";
     -- pragma synthesis_off
     wait for 300 ns;
@@ -104,9 +111,9 @@ begin
   Begin
     clk_8_0000MHz_pin <= '0';
     -- pragma synthesis_off
-   wait for 62.5 ns;
+   wait for 62 ns;
     clk_8_0000MHz_pin <= '1';
-   wait for 62.5 ns;
+   wait for 63 ns;
     -- pragma synthesis_on
   End Process;
   
