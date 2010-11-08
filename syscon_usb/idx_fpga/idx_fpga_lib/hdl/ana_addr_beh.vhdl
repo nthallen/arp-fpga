@@ -13,7 +13,7 @@ USE ieee.std_logic_arith.all;
 
 ENTITY ana_addr IS
   PORT (
-    Addr : IN  std_ulogic_vector(15 DOWNTO 0);
+    Addr : IN  std_logic_vector(15 DOWNTO 0);
     BdEn : OUT std_ulogic;
     CfgAddr : OUT std_logic_vector(7 DOWNTO 0);
     AcqAddr : OUT std_logic_vector(7 DOWNTO 0)
@@ -36,7 +36,7 @@ BEGIN
   CfgAddr(3) <= Addr(4);
   CfgAddr(6 DOWNTO 4) <= CONV_STD_LOGIC_VECTOR(mapped(5 DOWNTO 3),3);
   CfgAddr(7) <= '0';
-  AcqAddr(6 DOWNTO 0) <= To_StdLogicVector(Addr(7 DOWNTO 1));
+  AcqAddr(6 DOWNTO 0) <= Addr(7 DOWNTO 1);
   AcqAddr(7) <= '0';
   
   En : Process (Addr) Is

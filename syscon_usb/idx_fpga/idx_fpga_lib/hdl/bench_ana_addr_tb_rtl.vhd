@@ -30,7 +30,7 @@ ARCHITECTURE rtl OF bench_ana_addr IS
    -- Architecture declarations
 
    -- Internal signal declarations
-   SIGNAL Addr    : std_ulogic_vector(15 DOWNTO 0);
+   SIGNAL Addr    : std_logic_vector(15 DOWNTO 0);
    SIGNAL BdEn_int : std_ulogic;
    SIGNAL CfgAddr_int : std_logic_vector(7 DOWNTO 0);
    SIGNAL AcqAddr_int : std_logic_vector(7 DOWNTO 0);
@@ -38,7 +38,7 @@ ARCHITECTURE rtl OF bench_ana_addr IS
    -- Component declarations
    COMPONENT ana_addr
       PORT (
-         Addr    : IN     std_ulogic_vector(15 DOWNTO 0);
+         Addr    : IN     std_logic_vector(15 DOWNTO 0);
          BdEn    : OUT    std_ulogic;
          CfgAddr : OUT    std_logic_vector(7 DOWNTO 0);
          AcqAddr : OUT    std_logic_vector(7 DOWNTO 0)

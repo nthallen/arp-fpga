@@ -34,7 +34,7 @@ library idx_fpga_lib;
 entity dacs is
     GENERIC (
       N_INTERRUPTS : integer range 15 downto 1 := 1;
-      N_BOARDS : integer range 15 downto 1 := 2;
+      N_BOARDS : integer range 15 downto 1 := 3;
       IDX_N_CHANNELS : integer range 15 downto 1 := 1;
       IDX_BASE_ADDR : std_logic_vector(15 downto 0) := X"0A00";
       DIGIO_N_CONNECTORS : integer range 4 downto 1 := 2
@@ -65,8 +65,19 @@ entity dacs is
       idx_KillB : IN std_ulogic_vector (IDX_N_CHANNELS-1 DOWNTO 0);
       idx_LimI : IN std_ulogic_vector (IDX_N_CHANNELS-1 DOWNTO 0);
       idx_LimO : IN std_ulogic_vector (IDX_N_CHANNELS-1 DOWNTO 0);
-      idx_ZR : IN std_ulogic_vector (IDX_N_CHANNELS-1 DOWNTO 0)
- );
+      idx_ZR : IN std_ulogic_vector (IDX_N_CHANNELS-1 DOWNTO 0);
+      
+      dig_IO : INOUT std_logic_vector( DIGIO_N_CONNECTORS*6*8-1 DOWNTO 0);
+      dig_Dir : OUT std_logic_vector( DIGIO_N_CONNECTORS*6-1 DOWNTO 0);
+      
+      ana_in_SDI : IN std_ulogic_vector(1 DOWNTO 0); -- From A/D Converter
+      ana_in_CS5 : OUT std_ulogic; -- To LMP7312
+      ana_in_Conv : OUT std_ulogic; -- To A/D Converter
+      ana_in_Row  : OUT std_ulogic_vector(2 DOWNTO 0);
+      ana_in_SCK16 : OUT std_ulogic_vector(1 DOWNTO 0);
+      ana_in_SCK5 : OUT std_ulogic_vector(1 DOWNTO 0);
+      ana_in_SDO  : OUT std_ulogic_vector(1 DOWNTO 0)
+    );
 end dacs;
 
 architecture Behavioral of dacs is
@@ -167,7 +178,28 @@ architecture Behavioral of dacs is
         Dir    : OUT    std_logic_vector( N_CONNECTORS*6-1 DOWNTO 0)
      );
   END COMPONENT;
+  
+  COMPONENT ana_input
+     PORT (
+        Addr   : IN     std_logic_vector(15 DOWNTO 0);
+        ExpRd  : IN     std_ulogic;
+        ExpWr  : IN     std_ulogic;
+        F30M   : IN     std_ulogic;
+        RST    : IN     std_ulogic;
+        SDI    : IN     std_ulogic_vector(1 DOWNTO 0);
+        CS5    : OUT    std_ulogic;
+        Conv   : OUT    std_ulogic;
+        ExpAck : OUT    std_ulogic;
+        RdyOut : OUT    std_ulogic;
+        Row    : OUT    std_ulogic_vector(2 DOWNTO 0);
+        SCK16  : OUT    std_ulogic_vector(1 DOWNTO 0);
+        SCK5   : OUT    std_ulogic_vector(1 DOWNTO 0);
+        SDO    : OUT    std_ulogic_vector(1 DOWNTO 0);
+        Data   : INOUT  std_logic_vector(15 DOWNTO 0)
+     );
+  END COMPONENT;
   FOR ALL : DigIO USE ENTITY idx_fpga_lib.DigIO;
+  FOR ALL : ana_input USE ENTITY idx_fpga_lib.ana_input;
 
 	attribute box_type : string;
 	attribute box_type of system : component is "user_black_box";
@@ -191,8 +223,7 @@ architecture Behavioral of dacs is
   SIGNAL INTA : std_ulogic;
   SIGNAL Fail_outputs : std_logic_vector(4 DOWNTO 0);
   SIGNAL Fail_inputs : std_logic_vector(4 DOWNTO 0);
-  SIGNAL IO : std_logic_vector( DIGIO_N_CONNECTORS*6*8-1 DOWNTO 0);
-  SIGNAL Dir : std_logic_vector( DIGIO_N_CONNECTORS*6-1 DOWNTO 0);
+  SIGNAL ana_in_RdyOut : std_ulogic; -- Not used?
 
 begin
 	Inst_system: system
@@ -285,8 +316,27 @@ begin
        ExpAck => ExpAck(1),
        F8M    => clk_8_0000MHz,
        rst    => rst,
-       IO     => IO,
-       Dir    => Dir
+       IO     => dig_IO,
+       Dir    => dig_Dir
+    );
+
+ Inst_ana_in : ana_input
+    PORT MAP (
+       Addr   => ExpAddr,
+       ExpRd  => ExpRd,
+       ExpWr  => ExpWr,
+       F30M   => clk_30_0000MHz,
+       RST    => rst,
+       SDI    => ana_in_SDI,
+       CS5    => ana_in_CS5,
+       Conv   => ana_in_Conv,
+       ExpAck => ExpAck(2),
+       RdyOut => ana_in_RdyOut,
+       Row    => ana_in_Row,
+       SCK16  => ana_in_SCK16,
+       SCK5   => ana_in_SCK5,
+       SDO    => ana_in_SDO,
+       Data   => ExpData
     );
 
   subbus_cmdenbl <= CmdEnbl;
