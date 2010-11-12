@@ -117,7 +117,7 @@ BEGIN
   Ack : process ( F8M ) is
   begin
     if F8M'event and F8M = '1' then
-      if (Chan_sel = '1' or Base_int = '1') then
+      if BdEn_int = '1' then
         if ExpRd = '1' then
           RdEn_int <= '1';
           ExpAck <= '1';
@@ -139,25 +139,58 @@ BEGIN
   begin
     if F8M'event and F8M = '1' then
       if rst = '1' then
-        iData <= (others => 'Z');
         Data <= (others => 'Z');
-      elsif ExpRd = '1' and (Chan_sel = '1' or Base_int = '1' ) then
-        if RdEn_int = '0' then
-          iData <= (others => 'Z');
-          Data <= (others => 'Z');
-        elsif Base_int = '1' then
-          Data(15 DOWNTO N_CHANNELS) <= ( others => '0' );
-          Data(N_CHANNELS-1 DOWNTO 0) <= To_StdLogicVector(Running);
-        else
-          Data <= iData;
-        end if;
-      elsif RdEn_int = '1' then
-        Data <= ( others => 'Z' );
-        iData <= ( others => 'Z' );
+      elsif ExpRd = '1' and Chan_sel = '1' then
+        Data <= iData;
+      elsif ExpRd = '1' and Base_int = '1' then
+        Data(15 DOWNTO N_CHANNELS) <= ( others => '0' );
+        Data(N_CHANNELS-1 DOWNTO 0) <= To_StdLogicVector(Running);
+      else
+        Data <= (others => 'Z');
+      end if;
+    end if;
+  end process;
+  
+  iDataBus : process (F8M) is
+  begin
+    if F8M'event and F8M = '1' then
+      if ExpRd = '1' and BdEn_int = '1' then
+        iData <= (others => 'Z');
       else
         iData <= Data;
       end if;
+    end if;
+  end process;
 
+--  DataBus : process (F8M) is
+--  begin
+--    if F8M'event and F8M = '1' then
+--      if rst = '1' then
+--        iData <= (others => 'Z');
+--        Data <= (others => 'Z');
+--      elsif ExpRd = '1' and BdEn_int = '1' then
+--        if RdEn_int = '0' then
+--          iData <= (others => 'Z');
+--          Data <= (others => 'Z');
+--        elsif Base_int = '1' then
+--          Data(15 DOWNTO N_CHANNELS) <= ( others => '0' );
+--          Data(N_CHANNELS-1 DOWNTO 0) <= To_StdLogicVector(Running);
+--        else
+--          Data <= iData;
+--        end if;
+--      elsif RdEn_int = '1' then
+--        Data <= ( others => 'Z' );
+--        iData <= ( others => 'Z' );
+--      else
+--        iData <= Data;
+--      end if;
+
+--    end if;
+--  end process;
+
+  Channels : process (F8M) is
+  begin
+    if F8M'event AND F8M = '1' then
       Chan <= Chan_int;
     end if;
   end process;
