@@ -178,6 +178,70 @@ BEGIN
       return;
     end procedure check_write;
 
+    procedure check_read( Addr_In : IN std_logic_vector(15 DOWNTO 0);
+       Expect_Ack : IN integer;
+       Expect_Chan : IN integer;
+       Chan_No : IN integer;
+       Set_Data : IN integer;
+       iData_In : IN std_logic_vector(15 DOWNTO 0);
+       RData : IN std_logic_vector(15 DOWNTO 0);
+       What : IN string ) is
+    begin
+      Addr <= Addr_In;
+      Data <= (others => 'Z');
+      -- pragma synthesis_off;
+      wait for 100 ns;
+      ExpRd <= '1';
+      wait until F8M'Event and F8M = '1';
+      wait until F8M'Event and F8M = '1';
+      if Expect_Ack = 1 then
+        assert RdEn = '1'
+          report "RdEn not set"
+          severity error;
+      else
+        assert RdEn = '0'
+          report "RdEn set on invalid address"
+          severity error;
+      end if;
+      if Expect_Chan = 1 then
+        for i in 0 to N_CHANNELS-1 loop
+          if i = Chan_No then
+            assert Chan(i) = '1'
+              report "Specified channel not asserted"
+              severity error;
+          else
+            assert Chan(i) = '0'
+              report "Unspecified channel asserted"
+              severity error;
+          end if;
+        end loop;
+      else
+        for i in 0 to N_CHANNELS-1 loop
+          assert Chan(i) = '0'
+            report "Unspecified channel asserted"
+            severity error;
+        end loop;
+      end if;
+      wait for 30 ns;
+      if Set_Data = 1 then
+        iData <= iData_In;
+      end if;
+      wait for 970 ns;
+      if Expect_Ack = 1 then
+        assert ExpAck = '1'
+          report "ExpAck not set"
+          severity error;
+        assert Data = RData
+          report "Data on " & What & " read not valid"
+          severity error;
+      end if;
+      ExpRd <= '0';
+      wait for 30 ns;
+      iData <= (others => 'Z');
+      -- pragma synthesis_on
+      return;
+    end procedure check_read;
+
   Begin
     Done <= '0';
     Addr <= X"0000";
@@ -198,60 +262,14 @@ BEGIN
     check_write( X"0A10", 1, 1, 1 );
     check_write( X"0A18", 0, 0, 0 ); -- one beyond N_CHANNELS
 
-    Addr <= X"0A08";
-    Data <= (others => 'Z');
-    wait for 100 ns;
-    ExpRd <= '1';
-    wait until RdEn = '1';
-    wait for 30 ns;
-    iData <= X"55AA";
-    wait for 970 ns;
-    assert ExpAck = '1'
-      report "ExpAck not set"
-      severity error;
-    assert Data = iData
-      report "Data does not match iData"
-      severity error;
-    ExpRd <= '0';
-    wait for 30 ns;
-    iData <= (others => 'Z');
-
-    Addr <= X"0A00";
-    wait for 250 ns;
-    ExpRd <= '1';
-    wait until RdEn = '1';
-    wait for 30 ns;
-    assert ExpAck = '1'
-      report "ExpAck not set"
-      severity error;
-    wait for 970 ns;
-    assert Data(1 downto 0) = "00" report "Running misread" severity error;
-    ExpRd <= '0';
-    wait for 30 ns;
-    assert RdEn = '0' report "RdEn not cleared" severity error;
-    assert ExpAck = '0' report "ExpAck not cleared" severity error;
+    check_read( X"0000", 0, 0, 0, 0, X"0000", X"0000", "Invalid Address" );
+    check_read( X"0A08", 1, 1, 0, 1, X"55AA", X"55AA", "Channel Status" );
+    Running <= "00";
+    check_read( X"0A00", 1, 0, 0, 0, X"0000", X"0000", "Board Status" );
     Running <= "10";
-    ExpRd <= '1';
-    wait until RdEn = '1';
-    wait for 30 ns;
-    assert ExpAck = '1' report "ExpAck not set" severity error;
-    wait for 970 ns;
-    assert Data(1 downto 0) = "10" report "Running misread" severity error;
-    ExpRd <= '0';
-    wait for 30 ns;
-    assert RdEn = '0' report "RdEn not cleared" severity error;
-    assert ExpAck = '0' report "ExpAck not cleared" severity error;
+    check_read( X"0A00", 1, 0, 0, 0, X"0000", X"0002", "Board Status" );
     Running <= "01";
-    ExpRd <= '1';
-    wait until RdEn = '1';
-    wait for 30 ns;
-    assert ExpAck = '1' report "ExpAck not set" severity error;
-    wait for 970 ns;
-    assert Data(1 downto 0) = "01" report "Running misread" severity error;
-    ExpRd <= '0';
-    wait for 30 ns;
-    assert RdEn = '0' report "RdEn not cleared" severity error;
-    assert ExpAck = '0' report "ExpAck not cleared" severity error;
+    check_read( X"0A00", 1, 0, 0, 0, X"0000", X"0001", "Board Status" );
     
     -- Test interrupt operation
     assert BdIntr = '0' report "BdIntr asserted before config" severity error;
