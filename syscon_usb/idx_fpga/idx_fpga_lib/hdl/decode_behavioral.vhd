@@ -50,10 +50,11 @@ ARCHITECTURE behavioral OF decode IS
   SIGNAL Wrote : std_ulogic;
   SIGNAL F4M_int : std_ulogic;
   SIGNAL Chan_sel : std_ulogic;
-  SIGNAL Chan_int : std_ulogic_vector(15 DOWNTO 0);
+  SIGNAL Chan_int : std_ulogic_vector(N_CHANNELS-1 DOWNTO 0);
   SIGNAL Base_int : std_ulogic;
   SIGNAL RdEn_int : std_ulogic;
   SIGNAL WrEn_int : std_ulogic;
+  SIGNAL BdEn_int : std_ulogic; -- true if board is addressed
   SIGNAL Intr_En : std_ulogic;
 BEGIN
   process (Addr) is
@@ -61,15 +62,25 @@ BEGIN
   begin
     Base_int <= '0';
     Chan_sel <= '0';
+    BdEn_int <= '0';
     Chan_int <= (others => '0');
     if Addr = BASE_ADDR then
       Base_int <= '1';
+      BdEn_int <= '1';
     elsif Addr(15 DOWNTO 7) = BASE_ADDR(15 DOWNTO 7) and Addr(0) = '0' then
       Chan_num := unsigned(Addr(6 DOWNTO 3));
-      if Chan_num > 0 and Chan_num <= N_CHANNELS then
-        Chan_sel <= '1';
-        Chan_int(to_integer(Chan_num)) <= '1';
-      end if;
+      for i in 0 to N_CHANNELS-1 loop
+        if i+1 = to_integer(Chan_num) then
+          Chan_sel <= '1';
+          BdEn_int <= '1';
+          Chan_int(i) <= '1';
+        end if;
+      end loop;
+        -- if Chan_num > 0 and Chan_num <= N_CHANNELS then
+        -- Chan_sel <= '1';
+        -- BdEn_int <= '1';
+        -- Chan_int(to_integer(Chan_num)) <= '1';
+        -- end if;
     end if;
     OpCd <= Addr(2 DOWNTO 0);
   end process;
@@ -147,7 +158,7 @@ BEGIN
         iData <= Data;
       end if;
 
-      Chan <= Chan_int(N_CHANNELS DOWNTO 1);
+      Chan <= Chan_int;
     end if;
   end process;
   

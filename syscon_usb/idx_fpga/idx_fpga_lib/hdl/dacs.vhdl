@@ -81,7 +81,7 @@ entity dacs is
 end dacs;
 
 architecture Behavioral of dacs is
-	COMPONENT system
+	COMPONENT Processor
    	PORT(
        fpga_0_clk_1_sys_clk_pin : IN std_logic;
        fpga_0_rst_1_sys_rst_pin : IN std_logic;
@@ -202,7 +202,7 @@ architecture Behavioral of dacs is
   FOR ALL : ana_input USE ENTITY idx_fpga_lib.ana_input;
 
 	attribute box_type : string;
-	attribute box_type of system : component is "user_black_box";
+	attribute box_type of Processor : component is "user_black_box";
 	
 	SIGNAL clk_8_0000MHz : std_logic;
 	SIGNAL clk_30_0000MHz : std_logic;
@@ -226,7 +226,7 @@ architecture Behavioral of dacs is
   SIGNAL ana_in_RdyOut : std_ulogic; -- Not used?
 
 begin
-	Inst_system: system
+	Inst_Processor: Processor
 	 PORT MAP(
      fpga_0_Generic_IIC_Bus_Sda_pin => fpga_0_Generic_IIC_Bus_Sda_pin,
      fpga_0_Generic_IIC_Bus_Scl_pin => fpga_0_Generic_IIC_Bus_Scl_pin,

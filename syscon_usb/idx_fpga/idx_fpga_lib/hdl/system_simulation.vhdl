@@ -8,7 +8,7 @@
 LIBRARY ieee;
 USE ieee.std_logic_1164.all;
 
-ENTITY system IS
+ENTITY Processor IS
 	PORT(
 		fpga_0_clk_1_sys_clk_pin : IN std_logic;
 		fpga_0_rst_1_sys_rst_pin : IN std_logic;
@@ -32,9 +32,9 @@ ENTITY system IS
     xps_gpio_subbus_leds_readback_pin : IN std_logic_vector(4 downto 0);    
 		xps_gpio_subbus_switches_pin : IN std_logic_vector(3 downto 0)
 		);
-END system;
+END Processor;
 
-architecture Simulation of system is
+architecture Simulation of Processor is
   SIGNAL Addr : std_logic_vector (15 DOWNTO 0);
   SIGNAL Data_i : std_logic_vector (15 DOWNTO 0);
   SIGNAL Data_o : std_logic_vector (15 DOWNTO 0);
