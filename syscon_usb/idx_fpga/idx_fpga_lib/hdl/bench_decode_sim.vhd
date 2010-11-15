@@ -189,7 +189,7 @@ BEGIN
     begin
       Addr <= Addr_In;
       Data <= (others => 'Z');
-      -- pragma synthesis_off;
+      -- pragma synthesis_off
       wait for 100 ns;
       ExpRd <= '1';
       wait until F8M'Event and F8M = '1';

@@ -37,6 +37,7 @@ ARCHITECTURE beh OF DigIO IS
    SIGNAL PortEnLB : std_ulogic_vector(3 DOWNTO 0);
    SIGNAL PortEnHB : std_ulogic_vector(3 DOWNTO 0);
    SIGNAL RS       : std_ulogic;
+   SIGNAL BdEn_asynch : std_ulogic;
    SIGNAL BdEn     : std_ulogic;
    SIGNAL iData    : std_logic_vector(15 DOWNTO 0);
    SIGNAL RdEn     : std_ulogic;
@@ -53,7 +54,8 @@ ARCHITECTURE beh OF DigIO IS
          PortEnLB : OUT    std_ulogic_vector(3 DOWNTO 0);
          PortEnHB : OUT    std_ulogic_vector(3 DOWNTO 0);
          RS       : OUT    std_ulogic;
-         BdEn     : OUT    std_ulogic
+         BdEn     : OUT    std_ulogic;
+         F8M      : IN     std_ulogic
       );
    END COMPONENT;
    COMPONENT subbus_io
@@ -67,7 +69,8 @@ ARCHITECTURE beh OF DigIO IS
          iData  : INOUT  std_logic_vector(15 DOWNTO 0);
          RdEn   : OUT    std_ulogic;
          WrEn   : OUT    std_ulogic;
-         BdEn   : IN     std_ulogic
+         BdEn_In : IN    std_ulogic;
+         BdEn   : OUT    std_ulogic
       );
    END COMPONENT;
    COMPONENT DigIO_Conn
@@ -100,7 +103,8 @@ BEGIN
          PortEnLB => PortEnLB,
          PortEnHB => PortEnHB,
          RS       => RS,
-         BdEn     => BdEn
+         BdEn     => BdEn_asynch,
+         F8M      => F8M
       );
 
    Dig_decode : subbus_io
@@ -114,6 +118,7 @@ BEGIN
          iData  => iData,
          RdEn   => RdEn,
          WrEn   => WrEn,
+         BdEn_In => BdEn_asynch,
          BdEn   => BdEn
       );
 

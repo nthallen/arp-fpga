@@ -22,36 +22,41 @@ ENTITY DigIO_Addr IS
     PortEnLB : OUT std_ulogic_vector (3 DOWNTO 0);
     PortEnHB : OUT std_ulogic_vector (3 DOWNTO 0);
     RS : OUT std_ulogic;
-    BdEn : OUT std_ulogic
+    BdEn : OUT std_ulogic;
+    F8M : IN std_ulogic
   );
 END ENTITY DigIO_Addr;
 
 --
 ARCHITECTURE beh OF DigIO_Addr IS
-  alias Port1 is PortEnLB(0);
-  alias Port3 is PortEnLB(1);
-  alias Port5 is PortEnLB(2);
-  alias CfgLB is PortEnLB(3);
-  alias Port2 is PortEnHB(0);
-  alias Port4 is PortEnHB(1);
-  alias Port6 is PortEnHB(2);
-  alias CfgHB is PortEnHB(3);
+  SIGNAL PortEnLB_i : std_ulogic_vector (3 DOWNTO 0);
+  SIGNAL PortEnHB_i : std_ulogic_vector (3 DOWNTO 0);
+  SIGNAL ConnEn_i : std_ulogic_vector( N_CONNECTORS-1 DOWNTO 0);
+  SIGNAL RS_i : std_ulogic;
+  alias Port1 is PortEnLB_i(0);
+  alias Port3 is PortEnLB_i(1);
+  alias Port5 is PortEnLB_i(2);
+  alias CfgLB is PortEnLB_i(3);
+  alias Port2 is PortEnHB_i(0);
+  alias Port4 is PortEnHB_i(1);
+  alias Port6 is PortEnHB_i(2);
+  alias CfgHB is PortEnHB_i(3);
 BEGIN
   addr_decode : Process (Addr)
     variable ConnEned : std_ulogic;
     variable PortEned : std_ulogic;
   begin
-    ConnEn <= ( others => '0');
-    PortEnLB <= ( others => '0');
-    PortEnHB <= ( others => '0');
-    RS <= '0';
+    ConnEn_i <= ( others => '0');
+    PortEnLB_i <= ( others => '0');
+    PortEnHB_i <= ( others => '0');
+    RS_i <= '0';
     ConnEned := '0';
     PortEned := '0';
     for Conn_Num in 0 to N_CONNECTORS-1 loop
       if unsigned(Addr(15 DOWNTO 5)) =
            unsigned(BASE_ADDRESS(15 DOWNTO 5))
             + Conn_Num then
-        ConnEn(Conn_Num) <= '1';
+        ConnEn_i(Conn_Num) <= '1';
         ConnEned := '1';
       end if;
     end loop;
@@ -97,7 +102,7 @@ BEGIN
         CfgHB <= '1';
         PortEned := '1';
       when "1100" =>
-        RS <= '1';
+        RS_i <= '1';
         PortEned := '1';
       when "1101" =>
         -- CfgCN <= '1';
@@ -107,4 +112,14 @@ BEGIN
     end case;
     BdEn <= PortEned AND ConnEned;
   end process;
+  
+  clocked: Process (F8M)
+  BEGIN
+    if F8M'EVENT AND F8M = '1' THEN
+      ConnEn <= ConnEn_i;
+      PortEnLB <= PortEnLB_i;
+      PortEnHB <= PortEnHB_i;
+      RS <= RS_i;
+    end if;
+  End Process;
 END ARCHITECTURE beh;

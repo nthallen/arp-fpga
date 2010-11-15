@@ -12,18 +12,19 @@ USE ieee.std_logic_1164.all;
 USE ieee.std_logic_arith.all;
 
 ENTITY subbus_io IS
-PORT( 
-  Data    : INOUT  std_logic_vector (15 DOWNTO 0);
-  ExpRd   : IN     std_ulogic;
-  ExpWr   : IN     std_ulogic;
-  ExpAck  : OUT    std_ulogic;
-  F8M     : IN     std_ulogic;
-  rst     : IN     std_ulogic;
-
-  iData   : INOUT  std_logic_vector (15 DOWNTO 0);
-  RdEn    : OUT    std_ulogic;
-  WrEn    : OUT    std_ulogic;
-  BdEn    : IN     std_ulogic
+  PORT( 
+    Data    : INOUT  std_logic_vector (15 DOWNTO 0);
+    ExpRd   : IN     std_ulogic;
+    ExpWr   : IN     std_ulogic;
+    ExpAck  : OUT    std_ulogic;
+    F8M     : IN     std_ulogic;
+    rst     : IN     std_ulogic;
+  
+    iData   : INOUT  std_logic_vector (15 DOWNTO 0);
+    RdEn    : OUT    std_ulogic;
+    WrEn    : OUT    std_ulogic;
+    BdEn_In : IN     std_ulogic;
+    BdEn    : OUT    std_ulogic
   );
   -- Data is the external data bus
   -- iData is the internal data bus that goes to the circuit
@@ -41,13 +42,21 @@ ARCHITECTURE beh OF subbus_io IS
   SIGNAL RdEn_int : std_ulogic;
   SIGNAL WrEn_int : std_ulogic;
 BEGIN
+
+
+  BdEnbl : Process (F8M) Is
+  Begin
+    if F8M'Event and F8M = '1' then
+      BdEn <= BdEn_In;
+    end if;
+  end Process;
   
-  -- WrEn_int does not need to be qualified with ExpAck because there
-  -- are function-specific enables downstream.
+  -- WrEn_int needs to be qualified with BdEn_In
+  -- to make sure WrEn is occurs during BdEn
   WrEnbl : Process (F8M) Is
   Begin
     if F8M'Event and F8M = '1' then
-      if ExpWr = '1' then
+      if ExpWr = '1' AND BdEn_In = '1' then
         if Wrote = '1' then
           WrEn_int <= '0';
         else
@@ -64,17 +73,12 @@ BEGIN
   Ack : process ( F8M ) is
   begin
     if F8M'event and F8M = '1' then
-      if (BdEn = '1') then
-        if ExpRd = '1' then
-          RdEn_int <= '1';
-          ExpAck <= '1';
-        elsif ExpWr = '1' then
-          RdEn_int <= '0';
-          ExpAck <= '1';
-        else
-          RdEn_int <= '0';
-          ExpAck <= '0';
-        end if;
+      if ExpRd = '1' AND BdEn_In = '1' then
+        RdEn_int <= '1';
+        ExpAck <= '1';
+      elsif ExpWr = '1' AND BdEn_In = '1' then
+        RdEn_int <= '0';
+        ExpAck <= '1';
       else
         RdEn_int <= '0';
         ExpAck <= '0';
@@ -86,23 +90,49 @@ BEGIN
   begin
     if F8M'event and F8M = '1' then
       if rst = '1' then
-        iData <= (others => 'Z');
         Data <= (others => 'Z');
-      elsif ExpRd = '1' and BdEn = '1' then
-        if RdEn_int = '0' then
-          iData <= (others => 'Z');
-          Data <= (others => 'Z');
-        else
-          Data <= iData;
-        end if;
-      elsif RdEn_int = '1' then
-        Data <= ( others => 'Z' );
-        iData <= ( others => 'Z' );
+      elsif ExpRd = '1' and BdEn_In = '1' then
+        Data <= iData;
+      else
+        Data <= (others => 'Z');
+      end if;
+    end if;
+  end process;
+
+  iDataBus : process (F8M) is
+  begin
+    if F8M'event and F8M = '1' then
+      if rst = '1' then
+        iData <= (others => 'Z');
+      elsif ExpRd = '1' and BdEn_In = '1' then
+        iData <= (others => 'Z');
       else
         iData <= Data;
       end if;
     end if;
   end process;
+--  
+--  DataBus : process (F8M) is
+--  begin
+--    if F8M'event and F8M = '1' then
+--      if rst = '1' then
+--        iData <= (others => 'Z');
+--        Data <= (others => 'Z');
+--      elsif ExpRd = '1' and BdEn = '1' then
+--        if RdEn_int = '0' then
+--          iData <= (others => 'Z');
+--          Data <= (others => 'Z');
+--        else
+--          Data <= iData;
+--        end if;
+--      elsif RdEn_int = '1' then
+--        Data <= ( others => 'Z' );
+--        iData <= ( others => 'Z' );
+--      else
+--        iData <= Data;
+--      end if;
+--    end if;
+--  end process;
 
   RdEn <= RdEn_int;
   WrEn <= WrEn_int;

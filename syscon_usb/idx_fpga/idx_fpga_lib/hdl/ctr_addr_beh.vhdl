@@ -23,7 +23,8 @@ ENTITY ctr_addr IS
     CtrEn : OUT natural range N_COUNTERS-1 DOWNTO 0;
     CtrsEn : OUT std_ulogic;
     CtrEnHW : OUT std_ulogic;
-    BdEn : OUT std_ulogic
+    BdEn : OUT std_ulogic;
+    F8M  : IN  std_ulogic
   );
 END ENTITY ctr_addr;
 
