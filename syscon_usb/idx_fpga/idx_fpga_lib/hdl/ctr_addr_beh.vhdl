@@ -30,42 +30,58 @@ END ENTITY ctr_addr;
 
 --
 ARCHITECTURE beh OF ctr_addr IS
+  SIGNAL StatEn_i : std_ulogic;
+  SIGNAL RevEn_i : std_ulogic;
+  SIGNAL CtrEn_i : natural range N_COUNTERS-1 DOWNTO 0;
+  SIGNAL CtrsEn_i : std_ulogic;
+  SIGNAL CtrEnHW_i : std_ulogic;
 BEGIN
   addr_decode : Process (Addr)
     variable CtrEned : std_ulogic;
   begin
-    CtrEn <= 0;
-    CtrsEn <= '0';
-    CtrEnHW <= '0';
-    StatEn <= '0';
-    RevEn <= '0';
+    CtrEn_i <= 0;
+    CtrsEn_i <= '0';
+    CtrEnHW_i <= '0';
+    StatEn_i <= '0';
+    RevEn_i <= '0';
     BdEn <= '0';
     CtrEned := '0';
     for Ctr_Num in 0 to N_COUNTERS-1 loop
       if unsigned(Addr(15 DOWNTO 1)) =
            unsigned(BASE_ADDRESS(15 DOWNTO 1)) + 8
             + Ctr_Num * 2 then
-        CtrEn <= Ctr_Num;
-        CtrsEn <= '1';
-        CtrEnHW <= '0';
+        CtrEn_i <= Ctr_Num;
+        CtrsEn_i <= '1';
+        CtrEnHW_i <= '0';
         CtrEned := '1';
       end if;
       if unsigned(Addr(15 DOWNTO 1)) =
            unsigned(BASE_ADDRESS(15 DOWNTO 1)) + 9
             + Ctr_Num * 2 then
-        CtrEn <= Ctr_Num;
-        CtrsEn <= '1';
-        CtrEnHW <= '1';
+        CtrEn_i <= Ctr_Num;
+        CtrsEn_i <= '1';
+        CtrEnHW_i <= '1';
         CtrEned := '1';
       end if;
     end loop;
     if Addr = BASE_ADDRESS then
-      StatEn <= '1';
+      StatEn_i <= '1';
       CtrEned := '1';
     elsif unsigned(Addr) = unsigned(BASE_ADDRESS) + 2 then
-      RevEn <= '1';
+      RevEn_i <= '1';
       CtrEned := '1';
     end if;
     BdEn <= CtrEned;
+  end process;
+  
+  clocked : Process (F8M)
+  Begin
+    if F8M'EVENT AND F8M = '1' then
+      CtrEn <= CtrEn_i;
+      CtrsEn <= CtrsEn_i;
+      RevEn <= RevEn_i;
+      CtrEnHW <= CtrEnHW_i;
+      StatEn <= StatEn_i;
+    end if;
   end process;
 END ARCHITECTURE beh;
