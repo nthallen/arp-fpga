@@ -45,8 +45,15 @@ ARCHITECTURE arch OF syscon IS
   SIGNAL DataIn : std_logic_vector (15 DOWNTO 0);
   SIGNAL Cnt : std_logic_vector (3 DOWNTO 0);
   SIGNAL INTA_int : std_ulogic;
-  SIGNAL Active : std_ulogic;
+  SIGNAL Done_int : std_ulogic;
+  SIGNAL Ack_int : std_ulogic;
+  SIGNAL Start : std_ulogic;
   SIGNAL TwoMinuteTO : std_ulogic;
+  TYPE STATE_TYPE IS ( s0, s1i, s1r, s1w, s2 );
+  SIGNAL current_state : STATE_TYPE;
+  TYPE DSTATE_TYPE IS ( d0, d1, d2, d3 );
+  SIGNAL dcnt_state : DSTATE_TYPE;
+
   COMPONENT syscon_tick
      GENERIC (
         DEBUG_MULTIPLIER : integer := 100
@@ -86,63 +93,21 @@ BEGIN
       F8M         => F8M
     );
 
-  rdwr : process (F8M) IS
-    Variable intr_int: std_ulogic;
-    Variable ack_int: std_ulogic;
+  ExpDataBus : process (F8M) is
   begin
     if F8M'Event and F8M = '1' then
-      if RdEn = '0' and WrEn = '0' then
-        ExpRd <= '0';
-        ExpWr <= '0';
-        INTA_int  <= '0';
+      if RdEn = '1' then
+        ExpData <= (others => 'Z');
+      else
         ExpData <= Data_o;
-        Cnt <= "0000";
-        Active <= '0';
-        Done <= '0';
-		    DataIn <= (others => '0');
-        Ack <= '0';
-      elsif Active = '0' then
-        if RdEn = '1' xor WrEn = '1' then -- exactly one
-          if RdEn = '1' and Addr = X"0040" then
-            INTA_int <= '1';
-            ExpRd <= '0';
-          else
-            ExpRd <= RdEn;
-          end if;
-          ExpWr <= WrEn;
-          Active <= '1';
-          Cnt <= X"7";
-          if RdEn = '1' then
-            ExpData <= (others => 'Z');
-          end if;
-        end if;
-      elsif Active = '1' then
-        if Cnt = "0000" then
-          Done <= '1';
-          ExpRd <= '0';
-          ExpWr <= '0';
-          INTA_int <= '0';
-          --ExpData <= (others => 'Z');
-        else
-          Cnt <= Cnt - 1;
-          ack_int := INTA_int;
-          for i in N_BOARDS-1 DOWNTO 0 loop
-            if ExpAck(i) = '1' then
-              ack_int := '1';
-            end if;
-          end loop;
-          Ack <= ack_int;
-          if RdEn = '1' then
-            if INTA_int = '1' then
-              DataIn(15 downto N_INTERRUPTS) <= ( others => '0' );
-              DataIn(N_INTERRUPTS-1 downto 0) <= To_StdLogicVector(BdIntr);
-            else
-              DataIn <= ExpData;
-            end if;
-          end if;
-        end if;
       end if;
-      
+    end if;
+  end process;
+  
+  intr : process (F8M) is
+    Variable intr_int: std_ulogic;
+  begin
+    if F8M'Event and F8M = '1' then
       intr_int := '0';
       for i in N_INTERRUPTS-1 DOWNTO 0 loop
         if BdIntr(i) = '1' then
@@ -150,6 +115,22 @@ BEGIN
         end if;
       end loop;
       ExpIntr <= intr_int;
+    end if;
+  end process;
+  
+  -- ExpAck is not qualified here by RdEn or WrEn, because it
+  -- should be qualified downstream.
+  ackr : process (F8M) is
+    Variable ack_i: std_ulogic;
+  begin
+    if F8M'Event and F8M = '1' then
+      ack_i := INTA_int;
+      for i in N_BOARDS-1 DOWNTO 0 loop
+        if ExpAck(i) = '1' then
+          ack_i := '1';
+        end if;
+      end loop;
+      Ack_int <= ack_i;
     end if;
   end process;
   
@@ -167,5 +148,109 @@ BEGIN
   CmdStrb <= CS;
   ExpReset <= rst;
   INTA <= INTA_int;
+  Done <= Done_int;
+
+  -- outputs ExpRd, INTA_int, ExpWr, Ack, DataIn, Start
+  clocked_proc : PROCESS ( F8M )
+  BEGIN
+    IF (F8M'EVENT AND F8M = '1') THEN
+      if rst = '1' then
+        current_state <= s0;
+        Start <= '0';
+        Ack <= '0';
+        ExpRd <= '0';
+        ExpWr <= '0';
+        INTA_int <= '0';
+      else
+        CASE current_state IS
+          WHEN s0 =>
+            if RdEn = '1' AND WrEn = '0' AND Addr = X"0040" then
+              current_state <= s1i;
+              INTA_int <= '1';
+              Start <= '1';
+            elsif RdEn = '1' AND WrEn = '0' then
+              current_state <= s1r;
+              ExpRd <= '1';
+              Start <= '1';
+            elsif RdEn = '0' AND WrEn = '1' then
+              current_state <= s1w;
+              ExpWr <= '1';
+              Start <= '1';
+            else
+              Start <= '0';
+              Ack <= '0';
+              ExpRd <= '0';
+              ExpWr <= '0';
+              INTA_int <= '0';
+            end if;
+          WHEN s1i =>
+            if Done_int = '1' then
+              current_state <= s2;
+              INTA_int <= '0';
+            else
+              Ack <= ack_int;
+              DataIn(15 downto N_INTERRUPTS) <= ( others => '0' );
+              DataIn(N_INTERRUPTS-1 downto 0) <= To_StdLogicVector(BdIntr);
+            end if;
+          WHEN s1r =>
+            if Done_int = '1' then
+              current_state <= s2;
+              ExpRd <= '0';
+            else
+              Ack <= ack_int;
+              DataIn <= ExpData;
+            end if;
+          WHEN s1w =>
+            if Done_int = '1' then
+              current_state <= s2;
+              ExpWr <= '0';
+            else
+              Ack <= ack_int;
+            end if;
+          WHEN s2 =>
+            if RdEn = '0' AND WrEn = '0' then
+              current_state <= s0;
+              Start <= '0';
+              Ack <= '0';
+            end if;
+          WHEN OTHERS =>
+            current_state <= s0;
+        END CASE;
+      end if;
+    end if;
+  END PROCESS;
+
+  -- outputs Done_int
+  dclocked_proc : PROCESS ( F8M )
+  BEGIN
+    IF (F8M'EVENT AND F8M = '1') THEN
+      if rst = '1' then
+        dcnt_state <= d0;
+        Done_int <= '0';
+      else
+        CASE dcnt_state IS
+          WHEN d0 =>
+            if Start = '1' then
+              Cnt <= X"5";
+              dcnt_state <= d1;
+            end if;
+          WHEN  d1 =>
+            if Cnt = X"0" then
+              dcnt_state <= d2;
+              Done_int <= '1';
+            else
+              Cnt <= Cnt - 1;
+            end if;
+          WHEN  d2 =>
+            if RdEn = '0' AND WrEn = '0' then
+              dcnt_state <= d0;
+              Done_int <= '0';
+            end if;
+          WHEN others =>
+            dcnt_state <= d0;
+        END CASE;
+      end if;
+    end if;
+  END PROCESS;
 
 END ARCHITECTURE arch;
