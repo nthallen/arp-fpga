@@ -43,16 +43,13 @@ BEGIN
       CfgAddr(7) <= '0';
       AcqAddr(6 DOWNTO 0) <= Addr(7 DOWNTO 1);
       AcqAddr(7) <= '0';
+      if Addr(15 DOWNTO 8) = "00001100" AND Addr(0) = '0' then
+        BdEn <= '1';
+      else
+        BdEn <= '0';
+      end if;
     end if;
   end process;
-  
-  En : Process (Addr) Is
-  Begin
-    if Addr(15 DOWNTO 8) = "00001100" AND Addr(0) = '0' then
-      BdEn <= '1';
-    else
-      BdEn <= '0';
-    end if;
-  End Process;
+
 END ARCHITECTURE beh;
 

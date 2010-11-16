@@ -174,12 +174,14 @@ BEGIN
     assert Ack = '1' report "Ack should be asserted" severity error;
     wait for 600 ns;
     ExpAck <= "0";
-    wait for 100 ns;
+    wait for 400 ns;
+    wait until F8M'Event and F8M = '1';
     assert ExpWr = '0' report "ExpWr should be cleared" severity error;
     assert Done = '1' report "Done should be asserted" severity error;
     assert Ack = '1' report "Ack should be asserted" severity error;
     WrEn <= '0';
-    wait for 100 ns;
+    wait until F8M'Event and F8M = '1';
+    wait for 30 ns;
     assert Done = '0' report "Done should not be asserted" severity error;
     assert To_X01(Ack) = '0' report "Ack should not be asserted" severity error;
 
