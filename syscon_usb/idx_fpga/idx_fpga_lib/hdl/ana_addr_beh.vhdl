@@ -27,7 +27,7 @@ ARCHITECTURE beh OF ana_addr IS
   SIGNAL mapped : unsigned(5 DOWNTO 0);
 BEGIN
   
-  Addrs : Process (F8M) is
+  Addrs : Process (F30M) is
   Begin
     if F30M'Event AND F30M = '1' then
       permute(0) <= Addr(1);
