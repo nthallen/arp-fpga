@@ -10,8 +10,6 @@
 LIBRARY ieee;
 USE ieee.std_logic_1164.all;
 USE ieee.std_logic_arith.all;
-LIBRARY UNISIM;
-USE unisim.vcomponents.GSR;
 
 ENTITY syscon_tick IS
   GENERIC ( DEBUG_MULTIPLIER : integer := 100 );
@@ -27,22 +25,16 @@ END ENTITY syscon_tick;
 
 --
 ARCHITECTURE beh OF syscon_tick IS
-  SIGNAL Ticked : std_ulogic;
-  SIGNAL TwoSecTO : std_ulogic;
-  SIGNAL TwoSecTOd : std_ulogic; -- latched
-  SIGNAL CmdEnbl_int: std_ulogic;
-  SIGNAL TwoMinTO : std_ulogic;
-  SIGNAL TickCnt : unsigned(29 DOWNTO 0);
+  SIGNAL Ticked : std_ulogic := '0';
+  SIGNAL TwoSecTO : std_ulogic := '1';
+  SIGNAL TwoSecTOd : std_ulogic := '1'; -- latched
+  SIGNAL CmdEnbl_int: std_ulogic := '0';
+  SIGNAL TwoMinTO : std_ulogic := '0';
+  SIGNAL TickCnt : unsigned(29 DOWNTO 0) := conv_unsigned(0,30);
 BEGIN
-  SIC : Process (F8M, GSR) IS
+  SIC : Process (F8M) IS
   Begin
-    if GSR = '1' then
-      TwoSecTO <= '1';
-      TwoSecTOd <= '1';
-      TwoMinTO <= '0';
-      Ticked <= '0';
-      TickCnt <= conv_unsigned(0,30);
-    elsif F8M'Event AND F8M = '1' then
+    if F8M'Event AND F8M = '1' then
       if TickTock /= Ticked then
         TwoMinTO <= '0';
         TwoSecTO <= '0';
