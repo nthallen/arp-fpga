@@ -93,7 +93,6 @@ BEGIN
   End Process;
   test_proc : process is
   Begin
-    Done <= '0';
     RDEN <= '0';
     WREN <= "00";
     RD_ADDR <= (others => '0');
@@ -102,6 +101,7 @@ BEGIN
     OE <= '1';
     RST <= '1';
     -- pragma synthesis_off
+    Done <= '0';
     wait until CLK'Event AND CLK = '1';
     RST <= '0';
     wait until CLK'Event AND CLK = '1';
@@ -113,11 +113,14 @@ BEGIN
     RD_ADDR <= X"01";
     RDEN <= '1';
     wait until CLK'Event AND CLK = '1';
+    wait for 30ns;
+    assert RD_DATA = X"12345678" report "RD_DATA invalid" severity error;
     WR_DATA <= X"55555555";
     WREN <= "11";
     for i in 0 to 5 loop
       WR_ADDR <= std_logic_vector(conv_unsigned(i, 8));
       wait until CLK'Event AND CLK = '1';
+      assert RD_DATA = X"12345678" report "RD_DATA changed" severity error;
     end loop;
     RDEN <= '0';
     for i in 6 to 6 loop
@@ -125,14 +128,17 @@ BEGIN
       wait until CLK'Event AND CLK = '1';
     end loop;
     RDEN <= '1';
+    wait until CLK'Event AND CLK = '1';
     for i in 7 to 8 loop
       WR_ADDR <= std_logic_vector(conv_unsigned(i, 8));
       wait until CLK'Event AND CLK = '1';
+      assert RD_DATA = X"55555555" report "RD_DATA did not update" severity error;
     end loop;
     WR_DATA <= X"AAAAAAAA";
     for i in 0 to 8 loop
       WR_ADDR <= std_logic_vector(conv_unsigned(i, 8));
       wait until CLK'Event AND CLK = '1';
+      assert RD_DATA = X"55555555" report "RD_DATA changed" severity error;
     end loop;
     wait until CLK'Event AND CLK = '1';
     OE <= '0';

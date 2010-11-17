@@ -101,10 +101,11 @@ BEGIN
     procedure sbwr( Addr_In : IN std_logic_vector (15 downto 0);
                     Data_In : IN std_logic_vector (15 downto 0) ) is
     begin
+      -- pragma synthesis_off
+      -- wait for 40 ns;
+      wait until F8M'Event AND F8M = '1';
       Addr <= Addr_In;
       Data <= Data_in;
-      -- pragma synthesis_off
-      wait for 40 ns;
       ExpWr <= '1';
       wait for 1 us;
       assert ExpAck = '1' report "No acknowledge on write" severity error;
@@ -136,9 +137,10 @@ BEGIN
        Expect_Chan : IN integer;
        Chan_No : IN integer ) is
     begin
-      Addr <= Addr_In;
       -- pragma synthesis_off
-      wait for 100 ns;
+      -- Change test to have Addr and control arrive simultaneously
+      wait until F8M'Event AND F8M = '1';
+      Addr <= Addr_In;
       ExpWr <= '1';
       wait until F8M'Event and F8M = '1';
       wait for 30 ns;
@@ -187,10 +189,10 @@ BEGIN
        RData : IN std_logic_vector(15 DOWNTO 0);
        What : IN string ) is
     begin
-      Addr <= Addr_In;
       Data <= (others => 'Z');
       -- pragma synthesis_off
-      wait for 100 ns;
+      wait until F8M'Event and F8M = '1';
+      Addr <= Addr_In;
       ExpRd <= '1';
       wait until F8M'Event and F8M = '1';
       wait until F8M'Event and F8M = '1';

@@ -32,7 +32,7 @@ ARCHITECTURE rtl OF mock_ad7687_chain IS
   SIGNAL CurRow : std_ulogic_vector(2 DOWNTO 0);
 BEGIN
   
-  shift : Process (SCK16, Conv, RST) Is
+  shift : Process (SCK16, Conv, RST, Row) Is
   Begin
     if RST = '1' then
       ConvCnt <= X"00";

@@ -23,8 +23,7 @@ ENTITY subbus_io IS
     iData   : INOUT  std_logic_vector (15 DOWNTO 0);
     RdEn    : OUT    std_ulogic;
     WrEn    : OUT    std_ulogic;
-    BdEn_In : IN     std_ulogic;
-    BdEn    : OUT    std_ulogic
+    BdEn    : IN     std_ulogic
   );
   -- Data is the external data bus
   -- iData is the internal data bus that goes to the circuit
@@ -43,20 +42,13 @@ ARCHITECTURE beh OF subbus_io IS
   SIGNAL WrEn_int : std_ulogic;
 BEGIN
 
-
-  BdEnbl : Process (F8M) Is
-  Begin
-    if F8M'Event and F8M = '1' then
-      BdEn <= BdEn_In;
-    end if;
-  end Process;
   
   -- WrEn_int needs to be qualified with BdEn_In
   -- to make sure WrEn is occurs during BdEn
   WrEnbl : Process (F8M) Is
   Begin
     if F8M'Event and F8M = '1' then
-      if ExpWr = '1' AND BdEn_In = '1' then
+      if ExpWr = '1' AND BdEn = '1' then
         if Wrote = '1' then
           WrEn_int <= '0';
         else
@@ -73,10 +65,10 @@ BEGIN
   Ack : process ( F8M ) is
   begin
     if F8M'event and F8M = '1' then
-      if ExpRd = '1' AND BdEn_In = '1' then
+      if ExpRd = '1' AND BdEn = '1' then
         RdEn_int <= '1';
         ExpAck <= '1';
-      elsif ExpWr = '1' AND BdEn_In = '1' then
+      elsif ExpWr = '1' AND BdEn = '1' then
         RdEn_int <= '0';
         ExpAck <= '1';
       else
@@ -91,7 +83,7 @@ BEGIN
     if F8M'event and F8M = '1' then
       if rst = '1' then
         Data <= (others => 'Z');
-      elsif ExpRd = '1' and BdEn_In = '1' then
+      elsif ExpRd = '1' and BdEn = '1' then
         Data <= iData;
       else
         Data <= (others => 'Z');
@@ -104,7 +96,7 @@ BEGIN
     if F8M'event and F8M = '1' then
       if rst = '1' then
         iData <= (others => 'Z');
-      elsif ExpRd = '1' and BdEn_In = '1' then
+      elsif ExpRd = '1' and BdEn = '1' then
         iData <= (others => 'Z');
       else
         iData <= Data;

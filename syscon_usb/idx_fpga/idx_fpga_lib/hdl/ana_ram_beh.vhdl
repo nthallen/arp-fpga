@@ -33,6 +33,8 @@ ARCHITECTURE beh OF ana_ram IS
   SIGNAL WE : std_logic_vector(3 DOWNTO 0);
   SIGNAL RD_DATA_int : std_logic_vector(31 DOWNTO 0);
   SIGNAL RDEN_dly : std_ulogic;
+  SIGNAL RAM_RD_ADDR : std_logic_vector(8 DOWNTO 0);
+  SIGNAL RAM_WR_ADDR : std_logic_vector(8 DOWNTO 0);
 
   COMPONENT BRAM_SDP_MACRO is
   generic (
@@ -380,16 +382,19 @@ BEGIN
    port map (
      DO => RD_DATA_int, -- Output read data port
      DI => WR_DATA,     -- Input write data port
-     RDADDR => RD_ADDR, -- Input read address
+     RDADDR => RAM_RD_ADDR, -- Input read address
      RDCLK => CLK,      -- Input read clock
      RDEN => RDEN_int,  -- Input read port enable
      REGCE => '0',    -- Input read output register enable
      RST => RST,        -- Input reset 
      WE => WE,          -- Input write enable
-     WRADDR => WR_ADDR, -- Input write address
+     WRADDR => RAM_WR_ADDR, -- Input write address
      WRCLK => CLK,      -- Input write clock
      WREN => WREN_int   -- Input write port enable
   );
+  
+  RAM_RD_ADDR <= '0' & RD_ADDR;
+  RAM_WR_ADDR <= '0' & WR_ADDR;
 
   Wr_En : Process (WREN) IS
   Begin

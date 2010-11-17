@@ -43,6 +43,7 @@ END ENTITY syscon;
 --
 ARCHITECTURE arch OF syscon IS
   SIGNAL DataIn : std_logic_vector (15 DOWNTO 0);
+  SIGNAL Addr_int : std_logic_vector(15 DOWNTO 0);
   SIGNAL Cnt : std_logic_vector (3 DOWNTO 0);
   SIGNAL INTA_int : std_ulogic;
   SIGNAL Done_int : std_ulogic;
@@ -93,7 +94,7 @@ BEGIN
       F8M         => F8M
     );
 
-  ExpDataBus : process (F8M) is
+  ExpAddrDataBus : process (F8M) is
   begin
     if F8M'Event and F8M = '1' then
       if RdEn = '1' then
@@ -101,6 +102,7 @@ BEGIN
       else
         ExpData <= Data_o;
       end if;
+      Addr_int <= Addr;
     end if;
   end process;
   
@@ -144,9 +146,9 @@ BEGIN
   End Process;
 
   Data_i <= DataIn;
-  ExpAddr <= Addr;
   CmdStrb <= CS;
   ExpReset <= rst;
+  ExpAddr <= Addr_int;
   INTA <= INTA_int;
   Done <= Done_int;
 
@@ -164,7 +166,7 @@ BEGIN
       else
         CASE current_state IS
           WHEN s0 =>
-            if RdEn = '1' AND WrEn = '0' AND Addr = X"0040" then
+            if RdEn = '1' AND WrEn = '0' AND Addr_int = X"0040" then
               current_state <= s1i;
               INTA_int <= '1';
               Start <= '1';

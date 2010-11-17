@@ -106,10 +106,10 @@ BEGIN
       procedure sbwr( Addr_In : IN std_logic_vector (15 downto 0);
                       Data_In : IN std_logic_vector (15 downto 0) ) is
       begin
+        -- pragma synthesis_off
+        wait until F8M'Event AND F8M = '1';
         Addr <= Addr_In;
         Data <= Data_in;
-        -- pragma synthesis_off
-        wait for 40 ns;
         ExpWr <= '1';
         wait for 1 us;
         assert ExpAck = '1' report "No acknowledge on write" severity error;
@@ -123,8 +123,8 @@ BEGIN
       procedure sbrd_check( addr_in : std_logic_vector (15 DOWNTO 0);
           expected : std_logic_vector(15 DOWNTO 0) ) is
       begin
+        wait until F8M'Event AND F8M = '1';
         Addr <= addr_in;
-        wait for 40 ns;
         ExpRd <= '1';
         wait for 1 us;
         assert ExpAck = '1' report "No Acknowledge on read" severity error;

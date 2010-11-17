@@ -57,34 +57,32 @@ ARCHITECTURE behavioral OF decode IS
   SIGNAL BdEn_int : std_ulogic; -- true if board is addressed
   SIGNAL Intr_En : std_ulogic;
 BEGIN
-  Addressing : process (F8M) is
+  Addressing : process (Addr) is
     Variable Chan_num : unsigned(3 DOWNTO 0);
   begin
-    if F8M'Event AND F8M = '1' then
-      Base_int <= '0';
-      Chan_sel <= '0';
-      BdEn_int <= '0';
-      Chan_int <= (others => '0');
-      if Addr = BASE_ADDR then
-        Base_int <= '1';
-        BdEn_int <= '1';
-      elsif Addr(15 DOWNTO 7) = BASE_ADDR(15 DOWNTO 7) and Addr(0) = '0' then
-        Chan_num := unsigned(Addr(6 DOWNTO 3));
-        for i in 0 to N_CHANNELS-1 loop
-          if i+1 = to_integer(Chan_num) then
-            Chan_sel <= '1';
-            BdEn_int <= '1';
-            Chan_int(i) <= '1';
-          end if;
-        end loop;
-          -- if Chan_num > 0 and Chan_num <= N_CHANNELS then
-          -- Chan_sel <= '1';
-          -- BdEn_int <= '1';
-          -- Chan_int(to_integer(Chan_num)) <= '1';
-          -- end if;
-      end if;
-      OpCd <= Addr(2 DOWNTO 0);
+    Base_int <= '0';
+    Chan_sel <= '0';
+    BdEn_int <= '0';
+    Chan_int <= (others => '0');
+    if Addr = BASE_ADDR then
+      Base_int <= '1';
+      BdEn_int <= '1';
+    elsif Addr(15 DOWNTO 7) = BASE_ADDR(15 DOWNTO 7) and Addr(0) = '0' then
+      Chan_num := unsigned(Addr(6 DOWNTO 3));
+      for i in 0 to N_CHANNELS-1 loop
+        if i+1 = to_integer(Chan_num) then
+          Chan_sel <= '1';
+          BdEn_int <= '1';
+          Chan_int(i) <= '1';
+        end if;
+      end loop;
+        -- if Chan_num > 0 and Chan_num <= N_CHANNELS then
+        -- Chan_sel <= '1';
+        -- BdEn_int <= '1';
+        -- Chan_int(to_integer(Chan_num)) <= '1';
+        -- end if;
     end if;
+    OpCd <= Addr(2 DOWNTO 0);
   end process;
 
   f4m_clk : Process (F8M, rst, F4M_int)

@@ -11,7 +11,7 @@ LIBRARY ieee;
 USE ieee.std_logic_1164.ALL;
 USE ieee.std_logic_arith.ALL;
 LIBRARY idx_fpga_lib;
-USE idx_fpga_lib.All;
+-- USE idx_fpga_lib.All;
 
 ENTITY bench_ana_input_tester IS
    PORT( 
@@ -23,7 +23,7 @@ ENTITY bench_ana_input_tester IS
       SCK16  : IN     std_ulogic_vector (1 DOWNTO 0);
       SCK5   : IN     std_ulogic_vector (1 DOWNTO 0);
       SDO    : IN     std_ulogic_vector (1 DOWNTO 0);
-      Addr   : OUT    std_ulogic_vector (15 DOWNTO 0);
+      Addr   : OUT    std_logic_vector (15 DOWNTO 0);
       ExpRd  : OUT    std_ulogic;
       ExpWr  : OUT    std_ulogic;
       F30M   : OUT    std_ulogic;
@@ -41,6 +41,7 @@ ARCHITECTURE sim OF bench_ana_input_tester IS
    SIGNAL Bank : std_ulogic;
    SIGNAL RST_int : std_ulogic;
    SIGNAL F30M_int : std_ulogic;
+   SIGNAL CvtCnt : unsigned(7 DOWNTO 0);
    SIGNAL Done : std_ulogic;
    
    COMPONENT mock_ad7687_chain
@@ -89,8 +90,18 @@ BEGIN
     wait;
     -- pragma synthesis_on
   End Process;
+  
+  Count : Process (RST_int,CS5)
+  Begin
+    if RST_int = '1' then
+      CvtCnt <= X"00";
+    elsif CS5'Event AND CS5 = '0' then
+      CvtCnt <= CvtCnt + 1;
+    end if;
+  End Process;
 
   test_proc : Process
+    Variable CvtdRow : unsigned(4 DOWNTO 0);
   Begin
     Done <= '0';
     ExpRd <= '0';
@@ -101,11 +112,23 @@ BEGIN
     wait until F30M_int'Event AND F30M_int = '1';
     RST_int <= '0';
     wait until F30M_int'Event AND F30M_int = '1';
+    wait for 100us; -- wait for initial conversions
     Addr <= X"0C20";
     wait for 100 ns;
     for i in 1 to 20 loop
       ExpRd <= '1';
       wait for 1 us;
+      assert Data(15 DOWNTO 8) = X"10"
+        report "Mock output does not match row/column"
+        severity error;
+      assert Data(2 DOWNTO 0) = "001"
+        report "Mock low bits do not match cvt count row"
+        severity error;
+      CvtdRow := CvtCnt(7 DOWNTO 3);
+      assert Data(7 Downto 3) = conv_std_logic_vector(CvtdRow,5)
+          OR Data(7 DOWNTO 3) = conv_std_logic_vector(CvtdRow-1,5)
+        report "Cvt Count does not match"
+        severity error;
       ExpRd <= '0';
       wait for 100 us;
     end loop;

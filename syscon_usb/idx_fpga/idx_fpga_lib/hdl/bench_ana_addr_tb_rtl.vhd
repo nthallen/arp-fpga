@@ -34,14 +34,11 @@ ARCHITECTURE rtl OF bench_ana_addr IS
    SIGNAL BdEn_int : std_ulogic;
    SIGNAL CfgAddr_int : std_logic_vector(7 DOWNTO 0);
    SIGNAL AcqAddr_int : std_logic_vector(7 DOWNTO 0);
-   SIGNAL Done : std_ulogic;
-   SIGNAL F30M : std_ulogic;
 
    -- Component declarations
    COMPONENT ana_addr
       PORT (
          Addr    : IN     std_logic_vector(15 DOWNTO 0);
-         F30M    : IN     std_ulogic;
          BdEn    : OUT    std_ulogic;
          CfgAddr : OUT    std_logic_vector(7 DOWNTO 0);
          AcqAddr : OUT    std_logic_vector(7 DOWNTO 0)
@@ -60,46 +57,29 @@ BEGIN
        Addr    => Addr,
        BdEn    => BdEn_int,
        CfgAddr => CfgAddr_int,
-       AcqAddr => AcqAddr_int,
-       F30M => F30M
+       AcqAddr => AcqAddr_int
     );
 
   BdEn <= BdEn_int;
   CfgAddr <= CfgAddr_int;
   AcqAddr <= AcqAddr_int;
 
-  -- Approximately 30 MHz (33ns period => 30.3MHz)
-  clock : Process
-  Begin
-    F30M <= '0';
-    -- pragma synthesis_off
-    wait for 40 ns;
-    while Done = '0' loop
-      F30M <= '0';
-      wait for 16 ns;
-      F30M <= '1';
-      wait for 17 ns;
-    end loop;
-    wait;
-    -- pragma synthesis_on
-  End Process;
-
   test_proc : Process IS
+    -- pragma synthesis_off
     Variable unmapped : unsigned(5 DOWNTO 0);
     Variable remapped : unsigned(5 DOWNTO 0);
     Variable chkaddr : std_logic_vector(7 DOWNTO 0);
+    -- pragma synthesis_on
   Begin
     Addr <= X"0000";
-    Done <= '0';
     -- pragma synthesis_off
     wait for 50 ns;
     assert BdEn_int = '0' report "BdEn asserted" severity error;
     for i in 16#BFE# to 16#D03# loop
       Addr <=
-        To_StdULogicVector(
           conv_std_logic_vector(
-            conv_unsigned(i,16),16));
-      wait until F30M'EVENT AND F30M = '1';
+            conv_unsigned(i,16),16);
+      wait for 33ns;
       unmapped(0) := CfgAddr_int(0);
       unmapped(1) := CfgAddr_int(1);
       unmapped(2) := CfgAddr_int(2);
@@ -122,7 +102,6 @@ BEGIN
         report "CfgAddr bit 7 should be zero"
         severity error;
     end loop;
-    Done <= '1';
     wait;
     -- pragma synthesis_on
   End Process;
