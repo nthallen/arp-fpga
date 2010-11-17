@@ -26,6 +26,7 @@ ENTITY bench_ana_input_tester IS
       Addr   : OUT    std_logic_vector (15 DOWNTO 0);
       ExpRd  : OUT    std_ulogic;
       ExpWr  : OUT    std_ulogic;
+      F8M    : OUT    std_ulogic;
       F30M   : OUT    std_ulogic;
       RST    : OUT    std_ulogic;
       SDI    : OUT    std_ulogic_vector (1 DOWNTO 0);
@@ -40,7 +41,7 @@ END bench_ana_input_tester ;
 ARCHITECTURE sim OF bench_ana_input_tester IS
    SIGNAL Bank : std_ulogic;
    SIGNAL RST_int : std_ulogic;
-   SIGNAL F30M_int : std_ulogic;
+   SIGNAL F8M_int : std_ulogic;
    SIGNAL CvtCnt : unsigned(7 DOWNTO 0);
    SIGNAL Done : std_ulogic;
    
@@ -76,15 +77,30 @@ BEGIN
       Bank  => '1'
     );
 
-  clock : Process
+  clock8 : Process
   Begin
-    F30M_int <= '0';
+    F8M_int <= '0';
     -- pragma synthesis_off
     wait for 40 ns;
     while Done = '0' loop
-      F30M_int <= '0';
+      F8M_int <= '0';
+      wait for 62 ns;
+      F8M_int <= '1';
+      wait for 63 ns;
+    end loop;
+    wait;
+    -- pragma synthesis_on
+  End Process;
+
+  clock30 : Process
+  Begin
+    F30M <= '0';
+    -- pragma synthesis_off
+    wait for 40 ns;
+    while Done = '0' loop
+      F30M <= '0';
       wait for 16 ns;
-      F30M_int <= '1';
+      F30M <= '1';
       wait for 17 ns;
     end loop;
     wait;
@@ -109,15 +125,18 @@ BEGIN
     Data <= (others => 'Z');
     RST_int <= '1';
     -- pragma synthesis_off
-    wait until F30M_int'Event AND F30M_int = '1';
+    wait until F8M_int'Event AND F8M_int = '1';
     RST_int <= '0';
-    wait until F30M_int'Event AND F30M_int = '1';
-    wait for 100us; -- wait for initial conversions
+    wait until F8M_int'Event AND F8M_int = '1';
+    wait for 100 us; -- wait for initial conversions
     Addr <= X"0C20";
     wait for 100 ns;
     for i in 1 to 20 loop
+      wait until F8M_int'Event AND F8M_int = '1';
       ExpRd <= '1';
-      wait for 1 us;
+      for i in 1 to 7 loop
+        wait until F8M_int'Event AND F8M_int = '1';
+      end loop;
       assert Data(15 DOWNTO 8) = X"10"
         report "Mock output does not match row/column"
         severity error;
@@ -129,6 +148,7 @@ BEGIN
           OR Data(7 DOWNTO 3) = conv_std_logic_vector(CvtdRow-1,5)
         report "Cvt Count does not match"
         severity error;
+      wait until F8M_int'Event AND F8M_int = '1';
       ExpRd <= '0';
       wait for 100 us;
     end loop;
@@ -138,7 +158,7 @@ BEGIN
   End Process;
 
   RST <= RST_int;
-  F30M <= F30M_int;
+  F8M <= F8M_int;
 
 END ARCHITECTURE sim;
 

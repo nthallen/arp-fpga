@@ -22,7 +22,8 @@ ENTITY ana_cfg_ram IS
     WE0 : IN std_ulogic;
     WE1 : IN std_ulogic;
     RDEN : IN std_ulogic;
-    CLK  : IN std_ulogic;
+    RD_CLK : IN std_ulogic;
+    WR_CLK : IN std_ulogic;
     RST  : IN std_ulogic
     );
 END ENTITY ana_cfg_ram;
@@ -41,7 +42,8 @@ ARCHITECTURE beh OF ana_cfg_ram IS
          WREN    : IN     std_ulogic_vector(1 DOWNTO 0);
          RDEN    : IN     std_ulogic;
          OE      : IN     std_ulogic;
-         CLK     : IN     std_ulogic;
+         RD_CLK  : IN     std_ulogic;
+         WR_CLK  : IN     std_ulogic;
          RST     : IN     std_ulogic
       );
    END COMPONENT;
@@ -57,7 +59,8 @@ BEGIN
          WREN    => WREN,
          RDEN    => RDEN,
          OE      => '1',
-         CLK     => CLK,
+         RD_CLK  => RD_CLK,
+         WR_CLK  => WR_CLK,
          RST     => RST
       );
   WREN(0) <= WE0;

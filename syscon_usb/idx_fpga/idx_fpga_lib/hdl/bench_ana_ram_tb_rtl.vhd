@@ -51,7 +51,8 @@ ARCHITECTURE rtl OF bench_ana_ram IS
          WREN    : IN     std_ulogic_vector(1 DOWNTO 0);
          RDEN    : IN     std_ulogic;
          OE      : IN     std_ulogic;
-         CLK     : IN     std_ulogic;
+         RD_CLK  : IN     std_ulogic;
+         WR_CLK  : IN     std_ulogic;
          RST     : IN     std_ulogic
       );
    END COMPONENT;
@@ -72,7 +73,8 @@ BEGIN
          WREN    => WREN,
          RDEN    => RDEN,
          OE      => OE,
-         CLK     => CLK,
+         RD_CLK  => CLK,
+         WR_CLK  => CLK,
          RST     => RST
       );
 
@@ -113,7 +115,7 @@ BEGIN
     RD_ADDR <= X"01";
     RDEN <= '1';
     wait until CLK'Event AND CLK = '1';
-    wait for 30ns;
+    wait for 30 ns;
     assert RD_DATA = X"12345678" report "RD_DATA invalid" severity error;
     WR_DATA <= X"55555555";
     WREN <= "11";

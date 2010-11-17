@@ -21,7 +21,8 @@ ENTITY ana_data_ram IS
     WR_DATA : IN std_logic_vector(31 DOWNTO 0);
     RD_ADDR : IN std_logic_vector(7 DOWNTO 0);
     WR_ADDR : IN std_logic_vector(7 DOWNTO 0);
-    CLK     : IN std_ulogic;
+    RD_CLK  : IN std_ulogic;
+    WR_CLK  : IN std_ulogic;
     RST     : IN std_ulogic
     );
 END ENTITY ana_data_ram;
@@ -39,7 +40,8 @@ ARCHITECTURE beh OF ana_data_ram IS
          WREN    : IN     std_ulogic_vector(1 DOWNTO 0);
          RDEN    : IN     std_ulogic;
          OE      : IN     std_ulogic;
-         CLK     : IN     std_ulogic;
+         RD_CLK  : IN     std_ulogic;
+         WR_CLK  : IN     std_ulogic;
          RST     : IN     std_ulogic
       );
    END COMPONENT;
@@ -55,7 +57,8 @@ BEGIN
          WREN    => WREN_int,
          RDEN    => RDEN,
          OE      => RDEN,
-         CLK     => CLK,
+         RD_CLK  => RD_CLK,
+         WR_CLK  => WR_CLK,
          RST     => RST
       );
   WREN_int(0) <= WREN;

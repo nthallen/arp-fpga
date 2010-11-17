@@ -78,9 +78,9 @@ BEGIN
   Begin
     F8M <= '0';
     -- pragma synthesis_off
-    wait for 62.5 ns;
+    wait for 62 ns;
     F8M <= '1';
-    wait for 62.5 ns;
+    wait for 63 ns;
     -- pragma synthesis_on
   End Process;
 

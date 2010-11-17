@@ -22,7 +22,8 @@ ENTITY ana_ram IS
     WREN : IN std_ulogic_vector(1 DOWNTO 0);
     RDEN : IN std_ulogic;
     OE : IN std_ulogic;
-    CLK : IN std_ulogic;
+    RD_CLK : IN std_ulogic;
+    WR_CLK : IN std_ulogic;
     RST : IN std_ulogic
   );
 END ENTITY ana_ram;
@@ -383,13 +384,13 @@ BEGIN
      DO => RD_DATA_int, -- Output read data port
      DI => WR_DATA,     -- Input write data port
      RDADDR => RAM_RD_ADDR, -- Input read address
-     RDCLK => CLK,      -- Input read clock
+     RDCLK => RD_CLK,      -- Input read clock
      RDEN => RDEN_int,  -- Input read port enable
      REGCE => '0',    -- Input read output register enable
      RST => RST,        -- Input reset 
      WE => WE,          -- Input write enable
      WRADDR => RAM_WR_ADDR, -- Input write address
-     WRCLK => CLK,      -- Input write clock
+     WRCLK => WR_CLK,      -- Input write clock
      WREN => WREN_int   -- Input write port enable
   );
   
@@ -405,11 +406,11 @@ BEGIN
     end if;
   End Process;
 
-  Rd_En : Process ( CLK, RST, RDEN, RDEN_dly ) IS
+  Rd_En : Process ( RD_CLK, RST, RDEN, RDEN_dly ) IS
   Begin
     if RST = '1' then
       RDEN_dly <= '0';
-    elsif CLK'Event AND CLK = '1' then
+    elsif RD_CLK'Event AND RD_CLK = '1' then
       RDEN_dly <= RDEN;
     end if;
     if RDEN = '1' AND RDEN_dly = '0' then
