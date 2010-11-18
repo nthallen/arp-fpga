@@ -35,7 +35,7 @@ entity dacs is
     GENERIC (
       N_INTERRUPTS : integer range 15 downto 1 := 1;
       N_BOARDS : integer range 15 downto 1 := 3;
-      IDX_N_CHANNELS : integer range 15 downto 1 := 1;
+      IDX_N_CHANNELS : integer range 15 downto 1 := 3;
       IDX_BASE_ADDR : std_logic_vector(15 downto 0) := X"0A00";
       DIGIO_N_CONNECTORS : integer range 4 downto 1 := 2
     );
@@ -73,7 +73,7 @@ entity dacs is
       ana_in_SDI : IN std_ulogic_vector(1 DOWNTO 0); -- From A/D Converter
       ana_in_CS5 : OUT std_ulogic; -- To LMP7312
       ana_in_Conv : OUT std_ulogic; -- To A/D Converter
-      ana_in_Row  : OUT std_ulogic_vector(2 DOWNTO 0);
+      ana_in_Row : OUT std_ulogic_vector(2 DOWNTO 0);
       ana_in_SCK16 : OUT std_ulogic_vector(1 DOWNTO 0);
       ana_in_SCK5 : OUT std_ulogic_vector(1 DOWNTO 0);
       ana_in_SDO  : OUT std_ulogic_vector(1 DOWNTO 0)

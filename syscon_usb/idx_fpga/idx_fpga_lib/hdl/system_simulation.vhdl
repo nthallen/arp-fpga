@@ -116,7 +116,17 @@ begin
    wait for 63 ns;
     -- pragma synthesis_on
   End Process;
-  
+
+  f30m_clk : Process -- actually 25MHz
+  Begin
+    clk_30_0000MHz_pin <= '0';
+    -- pragma synthesis_off
+   wait for 20 ns;
+    clk_8_0000MHz_pin <= '1';
+   wait for 20 ns;
+    -- pragma synthesis_on
+  End Process;
+
   Status <= xps_gpio_subbus_status_pin;
   Data_i <= xps_gpio_subbus_data_i_pin;
   xps_gpio_subbus_data_o_pin <= Data_o;

@@ -51,7 +51,7 @@ ARCHITECTURE arch OF syscon IS
   SIGNAL Ack_int : std_ulogic;
   SIGNAL Start : std_ulogic;
   SIGNAL TwoMinuteTO : std_ulogic;
-  TYPE STATE_TYPE IS ( s0, s1i, s1r, s1w, s2 );
+  TYPE STATE_TYPE IS ( sc0, sc1i, sc1r, sc1w, sc2 );
   SIGNAL current_state : STATE_TYPE;
   TYPE DSTATE_TYPE IS ( d0, d1, d2, d3 );
   SIGNAL dcnt_state : DSTATE_TYPE;
@@ -157,7 +157,7 @@ end process;
   BEGIN
     IF (F8M'EVENT AND F8M = '1') THEN
       if rst = '1' then
-        current_state <= s0;
+        current_state <= sc0;
         Start <= '0';
         Ack <= '0';
         ExpRd <= '0';
@@ -165,17 +165,17 @@ end process;
         INTA_int <= '0';
       else
         CASE current_state IS
-          WHEN s0 =>
+          WHEN sc0 =>
             if RdEn = '1' AND WrEn = '0' AND Addr_int = X"0040" then
-              current_state <= s1i;
+              current_state <= sc1i;
               INTA_int <= '1';
               Start <= '1';
             elsif RdEn = '1' AND WrEn = '0' then
-              current_state <= s1r;
+              current_state <= sc1r;
               ExpRd <= '1';
               Start <= '1';
             elsif RdEn = '0' AND WrEn = '1' then
-              current_state <= s1w;
+              current_state <= sc1w;
               ExpWr <= '1';
               Start <= '1';
             else
@@ -185,38 +185,38 @@ end process;
               ExpWr <= '0';
               INTA_int <= '0';
             end if;
-          WHEN s1i =>
+          WHEN sc1i =>
             if Done_int = '1' then
-              current_state <= s2;
+              current_state <= sc2;
               INTA_int <= '0';
             else
               Ack <= ack_int;
               DataIn(15 downto N_INTERRUPTS) <= ( others => '0' );
               DataIn(N_INTERRUPTS-1 downto 0) <= To_StdLogicVector(BdIntr);
             end if;
-          WHEN s1r =>
+          WHEN sc1r =>
             if Done_int = '1' then
-              current_state <= s2;
+              current_state <= sc2;
               ExpRd <= '0';
             else
               Ack <= ack_int;
               DataIn <= ExpData;
             end if;
-          WHEN s1w =>
+          WHEN sc1w =>
             if Done_int = '1' then
-              current_state <= s2;
+              current_state <= sc2;
               ExpWr <= '0';
             else
               Ack <= ack_int;
             end if;
-          WHEN s2 =>
+          WHEN sc2 =>
             if RdEn = '0' AND WrEn = '0' then
-              current_state <= s0;
+              current_state <= sc0;
               Start <= '0';
               Ack <= '0';
             end if;
           WHEN OTHERS =>
-            current_state <= s0;
+            current_state <= sc0;
         END CASE;
       end if;
     end if;
