@@ -44,6 +44,7 @@ END ENTITY syscon;
 ARCHITECTURE arch OF syscon IS
   SIGNAL DataIn : std_logic_vector (15 DOWNTO 0);
   SIGNAL Addr_int : std_logic_vector(15 DOWNTO 0);
+  SIGNAL Ctrl_int : std_logic_vector (5 DOWNTO 0); -- Tick, Rst, CE,CS,Wr,Rd
   SIGNAL Cnt : std_logic_vector (3 DOWNTO 0);
   SIGNAL INTA_int : std_ulogic;
   SIGNAL Done_int : std_ulogic;
@@ -69,12 +70,12 @@ ARCHITECTURE arch OF syscon IS
      );
   END COMPONENT;
   FOR ALL : syscon_tick USE ENTITY idx_fpga_lib.syscon_tick;
-  alias RdEn is Ctrl(0);
-  alias WrEn is Ctrl(1);
-  alias CS is Ctrl(2);
-  alias CE is Ctrl(3);
-  alias rst is Ctrl(4);
-  alias TickTock is Ctrl(5);
+  alias RdEn is Ctrl_int(0);
+  alias WrEn is Ctrl_int(1);
+  alias CS is Ctrl_int(2);
+  alias CE is Ctrl_int(3);
+  alias rst is Ctrl_int(4);
+  alias TickTock is Ctrl_int(5);
   alias Done is Status(0);
   alias Ack is Status(1);
   alias ExpIntr is Status(2);
@@ -103,6 +104,7 @@ BEGIN
         ExpData <= Data_o;
       end if;
       Addr_int <= Addr;
+      Ctrl_int <= Ctrl;
     end if;
   end process;
   
@@ -122,19 +124,17 @@ BEGIN
   
   -- ExpAck is not qualified here by RdEn or WrEn, because it
   -- should be qualified downstream.
-  ackr : process (F8M) is
+  ackr : process (ExpAck, INTA_int) is
     Variable ack_i: std_ulogic;
   begin
-    if F8M'Event and F8M = '1' then
-      ack_i := INTA_int;
-      for i in N_BOARDS-1 DOWNTO 0 loop
-        if ExpAck(i) = '1' then
-          ack_i := '1';
-        end if;
-      end loop;
-      Ack_int <= ack_i;
-    end if;
-  end process;
+    ack_i := INTA_int;
+    for i in N_BOARDS-1 DOWNTO 0 loop
+      if ExpAck(i) = '1' then
+        ack_i := '1';
+      end if;
+    end loop;
+    Ack_int <= ack_i;
+end process;
   
   Failer : Process (Fail_In, TwoMinuteTO) IS
   Begin

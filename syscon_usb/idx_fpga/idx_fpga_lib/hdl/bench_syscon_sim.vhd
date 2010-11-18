@@ -143,9 +143,11 @@ BEGIN
     -- pragma synthesis_off
     wait for 300 ns;
     rst <= '0';
-    wait for 100 ns;
+    wait until F8M'Event and F8M = '1';
     RdEn <= '1';
-    wait for 200 ns;
+    wait until F8M'Event and F8M = '1';
+    wait until F8M'Event and F8M = '1';
+    wait for 40 ns;
     assert ExpRd = '1' report "ExpRd expected" severity error;
     ExpData <= X"55AA";
     ExpAck <= "1";
@@ -157,29 +159,36 @@ BEGIN
     assert Done = '1' report "Done should be asserted" severity error;
     assert Ack = '1' report "Ack should be asserted" severity error;
     RdEn <= '0';
-    wait for 300 ns;
+    wait until F8M'Event and F8M = '1';
+    wait until F8M'Event and F8M = '1';
+    wait for 40 ns;
     assert ExpRd = '0' report "ExpRd should have cleared" severity error;
     assert Done = '0' report "Done should not be asserted" severity error;
     assert Ack = '0' report "Ack should not be asserted" severity error;
     
     Data_o <= X"1234";
-    wait for 100 ns;
+    wait until F8M'Event AND F8M = '1';
     WrEn <= '1';
-    wait for 300 ns;
+    wait until F8M'Event AND F8M = '1';
+    wait until F8M'Event AND F8M = '1';
+    wait for 40 ns;
     assert ExpWr = '1' report "ExpWr should be asserted" severity error;
     assert Done = '0' report "Done should not be asserted" severity error;
     assert To_X01(Ack) = '0' report "Ack should not be asserted" severity error;
     ExpAck <= "1";
-    wait for 300 ns;
+    wait until F8M'Event AND F8M = '1';
+    wait for 40 ns;
     assert Ack = '1' report "Ack should be asserted" severity error;
-    wait for 600 ns;
-    ExpAck <= "0";
-    wait for 400 ns;
-    wait until F8M'Event and F8M = '1';
+    for i in 1 to 8 loop
+      wait until F8M'Event and F8M = '1';
+    end loop;
+    wait for 40 ns;
     assert ExpWr = '0' report "ExpWr should be cleared" severity error;
     assert Done = '1' report "Done should be asserted" severity error;
     assert Ack = '1' report "Ack should be asserted" severity error;
     WrEn <= '0';
+    ExpAck <= "0";
+    wait until F8M'Event and F8M = '1';
     wait until F8M'Event and F8M = '1';
     wait for 30 ns;
     assert Done = '0' report "Done should not be asserted" severity error;

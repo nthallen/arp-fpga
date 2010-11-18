@@ -184,6 +184,7 @@ architecture Behavioral of dacs is
         Addr   : IN     std_logic_vector(15 DOWNTO 0);
         ExpRd  : IN     std_ulogic;
         ExpWr  : IN     std_ulogic;
+        F8M    : IN     std_ulogic;
         F30M   : IN     std_ulogic;
         RST    : IN     std_ulogic;
         SDI    : IN     std_ulogic_vector(1 DOWNTO 0);
@@ -325,6 +326,7 @@ begin
        Addr   => ExpAddr,
        ExpRd  => ExpRd,
        ExpWr  => ExpWr,
+       F8M    => clk_8_0000MHz,
        F30M   => clk_30_0000MHz,
        RST    => rst,
        SDI    => ana_in_SDI,
