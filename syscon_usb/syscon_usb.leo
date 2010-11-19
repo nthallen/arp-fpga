@@ -11,15 +11,15 @@
 <vnodes>
 <v t="ntallen.20100519134237.1502"><vh>@chapters</vh></v>
 <v t="ntallen.20100519134237.1501" a="E"><vh>Syscon USB</vh>
-<v t="ntallen.20100601150619.1289" a="E"><vh>Todo</vh>
+<v t="ntallen.20100601150619.1289"><vh>Todo</vh>
 <v t="ntallen.20100805085605.1308"><vh>Diagnose Slowness</vh></v>
 <v t="ntallen.20100805085605.1309"><vh>Implement timeout in subbusd</vh></v>
 <v t="ntallen.20100805085605.1305"><vh>Indexer Features</vh>
-<v t="ntallen.20100805085605.1307" a="E"><vh>Interrupts</vh>
+<v t="ntallen.20100805085605.1307"><vh>Interrupts</vh>
 <v t="ntallen.20100816115707.1311"><vh>API: subbuslib</vh></v>
 <v t="ntallen.20100816115707.1312"><vh>Library implementation</vh></v>
-<v t="ntallen.20100816115707.1313" a="E"><vh>subbusd implementation</vh>
-<v t="ntallen.20100816115707.1314" a="E"><vh>USB</vh>
+<v t="ntallen.20100816115707.1313"><vh>subbusd implementation</vh>
+<v t="ntallen.20100816115707.1314"><vh>USB</vh>
 <v t="ntallen.20100816115707.1316"><vh>subbusd</vh></v>
 <v t="ntallen.20100816115707.1317"><vh>syscon_usb</vh></v>
 <v t="ntallen.20100816115707.1318"><vh>DACS</vh></v>
@@ -28,7 +28,8 @@
 </v>
 </v>
 </v>
-<v t="ntallen.20100827154528.1331"><vh>subbus (here for visibility)</vh></v>
+<v t="ntallen.20100827154528.1331"><vh>subbusd (here for visibility)</vh></v>
+<v t="ntallen.20100907120439.1333"><vh>syscon_usb</vh></v>
 </v>
 <v t="ntallen.20100520123955.1247"><vh>Development Issues</vh>
 <v t="ntallen.20100519134237.1503"><vh>12.1 Upgrade</vh></v>
@@ -47,13 +48,13 @@
 <v t="ntallen.20100525090916.1257" a="E"><vh>Development Plan</vh>
 <v t="ntallen.20100525090916.1259"><vh>Document Serial Protocol</vh></v>
 <v t="ntallen.20100803111918.1303"><vh>IPC</vh></v>
-<v t="ntallen.20100525090916.1258" a="E"><vh>Update Syscon</vh>
+<v t="ntallen.20100525090916.1258"><vh>Done: Update Syscon</vh>
 <v t="ntallen.20100525090916.1263"><vh>Read Operation</vh></v>
 <v t="ntallen.20100525090916.1264"><vh>Write Operation</vh></v>
 <v t="ntallen.20100527162821.1273" a="E"><vh>Implemented syscon VHDL module</vh>
 <v t="ntallen.20100527162821.1274"><vh>Done: Update XPS Proj</vh></v>
 <v t="ntallen.20100527162821.1275"><vh>Update SDK Proj</vh></v>
-<v t="ntallen.20100527162821.1278"><vh>Update ISE Proj</vh>
+<v t="ntallen.20100527162821.1278" a="E"><vh>Update ISE Proj</vh>
 <v t="ntallen.20100527162821.1277"><vh>Done: Create new top-level VHDL</vh></v>
 <v t="ntallen.20100527162821.1279"><vh>Bring in syscon, indexer</vh></v>
 <v t="ntallen.20100528083113.1287"><vh>Add reset pin to ctrl bus</vh></v>
@@ -61,11 +62,43 @@
 </v>
 </v>
 </v>
-<v t="ntallen.20100525090916.1260"><vh>Implement Subbus Library</vh></v>
-<v t="ntallen.20100525090916.1261"><vh>Implement Design with Indexer</vh></v>
-<v t="ntallen.20100525090916.1262"><vh>A/D VHDL</vh></v>
+<v t="ntallen.20100525090916.1260"><vh>Done: Implement Subbus Library</vh></v>
+<v t="ntallen.20101102122701.1375"><vh>Implement Subbus/Syscon Library</vh></v>
+<v t="ntallen.20100525090916.1261"><vh>Indexer: Simulated</vh></v>
+<v t="ntallen.20100525090916.1262"><vh>A/D VHDL: Simulated</vh>
+<v t="ntallen.20101013150328.1339"><vh>Convert Clock</vh></v>
+<v t="ntallen.20101013150328.1340"><vh>A/D =&gt; RAM</vh></v>
+<v t="ntallen.20101013150328.1341"><vh>RAM =&gt; Front End</vh></v>
+<v t="ntallen.20101013150328.1342"><vh>Subbus RW</vh></v>
+<v t="ntallen.20101013150328.1343"><vh>RAM Configuration</vh>
+<v t="ntallen.20101014082117.1355"><vh>Simply Dual-ported RAM</vh></v>
+<v t="ntallen.20101014082117.1357"><vh>ana_ram</vh></v>
 </v>
-<v t="ntallen.20100823102718.1327" a="E"><vh>Documentation</vh>
+<v t="ntallen.20101013150328.1344"><vh>Basic Operation</vh></v>
+<v t="ntallen.20101013150328.1345"><vh>Enhanced Operations</vh>
+<v t="ntallen.20101013150328.1346"><vh>Configuration Readback</vh></v>
+</v>
+<v t="ntallen.20101019142341.1359" a="E"><vh>Design Hierarchy</vh>
+<v t="ntallen.20101022104642.1372"><vh>ana_subbus</vh></v>
+<v t="ntallen.20101019142341.1363"><vh>ana_ram</vh></v>
+<v t="ntallen.20101022104642.1371" a="E"><vh>ana_hwside</vh>
+<v t="ntallen.20101019142341.1364"><vh>ana_acquire</vh></v>
+<v t="ntallen.20101019142341.1362"><vh>ana_s16</vh></v>
+<v t="ntallen.20101019142341.1360"><vh>ana_s5</vh>
+<v t="ntallen.20101019142341.1361"><vh>ana_s5s</vh></v>
+</v>
+</v>
+</v>
+</v>
+<v t="ntallen.20100920151402.1335"><vh>Digio VHDL: Simulated</vh>
+<v t="ntallen.20100920151402.1336"><vh>Basic Specs</vh></v>
+</v>
+<v t="ntallen.20101102122701.1376"><vh>D/A VHDL</vh></v>
+<v t="ntallen.20101102122701.1377" a="E"><vh>Syscon Features</vh>
+<v t="ntallen.20101102122701.1378"><vh>Tick</vh></v>
+</v>
+</v>
+<v t="ntallen.20100823102718.1327"><vh>Documentation</vh>
 <v t="ntallen.20100525090916.1259"></v>
 <v t="ntallen.20100824101804.1329"><vh>Document API</vh></v>
 </v>
@@ -429,10 +462,158 @@ functions--doesn't even need to be configurable, really)
             Write test bench: HDS doesn't like that--do it at channel level instead</t>
 <t tx="ntallen.20100823102718.1327"></t>
 <t tx="ntallen.20100824101804.1329">Generating doxygen documentation in source code.</t>
-<t tx="ntallen.20100827154528.1331">Make sure subbusd/serusb returns SBS_ACK and SBS_NACK status
-Interrupt functions should have a way to return to client on error without enqueuing command to serusb.
-Need to implement interrupt attach/detach functions
-Need to implement timeout and error returns
+<t tx="ntallen.20100827154528.1331">done: Make sure subbusd/serusb returns SBS_ACK and SBS_NACK status
+done: Interrupt functions should have a way to return to client on error without enqueuing command to serusb.
+done: Need to implement interrupt attach/detach functions
+done: Need to implement timeout and error returns
+    timer_create() to create a timer and associate it with a pulse</t>
+<t tx="ntallen.20100907120439.1333">Implement all of the protocol defined in serusb/README
+Done: Get subbus source into subversion
 </t>
+<t tx="ntallen.20100920151402.1335"></t>
+<t tx="ntallen.20100920151402.1336">120 direction-selectable I/O channels in 15 banks of 8
+  Half go to connector board, half to power board
+  One 8-bit bank is split between the two boards, but still has
+  a single direction select.
+8 bidirectional channels to connector board
+8 bidirectional channels to the power board
+
+Indexer I/O needs to be carved out of this space
+
+Looks like one "board" of two "connectors" in the Digio64 nomenclature
+would do the trick, leaving 3 ports for indexer usage.
+
+DIG_BASE_ADDR 0x800
+DIG_CONN_OFFSET 0x20
+DIG_CONN_PER_BD 2
+DIG_BD_NUM 0
+DIG_RESET_OFFSET 0x18
+
+DIGIO_BASE_ADDR DIG_BASE_ADDR + (DIG_CONN_OFFSET*DIG_CONN_PER_BD*DIG_BD_NUM)
+
+
+</t>
+<t tx="ntallen.20101013150328.1339">Upper limit is determined by the time to transfer the data out of the converters.</t>
+<t tx="ntallen.20101013150328.1340"></t>
+<t tx="ntallen.20101013150328.1341"></t>
+<t tx="ntallen.20101013150328.1342"></t>
+<t tx="ntallen.20101013150328.1343">BRAM comes in 9Kb blocks which can be configured in various ways:
+    As a simple memory, 512x16 where we provide all arbitration
+    As a full dual-ported RAM 512x16 where we provide arbitration on the hardware side
+    As a simple dual-ported RAM 512x16 or 256x32.
+      We would need two 9kb BRAMs, but no additional arbitration.
+      </t>
+<t tx="ntallen.20101013150328.1344">There are 128 16-bit analog inputs.
+Most recently recorded values for channel i can be read from subbus address:
+    BASE_ADDRESS + 2*i
+BASE_ADDRESS is probably 0x0C00, so read addresses run from 0x0C00 to 0x0CFE
+
+The front end is configured with a 5-bit code. This is programmed by
+writing to the same address as the input channel.</t>
+<t tx="ntallen.20101013150328.1345"></t>
+<t tx="ntallen.20101013150328.1346">For each channel, i, a second 16-bit word can be read from:
+    BASE_ADDRESS + 2*i + 1
+immediately after reading a channel.
+This word includes the 5 bits of configuration and 11 bits of
+frame counter. This value is latched when the channel is
+read, so providing the next read is from the config address,
+it will be correctly mated with the data. The address could
+be checked against the latched address to make sure the
+value matches.
+
+The configuration value will be read back from the front-end
+hardware so as to guarantee that we are reporting the
+configuration that was actually in use when the data was
+converted.
+</t>
+<t tx="ntallen.20101014082117.1355">Storage of A/D data (16 bits) and configuration readback (5 bits)
+requires a total of 128 x 21 bits. This maps into a simple dual-
+ported RAM at 256x32.
+
+Storage of programmed configuration values (5 bits) requires
+128x5 bits, which can map into lots of configurations, including
+the simple dual-ported RAM at 256x32.
+
+Reading the Spartan-6 BRAM data sheet, it appears that simultaneous
+reads and writes to the same address are supported in SDP mode
+providing the clocks are synchronous and the write mode is
+READ_FIRST. The doc is slightly ambiguous because it defines
+the SDP as having two ports with independent clocks, but then
+says the collision rules are the same as for TDP, which supports
+simultaneous reads when the clocks are synchronous. I guess
+"independent" and "synchronous" are not mutually exclusive.</t>
+<t tx="ntallen.20101014082117.1357">encapsulation of the RAMB8BWER primitive in SDP mode, 256 x 32
+
+ENTITY ana_ram IS
+  PORT (
+    RD_ADDR : IN std_logic_vector(7 DOWNTO 0);
+    WR_ADDR : IN std_logic_vector(7 DOWNTO 0);
+    RD_DATA : OUT std_logic_vector(31 DOWNTO 0);
+    WR_DATA : IN std_logic_vector(31 DOWNTO 0);
+    WREN : IN std_ulogic;
+    RDEN : IN std_ulogic;
+    CLK : IN std_ulogic;
+    RST : IN std_ulogic
+  );
+END ENTITY ana_ram;
+</t>
+<t tx="ntallen.20101019142341.1359">Using AD7687 in "Chain mode with busy indicator", Page 23 of the manual.
+This requires that SDI and CNV are tied together. I will make that
+association at the top level of this design.</t>
+<t tx="ntallen.20101019142341.1360">Wrapper for ana_s5s state machine. Operates on the word level, so does not generate the CS output.
+Note: whoever does generate the CS output must ensure the setup time requirements, specifically
+ t3 = CS/ to SCK/ min 50 ns setup
+ t7 = SCK to CS min 50 ns hold
+</t>
+<t tx="ntallen.20101019142341.1361">State machine for clocking out configuration bits and generating the configuration clock.</t>
+<t tx="ntallen.20101019142341.1362">State machine for clocking in data from A/D. Like ana_s5s, operates on the word level.</t>
+<t tx="ntallen.20101019142341.1363">Encapsulation of BRAM block for use in simple dual ported RAM mode.</t>
+<t tx="ntallen.20101019142341.1364">State machine generating control signals to drive ana_s5, ana_s16.
+      CLK    : IN     std_logic; 30 MHz max. S5.SCK is CLK/6. S16.SCK is CLK/2
+      RST    : IN     std_logic; Synch active high
+      RdyIn  : IN     std_ulogic; Intended as logical and of Rdy signals from s5 and s16
+      SDI    : IN     std_ulogic_vector (1 DOWNTO 0); SDI signals from each bank of A/D converters
+      Addr   : OUT    std_ulogic_vector (7 DOWNTO 0); Address for our side of the two RAM banks
+      Conv   : OUT    std_ulogic; Convert signal to A/D converters
+      NxtRow : OUT    std_ulogic_vector (2 DOWNTO 0); Address lines for the mux
+      RdWrEn : OUT    std_ulogic;
+      RdyOut : OUT    std_ulogic;
+      S5WE   : OUT    std_ulogic_vector (1 DOWNTO 0); Write Enable for the two S5 state machines
+      Start  : OUT    std_ulogic
+
+NxtRow is so called because it represents the row of data that will
+be retrieved during the next acquisition sequence. According to the
+terminology in the AD7687 data sheet, acquisition comes after conversion,
+and is the process of retrieving the converted value.
+
+RdWrEn is an enable line that goes to both banks of RAM. It is the
+read enable on the configuration RAM and write enable on the data
+RAM.
+
+RdyOut goes high when the acquisition sequence is completed. This was intended
+as a signal for external synchronization, but in the current configuration,
+it is simply a flag that the next conversion/acquisition sequence will start.
+
+Start is a signal to S5 and S16 machines to begin their sequences (or continue
+their sequences).</t>
+<t tx="ntallen.20101022104642.1371">This component encapsulates all the hardware interface timing.
+
+Copy data from cfg cache on RdWrEn
+Set cfg cache from DO5 on S5WE</t>
+<t tx="ntallen.20101022104642.1372"></t>
+<t tx="ntallen.20101102122701.1375"></t>
+<t tx="ntallen.20101102122701.1376"></t>
+<t tx="ntallen.20101102122701.1377">Fail Lights/LEDs
+I/O Switches
+Tick tie in to Fail, CmdEnbl
+</t>
+<t tx="ntallen.20101102122701.1378">Two-second timeout should clear cmdenbl and ARM, which qualifies it
+    In existing design, it is possible to set cmdenbl and then subsequently
+    start ticking, which will enable cmdenbl output, or you can start
+    ticking and then enable cmdenbl.
+    DCCC takes advantage of this independence by setting cmdenbl independent
+    of whether telemetry has started or not.
+    
+Two-minute timeout should light fail light (which can also be set manually)</t>
 </tnodes>
 </leo_file>
