@@ -99,7 +99,7 @@ architecture Behavioral of dacs is
        xps_epc_0_PRH_Rd_n_pin : OUT std_logic;
        FTDI_SI_pin : OUT std_logic;
        xps_gpio_subbus_addr_pin : OUT std_logic_vector(15 downto 0);
-       xps_gpio_subbus_ctrl_pin : OUT std_logic_vector(5 downto 0);
+       xps_gpio_subbus_ctrl_pin : OUT std_logic_vector(6 downto 0);
        xps_gpio_subbus_data_i_pin : IN std_logic_vector(15 downto 0);
        xps_gpio_subbus_data_o_pin : OUT std_logic_vector(15 downto 0);
        xps_gpio_subbus_status_pin : IN std_logic_vector(3 downto 0);
@@ -118,7 +118,7 @@ architecture Behavioral of dacs is
     		Addr : IN std_logic_vector(15 downto 0);    
     		Data_i : OUT std_logic_vector(15 downto 0);
     		Data_o : IN std_logic_vector(15 downto 0);
-    		Ctrl : IN std_logic_vector(5 downto 0);
+    		Ctrl : IN std_logic_vector(6 downto 0);
     		Status : OUT std_logic_vector(3 downto 0);
     		ExpRd : OUT std_logic;
     		ExpWr : OUT std_logic;

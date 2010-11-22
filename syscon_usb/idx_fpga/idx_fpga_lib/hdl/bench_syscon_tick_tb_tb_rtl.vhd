@@ -24,6 +24,7 @@ ARCHITECTURE rtl OF bench_syscon_tick_tb IS
 
    -- Internal signal declarations
    SIGNAL TickTock    : std_ulogic;
+   SIGNAL Arm_In      : std_ulogic;
    SIGNAL CmdEnbl_cmd : std_ulogic;
    SIGNAL CmdEnbl     : std_ulogic;
    SIGNAL TwoSecondTO : std_ulogic;
@@ -39,6 +40,7 @@ ARCHITECTURE rtl OF bench_syscon_tick_tb IS
       PORT (
          TickTock    : IN     std_ulogic;
          CmdEnbl_cmd : IN     std_ulogic;
+         Arm_In      : IN     std_ulogic;
          CmdEnbl     : OUT    std_ulogic;
          TwoSecondTO : OUT    std_ulogic;
          Flt_CPU_Reset : OUT std_ulogic; -- 1sec reset pulse
@@ -59,6 +61,7 @@ BEGIN
       PORT MAP (
          TickTock    => TickTock,
          CmdEnbl_cmd => CmdEnbl_cmd,
+         Arm_In      => Arm_In,
          CmdEnbl     => CmdEnbl,
          TwoSecondTO => TwoSecondTO,
          Flt_CPU_Reset => Flt_CPU_Reset,
@@ -87,9 +90,14 @@ BEGIN
     Done <= '0';
     TickTock <= '0';
     CmdEnbl_cmd <= '0';
+    Arm_In <= '0';
     -- pragma synthesis_off
     wait for 500 ns;
+    --
+    -- First test a normal enable/timeout sequence
+    --
     TickTock <= '1';
+    Arm_In <= '1';
     wait for 3 us;
     CmdEnbl_cmd <= '1';
     wait for 3 us;
@@ -115,7 +123,10 @@ BEGIN
       assert TwoSecondTO = '1'
         report "TwoSecondTO cleared w/o tick"
         severity error;
-    TickTock <= '0';
+    --
+    -- 30 ms: Now verify that late tick does not re-enable
+    --
+    TickTock <= not TickTock;
     wait for 500 ns;
       assert CmdEnbl = '0'
         report "CmdEnbl re-enabled by tick w/o reset"
@@ -127,6 +138,9 @@ BEGIN
       assert Flt_CPU_Reset = '0'
         report "Flt_CPU_Reset reissued without intervening /CmdEnbl"
         severity error;
+    --
+    -- 50 ms: Take CmdEnbl_cmd down to re-enable tick
+    --
     CmdEnbl_cmd <= '0';
     wait for 500 ns;
       assert TwoSecondTO = '1'
@@ -140,7 +154,10 @@ BEGIN
       assert CmdEnbl = '0'
         report "CmdEnbl set w/o tick"
         severity error;
-    TickTock <= '1';
+    --
+    -- 50 ms+: Tick should go through now
+    --
+    TickTock <= not TickTock;
     wait for 500 ns;
       assert TwoSecondTO = '0'
         report "TwoSecondTO still set after arm/tick"
@@ -148,6 +165,21 @@ BEGIN
       assert CmdEnbl = '1'
         report "CmdEnbl not set on tick"
         severity error;
+    
+    --
+    -- 50 ms++: Now try to disarm
+    --
+    Arm_In <= '0';
+    wait for 20 ms;
+      assert TwoSecondTO = '1'
+        report "TwoSecondTO did not trip when Arm_In 0"
+        severity error;
+      assert Flt_CPU_Reset = '0'
+        report "Flt_CPU_Reset tripped when Arm_In 0"
+        severity error;
+    --
+    -- TwoMinuteTO should work even when Arm_in is 0
+    --
     wait until TwoMinuteTO = '1' for 1200 ms;
       assert TwoMinuteTO = '1'
         report "TwoMinuteTO not set"

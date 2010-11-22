@@ -20,7 +20,7 @@ ENTITY syscon IS
   );
   PORT (
     F8M : IN std_logic;
-    Ctrl : IN std_logic_vector (5 DOWNTO 0); -- Tick, Rst, CE,CS,Wr,Rd
+    Ctrl : IN std_logic_vector (6 DOWNTO 0); -- Arm_in, Tick, Rst, CE,CS,Wr,Rd
     Addr : IN std_logic_vector (15 DOWNTO 0);
     Data_i : OUT std_logic_vector (15 DOWNTO 0);
     Data_o : IN std_logic_vector (15 DOWNTO 0);
@@ -45,7 +45,7 @@ END ENTITY syscon;
 ARCHITECTURE arch OF syscon IS
   SIGNAL DataIn : std_logic_vector (15 DOWNTO 0);
   SIGNAL Addr_int : std_logic_vector(15 DOWNTO 0);
-  SIGNAL Ctrl_int : std_logic_vector (5 DOWNTO 0); -- Tick, Rst, CE,CS,Wr,Rd
+  SIGNAL Ctrl_int : std_logic_vector (6 DOWNTO 0); -- Arm_in, Tick, Rst, CE,CS,Wr,Rd
   SIGNAL Cnt : std_logic_vector (3 DOWNTO 0);
   SIGNAL INTA_int : std_ulogic;
   SIGNAL Done_int : std_ulogic;
@@ -64,6 +64,7 @@ ARCHITECTURE arch OF syscon IS
      PORT (
         TickTock    : IN     std_ulogic;
         CmdEnbl_cmd : IN     std_ulogic;
+        Arm_in      : IN     std_ulogic;
         CmdEnbl     : OUT    std_ulogic;
         TwoSecondTO : OUT    std_ulogic;
         Flt_CPU_Reset : OUT std_ulogic; -- 1sec reset pulse
@@ -77,6 +78,7 @@ ARCHITECTURE arch OF syscon IS
   alias CS is Ctrl_int(2);
   alias CE is Ctrl_int(3);
   alias rst is Ctrl_int(4);
+  alias arm is Ctrl_int(5);
   alias TickTock is Ctrl_int(5);
   alias Done is Status(0);
   alias Ack is Status(1);
@@ -91,6 +93,7 @@ BEGIN
     PORT MAP (
       TickTock    => TickTock,
       CmdEnbl_cmd => CE,
+      Arm_In      => arm,
       CmdEnbl     => CmdEnbl,
       TwoSecondTO => TwoSecondTO,
       Flt_CPU_Reset => Flt_CPU_Reset,

@@ -16,6 +16,7 @@ ENTITY syscon_tick IS
   PORT (
     TickTock : IN std_ulogic; -- Comes from control word
     CmdEnbl_cmd : IN std_ulogic; -- Comes from control word
+    Arm_In : IN std_ulogic; -- from control word
     CmdEnbl : OUT std_ulogic; -- Goes to HW
     TwoSecondTO : OUT std_ulogic; -- Goes back in status
     Flt_CPU_Reset : OUT std_ulogic; -- 1sec reset pulse
@@ -33,11 +34,12 @@ ARCHITECTURE beh OF syscon_tick IS
   SIGNAL CmdEnbl_int: std_ulogic := '0';
   SIGNAL TwoMinTO : std_ulogic := '0';
   SIGNAL TickCnt : unsigned(29 DOWNTO 0) := conv_unsigned(0,30);
+  SIGNAL CPU_Reset : std_ulogic := '0';
 BEGIN
   SIC : Process (F8M) IS
   Begin
     if F8M'Event AND F8M = '1' then
-      if TickEnbl = '1' AND TickTock /= Ticked then
+      if Arm_In = '1' AND TickEnbl = '1' AND TickTock /= Ticked then
         TwoMinTO <= '0';
         TwoSecTO <= '0';
         TickCnt <= conv_unsigned(0,30);
@@ -54,7 +56,7 @@ BEGIN
       end if;
       Ticked <= TickTock;
       
-      if Armed = '1' AND CmdEnbl_cmd = '1' then
+      if Arm_In = '1' AND Armed = '1' AND CmdEnbl_cmd = '1' then
         CmdEnbl_int <= '1';
       else
         CmdEnbl_int <= '0';
@@ -64,10 +66,12 @@ BEGIN
         TickEnbl <= '1';
       end if;
       
-      if TwoSecTO = '1' AND TickCnt < conv_unsigned(24000000,30) then
-        Flt_CPU_Reset <= '1';
+      if ( Arm_In = '1' OR CPU_Reset = '1')
+           AND TwoSecTO = '1'
+           AND TickCnt < conv_unsigned(24000000,30) then
+        CPU_Reset <= '1';
       else
-        Flt_CPU_Reset <= '0';
+        CPU_Reset <= '0';
       end if;
     end if;
   End Process;
@@ -75,5 +79,6 @@ BEGIN
   CmdEnbl <= CmdEnbl_int;
   TwoSecondTO <= TwoSecTO;
   TwoMinuteTO <= TwoMinTO;
+  Flt_CPU_Reset <= CPU_Reset;
 END ARCHITECTURE beh;
 

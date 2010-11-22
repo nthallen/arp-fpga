@@ -33,7 +33,7 @@ END ENTITY bench_syscon;
 --
 ARCHITECTURE sim OF bench_syscon IS
   SIGNAL F8M : std_ulogic;
-  SIGNAL Ctrl : std_logic_vector (5 DOWNTO 0); -- Wr,Rd
+  SIGNAL Ctrl : std_logic_vector (6 DOWNTO 0); -- Wr,Rd
   SIGNAL Addr : std_logic_vector (15 DOWNTO 0);
   SIGNAL Data_i : std_logic_vector (15 DOWNTO 0);
   SIGNAL Data_o : std_logic_vector (15 DOWNTO 0);
@@ -56,6 +56,7 @@ ARCHITECTURE sim OF bench_syscon IS
   alias CS is Ctrl(2);
   alias CE is Ctrl(3);
   alias rst is Ctrl(4);
+  alias arm is Ctrl(5);
   alias Done is Status(0);
   alias Ack is Status(1);
   alias ExpIntr is Status(2);
@@ -68,7 +69,7 @@ ARCHITECTURE sim OF bench_syscon IS
     );
     PORT (
       F8M : IN std_logic;
-      Ctrl : IN std_logic_vector (5 DOWNTO 0); -- Wr,Rd
+      Ctrl : IN std_logic_vector (6 DOWNTO 0); -- Wr,Rd
       Addr : IN std_logic_vector (15 DOWNTO 0);
       Data_i : OUT std_logic_vector (15 DOWNTO 0);
       Data_o : IN std_logic_vector (15 DOWNTO 0);
@@ -135,7 +136,7 @@ BEGIN
   test_proc: Process
   Begin
     SimDone <= '0';
-    Ctrl <= "000000";
+    Ctrl <= "0000000";
     Addr <= (others => '0');
     Data_o <= (others => '0');
     ExpData <= (others => 'Z');
