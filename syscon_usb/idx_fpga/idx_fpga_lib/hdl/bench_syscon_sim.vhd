@@ -50,6 +50,7 @@ ARCHITECTURE sim OF bench_syscon IS
   SIGNAL ExpReset : std_ulogic;
   SIGNAL Fail_In : std_ulogic;
   SIGNAL Fail_Out : std_ulogic;
+  SIGNAL Flt_CPU_Reset : std_ulogic;
   alias RdEn is Ctrl(0);
   alias WrEn is Ctrl(1);
   alias CS is Ctrl(2);
@@ -83,7 +84,8 @@ ARCHITECTURE sim OF bench_syscon IS
 	    CmdStrb : OUT std_ulogic;
 	    ExpReset : OUT std_ulogic;
       Fail_In : IN std_ulogic;
-      Fail_Out : OUT std_ulogic
+      Fail_Out : OUT std_ulogic;
+      Flt_CPU_Reset : OUT std_ulogic
     );
   END COMPONENT;
   FOR ALL : syscon USE ENTITY idx_fpga_lib.syscon;
@@ -111,7 +113,8 @@ BEGIN
         CmdStrb  => CmdStrb,
         ExpReset => ExpReset,
         Fail_In  => Fail_In,
-        Fail_Out => Fail_Out
+        Fail_Out => Fail_Out,
+        Flt_CPU_Reset => Flt_CPU_Reset
      );
 
   f8m_clk : Process

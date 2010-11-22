@@ -56,6 +56,7 @@ entity dacs is
       subbus_cmdenbl : OUT std_ulogic;
       subbus_cmdstrb : OUT std_ulogic;
       subbus_fail_leds : OUT std_logic_vector(4 downto 0);
+      subbus_flt_cpu_reset : OUT std_ulogic;
       DACS_switches : IN std_logic_vector(3 downto 0);
 
       idx_Run : OUT std_ulogic_vector(IDX_N_CHANNELS-1 downto 0);
@@ -130,7 +131,8 @@ architecture Behavioral of dacs is
       CmdStrb : OUT std_ulogic;
       ExpReset : OUT std_ulogic;
       Fail_In : IN std_ulogic;
-      Fail_Out : OUT std_ulogic
+      Fail_Out : OUT std_ulogic;
+      Flt_CPU_Reset : OUT std_ulogic
 		);
 	END COMPONENT;
 	
@@ -275,7 +277,8 @@ begin
     		CmdStrb => CmdStrb,
       ExpReset => rst,
       Fail_In => Fail_outputs(0),
-      Fail_Out => Fail_inputs(0)
+      Fail_Out => Fail_inputs(0),
+      Flt_CPU_Reset => subbus_flt_cpu_reset
    	);
 	
 	Inst_idx: gxidx

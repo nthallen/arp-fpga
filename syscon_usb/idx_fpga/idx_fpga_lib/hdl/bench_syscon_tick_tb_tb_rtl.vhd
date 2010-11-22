@@ -10,9 +10,6 @@
 LIBRARY ieee;
 USE ieee.std_logic_1164.all;
 USE ieee.std_logic_arith.all;
-LIBRARY UNISIM;
-USE unisim.vcomponents.GSR;
-
 
 ENTITY bench_syscon_tick_tb IS
 END bench_syscon_tick_tb;
@@ -30,6 +27,7 @@ ARCHITECTURE rtl OF bench_syscon_tick_tb IS
    SIGNAL CmdEnbl_cmd : std_ulogic;
    SIGNAL CmdEnbl     : std_ulogic;
    SIGNAL TwoSecondTO : std_ulogic;
+   SIGNAL Flt_CPU_Reset : std_ulogic;
    SIGNAL TwoMinuteTO : std_ulogic;
    SIGNAL F8M         : std_ulogic;
    SIGNAL Done        : std_ulogic;
@@ -37,12 +35,13 @@ ARCHITECTURE rtl OF bench_syscon_tick_tb IS
 
    -- Component declarations
    COMPONENT syscon_tick
-      GENERIC ( DEBUG_MULTIPLIER : integer := 100 );
+      GENERIC ( DEBUG_MULTIPLIER : integer := 1 );
       PORT (
          TickTock    : IN     std_ulogic;
          CmdEnbl_cmd : IN     std_ulogic;
          CmdEnbl     : OUT    std_ulogic;
          TwoSecondTO : OUT    std_ulogic;
+         Flt_CPU_Reset : OUT std_ulogic; -- 1sec reset pulse
          TwoMinuteTO : OUT    std_ulogic;
          F8M         : IN     std_ulogic
       );
@@ -56,12 +55,13 @@ ARCHITECTURE rtl OF bench_syscon_tick_tb IS
 BEGIN
 
    DUT_syscon_tick : syscon_tick
-      GENERIC MAP ( DEBUG_MULTIPLIER => 1 )
+      GENERIC MAP ( DEBUG_MULTIPLIER => 100 )
       PORT MAP (
          TickTock    => TickTock,
          CmdEnbl_cmd => CmdEnbl_cmd,
          CmdEnbl     => CmdEnbl,
          TwoSecondTO => TwoSecondTO,
+         Flt_CPU_Reset => Flt_CPU_Reset,
          TwoMinuteTO => TwoMinuteTO,
          F8M         => F8M
       );
@@ -87,38 +87,77 @@ BEGIN
     Done <= '0';
     TickTock <= '0';
     CmdEnbl_cmd <= '0';
-    GSR <= '1';
     -- pragma synthesis_off
-    wait for 500 ns;
-    GSR <= '0';
     wait for 500 ns;
     TickTock <= '1';
     wait for 3 us;
     CmdEnbl_cmd <= '1';
     wait for 3 us;
-    assert CmdEnbl = '1' report "CmdEnbl not set" severity error;
+      assert CmdEnbl = '1' report "CmdEnbl not set" severity error;
     CmdEnbl_cmd <= '0';
     wait for 3 us;
-    assert CmdEnbl = '0' report "CmdEnbl not reset" severity error;
+      assert CmdEnbl = '0' report "CmdEnbl not reset" severity error;
     CmdEnbl_cmd <= '1';
     wait for 20 ms;
-    assert CmdEnbl = '0' report "CmdEnbl did not trip" severity error;
-    assert TwoSecondTO = '1' report "TwoSecondTO not set" severity error;
-    CmdEnbl_cmd <= '0';
-    wait for 500 ns;
-    assert TwoSecondTO = '0' report "TwoSecondTO not reset" severity error;
-    CmdEnbl_cmd <= '1';
-    wait for 500 ns;
-    assert TwoSecondTO = '0' report "TwoSecondTO set w/o arm" severity error;
-    assert CmdEnbl = '0' report "CmdEnbl set w/o arm" severity error;
+      assert CmdEnbl = '0'
+        report "CmdEnbl did not trip"
+        severity error;
+      assert TwoSecondTO = '1'
+        report "TwoSecondTO not set"
+        severity error;
+      assert Flt_CPU_Reset = '1'
+        report "Flt_CPU_Reset not set"
+        severity error;
+    wait for 10 ms;
+      assert Flt_CPU_Reset = '0'
+        report "Flt_CPU_Reset did not reset"
+        severity error;
+      assert TwoSecondTO = '1'
+        report "TwoSecondTO cleared w/o tick"
+        severity error;
     TickTock <= '0';
     wait for 500 ns;
-    assert TwoSecondTO = '0' report "TwoSecondTO set w/ arm" severity error;
-    assert CmdEnbl = '1' report "CmdEnbl not set on tick" severity error;
+      assert CmdEnbl = '0'
+        report "CmdEnbl re-enabled by tick w/o reset"
+        severity error;
+      assert TwoSecondTO = '1'
+        report "TwoSecondTO reset without intervening /CmdEnbl"
+        severity error;
+    wait for 20 ms; -- timeout again
+      assert Flt_CPU_Reset = '0'
+        report "Flt_CPU_Reset reissued without intervening /CmdEnbl"
+        severity error;
+    CmdEnbl_cmd <= '0';
+    wait for 500 ns;
+      assert TwoSecondTO = '1'
+        report "TwoSecondTO reset by /CmdEnbl w/o Tick"
+        severity error;
+    CmdEnbl_cmd <= '1';
+    wait for 500 ns;
+      assert TwoSecondTO = '1'
+        report "TwoSecondTO reset w/o Tick"
+        severity error;
+      assert CmdEnbl = '0'
+        report "CmdEnbl set w/o tick"
+        severity error;
+    TickTock <= '1';
+    wait for 500 ns;
+      assert TwoSecondTO = '0'
+        report "TwoSecondTO still set after arm/tick"
+        severity error;
+      assert CmdEnbl = '1'
+        report "CmdEnbl not set on tick"
+        severity error;
     wait until TwoMinuteTO = '1' for 1200 ms;
-    assert TwoMinuteTO = '1' report "TwoMinuteTO not set" severity error;
-    assert CmdEnbl = '0' report "CmdEnbl did not trip" severity error;
-    assert TwoSecondTO = '1' report "TwoSecondTO not set" severity error;
+      assert TwoMinuteTO = '1'
+        report "TwoMinuteTO not set"
+        severity error;
+      assert CmdEnbl = '0'
+        report "CmdEnbl did not trip"
+        severity error;
+      assert TwoSecondTO = '1'
+        report "TwoSecondTO not set"
+        severity error;
     Done <= '1';
     wait;
     -- pragma synthesis_on

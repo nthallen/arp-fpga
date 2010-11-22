@@ -36,7 +36,8 @@ ENTITY syscon IS
 	  CmdStrb : OUT std_ulogic;
 	  ExpReset : OUT std_ulogic;
 	  Fail_In : IN std_ulogic;
-	  Fail_Out : OUT std_ulogic
+	  Fail_Out : OUT std_ulogic;
+	  Flt_CPU_Reset : OUT std_ulogic -- 1sec reset pulse
   );
 END ENTITY syscon;
 
@@ -65,6 +66,7 @@ ARCHITECTURE arch OF syscon IS
         CmdEnbl_cmd : IN     std_ulogic;
         CmdEnbl     : OUT    std_ulogic;
         TwoSecondTO : OUT    std_ulogic;
+        Flt_CPU_Reset : OUT std_ulogic; -- 1sec reset pulse
         TwoMinuteTO : OUT    std_ulogic;
         F8M         : IN     std_ulogic
      );
@@ -91,6 +93,7 @@ BEGIN
       CmdEnbl_cmd => CE,
       CmdEnbl     => CmdEnbl,
       TwoSecondTO => TwoSecondTO,
+      Flt_CPU_Reset => Flt_CPU_Reset,
       TwoMinuteTO => TwoMinuteTO,
       F8M         => F8M
     );
