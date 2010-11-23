@@ -31,7 +31,7 @@
 <v t="ntallen.20100827154528.1331"><vh>subbusd (here for visibility)</vh></v>
 <v t="ntallen.20100907120439.1333"><vh>syscon_usb</vh></v>
 </v>
-<v t="ntallen.20100520123955.1247"><vh>Development Issues</vh>
+<v t="ntallen.20100520123955.1247" a="E"><vh>Development Issues</vh>
 <v t="ntallen.20100519134237.1503"><vh>12.1 Upgrade</vh></v>
 <v t="ntallen.20100524120730.1249"><vh>ISE/XPS/SDK</vh>
 <v t="ntallen.20100524120730.1250"><vh>Bit Stream</vh></v>
@@ -44,6 +44,11 @@
 <v t="ntallen.20100607110403.1299"><vh>sbtest</vh></v>
 <v t="ntallen.20100610083250.1301"><vh>Simulation problem</vh></v>
 </v>
+<v t="ntallen.20101123111757.1383" a="E"><vh>Revision Control</vh>
+<v t="ntallen.20101123111757.1384"><vh>HDS archive</vh></v>
+<v t="ntallen.20101123111757.1385"><vh>SDK archive</vh></v>
+<v t="ntallen.20101123111757.1386"><vh>ISE archive</vh></v>
+</v>
 </v>
 <v t="ntallen.20100525090916.1257" a="E"><vh>Development Plan</vh>
 <v t="ntallen.20100525090916.1259"><vh>Document Serial Protocol</vh></v>
@@ -51,10 +56,10 @@
 <v t="ntallen.20100525090916.1258"><vh>Done: Update Syscon</vh>
 <v t="ntallen.20100525090916.1263"><vh>Read Operation</vh></v>
 <v t="ntallen.20100525090916.1264"><vh>Write Operation</vh></v>
-<v t="ntallen.20100527162821.1273" a="E"><vh>Implemented syscon VHDL module</vh>
+<v t="ntallen.20100527162821.1273"><vh>Implemented syscon VHDL module</vh>
 <v t="ntallen.20100527162821.1274"><vh>Done: Update XPS Proj</vh></v>
 <v t="ntallen.20100527162821.1275"><vh>Update SDK Proj</vh></v>
-<v t="ntallen.20100527162821.1278" a="E"><vh>Update ISE Proj</vh>
+<v t="ntallen.20100527162821.1278"><vh>Update ISE Proj</vh>
 <v t="ntallen.20100527162821.1277"><vh>Done: Create new top-level VHDL</vh></v>
 <v t="ntallen.20100527162821.1279"><vh>Bring in syscon, indexer</vh></v>
 <v t="ntallen.20100528083113.1287"><vh>Add reset pin to ctrl bus</vh></v>
@@ -78,10 +83,10 @@
 <v t="ntallen.20101013150328.1345"><vh>Enhanced Operations</vh>
 <v t="ntallen.20101013150328.1346"><vh>Configuration Readback</vh></v>
 </v>
-<v t="ntallen.20101019142341.1359" a="E"><vh>Design Hierarchy</vh>
+<v t="ntallen.20101019142341.1359"><vh>Design Hierarchy</vh>
 <v t="ntallen.20101022104642.1372"><vh>ana_subbus</vh></v>
 <v t="ntallen.20101019142341.1363"><vh>ana_ram</vh></v>
-<v t="ntallen.20101022104642.1371" a="E"><vh>ana_hwside</vh>
+<v t="ntallen.20101022104642.1371"><vh>ana_hwside</vh>
 <v t="ntallen.20101019142341.1364"><vh>ana_acquire</vh></v>
 <v t="ntallen.20101019142341.1362"><vh>ana_s16</vh></v>
 <v t="ntallen.20101019142341.1360"><vh>ana_s5</vh>
@@ -98,7 +103,7 @@
 <v t="ntallen.20101102122701.1378"><vh>Tick</vh></v>
 </v>
 </v>
-<v t="ntallen.20100823102718.1327"><vh>Documentation</vh>
+<v t="ntallen.20100823102718.1327" a="E"><vh>Documentation</vh>
 <v t="ntallen.20100525090916.1259"></v>
 <v t="ntallen.20100824101804.1329"><vh>Document API</vh></v>
 </v>
@@ -614,6 +619,62 @@ Tick tie in to Fail, CmdEnbl
     DCCC takes advantage of this independence by setting cmdenbl independent
     of whether telemetry has started or not.
     
-Two-minute timeout should light fail light (which can also be set manually)</t>
+Two-minute timeout should light fail light (which can also be set manually)
+
+Old behavior:
+    Tick sets ARM
+    ARM and cmdenbl_cmd produce CmdEnbl
+    TwoSecond Timeout while ARMed
+        produces Flt_CPU_Reset
+        Clears ARM and CmdEnbl
+        Subsequent tick will not reenable cmdenbl. An actual write to cmdenbl is required.
+    Disarm command prevents Flt_CPU_Reset, disabled CmdEnbl, clears ARM
+
+I will need a separate arm line in, plus some software logic. Will retain all of the below,
+but require that Arm_in be true in order to recognize any ticks or produce reset.
+
+I will not use a separate arm control line. I will count on CmdEnbl_cmd being reset before
+a tick will be recognized, and will require a subsequent tick before CmdEnbl will be
+asserted.
+
+I will require that the software look monitor the TwoSecondTO bit of the status word
+and clear CmdEnbl_cmd if it is observed. That will require the flight software to
+explicitly set CmdEnbl before it will be recognized.
+
+This does mean that a late tick could be recognized, but not before the reset is issued.
+Even if it is recognized, cmdenbl will not be asserted without another explicit set.
+</t>
+<t tx="ntallen.20101123111757.1383">Due to the vagaries of the various tools involved, the source code
+is separated into multiple modules under the arp-fpga subversion repository.</t>
+<t tx="ntallen.20101123111757.1384">https://forge.abcd.harvard.edu/svn/arp-fpga/trunk/syscon_usb/idx_fpga
+
+This is tied into the HDL Designer Series software and represents the
+VHDL code and graphical input formats (block diagrams, state machines)
+within the HDS development environment.</t>
+<t tx="ntallen.20101123111757.1385">https://forge.abcd.harvard.edu/svn/arp-fpga/trunk/syscon_usb/fpga_sw/subbus
+
+This is a project to be checked out into the XPS SDK:</t>
+<t tx="ntallen.20101123111757.1386">https://forge.abcd.harvard.edu/svn/arp-fpga/trunk/syscon_usb/DACS_V1_0_ISE
+
+This is the necessary components of the ISE and XPS projects. The SDK project
+needs to be set up separately.
+
+Export Hardware project to SDK
+In SDK: New Board Support Package:
+    Standalone
+    Set stdio to mdm
+New Project from SVN
+    https://forge.abcd.harvard.edu/svn/arp-fpga/trunk/syscon_usb/fpga_sw
+    subbus
+Edit project properties
+    C/C++ General
+      Paths and Properties
+        Includes
+          Fix up microblaze include path to match selection in BSP creation
+        Library Paths
+          Fix up microblaze library path to match selection in BSP creation
+
+Back in XPS, double check path to executable.
+</t>
 </tnodes>
 </leo_file>
