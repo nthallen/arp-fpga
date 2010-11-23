@@ -34,7 +34,7 @@ library idx_fpga_lib;
 entity dacs is
     GENERIC (
       N_INTERRUPTS : integer range 15 downto 1 := 1;
-      N_BOARDS : integer range 15 downto 1 := 3;
+      N_BOARDS : integer range 15 downto 1 := 5;
       IDX_N_CHANNELS : integer range 15 downto 1 := 3;
       IDX_BASE_ADDR : std_logic_vector(15 downto 0) := X"0A00";
       DIGIO_N_CONNECTORS : integer range 4 downto 1 := 2
@@ -77,7 +77,9 @@ entity dacs is
       ana_in_Row : OUT std_ulogic_vector(2 DOWNTO 0);
       ana_in_SCK16 : OUT std_ulogic_vector(1 DOWNTO 0);
       ana_in_SCK5 : OUT std_ulogic_vector(1 DOWNTO 0);
-      ana_in_SDO  : OUT std_ulogic_vector(1 DOWNTO 0)
+      ana_in_SDO  : OUT std_ulogic_vector(1 DOWNTO 0);
+      
+      ctr_PMT     : IN std_logic_vector(7 DOWNTO 0)
     );
 end dacs;
 
@@ -180,6 +182,7 @@ architecture Behavioral of dacs is
         Dir    : OUT    std_logic_vector( N_CONNECTORS*6-1 DOWNTO 0)
      );
   END COMPONENT;
+  FOR ALL : DigIO USE ENTITY idx_fpga_lib.DigIO;
   
   COMPONENT ana_input
      PORT (
@@ -201,8 +204,27 @@ architecture Behavioral of dacs is
         Data   : INOUT  std_logic_vector(15 DOWNTO 0)
      );
   END COMPONENT;
-  FOR ALL : DigIO USE ENTITY idx_fpga_lib.DigIO;
+  COMPONENT ctr_ungated
+     GENERIC (
+        BASE_ADDRESS : std_logic_vector (15 DOWNTO 0) := X"0600";
+        N_COUNTERS   : integer range 4 DOWNTO 4       := 4;
+        N_BITS       : integer range 32 DOWNTO 16     := 20
+     );
+     PORT (
+        Addr   : IN     std_logic_vector(15 DOWNTO 0);
+        Data   : INOUT  std_logic_vector(15 DOWNTO 0);
+        ExpRd  : IN     std_ulogic;
+        ExpWr  : IN     std_ulogic;
+        ExpAck : OUT    std_ulogic;
+        F8M    : IN     std_ulogic;
+        rst    : IN     std_ulogic;
+        PMT    : IN     std_logic_vector(N_COUNTERS-1 DOWNTO 0)
+     );
+  END COMPONENT;
   FOR ALL : ana_input USE ENTITY idx_fpga_lib.ana_input;
+  FOR ALL : ctr_ungated USE ENTITY idx_fpga_lib.ctr_ungated;
+
+
 
 	attribute box_type : string;
 	attribute box_type of Processor : component is "user_black_box";
@@ -342,6 +364,40 @@ begin
        SCK5   => ana_in_SCK5,
        SDO    => ana_in_SDO,
        Data   => ExpData
+    );
+
+  ctr_0 : ctr_ungated
+    GENERIC MAP (
+       BASE_ADDRESS => X"0600",
+       N_COUNTERS   => 4,
+       N_BITS       => 20
+    )
+    PORT MAP (
+       Addr   => ExpAddr,
+       Data   => ExpData,
+       ExpRd  => ExpRd,
+       ExpWr  => ExpWr,
+       ExpAck => ExpAck(3),
+       F8M    => clk_8_0000MHz,
+       rst    => rst,
+       PMT    => ctr_PMT(3 DOWNTO 0)
+    );
+
+  ctr_1 : ctr_ungated
+    GENERIC MAP (
+       BASE_ADDRESS => X"0620",
+       N_COUNTERS   => 4,
+       N_BITS       => 20
+    )
+    PORT MAP (
+       Addr   => ExpAddr,
+       Data   => ExpData,
+       ExpRd  => ExpRd,
+       ExpWr  => ExpWr,
+       ExpAck => ExpAck(4),
+       F8M    => clk_8_0000MHz,
+       rst    => rst,
+       PMT    => ctr_PMT(7 DOWNTO 4)
     );
 
   subbus_cmdenbl <= CmdEnbl;

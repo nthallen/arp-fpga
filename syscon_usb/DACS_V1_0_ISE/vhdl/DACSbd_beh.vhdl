@@ -173,7 +173,8 @@ ARCHITECTURE beh OF DACSbd IS
          ana_in_Row                     : OUT    std_ulogic_vector(2 DOWNTO 0);
          ana_in_SCK16                   : OUT    std_ulogic_vector(1 DOWNTO 0);
          ana_in_SCK5                    : OUT    std_ulogic_vector(1 DOWNTO 0);
-         ana_in_SDO                     : OUT    std_ulogic_vector(1 DOWNTO 0)
+         ana_in_SDO                     : OUT    std_ulogic_vector(1 DOWNTO 0);
+         ctr_PMT                        : IN std_logic_vector(7 DOWNTO 0)
       );
    END COMPONENT;
    FOR ALL : dacs USE ENTITY idx_fpga_lib.dacs;
@@ -181,7 +182,7 @@ BEGIN
   dacs_i : dacs
     GENERIC MAP (
        N_INTERRUPTS       => 1,
-       N_BOARDS           => 3,
+       N_BOARDS           => 5,
        IDX_N_CHANNELS     => IDX_N_CHANNELS,
        IDX_BASE_ADDR      => X"0A00",
        DIGIO_N_CONNECTORS => DIGIO_N_CONNECTORS
@@ -221,7 +222,8 @@ BEGIN
        ana_in_Row                     => ana_in_Row,
        ana_in_SCK16                   => AI_AD_SCK,
        ana_in_SCK5                    => AI_AFE_SCK,
-       ana_in_SDO                     => AI_AFE_MOSI
+       ana_in_SDO                     => AI_AFE_MOSI,
+       ctr_PMT                        => COUNT
     );
 
   AI_AD_CNV(0) <= ana_in_Conv;
