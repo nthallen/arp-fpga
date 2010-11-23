@@ -34,6 +34,8 @@
 #define SUBBUS_STATUS_DEVICE_ID     XPAR_XPS_GPIO_SB_STATUS_DEVICE_ID
 #define SUBBUS_ADDR_DEVICE_ID 		XPAR_XPS_GPIO_SB_ADDR_DEVICE_ID
 #define SUBBUS_DATA_DEVICE_ID 		XPAR_XPS_GPIO_SB_DATA_DEVICE_ID
+#define SUBBUS_FAIL_DEVICE_ID       XPAR_XPS_GPIO_SB_LEDS_DEVICE_ID
+#define SUBBUS_SWITCHES_DEVICE_ID   XPAR_XPS_GPIO_SB_SWITCHES_DEVICE_ID
 #define FTDI_SI_DEVICE_ID           XPAR_XPS_GPIO_FTDI_SI_DEVICE_ID
 
 #define SBCTRL_RD                   0x1
@@ -41,9 +43,12 @@
 #define SBCTRL_CS                   0x4
 #define SBCTRL_CE                   0x8
 #define SBCTRL_RST                  0x10
+#define SBCTRL_TICK                 0x20
+#define SBCTRL_ARM                  0x40
 #define SBSTAT_DONE                 0x1
 #define SBSTAT_ACK                  0x2
 #define SBSTAT_INTR                 0x4
+#define SBSTAT_TWOSECTO             0x8
 
 #define EXPRD_NS					1000
 #define EXPWR_NS					1000
@@ -84,7 +89,7 @@ XGpio FTDI_SI;
 XGpio Data_Rdy;
 XGpio Subbus_Addr, Subbus_Data;
 XGpio Subbus_Ctrl, Subbus_Status;
-static unsigned short FailReg = 0;
+XGpio Subbus_Fail, Subbus_Switches;
 static unsigned short subb_ctrl = 0;
 
 static void init_gpios(void) {
@@ -94,6 +99,8 @@ static void init_gpios(void) {
   XGpio_Initialize(&Subbus_Data, SUBBUS_DATA_DEVICE_ID);
   XGpio_Initialize(&Subbus_Status, SUBBUS_STATUS_DEVICE_ID);
   XGpio_Initialize(&Subbus_Ctrl, SUBBUS_CTRL_DEVICE_ID);
+  XGpio_Initialize(&Subbus_Fail, SUBBUS_FAIL_DEVICE_ID);
+  XGpio_Initialize(&Subbus_Switches, SUBBUS_SWITCHES_DEVICE_ID);
   XGpio_Initialize(&FTDI_SI, FTDI_SI_DEVICE_ID);
   XGpio_DiscreteWrite(&FTDI_SI,1,1);
 }
@@ -286,13 +293,12 @@ static void parse_command(char *cmd) {
       SendUSB(expack ? "W" : "w");
       break;
     case 'F':
-      // ### Need to write to hardware
-      FailReg = arg1;
+      XGpio_DiscreteWrite(&Subbus_Fail,1,arg1);
       SendUSB( "F" );
       break;
     case 'f':
-      // ### Need to read from hardware
-      SendUSB1('f', FailReg);
+      arg1 = XGpio_DiscreteRead(&Subbus_Fail,2);
+      SendUSB1('f', arg1);
       break;
     case 'C':
     case 'S':
@@ -312,15 +318,33 @@ static void parse_command(char *cmd) {
       SendUSB(BOARD_REV);             // Respond with Board Rev info
       break;
     case 'D': // Read Switches
-      // ### Actually read from hardware
-      SendUSB1('D', 0);
+      arg1 = XGpio_DiscreteRead(&Subbus_Switches,1);
+      SendUSB1('D', arg1);
       break;
     case 'T': // Tick
-      // ### Actually write to hardware
+      subb_ctrl ^= SBCTRL_TICK;
+      if ((subb_ctrl & SBCTRL_ARM) == 0) {
+    	// If we aren't already armed, we need to read the status
+    	// after arming to make sure the two second timeout
+    	// is cleared. It can take up to 250ns to clear, which
+    	// is 17 clock cycles on a 66 MHz uBlaze.
+    	int i;
+		subb_ctrl |= SBCTRL_ARM;
+		XGpio_DiscreteWrite(&Subbus_Ctrl,1,subb_ctrl);
+		for ( i = 0; i < 10; i++ ) {
+		  Xuint8 subb_status;
+		  subb_status = XGpio_DiscreteRead(&Subbus_Status,1);
+		  if ((subb_status & SBSTAT_TWOSECTO) == 0)
+			break;
+		}
+      } else {
+		XGpio_DiscreteWrite(&Subbus_Ctrl,1,subb_ctrl);
+      }
       // No return output
       break;
     case 'A': // Disarm 2-second reboot
-      // ### Actually write to hardware
+      subb_ctrl &= ~SBCTRL_ARM;
+      XGpio_DiscreteWrite(&Subbus_Ctrl,1,subb_ctrl);
       SendUSB("A");
       break;
     case 'i':
@@ -358,6 +382,7 @@ int main(void) {
   subbus_reset();
   
   while(1) {
+    Xuint8 subb_status;
     if ( XGpio_DiscreteRead(&Data_Rdy,1) == 1 ) {
       int c = XIo_In8(FTDI_ADDRESS);
       cmd[cmd_byte_num++] = c;
@@ -373,8 +398,13 @@ int main(void) {
       SendError("2"); // Code 2: Rcv Timeout
       cmd_byte_num = 0;
     }
-    if ( XGpio_DiscreteRead(&Subbus_Status,1) & SBSTAT_INTR)
+    subb_status = XGpio_DiscreteRead(&Subbus_Status,1);
+    if ( subb_status & SBSTAT_INTR)
       intr_service();
+    if ( (subb_status & SBSTAT_TWOSECTO) && (subb_ctrl & SBCTRL_ARM) ) {
+      subb_ctrl &= ~(SBCTRL_ARM | SBCTRL_CE);
+      XGpio_DiscreteWrite(&Subbus_Ctrl,1,subb_ctrl);
+    }
   }
   return 0;
 }		
