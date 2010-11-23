@@ -22,7 +22,7 @@ END bench_ctr_ungated;
 
 
 LIBRARY idx_fpga_lib;
-USE idx_fpga_lib.ALL;
+-- USE idx_fpga_lib.ALL;
 
 
 ARCHITECTURE rtl OF bench_ctr_ungated IS

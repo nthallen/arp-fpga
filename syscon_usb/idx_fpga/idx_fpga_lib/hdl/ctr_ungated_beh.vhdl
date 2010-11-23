@@ -39,7 +39,6 @@ ENTITY ctr_ungated IS
    SIGNAL iData : std_logic_vector(15 DOWNTO 0);
    SIGNAL RdEn  : std_ulogic;
    SIGNAL WrEn  : std_ulogic;
-   SIGNAL BdEn_asynch : std_ulogic;
    SIGNAL BdEn  : std_ulogic;
    SIGNAL StatEn  : std_ulogic;
    SIGNAL RevEn   : std_ulogic;
@@ -67,8 +66,7 @@ ENTITY ctr_ungated IS
          iData  : INOUT  std_logic_vector(15 DOWNTO 0);
          RdEn   : OUT    std_ulogic;
          WrEn   : OUT    std_ulogic;
-         BdEn_In : IN    std_ulogic;
-         BdEn   : OUT    std_ulogic
+         BdEn   : IN     std_ulogic
       );
    END COMPONENT;
    
@@ -84,8 +82,7 @@ ENTITY ctr_ungated IS
          CtrEn   : OUT    natural range N_COUNTERS-1 DOWNTO 0;
          CtrsEn  : OUT    std_ulogic;
          CtrEnHW : OUT    std_ulogic;
-         BdEn    : OUT    std_ulogic;
-         F8M     : IN     std_ulogic
+         BdEn    : OUT    std_ulogic
       );
    END COMPONENT;
    
@@ -150,7 +147,6 @@ BEGIN
          iData  => iData,
          RdEn   => RdEn,
          WrEn   => WrEn,
-         BdEn_In => BdEn_asynch,
          BdEn   => BdEn
       );
       
@@ -166,8 +162,7 @@ BEGIN
          CtrEn   => CtrEn,
          CtrsEn  => CtrsEn,
          CtrEnHW => CtrEnHW,
-         BdEn    => BdEn_asynch,
-         F8M     => F8M
+         BdEn    => BdEn
       );
       
    ctr_synch_i : ctr_synch
