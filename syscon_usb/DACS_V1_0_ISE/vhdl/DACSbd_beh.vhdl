@@ -117,6 +117,7 @@ ARCHITECTURE beh OF DACSbd IS
    SIGNAL subbus_cmdenbl                 : std_ulogic;
    SIGNAL subbus_cmdstrb                 : std_ulogic;
    SIGNAL subbus_fail_leds               : std_logic_vector(4 downto 0);
+   SIGNAL subbus_flt_cpu_reset           : std_ulogic;
    SIGNAL idx_Run                        : std_ulogic_vector(IDX_N_CHANNELS-1 downto 0);
    SIGNAL idx_Step                       : std_ulogic_vector(IDX_N_CHANNELS-1 downto 0);
    SIGNAL idx_Dir                        : std_ulogic_vector(IDX_N_CHANNELS-1 DOWNTO 0);
@@ -154,6 +155,7 @@ ARCHITECTURE beh OF DACSbd IS
          subbus_cmdenbl                 : OUT    std_ulogic;
          subbus_cmdstrb                 : OUT    std_ulogic;
          subbus_fail_leds               : OUT    std_logic_vector(4 downto 0);
+         subbus_flt_cpu_reset           : OUT    std_ulogic;
          DACS_switches                  : IN     std_logic_vector(3 downto 0);
          idx_Run                        : OUT    std_ulogic_vector(IDX_N_CHANNELS-1 downto 0);
          idx_Step                       : OUT    std_ulogic_vector(IDX_N_CHANNELS-1 downto 0);
@@ -199,6 +201,7 @@ BEGIN
        subbus_cmdenbl                 => subbus_cmdenbl,
        subbus_cmdstrb                 => subbus_cmdstrb,
        subbus_fail_leds               => subbus_fail_leds,
+       subbus_flt_cpu_reset           => subbus_flt_cpu_reset,
        DACS_switches                  => GPIO_SW,
        idx_Run                        => idx_Run,
        idx_Step                       => idx_Step,

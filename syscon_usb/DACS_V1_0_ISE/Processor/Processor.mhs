@@ -29,13 +29,13 @@
  PORT xps_epc_0_PRH_Rd_n_pin = xps_epc_0_PRH_Rd_n, DIR = O
  PORT FTDI_SI_pin = FTDI_SI, DIR = O
  PORT xps_gpio_subbus_addr_pin = xps_gpio_subbus_addr, DIR = O, VEC = [15:0]
- PORT xps_gpio_subbus_ctrl_pin = xps_gpio_subbus_ctrl, DIR = O, VEC = [5:0]
+ PORT xps_gpio_subbus_ctrl_pin = xps_gpio_subbus_ctrl, DIR = O, VEC = [0:6]
  PORT xps_gpio_subbus_data_i_pin = xps_gpio_subbus_data_i, DIR = I, VEC = [15:0]
  PORT xps_gpio_subbus_data_o_pin = xps_gpio_subbus_data_o, DIR = O, VEC = [15:0]
  PORT xps_gpio_subbus_status_pin = xps_gpio_subbus_status, DIR = I, VEC = [3:0]
- PORT xps_gpio_subbus_leds_pin = xps_gpio_subbus_leds, DIR = O, VEC = [4:0]
+ PORT xps_gpio_subbus_leds_pin = xps_gpio_subbus_leds, DIR = O, VEC = [0:4]
  PORT xps_gpio_subbus_switches_pin = xps_gpio_subbus_switches, DIR = I, VEC = [3:0]
- PORT xps_gpio_subbus_leds_readback_pin = xps_gpio_subbus_leds_readback, DIR = I, VEC = [4:0]
+ PORT xps_gpio_subbus_leds_readback_pin = xps_gpio_subbus_leds_readback, DIR = I, VEC = [0:4]
 
 
 BEGIN microblaze
@@ -233,9 +233,10 @@ END
 BEGIN xps_gpio
  PARAMETER INSTANCE = xps_gpio_sb_ctrl
  PARAMETER HW_VER = 2.00.a
- PARAMETER C_GPIO_WIDTH = 6
+ PARAMETER C_GPIO_WIDTH = 7
  PARAMETER C_BASEADDR = 0x81460000
  PARAMETER C_HIGHADDR = 0x8146ffff
+ PARAMETER C_TRI_DEFAULT = 0x00000000
  BUS_INTERFACE SPLB = mb_plb
  PORT GPIO_IO_O = xps_gpio_subbus_ctrl
 END
@@ -289,6 +290,7 @@ BEGIN xps_gpio
  PARAMETER C_IS_DUAL = 1
  PARAMETER C_GPIO2_WIDTH = 5
  PARAMETER C_ALL_INPUTS_2 = 1
+ PARAMETER C_TRI_DEFAULT = 0x00000000
  BUS_INTERFACE SPLB = mb_plb
  PORT GPIO_IO_O = xps_gpio_subbus_leds
  PORT GPIO2_IO_I = xps_gpio_subbus_leds_readback

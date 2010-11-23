@@ -56,6 +56,7 @@ entity dacs is
       subbus_cmdenbl : OUT std_ulogic;
       subbus_cmdstrb : OUT std_ulogic;
       subbus_fail_leds : OUT std_logic_vector(4 downto 0);
+      subbus_flt_cpu_reset : OUT std_ulogic;
       DACS_switches : IN std_logic_vector(3 downto 0);
 
       idx_Run : OUT std_ulogic_vector(IDX_N_CHANNELS-1 downto 0);
@@ -98,7 +99,7 @@ architecture Behavioral of dacs is
        xps_epc_0_PRH_Rd_n_pin : OUT std_logic;
        FTDI_SI_pin : OUT std_logic;
        xps_gpio_subbus_addr_pin : OUT std_logic_vector(15 downto 0);
-       xps_gpio_subbus_ctrl_pin : OUT std_logic_vector(5 downto 0);
+       xps_gpio_subbus_ctrl_pin : OUT std_logic_vector(6 downto 0);
        xps_gpio_subbus_data_i_pin : IN std_logic_vector(15 downto 0);
        xps_gpio_subbus_data_o_pin : OUT std_logic_vector(15 downto 0);
        xps_gpio_subbus_status_pin : IN std_logic_vector(3 downto 0);
@@ -117,7 +118,7 @@ architecture Behavioral of dacs is
     		Addr : IN std_logic_vector(15 downto 0);    
     		Data_i : OUT std_logic_vector(15 downto 0);
     		Data_o : IN std_logic_vector(15 downto 0);
-    		Ctrl : IN std_logic_vector(5 downto 0);
+    		Ctrl : IN std_logic_vector(6 downto 0);
     		Status : OUT std_logic_vector(3 downto 0);
     		ExpRd : OUT std_logic;
     		ExpWr : OUT std_logic;
@@ -130,7 +131,8 @@ architecture Behavioral of dacs is
       CmdStrb : OUT std_ulogic;
       ExpReset : OUT std_ulogic;
       Fail_In : IN std_ulogic;
-      Fail_Out : OUT std_ulogic
+      Fail_Out : OUT std_ulogic;
+      Flt_CPU_Reset : OUT std_ulogic
 		);
 	END COMPONENT;
 	
@@ -210,7 +212,7 @@ architecture Behavioral of dacs is
 	SIGNAL subbus_addr : std_logic_vector(15 downto 0);
 	SIGNAL subbus_data_i : std_logic_vector(15 downto 0);      
 	SIGNAL subbus_data_o : std_logic_vector(15 downto 0);      
-	SIGNAL subbus_ctrl : std_logic_vector(5 downto 0);
+	SIGNAL subbus_ctrl : std_logic_vector(6 downto 0);
 	SIGNAL subbus_status : std_logic_vector(3 downto 0);
 	SIGNAL ExpAddr : std_logic_vector(15 downto 0);
 	SIGNAL ExpData : std_logic_vector(15 downto 0);
@@ -275,7 +277,8 @@ begin
     		CmdStrb => CmdStrb,
       ExpReset => rst,
       Fail_In => Fail_outputs(0),
-      Fail_Out => Fail_inputs(0)
+      Fail_Out => Fail_inputs(0),
+      Flt_CPU_Reset => subbus_flt_cpu_reset
    	);
 	
 	Inst_idx: gxidx
