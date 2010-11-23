@@ -24,7 +24,7 @@ ENTITY Processor IS
 		xps_epc_0_PRH_Rd_n_pin : OUT std_logic;
 		FTDI_SI_pin : OUT std_logic;
 		xps_gpio_subbus_addr_pin : OUT std_logic_vector(15 downto 0);
-		xps_gpio_subbus_ctrl_pin : OUT std_logic_vector(5 downto 0);
+		xps_gpio_subbus_ctrl_pin : OUT std_logic_vector(6 downto 0);
 		xps_gpio_subbus_data_i_pin : IN std_logic_vector(15 downto 0);
 		xps_gpio_subbus_data_o_pin : OUT std_logic_vector(15 downto 0);
 		xps_gpio_subbus_status_pin : IN std_logic_vector(3 downto 0);
@@ -38,13 +38,15 @@ architecture Simulation of Processor is
   SIGNAL Addr : std_logic_vector (15 DOWNTO 0);
   SIGNAL Data_i : std_logic_vector (15 DOWNTO 0);
   SIGNAL Data_o : std_logic_vector (15 DOWNTO 0);
-  SIGNAL Ctrl : std_logic_vector (5 DOWNTO 0);
+  SIGNAL Ctrl : std_logic_vector (6 DOWNTO 0);
   SIGNAL Status : std_logic_vector (3 DOWNTO 0); -- ExpIntr,Ack,Done
   alias RdEn is Ctrl(0);
   alias WrEn is Ctrl(1);
   alias CS is Ctrl(2);
   alias CE is Ctrl(3);
   alias rst is Ctrl(4);
+  alias tick is Ctrl(5);
+  alias arm is Ctrl(6);
   alias Done is Status(0);
   alias Ack is Status(1);
   alias ExpIntr is Status(2);
@@ -56,7 +58,7 @@ begin
     xps_epc_0_PRH_Rd_n_pin <= '0';
     xps_epc_0_FTDI_Wr_pin <= '0';
     Addr <= X"0000";
-    Ctrl <= "000000";
+    Ctrl <= "0000000";
     Data_o <= X"5555";
     -- pragma synthesis_off
     wait for 300 ns;

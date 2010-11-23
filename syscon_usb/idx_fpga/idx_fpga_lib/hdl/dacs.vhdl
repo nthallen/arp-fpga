@@ -212,7 +212,7 @@ architecture Behavioral of dacs is
 	SIGNAL subbus_addr : std_logic_vector(15 downto 0);
 	SIGNAL subbus_data_i : std_logic_vector(15 downto 0);      
 	SIGNAL subbus_data_o : std_logic_vector(15 downto 0);      
-	SIGNAL subbus_ctrl : std_logic_vector(5 downto 0);
+	SIGNAL subbus_ctrl : std_logic_vector(6 downto 0);
 	SIGNAL subbus_status : std_logic_vector(3 downto 0);
 	SIGNAL ExpAddr : std_logic_vector(15 downto 0);
 	SIGNAL ExpData : std_logic_vector(15 downto 0);
