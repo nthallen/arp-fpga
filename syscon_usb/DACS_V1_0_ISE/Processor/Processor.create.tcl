@@ -1,4 +1,4 @@
-cd C:/Data/Xilinx/DACS_V1_0/Processor
+cd C:/Data/Xilinx/DACS_V1_0A_ISE/Processor
 if { [xload new Processor.xmp] != 0 } {
   exit -1
 }

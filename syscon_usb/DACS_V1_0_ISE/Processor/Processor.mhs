@@ -1,7 +1,7 @@
 
 # ##############################################################################
-# Created by Base System Builder Wizard for Xilinx EDK 12.1 Build EDK_MS1.53d
-# Mon Nov 01 16:34:35 2010
+# Created by Base System Builder Wizard for Xilinx EDK 12.3 Build EDK_MS3.70d
+# Wed Dec 15 10:54:38 2010
 # Target Board:  Custom
 # Family:    spartan6
 # Device:    xc6slx150
@@ -15,33 +15,30 @@
  PARAMETER VERSION = 2.1.0
 
 
- PORT fpga_0_Generic_IIC_Bus_Sda_pin = fpga_0_Generic_IIC_Bus_Sda_pin, DIR = IO
- PORT fpga_0_Generic_IIC_Bus_Scl_pin = fpga_0_Generic_IIC_Bus_Scl_pin, DIR = IO
- PORT fpga_0_RS232_RX_pin = fpga_0_RS232_RX_pin, DIR = I
- PORT fpga_0_RS232_TX_pin = fpga_0_RS232_TX_pin, DIR = O
  PORT fpga_0_clk_1_sys_clk_pin = dcm_clk_s, DIR = I, SIGIS = CLK, CLK_FREQ = 100000000
  PORT fpga_0_rst_1_sys_rst_pin = sys_rst_s, DIR = I, SIGIS = RST, RST_POLARITY = 0
  PORT clk_8_0000MHz_pin = clk_8_0000MHz, DIR = O, SIGIS = CLK, CLK_FREQ = 8000000
  PORT clk_30_0000MHz_pin = clk_30_0000MHz, DIR = O, SIGIS = CLK, CLK_FREQ = 25000000
- PORT xps_epc_0_FTDI_RXF_pin = xps_epc_0_FTDI_RXF, DIR = I
- PORT xps_epc_0_FTDI_WR_pin = xps_epc_0_FTDI_WR, DIR = O
+ PORT xps_epc_0_PRH_Rdy_pin = xps_epc_0_PRH_Rdy, DIR = I
+ PORT xps_epc_0_PRH_Wr_n_pin = xps_epc_0_PRH_Wr_n, DIR = O
  PORT xps_epc_0_PRH_Data_pin = xps_epc_0_PRH_Data, DIR = IO, VEC = [7:0]
  PORT xps_epc_0_PRH_Rd_n_pin = xps_epc_0_PRH_Rd_n, DIR = O
  PORT FTDI_SI_pin = FTDI_SI, DIR = O
  PORT xps_gpio_subbus_addr_pin = xps_gpio_subbus_addr, DIR = O, VEC = [15:0]
- PORT xps_gpio_subbus_ctrl_pin = xps_gpio_subbus_ctrl, DIR = O, VEC = [0:6]
+ PORT xps_gpio_subbus_ctrl_pin = xps_gpio_subbus_ctrl, DIR = O, VEC = [6:0]
  PORT xps_gpio_subbus_data_i_pin = xps_gpio_subbus_data_i, DIR = I, VEC = [15:0]
  PORT xps_gpio_subbus_data_o_pin = xps_gpio_subbus_data_o, DIR = O, VEC = [15:0]
  PORT xps_gpio_subbus_status_pin = xps_gpio_subbus_status, DIR = I, VEC = [3:0]
- PORT xps_gpio_subbus_leds_pin = xps_gpio_subbus_leds, DIR = O, VEC = [0:4]
+ PORT xps_gpio_subbus_leds_pin = xps_gpio_subbus_leds, DIR = O, VEC = [4:0]
  PORT xps_gpio_subbus_switches_pin = xps_gpio_subbus_switches, DIR = I, VEC = [3:0]
- PORT xps_gpio_subbus_leds_readback_pin = xps_gpio_subbus_leds_readback, DIR = I, VEC = [0:4]
+ PORT xps_gpio_subbus_leds_readback_pin = xps_gpio_subbus_leds_readback, DIR = I, VEC = [4:0]
 
 
 BEGIN microblaze
  PARAMETER INSTANCE = microblaze_0
+ PARAMETER C_USE_BARREL = 1
  PARAMETER C_DEBUG_ENABLED = 1
- PARAMETER HW_VER = 7.30.a
+ PARAMETER HW_VER = 8.00.a
  BUS_INTERFACE DLMB = dlmb
  BUS_INTERFACE ILMB = ilmb
  BUS_INTERFACE DPLB = mb_plb
@@ -52,7 +49,7 @@ END
 
 BEGIN plb_v46
  PARAMETER INSTANCE = mb_plb
- PARAMETER HW_VER = 1.04.a
+ PARAMETER HW_VER = 1.05.a
  PORT PLB_Clk = clk_66_6667MHz
  PORT SYS_Rst = sys_bus_reset
 END
@@ -96,30 +93,6 @@ BEGIN bram_block
  BUS_INTERFACE PORTB = dlmb_port
 END
 
-BEGIN xps_iic
- PARAMETER INSTANCE = Generic_IIC_Bus
- PARAMETER HW_VER = 2.03.a
- PARAMETER C_BASEADDR = 0x81600000
- PARAMETER C_HIGHADDR = 0x8160ffff
- BUS_INTERFACE SPLB = mb_plb
- PORT Sda = fpga_0_Generic_IIC_Bus_Sda_pin
- PORT Scl = fpga_0_Generic_IIC_Bus_Scl_pin
-END
-
-BEGIN xps_uartlite
- PARAMETER INSTANCE = RS232
- PARAMETER C_BAUDRATE = 9600
- PARAMETER C_DATA_BITS = 8
- PARAMETER C_USE_PARITY = 0
- PARAMETER C_ODD_PARITY = 0
- PARAMETER HW_VER = 1.01.a
- PARAMETER C_BASEADDR = 0x84000000
- PARAMETER C_HIGHADDR = 0x8400ffff
- BUS_INTERFACE SPLB = mb_plb
- PORT RX = fpga_0_RS232_RX_pin
- PORT TX = fpga_0_RS232_TX_pin
-END
-
 BEGIN clock_generator
  PARAMETER INSTANCE = clock_generator_0
  PARAMETER C_CLKIN_FREQ = 100000000
@@ -143,8 +116,7 @@ BEGIN mdm
  PARAMETER INSTANCE = mdm_0
  PARAMETER C_MB_DBG_PORTS = 1
  PARAMETER C_USE_UART = 1
- PARAMETER C_UART_WIDTH = 8
- PARAMETER HW_VER = 1.00.g
+ PARAMETER HW_VER = 2.00.a
  PARAMETER C_BASEADDR = 0x84400000
  PARAMETER C_HIGHADDR = 0x8440ffff
  BUS_INTERFACE SPLB = mb_plb
@@ -155,7 +127,7 @@ END
 BEGIN proc_sys_reset
  PARAMETER INSTANCE = proc_sys_reset_0
  PARAMETER C_EXT_RESET_HIGH = 0
- PARAMETER HW_VER = 2.00.a
+ PARAMETER HW_VER = 3.00.a
  PORT Slowest_sync_clk = clk_66_6667MHz
  PORT Ext_Reset_In = sys_rst_s
  PORT MB_Debug_Sys_Rst = Debug_SYS_Rst
@@ -239,24 +211,6 @@ BEGIN xps_gpio
  PARAMETER C_TRI_DEFAULT = 0x00000000
  BUS_INTERFACE SPLB = mb_plb
  PORT GPIO_IO_O = xps_gpio_subbus_ctrl
-END
-
-BEGIN util_vector_logic
- PARAMETER INSTANCE = util_RXF_invert
- PARAMETER HW_VER = 1.00.a
- PARAMETER C_OPERATION = not
- PARAMETER C_SIZE = 1
- PORT Op1 = xps_epc_0_FTDI_RXF
- PORT Res = xps_epc_0_PRH_Rdy
-END
-
-BEGIN util_vector_logic
- PARAMETER INSTANCE = util_WR_invert
- PARAMETER HW_VER = 1.00.a
- PARAMETER C_OPERATION = not
- PARAMETER C_SIZE = 1
- PORT Op1 = xps_epc_0_PRH_Wr_n
- PORT Res = xps_epc_0_FTDI_WR
 END
 
 BEGIN xps_gpio

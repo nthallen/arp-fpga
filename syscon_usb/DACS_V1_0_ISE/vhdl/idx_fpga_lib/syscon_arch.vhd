@@ -59,7 +59,7 @@ ARCHITECTURE arch OF syscon IS
 
   COMPONENT syscon_tick
      GENERIC (
-        DEBUG_MULTIPLIER : integer := 100
+        DEBUG_MULTIPLIER : integer := 1
      );
      PORT (
         TickTock    : IN     std_ulogic;
@@ -78,7 +78,7 @@ ARCHITECTURE arch OF syscon IS
   alias CS is Ctrl_int(2);
   alias CE is Ctrl_int(3);
   alias rst is Ctrl_int(4);
-  alias arm is Ctrl_int(5);
+  alias arm is Ctrl_int(6);
   alias TickTock is Ctrl_int(5);
   alias Done is Status(0);
   alias Ack is Status(1);
@@ -88,7 +88,7 @@ BEGIN
 
   Tick : syscon_tick
     GENERIC MAP (
-      DEBUG_MULTIPLIER => 100
+      DEBUG_MULTIPLIER => 1
     )
     PORT MAP (
       TickTock    => TickTock,
