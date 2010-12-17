@@ -91,6 +91,7 @@ XGpio Subbus_Addr, Subbus_Data;
 XGpio Subbus_Ctrl, Subbus_Status;
 XGpio Subbus_Fail, Subbus_Switches;
 static unsigned short subb_ctrl = 0;
+static unsigned short fail_reg = 0;
 
 static void init_gpios(void) {
   // Initialize all GPIO's
@@ -293,7 +294,8 @@ static void parse_command(char *cmd) {
       SendUSB(expack ? "W" : "w");
       break;
     case 'F':
-      XGpio_DiscreteWrite(&Subbus_Fail,1,arg1);
+      fail_reg = (fail_reg & 6) | (arg1 & 9);
+      XGpio_DiscreteWrite(&Subbus_Fail,1,fail_reg);
       SendUSB( "F" );
       break;
     case 'f':
@@ -306,6 +308,7 @@ static void parse_command(char *cmd) {
         if (arg1) subb_ctrl |= bit;
         else subb_ctrl &= ~bit;
         XGpio_DiscreteWrite(&Subbus_Ctrl,1,subb_ctrl);
+		// xil_printf("ctrl(4): %02X\n", subb_ctrl);
       }
       SendUSB0(cmd_code);
       break;
@@ -330,21 +333,28 @@ static void parse_command(char *cmd) {
     	// is 17 clock cycles on a 66 MHz uBlaze.
     	int i;
 		subb_ctrl |= SBCTRL_ARM;
+		// xil_printf("ctrl(0): %02X\n", subb_ctrl);
 		XGpio_DiscreteWrite(&Subbus_Ctrl,1,subb_ctrl);
-		for ( i = 0; i < 10; i++ ) {
+		for ( i = 0; i < 20; i++ ) {
 		  Xuint8 subb_status;
 		  subb_status = XGpio_DiscreteRead(&Subbus_Status,1);
 		  if ((subb_status & SBSTAT_TWOSECTO) == 0)
 			break;
 		}
+		if (i == 20) { // #### Diagnostic code: temporary
+		  fail_reg |= 2;
+		  XGpio_DiscreteWrite(&Subbus_Fail, 1, fail_reg);
+		}
       } else {
 		XGpio_DiscreteWrite(&Subbus_Ctrl,1,subb_ctrl);
+		// xil_printf("ctrl(1): %02X\n", subb_ctrl);
       }
       // No return output
       break;
     case 'A': // Disarm 2-second reboot
-      subb_ctrl &= ~SBCTRL_ARM;
+      subb_ctrl &= ~(SBCTRL_ARM | SBCTRL_CE);
       XGpio_DiscreteWrite(&Subbus_Ctrl,1,subb_ctrl);
+	  // xil_printf("ctrl(2): %02X\n", subb_ctrl);
       SendUSB("A");
       break;
     case 'i':
@@ -404,6 +414,9 @@ int main(void) {
     if ( (subb_status & SBSTAT_TWOSECTO) && (subb_ctrl & SBCTRL_ARM) ) {
       subb_ctrl &= ~(SBCTRL_ARM | SBCTRL_CE);
       XGpio_DiscreteWrite(&Subbus_Ctrl,1,subb_ctrl);
+	  // xil_printf("ctrl(3): %02X\n", subb_ctrl);
+      fail_reg |= 4;
+      XGpio_DiscreteWrite(&Subbus_Fail,1,fail_reg);
     }
   }
   return 0;
