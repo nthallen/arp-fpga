@@ -268,5 +268,6 @@ BEGIN
   FPGA_CMDSTRB_B	<= not subbus_cmdstrb;
   GPIO_ERROR_LED	<= subbus_fail_leds(0);
   GPIO_LED <= subbus_fail_leds(4 DOWNTO 1);
+  DA_CS_B <= "00";
 END ARCHITECTURE beh;
 
