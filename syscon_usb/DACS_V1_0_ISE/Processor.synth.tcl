@@ -1,5 +1,5 @@
 proc pnsynth {} {
-  cd C:/Data/Xilinx/DACS_V1_0A_ISE/Processor
+  cd C:/Data/Xilinx/DACS_V1_0_ISE/Processor
   if { [ catch { xload xmp Processor.xmp } result ] } {
     exit 10
   }
