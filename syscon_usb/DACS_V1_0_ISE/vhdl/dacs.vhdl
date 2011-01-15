@@ -43,10 +43,11 @@ entity dacs is
       fpga_0_rst_1_sys_rst_pin : IN std_logic;
       fpga_0_clk_1_sys_clk_pin : IN std_logic;
       
-      xps_epc_0_FTDI_RXF_pin : IN std_logic;
       xps_epc_0_PRH_Data_pin : INOUT std_logic_vector(7 downto 0);
-      xps_epc_0_PRH_Rd_n_pin : OUT std_logic;
-      xps_epc_0_FTDI_WR_pin : OUT std_logic;
+      FTDI_RD_pin : OUT std_logic;
+      FTDI_WR_pin : OUT std_logic;
+      FTDI_RXF_pin : IN std_logic;
+      FTDI_TXE_pin : IN std_logic;
       FTDI_SI_pin : OUT std_logic;
       
       fpga_0_RS232_RX_pin : IN std_logic;
@@ -86,24 +87,27 @@ end dacs;
 
 architecture Behavioral of dacs is
 	COMPONENT Processor
-    PORT(
-      fpga_0_clk_1_sys_clk_pin : IN std_logic;
-      fpga_0_rst_1_sys_rst_pin : IN std_logic;
-      xps_epc_0_PRH_Rdy_pin : IN std_logic;
-      xps_gpio_subbus_data_i_pin : IN std_logic_vector(15 downto 0);
-      xps_gpio_subbus_status_pin : IN std_logic_vector(3 downto 0);
-      xps_gpio_subbus_switches_pin : IN std_logic_vector(3 downto 0);
-      xps_gpio_subbus_leds_readback_pin : IN std_logic_vector(4 downto 0);    
-      xps_epc_0_PRH_Data_pin : INOUT std_logic_vector(7 downto 0);      
-      clk_8_0000MHz_pin : OUT std_logic;
-      clk_30_0000MHz_pin : OUT std_logic;
-      xps_epc_0_PRH_Wr_n_pin : OUT std_logic;
-      xps_epc_0_PRH_Rd_n_pin : OUT std_logic;
-      FTDI_SI_pin : OUT std_logic;
-      xps_gpio_subbus_addr_pin : OUT std_logic_vector(15 downto 0);
-      xps_gpio_subbus_ctrl_pin : OUT std_logic_vector(6 downto 0);
-      xps_gpio_subbus_data_o_pin : OUT std_logic_vector(15 downto 0);
-      xps_gpio_subbus_leds_pin : OUT std_logic_vector(4 downto 0)
+	PORT(
+		fpga_0_clk_1_sys_clk_pin : IN std_logic;
+		fpga_0_rst_1_sys_rst_pin : IN std_logic;
+		clk_8_0000MHz_pin : OUT std_logic;
+		clk_30_0000MHz_pin : OUT std_logic;
+
+		xps_epc_0_PRH_Rdy_pin : IN std_logic;
+		xps_epc_0_PRH_Data_pin : INOUT std_logic_vector(7 downto 0);      
+		xps_epc_0_PRH_Wr_n_pin : OUT std_logic;
+		xps_epc_0_PRH_Rd_n_pin : OUT std_logic;
+		FTDI_SI_pin : OUT std_logic;
+		FTDI_RX_RDY_pin : IN std_logic;    
+
+		xps_gpio_subbus_data_i_pin : IN std_logic_vector(15 downto 0);
+		xps_gpio_subbus_status_pin : IN std_logic_vector(3 downto 0);
+		xps_gpio_subbus_switches_pin : IN std_logic_vector(3 downto 0);
+		xps_gpio_subbus_leds_readback_pin : IN std_logic_vector(4 downto 0);
+		xps_gpio_subbus_addr_pin : OUT std_logic_vector(15 downto 0);
+		xps_gpio_subbus_ctrl_pin : OUT std_logic_vector(6 downto 0);
+		xps_gpio_subbus_data_o_pin : OUT std_logic_vector(15 downto 0);
+		xps_gpio_subbus_leds_pin : OUT std_logic_vector(4 downto 0)
 		);
 	END COMPONENT;
 
@@ -228,6 +232,7 @@ architecture Behavioral of dacs is
 	
 	SIGNAL clk_8_0000MHz : std_logic;
 	SIGNAL clk_30_0000MHz : std_logic;
+  SIGNAL xps_epc_0_PRH_Wr_n_pin : std_logic;
 	SIGNAL subbus_addr : std_logic_vector(15 downto 0);
 	SIGNAL subbus_data_i : std_logic_vector(15 downto 0);      
 	SIGNAL subbus_data_o : std_logic_vector(15 downto 0);      
@@ -246,8 +251,6 @@ architecture Behavioral of dacs is
   SIGNAL Fail_outputs : std_logic_vector(4 DOWNTO 0);
   SIGNAL Fail_inputs : std_logic_vector(4 DOWNTO 0);
   SIGNAL ana_in_RdyOut : std_ulogic; -- Not used?
-  SIGNAL xps_epc_0_PRH_Rdy_pin : std_logic;
-  SIGNAL xps_epc_0_PRH_Wr_n_pin : std_logic;
 
 begin
 	Inst_Processor: Processor
@@ -260,11 +263,14 @@ begin
      fpga_0_rst_1_sys_rst_pin => fpga_0_rst_1_sys_rst_pin,
      clk_8_0000MHz_pin => clk_8_0000MHz,
      clk_30_0000MHz_pin => clk_30_0000MHz,
-     xps_epc_0_PRH_Rdy_pin => xps_epc_0_PRH_Rdy_pin,
+
+     xps_epc_0_PRH_Rdy_pin =>  not FTDI_TXE_pin,
      xps_epc_0_PRH_Wr_n_pin => xps_epc_0_PRH_Wr_n_pin,
      xps_epc_0_PRH_Data_pin => xps_epc_0_PRH_Data_pin,
-     xps_epc_0_PRH_Rd_n_pin => xps_epc_0_PRH_Rd_n_pin,
+     xps_epc_0_PRH_Rd_n_pin => FTDI_RD_pin,
      FTDI_SI_pin => FTDI_SI_pin,
+     FTDI_RX_RDY_pin => not FTDI_RXF_pin,
+
      xps_gpio_subbus_addr_pin => subbus_addr,
      xps_gpio_subbus_data_i_pin => subbus_data_i,
      xps_gpio_subbus_data_o_pin => subbus_data_o,
@@ -408,8 +414,7 @@ begin
   subbus_fail_leds(2) <= subbus_ctrl(5); -- Tick
   subbus_fail_leds(3) <= subbus_ctrl(3); -- CE
   subbus_fail_leds(4) <= subbus_status(3); -- TwoSecTO
-  xps_epc_0_PRH_Rdy_pin <= not xps_epc_0_FTDI_RXF_pin;
-  xps_epc_0_FTDI_WR_pin <= not xps_epc_0_PRH_Wr_n_pin;
+  FTDI_WR_pin <= not xps_epc_0_PRH_Wr_n_pin;
   fpga_0_RS232_TX_pin <= '0';
 end Behavioral;
 
