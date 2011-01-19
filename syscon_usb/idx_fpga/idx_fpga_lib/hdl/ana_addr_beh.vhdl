@@ -16,7 +16,7 @@ ENTITY ana_addr IS
     Addr : IN  std_logic_vector(15 DOWNTO 0);
     BdEn : OUT std_ulogic;
     CfgAddr : OUT std_logic_vector(7 DOWNTO 0);
-    AcqAddr : OUT std_logic_vector(7 DOWNTO 0)
+    AcqAddr : OUT std_logic_vector(8 DOWNTO 0)
   );
 END ENTITY ana_addr;
 
@@ -28,20 +28,23 @@ BEGIN
     Variable permute : unsigned(5 DOWNTO 0);
     Variable mapped : unsigned(5 DOWNTO 0);
   Begin
-    permute(0) := Addr(1);
-    permute(1) := Addr(2);
-    permute(2) := Addr(3);
-    permute(3) := Addr(5);
-    permute(4) := Addr(6);
-    permute(5) := Addr(7);
-    mapped := permute + 16#37#;
-    CfgAddr(2 DOWNTO 0) <= CONV_STD_LOGIC_VECTOR(mapped(2 DOWNTO 0),3);
-    CfgAddr(3) <= Addr(4);
-    CfgAddr(6 DOWNTO 4) <= CONV_STD_LOGIC_VECTOR(mapped(5 DOWNTO 3),3);
-    CfgAddr(7) <= '0';
-    AcqAddr(6 DOWNTO 0) <= Addr(7 DOWNTO 1);
-    AcqAddr(7) <= '0';
-    if Addr(15 DOWNTO 8) = "00001100" AND Addr(0) = '0' then
+    if Addr(8) = '1' then
+      CfgAddr <= Addr(8 downto 1);
+    else
+      permute(0) := Addr(1);
+      permute(1) := Addr(2);
+      permute(2) := Addr(3);
+      permute(3) := Addr(5);
+      permute(4) := Addr(6);
+      permute(5) := Addr(7);
+      mapped := permute + 16#37#;
+      CfgAddr(2 DOWNTO 0) <= CONV_STD_LOGIC_VECTOR(mapped(2 DOWNTO 0),3);
+      CfgAddr(3) <= Addr(4);
+      CfgAddr(6 DOWNTO 4) <= CONV_STD_LOGIC_VECTOR(mapped(5 DOWNTO 3),3);
+      CfgAddr(7) <= '0';
+    end if;
+    AcqAddr <= Addr(8 DOWNTO 0);
+    if Addr(15 DOWNTO 9) = "0000110" then
       BdEn <= '1';
     else
       BdEn <= '0';

@@ -19,9 +19,8 @@ ENTITY ana_ram IS
     WR_ADDR : IN std_logic_vector(7 DOWNTO 0);
     RD_DATA : OUT std_logic_vector(31 DOWNTO 0);
     WR_DATA : IN std_logic_vector(31 DOWNTO 0);
-    WREN : IN std_ulogic_vector(1 DOWNTO 0);
+    WREN : IN std_ulogic;
     RDEN : IN std_ulogic;
-    OE : IN std_ulogic;
     RD_CLK : IN std_ulogic;
     WR_CLK : IN std_ulogic;
     RST : IN std_ulogic
@@ -29,11 +28,8 @@ ENTITY ana_ram IS
 END ENTITY ana_ram;
 
 ARCHITECTURE beh OF ana_ram IS
-  SIGNAL WREN_int : std_ulogic;
-  SIGNAL RDEN_int : std_ulogic;
   SIGNAL WE : std_logic_vector(3 DOWNTO 0);
   SIGNAL RD_DATA_int : std_logic_vector(31 DOWNTO 0);
-  SIGNAL RDEN_dly : std_ulogic;
   SIGNAL RAM_RD_ADDR : std_logic_vector(8 DOWNTO 0);
   SIGNAL RAM_WR_ADDR : std_logic_vector(8 DOWNTO 0);
 
@@ -385,53 +381,18 @@ BEGIN
      DI => WR_DATA,     -- Input write data port
      RDADDR => RAM_RD_ADDR, -- Input read address
      RDCLK => RD_CLK,      -- Input read clock
-     RDEN => RDEN_int,  -- Input read port enable
-     REGCE => '0',    -- Input read output register enable
-     RST => RST,        -- Input reset 
-     WE => WE,          -- Input write enable
+     RDEN => RDEN,         -- Input read port enable
+     REGCE => '0',         -- Input read output register enable
+     RST => RST,           -- Input reset 
+     WE => WE,             -- Input write enable
      WRADDR => RAM_WR_ADDR, -- Input write address
-     WRCLK => WR_CLK,      -- Input write clock
-     WREN => WREN_int   -- Input write port enable
+     WRCLK => WR_CLK,       -- Input write clock
+     WREN => WREN           -- Input write port enable
   );
   
   RAM_RD_ADDR <= '0' & RD_ADDR;
   RAM_WR_ADDR <= '0' & WR_ADDR;
-
-  Wr_En : Process (WREN) IS
-  Begin
-    if WREN = "11" then
-      WREN_int <= '1';
-    else
-      WREN_int <= '0';
-    end if;
-  End Process;
-
-  Rd_En : Process ( RD_CLK, RST, RDEN, RDEN_dly ) IS
-  Begin
-    if RST = '1' then
-      RDEN_dly <= '0';
-    elsif RD_CLK'Event AND RD_CLK = '1' then
-      RDEN_dly <= RDEN;
-    end if;
-    if RDEN = '1' AND RDEN_dly = '0' then
-      RDEN_int <= '1';
-    else
-      RDEN_int <= '0';
-    end if;
-  End Process;
-  
-  Out_En : Process (OE,RD_DATA_int) Is
-  Begin
-    if OE = '1' then
-      RD_DATA <= RD_DATA_int;
-    else
-      RD_DATA <= (others => 'Z');
-    end if;
-  End Process;
-
-  WE(0) <= WREN_int;
-  WE(1) <= WREN_int;
-  WE(2) <= WREN_int;
-  WE(3) <= WREN_int;
+  RD_DATA <= RD_DATA_int;
+  WE <= (others => WREN);
 End Architecture beh;
 

@@ -19,7 +19,7 @@ ENTITY bench_ana_input_tester IS
       Conv   : IN     std_ulogic;
       ExpAck : IN     std_ulogic;
       RdyOut : IN     std_ulogic;
-      Row    : IN     std_ulogic_vector (2 DOWNTO 0);
+      Row    : IN     std_ulogic_vector (5 DOWNTO 0);
       SCK16  : IN     std_ulogic_vector (1 DOWNTO 0);
       SCK5   : IN     std_ulogic_vector (1 DOWNTO 0);
       SDO    : IN     std_ulogic_vector (1 DOWNTO 0);
@@ -63,7 +63,7 @@ BEGIN
          Conv  => Conv,
          RST   => RST_int,
          SDO   => SDI(0),
-         Row   => Row,
+         Row   => Row(2 DOWNTO 0),
          Bank  => '0'
       );
 
@@ -73,7 +73,7 @@ BEGIN
       Conv  => Conv,
       RST   => RST_int,
       SDO   => SDI(1),
-      Row   => Row,
+      Row   => Row(2 DOWNTO 0),
       Bank  => '1'
     );
 

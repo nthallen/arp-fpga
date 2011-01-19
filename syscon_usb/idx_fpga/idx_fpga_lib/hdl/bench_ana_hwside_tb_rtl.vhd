@@ -14,13 +14,13 @@ USE ieee.std_logic_arith.all;
 
 ENTITY bench_ana_hwside IS
    GENERIC (
-      DEF_CFG : std_logic_vector(4 DOWNTO 0) := "10100"
+      DEF_CFG : std_logic_vector(8 DOWNTO 0) := "000010100"
    );
 END bench_ana_hwside;
 
 
 LIBRARY idx_fpga_lib;
-USE idx_fpga_lib.ALL;
+-- USE idx_fpga_lib.ALL;
 
 
 ARCHITECTURE rtl OF bench_ana_hwside IS
@@ -30,11 +30,14 @@ ARCHITECTURE rtl OF bench_ana_hwside IS
    -- Internal signal declarations
    SIGNAL CLK     : std_logic;
    SIGNAL RST     : std_logic;
-   SIGNAL Row     : std_ulogic_vector(2 DOWNTO 0);
-   SIGNAL CfgData : std_logic_vector(4 DOWNTO 0);
+   SIGNAL Row     : std_ulogic_vector(5 DOWNTO 0);
+   SIGNAL CfgData : std_logic_vector(8 DOWNTO 0);
    SIGNAL AcqData : std_logic_vector(31 DOWNTO 0);
-   SIGNAL RAMAddr : std_logic_vector(7 DOWNTO 0);
-   SIGNAL RdWrEn  : std_ulogic;
+   SIGNAL RD_Addr : std_logic_vector(7 DOWNTO 0);
+   SIGNAL WR_Addr : std_logic_vector(7 DOWNTO 0);
+   SIGNAL RdEn    : std_ulogic;
+   SIGNAL WrEn    : std_ulogic;
+   SIGNAL RAM_BUSY : std_ulogic;
    SIGNAL RdyOut  : std_ulogic;
    SIGNAL Conv    : std_ulogic;
    SIGNAL CS5     : std_ulogic;
@@ -47,17 +50,20 @@ ARCHITECTURE rtl OF bench_ana_hwside IS
    -- Component declarations
    COMPONENT ana_hwside
       GENERIC (
-         DEF_CFG : std_logic_vector(4 DOWNTO 0) := "10100"
+         DEF_CFG : std_logic_vector(8 DOWNTO 0) := "000010100"
       );
       PORT (
          CLK     : IN     std_logic;
          RST     : IN     std_logic;
-         Row     : OUT    std_ulogic_vector(2 DOWNTO 0);
-         CfgData : IN     std_logic_vector(4 DOWNTO 0);
+         CfgData : IN std_logic_vector(8 DOWNTO 0);
+         Row     : OUT std_ulogic_vector(5 DOWNTO 0);
          AcqData : OUT    std_logic_vector(31 DOWNTO 0);
-         RAMAddr : OUT    std_logic_vector(7 DOWNTO 0);
-         RdWrEn  : OUT    std_ulogic;
-         RdyOut  : OUT    std_ulogic;
+         RD_Addr : OUT std_logic_vector(7 DOWNTO 0);
+         WR_Addr : OUT std_logic_vector(7 DOWNTO 0);
+         RdEn    : OUT std_ulogic;
+         WrEn    : OUT std_ulogic;
+         RdyOut  : OUT std_ulogic;
+         RAM_Busy : OUT std_ulogic;
          Conv    : OUT    std_ulogic;
          CS5     : OUT    std_ulogic;
          SDI     : IN     std_ulogic_vector(1 DOWNTO 0);
@@ -90,7 +96,7 @@ BEGIN
       Conv  => Conv,
       RST   => RST,
       SDO   => SDI(0),
-      Row   => Row,
+      Row   => Row(2 DOWNTO 0),
       Bank  => '0'
     );
   adbank1 : mock_ad7687_chain
@@ -99,7 +105,7 @@ BEGIN
       Conv  => Conv,
       RST   => RST,
       SDO   => SDI(1),
-      Row   => Row,
+      Row   => Row(2 DOWNTO 0),
       Bank  => '1'
     );
 
@@ -113,8 +119,11 @@ BEGIN
        Row     => Row,
        CfgData => CfgData,
        AcqData => AcqData,
-       RAMAddr => RAMAddr,
-       RdWrEn  => RdWrEn,
+       RD_Addr => RD_Addr,
+       WR_Addr => WR_Addr,
+       RdEn    => RdEn,
+       WrEn    => WrEn,
+       RAM_BUSY => RAM_BUSY,
        RdyOut  => RdyOut,
        Conv    => Conv,
        CS5     => CS5,
@@ -139,23 +148,41 @@ BEGIN
     wait;
     -- pragma synthesis_on
   End Process;
+  
+  CfgData_p : Process (CLK) Is
+  Begin
+    if CLK'Event AND CLK = '1' then
+      if RdEn = '1' then
+        if RD_Addr = "00100100" then
+          CfgData <= "100010100";
+        elsif RD_Addr = "00111010" then
+          CfgData <= "100111000";
+        else
+          CfgData <= "000010011";
+        end if;
+      end if;
+    end if;
+  End Process;
 
   test_proc : Process
     Procedure check_write IS
     Begin
       -- pragma synthesis_off
-      wait until RdWrEn = '1';
+      wait until RdEn = '1' AND WrEn = '1';
       wait until CLK'Event AND CLK = '1';
-      assert RAMAddr = AcqData(15 DOWNTO 8)
+      assert RD_Addr = AcqData(15 DOWNTO 8)
         report "Invalid AcqData"
         severity error;
-      assert AcqData(31 DOWNTO 16) = X"0014" OR AcqData(31 DOWNTO 16) = X"0013"
-        report "Invalid CfgData in readback"
+      assert AcqData(31 DOWNTO 25) = "0000000" OR AcqData(31 DOWNTO 25) = "0000000"
+        report "Nonzero CfgData in readback"
+        severity error;
+      assert AcqData(24 DOWNTO 21) = "0000" OR AcqData(24) = '1'
+        report "Invalid MuxCfg in readback"
         severity error;
       -- pragma synthesis_on
+      return;
     End Procedure;
   Begin
-    CfgData <= "10011";
     Done <= '0';
     RST <= '1';
     -- pragma synthesis_off
@@ -169,6 +196,5 @@ BEGIN
     wait;
     -- pragma synthesis_on
   End Process;
-
 
 END rtl;

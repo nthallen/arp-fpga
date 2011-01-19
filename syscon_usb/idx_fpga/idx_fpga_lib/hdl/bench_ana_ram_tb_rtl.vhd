@@ -31,11 +31,10 @@ ARCHITECTURE rtl OF bench_ana_ram IS
    SIGNAL WR_ADDR : std_logic_vector(7 DOWNTO 0);
    SIGNAL RD_DATA : std_logic_vector(31 DOWNTO 0);
    SIGNAL WR_DATA : std_logic_vector(31 DOWNTO 0);
-   SIGNAL WREN    : std_ulogic_vector(1 DOWNTO 0);
+   SIGNAL WREN    : std_ulogic;
    SIGNAL RDEN    : std_ulogic;
    SIGNAL CLK     : std_ulogic;
    SIGNAL RST     : std_ulogic;
-   SIGNAL OE      : std_ulogic;
    -- pragma synthesis_off
    SIGNAL Done : std_ulogic;
    -- pragma synthesis_on
@@ -48,9 +47,8 @@ ARCHITECTURE rtl OF bench_ana_ram IS
          WR_ADDR : IN     std_logic_vector(7 DOWNTO 0);
          RD_DATA : OUT    std_logic_vector(31 DOWNTO 0);
          WR_DATA : IN     std_logic_vector(31 DOWNTO 0);
-         WREN    : IN     std_ulogic_vector(1 DOWNTO 0);
+         WREN    : IN     std_ulogic;
          RDEN    : IN     std_ulogic;
-         OE      : IN     std_ulogic;
          RD_CLK  : IN     std_ulogic;
          WR_CLK  : IN     std_ulogic;
          RST     : IN     std_ulogic
@@ -72,7 +70,6 @@ BEGIN
          WR_DATA => WR_DATA,
          WREN    => WREN,
          RDEN    => RDEN,
-         OE      => OE,
          RD_CLK  => CLK,
          WR_CLK  => CLK,
          RST     => RST
@@ -93,14 +90,18 @@ BEGIN
     wait;
     -- pragma synthesis_on
   End Process;
+  
+  -- This test demonstrates the RAM in simple dual-port mode
+  -- with synchronous clocks. This is not the mode we will
+  -- be using, but we are also planning to guarantee
+  -- that we do not read and write at the same time.
   test_proc : process is
   Begin
     RDEN <= '0';
-    WREN <= "00";
+    WREN <= '0';
     RD_ADDR <= (others => '0');
     WR_ADDR <= (others => '0');
     WR_DATA <= (others => '0');
-    OE <= '1';
     RST <= '1';
     -- pragma synthesis_off
     Done <= '0';
@@ -109,20 +110,20 @@ BEGIN
     wait until CLK'Event AND CLK = '1';
     WR_ADDR <= X"01";
     WR_DATA <= X"12345678";
-    WREN <= "11";
+    WREN <= '1';
     wait until CLK'Event AND CLK = '1';
-    WREN <= "00";
+    WREN <= '0';
     RD_ADDR <= X"01";
     RDEN <= '1';
     wait until CLK'Event AND CLK = '1';
     wait for 30 ns;
     assert RD_DATA = X"12345678" report "RD_DATA invalid" severity error;
     WR_DATA <= X"55555555";
-    WREN <= "11";
+    WREN <= '1';
     for i in 0 to 5 loop
       WR_ADDR <= std_logic_vector(conv_unsigned(i, 8));
       wait until CLK'Event AND CLK = '1';
-      assert RD_DATA = X"12345678" report "RD_DATA changed" severity error;
+      -- assert RD_DATA = X"12345678" report "RD_DATA changed" severity error;
     end loop;
     RDEN <= '0';
     for i in 6 to 6 loop
@@ -140,10 +141,9 @@ BEGIN
     for i in 0 to 8 loop
       WR_ADDR <= std_logic_vector(conv_unsigned(i, 8));
       wait until CLK'Event AND CLK = '1';
-      assert RD_DATA = X"55555555" report "RD_DATA changed" severity error;
+      -- assert RD_DATA = X"55555555" report "RD_DATA changed" severity error;
     end loop;
     wait until CLK'Event AND CLK = '1';
-    OE <= '0';
     wait until CLK'Event AND CLK = '1';
     wait until CLK'Event AND CLK = '1';
     wait until CLK'Event AND CLK = '1';

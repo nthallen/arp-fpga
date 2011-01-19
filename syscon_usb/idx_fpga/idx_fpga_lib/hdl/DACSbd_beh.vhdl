@@ -44,6 +44,7 @@ ENTITY DACSbd IS
     FTDI_D : INOUT std_logic_vector ( 7 DOWNTO 0 );
     FTDI_RD : OUT std_logic;
     FTDI_RXF : IN std_logic;
+    FTDI_TXE : IN std_ulogic;
     FTDI_SI : OUT std_logic;
     FTDI_WR : OUT std_logic;
     GPIO_ERROR_LED : OUT std_logic;
@@ -82,7 +83,6 @@ ENTITY DACSbd IS
     FTDI_SPR_BC6 : IN std_ulogic;
     FTDI_SPR_BC7 : IN std_ulogic;
     FTDI_SUSPEND_B : IN std_ulogic;
-    FTDI_TXE : IN std_ulogic;
     FTDI_UPLOAD : IN std_ulogic;
     GPIO_HDR : IN std_ulogic_vector ( 15 DOWNTO 0 );
     MPS_PFO_B : IN std_ulogic;
@@ -126,7 +126,6 @@ ARCHITECTURE beh OF DACSbd IS
    SIGNAL idx_LimI                       : std_ulogic_vector(IDX_N_CHANNELS-1 DOWNTO 0);
    SIGNAL idx_LimO                       : std_ulogic_vector(IDX_N_CHANNELS-1 DOWNTO 0);
    SIGNAL idx_ZR                         : std_ulogic_vector(IDX_N_CHANNELS-1 DOWNTO 0);
-   --SIGNAL dig_IO                       : std_logic_vector( DIGIO_N_CONNECTORS*6*8-1 DOWNTO 0);
    SIGNAL spare_DIO                      : std_logic_vector(7 DOWNTO 0);
    SIGNAL dig_Dir                        : std_logic_vector( DIGIO_N_CONNECTORS*6-1 DOWNTO 0);
    SIGNAL ana_in_CS5                     : std_ulogic;
@@ -143,20 +142,27 @@ ARCHITECTURE beh OF DACSbd IS
       PORT (
          fpga_0_rst_1_sys_rst_pin       : IN     std_logic;
          fpga_0_clk_1_sys_clk_pin       : IN     std_logic;
-         xps_epc_0_FTDI_RXF_pin         : IN     std_logic;
+
          xps_epc_0_PRH_Data_pin         : INOUT  std_logic_vector(7 downto 0);
-         xps_epc_0_PRH_Rd_n_pin         : OUT    std_logic;
-         xps_epc_0_FTDI_WR_pin          : OUT    std_logic;
+         FTDI_RD_pin                    : OUT    std_logic;
+         FTDI_RXF_pin                   : IN     std_logic;
+         FTDI_TXE_pin                   : IN std_logic;
+         FTDI_WR_pin                    : OUT    std_logic;
          FTDI_SI_pin                    : OUT    std_logic;
+
          fpga_0_RS232_RX_pin            : IN     std_logic;
          fpga_0_RS232_TX_pin            : OUT    std_logic;
+
          fpga_0_Generic_IIC_Bus_Sda_pin : INOUT  std_logic;
          fpga_0_Generic_IIC_Bus_Scl_pin : INOUT  std_logic;
+
          subbus_cmdenbl                 : OUT    std_ulogic;
          subbus_cmdstrb                 : OUT    std_ulogic;
          subbus_fail_leds               : OUT    std_logic_vector(4 downto 0);
          subbus_flt_cpu_reset           : OUT    std_ulogic;
+
          DACS_switches                  : IN     std_logic_vector(3 downto 0);
+
          idx_Run                        : OUT    std_ulogic_vector(IDX_N_CHANNELS-1 downto 0);
          idx_Step                       : OUT    std_ulogic_vector(IDX_N_CHANNELS-1 downto 0);
          idx_Dir                        : OUT    std_ulogic_vector(IDX_N_CHANNELS-1 DOWNTO 0);
@@ -165,8 +171,10 @@ ARCHITECTURE beh OF DACSbd IS
          idx_LimI                       : IN     std_ulogic_vector(IDX_N_CHANNELS-1 DOWNTO 0);
          idx_LimO                       : IN     std_ulogic_vector(IDX_N_CHANNELS-1 DOWNTO 0);
          idx_ZR                         : IN     std_ulogic_vector(IDX_N_CHANNELS-1 DOWNTO 0);
+
          dig_IO                         : INOUT  std_logic_vector( DIGIO_N_CONNECTORS*6*8-1 DOWNTO 0);
          dig_Dir                        : OUT    std_logic_vector( DIGIO_N_CONNECTORS*6-1 DOWNTO 0);
+
          ana_in_SDI                     : IN     std_ulogic_vector(1 DOWNTO 0);
          ana_in_CS5                     : OUT    std_ulogic;
          ana_in_Conv                    : OUT    std_ulogic;
@@ -174,6 +182,7 @@ ARCHITECTURE beh OF DACSbd IS
          ana_in_SCK16                   : OUT    std_ulogic_vector(1 DOWNTO 0);
          ana_in_SCK5                    : OUT    std_ulogic_vector(1 DOWNTO 0);
          ana_in_SDO                     : OUT    std_ulogic_vector(1 DOWNTO 0);
+
          ctr_PMT                        : IN std_logic_vector(7 DOWNTO 0)
       );
    END COMPONENT;
@@ -190,11 +199,14 @@ BEGIN
     PORT MAP (
        fpga_0_rst_1_sys_rst_pin       => FPGA_CPU_RESET,
        fpga_0_clk_1_sys_clk_pin       => FPGA_SYSCLK,
-       xps_epc_0_FTDI_RXF_pin         => FTDI_RXF,
+
        xps_epc_0_PRH_Data_pin         => FTDI_D,
-       xps_epc_0_PRH_Rd_n_pin         => FTDI_RD,
-       xps_epc_0_FTDI_WR_pin          => FTDI_WR,
+       FTDI_RD_pin                    => FTDI_RD,
+       FTDI_WR_pin                    => FTDI_WR,
+       FTDI_RXF_pin                   => FTDI_RXF,
+       FTDI_TXE_pin                   => FTDI_TXE,
        FTDI_SI_pin                    => FTDI_SI,
+
        fpga_0_RS232_RX_pin            => USB_1_RX,
        fpga_0_RS232_TX_pin            => USB_1_TX,
        fpga_0_Generic_IIC_Bus_Sda_pin => IIC_SDA,
@@ -232,7 +244,6 @@ BEGIN
   AI_AFE_CS_B(1) <= ana_in_CS5;
   AI_MUX0_A <= ana_in_Row;
   AI_MUX1_A <= ana_in_Row;
-  -- DIO(23 DOWNTO 0) <= dig_IO(23 DOWNTO 0);
   DIO(24) <=	idx_Dir(0);
   DIO(25) <=	idx_Run(0);
   DIO(26) <=	idx_Step(0);
@@ -258,7 +269,6 @@ BEGIN
   idx_LimI(2) <= DIO(52);
   idx_LimO(2) <= DIO(53);
   idx_ZR(2) <= DIO(54);
-  -- DIO(119 DOWNTO 56) <= dig_IO(95 DOWNTO 32);
   DIO_DIR(2 DOWNTO 0) <= dig_Dir(2 DOWNTO 0);
   DIO_DIR(6 DOWNTO 3) <= "1100";
   DIO_DIR(14 DOWNTO 7) <= dig_Dir(11 DOWNTO 4);

@@ -28,37 +28,49 @@ ARCHITECTURE rtl OF bench_ana_acquire IS
    -- Architecture declarations
 
    -- Internal signal declarations
-   SIGNAL Addr   : std_logic_vector(7 DOWNTO 0);
-   SIGNAL CLK    : std_ulogic;
-   SIGNAL Conv   : std_ulogic;
-   SIGNAL NxtRow : std_ulogic_vector(2 DOWNTO 0);
-   SIGNAL RdWrEn : std_ulogic;
-   SIGNAL RdyIn  : std_ulogic;
-   SIGNAL RdyOut : std_ulogic;
-   SIGNAL RST    : std_ulogic;
-   SIGNAL S5WE   : std_ulogic_vector(1 DOWNTO 0);
-   SIGNAL Start  : std_ulogic;
-   SIGNAL Done   : std_ulogic;
-   SIGNAL SDI    : std_ulogic_vector(1 DOWNTO 0);
-   SIGNAL CS5    : std_ulogic;
+   SIGNAL CLK       :     std_ulogic;
+   SIGNAL CurMuxCfg :     std_logic_vector (3 DOWNTO 0);
+   SIGNAL NewMuxCfg :     std_logic_vector (3 DOWNTO 0);
+   SIGNAL RST       :     std_ulogic;
+   SIGNAL RdyIn     :     std_ulogic;
+   SIGNAL SDI       :     std_ulogic_vector (1 DOWNTO 0);
+   SIGNAL CS5       :     std_ulogic;
+   SIGNAL Col_Addr  :     std_logic_vector (2 DOWNTO 0);
+   SIGNAL Conv      :     std_ulogic;
+   SIGNAL NxtRow    :     std_ulogic_vector (5 DOWNTO 0);
+   SIGNAL RAM_BUSY  :     std_ulogic;
+   SIGNAL RD_Addr   :     std_logic_vector (7 DOWNTO 0);
+   SIGNAL RdEn      :     std_ulogic;
+   SIGNAL RdyOut    :     std_ulogic;
+   SIGNAL S5WE      :     std_ulogic_vector (1 DOWNTO 0);
+   SIGNAL Start     :     std_ulogic;
+   SIGNAL WR_Addr   :     std_logic_vector (7 DOWNTO 0);
+   SIGNAL WrEn      :     std_ulogic;
+   SIGNAL Done      :     std_ulogic;
 
 
    -- Component declarations
    COMPONENT ana_acquire
-      PORT (
-         Addr   : OUT    std_logic_vector(7 DOWNTO 0);
-         CLK    : IN     std_ulogic;
-         Conv   : OUT    std_ulogic;
-         CS5    : OUT    std_ulogic;
-         NxtRow : OUT    std_ulogic_vector(2 DOWNTO 0);
-         RdWrEn : OUT    std_ulogic;
-         RdyIn  : IN     std_ulogic;
-         RdyOut : OUT    std_ulogic;
-         RST    : IN     std_ulogic;
-         S5WE   : OUT    std_ulogic_vector(1 DOWNTO 0);
-         SDI    : IN     std_ulogic_vector(1 DOWNTO 0);
-         Start  : OUT    std_ulogic
-      );
+     PORT( 
+        CLK       : IN     std_ulogic;
+        CurMuxCfg : IN     std_logic_vector (3 DOWNTO 0);
+        NewMuxCfg : IN     std_logic_vector (3 DOWNTO 0);
+        RST       : IN     std_ulogic;
+        RdyIn     : IN     std_ulogic;
+        SDI       : IN     std_ulogic_vector (1 DOWNTO 0);
+        CS5       : OUT    std_ulogic;
+        Col_Addr  : OUT    std_logic_vector (2 DOWNTO 0);
+        Conv      : OUT    std_ulogic;
+        NxtRow    : OUT    std_ulogic_vector (5 DOWNTO 0);
+        RAM_BUSY  : OUT    std_ulogic;
+        RD_Addr   : OUT    std_logic_vector (7 DOWNTO 0);
+        RdEn      : OUT    std_ulogic;
+        RdyOut    : OUT    std_ulogic;
+        S5WE      : OUT    std_ulogic_vector (1 DOWNTO 0);
+        Start     : OUT    std_ulogic;
+        WR_Addr   : OUT    std_logic_vector (7 DOWNTO 0);
+        WrEn      : OUT    std_ulogic
+     );
    END COMPONENT;
 
    -- embedded configurations
@@ -70,18 +82,24 @@ BEGIN
 
  DUT_ana_acquire : ana_acquire
     PORT MAP (
-       Addr   => Addr,
-       CLK    => CLK,
-       Conv   => Conv,
-       CS5    => CS5,
-       NxtRow => NxtRow,
-       RdWrEn => RdWrEn,
-       RdyIn  => RdyIn,
-       RdyOut => RdyOut,
-       RST    => RST,
-       S5WE   => S5WE,
-       SDI    => SDI,
-       Start  => Start
+      CLK => CLK,
+      CurMuxCfg => CurMuxCfg,
+      NewMuxCfg => NewMuxCfg,
+      RST => RST,
+      RdyIn => RdyIn,
+      SDI => SDI,
+      CS5 => CS5,
+      Col_Addr => Col_Addr,
+      Conv => Conv,
+      NxtRow => NxtRow,
+      RAM_BUSY => RAM_BUSY,
+      RD_Addr => RD_Addr,
+      RdEn => RdEn,
+      RdyOut => RdyOut,
+      S5WE => S5WE,
+      Start => Start,
+      WR_Addr => WR_Addr,
+      WrEn => WrEn
     );
 
   clock : Process
@@ -115,7 +133,31 @@ BEGIN
     wait;
     -- pragma synthesis_on
   End Process;
-
+  
+  NewMuxCfg_p : Process (CLK)
+  Begin
+    if CLK'Event AND CLK = '1' then
+      if RST = '1' then
+        NewMuxCfg <= "0000";
+      else
+        if RdEn = '1' AND RD_Addr = "00100100" then -- r 2 b 0 c 4
+          NewMuxCfg <= "1010";
+        else
+          NewMuxCfg <= "0000";
+        end if;
+      end if;
+    end if;
+  end Process;
+  
+  CurMuxCfg_p : Process (WR_Addr)
+  Begin
+    if WR_Addr = "00110110" then -- r 3 b 0 c 6
+      CurMuxCfg <= "1010";
+    else
+      CurMuxCfg <= "0000";
+    end if;
+  end Process;
+  
   test_proc : Process
     Begin
       SDI <= "00";
