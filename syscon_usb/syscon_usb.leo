@@ -31,7 +31,7 @@
 <v t="ntallen.20100827154528.1331"><vh>subbusd (here for visibility)</vh></v>
 <v t="ntallen.20100907120439.1333"><vh>syscon_usb</vh></v>
 </v>
-<v t="ntallen.20100520123955.1247" a="E"><vh>Development Issues</vh>
+<v t="ntallen.20100520123955.1247"><vh>Development Issues</vh>
 <v t="ntallen.20100519134237.1503"><vh>12.1 Upgrade</vh></v>
 <v t="ntallen.20100524120730.1249"><vh>ISE/XPS/SDK</vh>
 <v t="ntallen.20100524120730.1250"><vh>Bit Stream</vh></v>
@@ -44,10 +44,15 @@
 <v t="ntallen.20100607110403.1299"><vh>sbtest</vh></v>
 <v t="ntallen.20100610083250.1301"><vh>Simulation problem</vh></v>
 </v>
-<v t="ntallen.20101123111757.1383" a="E"><vh>Revision Control</vh>
+<v t="ntallen.20101123111757.1383"><vh>Revision Control</vh>
 <v t="ntallen.20101123111757.1384"><vh>HDS archive</vh></v>
 <v t="ntallen.20101123111757.1385"><vh>SDK archive</vh></v>
 <v t="ntallen.20101123111757.1386"><vh>ISE archive</vh></v>
+</v>
+<v t="ntallen.20101215085413.1391"><vh>12.3 Upgrade</vh>
+<v t="ntallen.20101215085413.1392"><vh>ISE</vh></v>
+<v t="ntallen.20101215085413.1393"><vh>XPS</vh></v>
+<v t="ntallen.20101215085413.1394"><vh>SDK</vh></v>
 </v>
 </v>
 <v t="ntallen.20100525090916.1257" a="E"><vh>Development Plan</vh>
@@ -70,7 +75,7 @@
 <v t="ntallen.20100525090916.1260"><vh>Done: Implement Subbus Library</vh></v>
 <v t="ntallen.20101102122701.1375"><vh>Implement Subbus/Syscon Library</vh></v>
 <v t="ntallen.20100525090916.1261"><vh>Indexer: Simulated</vh></v>
-<v t="ntallen.20100525090916.1262"><vh>A/D VHDL: Simulated</vh>
+<v t="ntallen.20100525090916.1262" a="E"><vh>A/D VHDL: Simulated</vh>
 <v t="ntallen.20101013150328.1339"><vh>Convert Clock</vh></v>
 <v t="ntallen.20101013150328.1340"><vh>A/D =&gt; RAM</vh></v>
 <v t="ntallen.20101013150328.1341"><vh>RAM =&gt; Front End</vh></v>
@@ -83,11 +88,19 @@
 <v t="ntallen.20101013150328.1345"><vh>Enhanced Operations</vh>
 <v t="ntallen.20101013150328.1346"><vh>Configuration Readback</vh></v>
 </v>
-<v t="ntallen.20101019142341.1359"><vh>Design Hierarchy</vh>
+<v t="ntallen.20101019142341.1359" a="E"><vh>Design Hierarchy</vh>
 <v t="ntallen.20101022104642.1372"><vh>ana_subbus</vh></v>
+<v t="ntallen.20110118143100.1403"><vh>ana_data_ram</vh>
+<v t="ntallen.20110118143100.1404"><vh>ana_data_rd</vh></v>
 <v t="ntallen.20101019142341.1363"><vh>ana_ram</vh></v>
-<v t="ntallen.20101022104642.1371"><vh>ana_hwside</vh>
-<v t="ntallen.20101019142341.1364"><vh>ana_acquire</vh></v>
+</v>
+<v t="ntallen.20110118143100.1405"><vh>ana_cfg_ram</vh>
+<v t="ntallen.20101019142341.1363"></v>
+</v>
+<v t="ntallen.20101022104642.1371" a="E"><vh>ana_hwside</vh>
+<v t="ntallen.20101019142341.1364" a="E"><vh>ana_acquire</vh>
+<v t="ntallen.20110118143100.1406"><vh>sub-muxing</vh></v>
+</v>
 <v t="ntallen.20101019142341.1362"><vh>ana_s16</vh></v>
 <v t="ntallen.20101019142341.1360"><vh>ana_s5</vh>
 <v t="ntallen.20101019142341.1361"><vh>ana_s5s</vh></v>
@@ -99,13 +112,16 @@
 <v t="ntallen.20100920151402.1336"><vh>Basic Specs</vh></v>
 </v>
 <v t="ntallen.20101102122701.1376"><vh>D/A VHDL</vh></v>
-<v t="ntallen.20101102122701.1377" a="E"><vh>Syscon Features</vh>
+<v t="ntallen.20101102122701.1377"><vh>Syscon Features</vh>
 <v t="ntallen.20101102122701.1378"><vh>Tick</vh></v>
 </v>
 </v>
-<v t="ntallen.20100823102718.1327" a="E"><vh>Documentation</vh>
+<v t="ntallen.20100823102718.1327"><vh>Documentation</vh>
 <v t="ntallen.20100525090916.1259"></v>
 <v t="ntallen.20100824101804.1329"><vh>Document API</vh></v>
+</v>
+<v t="ntallen.20110115103957.1399"><vh>Revisions</vh>
+<v t="ntallen.20110115103957.1400"><vh>DACS_V1_0_ISE</vh></v>
 </v>
 </v>
 </vnodes>
@@ -498,7 +514,11 @@ DIGIO_BASE_ADDR DIG_BASE_ADDR + (DIG_CONN_OFFSET*DIG_CONN_PER_BD*DIG_BD_NUM)
 
 
 </t>
-<t tx="ntallen.20101013150328.1339">Upper limit is determined by the time to transfer the data out of the converters.</t>
+<t tx="ntallen.20101013150328.1339">Upper limit is determined by the time to transfer the data out of the converters.
+
+Simulation give (.182 - .0867) ms = .095 ms between samples of a single channel.
+That gives a conversion rate on the order of 10500 conversion/second.
+Sub-muxed channels will be converted at only 1316 conversions/second.</t>
 <t tx="ntallen.20101013150328.1340"></t>
 <t tx="ntallen.20101013150328.1341"></t>
 <t tx="ntallen.20101013150328.1342"></t>
@@ -569,10 +589,24 @@ association at the top level of this design.</t>
 Note: whoever does generate the CS output must ensure the setup time requirements, specifically
  t3 = CS/ to SCK/ min 50 ns setup
  t7 = SCK to CS min 50 ns hold
-</t>
+
+ana_s5s stores the configuration data when it is read from the ana_cfg_ram.</t>
 <t tx="ntallen.20101019142341.1361">State machine for clocking out configuration bits and generating the configuration clock.</t>
 <t tx="ntallen.20101019142341.1362">State machine for clocking in data from A/D. Like ana_s5s, operates on the word level.</t>
-<t tx="ntallen.20101019142341.1363">Encapsulation of BRAM block for use in simple dual ported RAM mode.</t>
+<t tx="ntallen.20101019142341.1363">Encapsulation of BRAM block for use in simple dual ported RAM mode.
+Using the BRAM_SDP_MACRO.
+
+As noted elsewhere, the Spartan-6 BRAM does not support simultaneous
+operations on both ports of a dual-ported RAM.
+
+As currently written, the RDEN signal is delayed one clock cycle.
+This was done to limit a read to a single clock cycle. I am
+going to remove this, because that logic has moved up a level
+into either ana_data_ram or ana_cfg_ram.
+
+1/18/11: Switching BRAM_SIZE back to 36Kb (was 18Kb) just to make sure
+I'm abiding by Xilinx's restrictions.
+</t>
 <t tx="ntallen.20101019142341.1364">State machine generating control signals to drive ana_s5, ana_s16.
       CLK    : IN     std_logic; 30 MHz max. S5.SCK is CLK/6. S16.SCK is CLK/2
       RST    : IN     std_logic; Synch active high
@@ -580,16 +614,23 @@ Note: whoever does generate the CS output must ensure the setup time requirement
       SDI    : IN     std_ulogic_vector (1 DOWNTO 0); SDI signals from each bank of A/D converters
       Addr   : OUT    std_ulogic_vector (7 DOWNTO 0); Address for our side of the two RAM banks
       Conv   : OUT    std_ulogic; Convert signal to A/D converters
-      NxtRow : OUT    std_ulogic_vector (2 DOWNTO 0); Address lines for the mux
+      NxtRow : OUT    std_ulogic_vector (5 DOWNTO 0); Address lines for the mux
       RdWrEn : OUT    std_ulogic;
       RdyOut : OUT    std_ulogic;
       S5WE   : OUT    std_ulogic_vector (1 DOWNTO 0); Write Enable for the two S5 state machines
+      RAM_BUSY : OUT  std_ulogic; Flag to avoid RAM collisions
       Start  : OUT    std_ulogic
 
 NxtRow is so called because it represents the row of data that will
 be retrieved during the next acquisition sequence. According to the
 terminology in the AD7687 data sheet, acquisition comes after conversion,
 and is the process of retrieving the converted value.
+
+The low-order 3 bits of NxtRow go to the primary Muxes on the DACS
+board. The higher-order bits can be used for external muxes. A
+channel that is muxed will have extra bits set in the cfg_ram
+flagging the fact that the channel is muxed and specifying 3 of
+the bits of the address where the result will be stored.
 
 RdWrEn is an enable line that goes to both banks of RAM. It is the
 read enable on the configuration RAM and write enable on the data
@@ -603,8 +644,15 @@ Start is a signal to S5 and S16 machines to begin their sequences (or continue
 their sequences).</t>
 <t tx="ntallen.20101022104642.1371">This component encapsulates all the hardware interface timing.
 
-Copy data from cfg cache on RdWrEn
-Set cfg cache from DO5 on S5WE</t>
+This component caches channel configuration data between the
+time it is read from the cfg_ram (as signaled by S5WE)
+and when the converted data is read from the A/D and
+written into the data_ram.
+    Copy data from cfg cache when writing to data ram
+        AcqData always reflects the cached configuration and
+        latest converted data from the ana_s16(s), selecting
+        based on the 'bank' bit (Addr(3))
+    Set cfg cache from DO5 on S5WE</t>
 <t tx="ntallen.20101022104642.1372"></t>
 <t tx="ntallen.20101102122701.1375"></t>
 <t tx="ntallen.20101102122701.1376"></t>
@@ -676,5 +724,80 @@ Edit project properties
 
 Back in XPS, double check path to executable.
 </t>
+<t tx="ntallen.20101215085413.1391">Rebuilding the design from the ground up (although all the VHDL should come in without modification)
+I will summarize the salient features of the designs...</t>
+<t tx="ntallen.20101215085413.1392">Spartan 6
+xs6slx150
+fgg484
+-2
+
+EEPROM is M25P64
+</t>
+<t tx="ntallen.20101215085413.1393">Single processor design
+Reference Clock is 100 MHz
+Reset Active Low (default)
+No other IP in the BSB
+
+IP:
+    clock_generator: Need to add 8MHz and 25MHz outputs
+    iic (later)
+    rs232 (later)
+    xps_epc (copy and paste from earlier design
+    GPIOs: (copy and paste)
+        data
+        addr
+        status
+        ctrl
+        Data_Rdy (FTDI/epc)
+        FTDI_SI
+        LEDs
+        Switches
+
+Instead of using util_vector_logic, I will implement the necessary inversion in
+Dacsbd_beh.vhdl
+
+Export to SDK:
+    This design has instantiated in Project Navigator.
+    After exporting to SDK, you must manually copy the
+    bitstream and &lt;design&gt;_bd.bmm file from the Project
+    Navigator directory to the export directory display below
+    SDK\SDK_Export
+
+I've tried this, but I cannot currently figure out how to tell the SDK what files to use to configure the FPGA
+</t>
+<t tx="ntallen.20101215085413.1394"></t>
+<t tx="ntallen.20110115103957.1399"></t>
+<t tx="ntallen.20110115103957.1400">This is the main branch for current development. Any directory created with suffixes is a temporary test.
+DACS_V1_0A_ISE e.g.</t>
+<t tx="ntallen.20110118143100.1403">Encapsulation of ana_ram to avoid simultaneous operations by
+delaying the subbus read while RAM_BUSY is asserted.
+
+Also will cache the configuration data read from an even address
+to report on a subsequent read of the next higher address.</t>
+<t tx="ntallen.20110118143100.1404"></t>
+<t tx="ntallen.20110118143100.1405">Encapsulation of ana_ram to avoid simultaneous operations by
+delaying the subbus write while RAM_BUSY is asserted.
+</t>
+<t tx="ntallen.20110118143100.1406">Basic analog input address run from C00 to CFE, so there are 8 significant bits.
+Bit 0 is used simply to indicate whether the converted value or the configuration
+value is being read. That leaves 7 address bits: Addr(7 downto 1). Of these:
+    Addr(7 downto 5) is the Row
+    Addr(4) is the Bank
+    Addr(3 downto 1) is the Column
+
+2^7 = 128 different channels, corresponding to 2 banks of 8 converters with 8-channel
+muxes.
+
+And 8 of these 128 channels may be further muxed off the DACS board.
+The configuration word consists of 9 bits:
+    Cfg(4 downto 0) is the channel gain configuration
+    Cfg(8) is the remux bit
+    Cfg(7 downto 5) is the remux addr: maddr
+When a remuxed channel is read from the converter, the value is
+stored at the normal location, then also at a mux address, which
+is assembled as: X"D" &amp; maddr &amp; bank &amp; Row(5 downto 3)
+
+#### Since the RAMaddr is generated by ana_acquire, it needs to have at least the
+mux configuration bits that are cached by ana_hwside.</t>
 </tnodes>
 </leo_file>
