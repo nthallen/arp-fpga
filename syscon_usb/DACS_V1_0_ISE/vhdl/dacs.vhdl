@@ -76,7 +76,7 @@ entity dacs is
       ana_in_SDI : IN std_ulogic_vector(1 DOWNTO 0); -- From A/D Converter
       ana_in_CS5 : OUT std_ulogic; -- To LMP7312
       ana_in_Conv : OUT std_ulogic; -- To A/D Converter
-      ana_in_Row : OUT std_ulogic_vector(2 DOWNTO 0);
+      ana_in_Row : OUT std_ulogic_vector(5 DOWNTO 0);
       ana_in_SCK16 : OUT std_ulogic_vector(1 DOWNTO 0);
       ana_in_SCK5 : OUT std_ulogic_vector(1 DOWNTO 0);
       ana_in_SDO  : OUT std_ulogic_vector(1 DOWNTO 0);
@@ -198,7 +198,7 @@ architecture Behavioral of dacs is
         Conv   : OUT    std_ulogic;
         ExpAck : OUT    std_ulogic;
         RdyOut : OUT    std_ulogic;
-        Row    : OUT    std_ulogic_vector(2 DOWNTO 0);
+        Row    : OUT    std_ulogic_vector(5 DOWNTO 0);
         SCK16  : OUT    std_ulogic_vector(1 DOWNTO 0);
         SCK5   : OUT    std_ulogic_vector(1 DOWNTO 0);
         SDO    : OUT    std_ulogic_vector(1 DOWNTO 0);
