@@ -38,6 +38,7 @@ ARCHITECTURE beh OF ana_s5 IS
   type rdi_t is array (1 DOWNTO 0) of std_logic_vector(8 DOWNTO 0);
   SIGNAL RDI : rdi_t;
   SIGNAL N_CFG : std_logic_vector(1 DOWNTO 0);
+  SIGNAL Started : std_ulogic;
   COMPONENT ana_s5s
      PORT (
         DI    : IN     std_logic_vector(8 DOWNTO 0);
@@ -57,6 +58,8 @@ BEGIN
     if CLK'Event AND CLK = '1' then
       if RST = '1' then
         N_CFG <= "00";
+        RDI(0) <= DEF_CFG;
+        Started <= '0';
       else
         if WE = '1' then
           if N_CFG = "00" then
@@ -69,7 +72,7 @@ BEGIN
             RDI(0) <= DI;
             N_CFG <= "01";
           end if;
-        elsif Start = '1' then
+        elsif Start = '1' AND Started = '0' then
           if N_CFG = "10" then
             N_CFG <= "01";
             RDI(0) <= RDI(1);
@@ -78,6 +81,7 @@ BEGIN
             RDI(0) <= DEF_CFG;
           end if;
         end if;
+        Started <= Start;
       end if;
     end if;
   End Process;

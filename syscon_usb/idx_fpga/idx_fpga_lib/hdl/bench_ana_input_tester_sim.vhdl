@@ -44,6 +44,7 @@ ARCHITECTURE sim OF bench_ana_input_tester IS
    SIGNAL F8M_int : std_ulogic;
    SIGNAL CvtCnt : unsigned(7 DOWNTO 0);
    SIGNAL Done : std_ulogic;
+   SIGNAL Read_Result : std_logic_vector(15 DOWNTO 0);
    
    COMPONENT mock_ad7687_chain
       PORT (
@@ -115,9 +116,43 @@ BEGIN
       CvtCnt <= CvtCnt + 1;
     end if;
   End Process;
+  
 
   test_proc : Process
     Variable CvtdRow : unsigned(4 DOWNTO 0);
+    
+    procedure sbrd( addr_in : std_logic_vector (15 DOWNTO 0) ) is
+    begin
+      Addr <= addr_in;
+      -- pragma synthesis_off
+      wait for 125 ns;
+      ExpRd <= '1';
+      wait for 1 us;
+      assert ExpAck = '1' report "No Acknowledge on read" severity error;
+      Read_Result <= Data;
+      ExpRd <= '0';
+      wait for 125 ns;
+      -- pragma synthesis_on
+      return;
+    end procedure sbrd;
+
+    procedure sbwr( Addr_In : IN std_logic_vector (15 downto 0);
+                    Data_In : IN std_logic_vector (15 downto 0) ) is
+    begin
+      Addr <= Addr_In;
+      Data <= Data_in;
+      -- pragma synthesis_off
+      wait for 40 ns;
+      ExpWr <= '1';
+      wait for 1 us;
+      assert ExpAck = '1' report "No acknowledge on write" severity error;
+      ExpWr <= '0';
+      wait for 250 ns;
+      Data <= (others => 'Z');
+      -- pragma synthesis_on
+      return;
+    end procedure sbwr;
+  
   Begin
     Done <= '0';
     ExpRd <= '0';
@@ -129,27 +164,24 @@ BEGIN
     RST_int <= '0';
     wait until F8M_int'Event AND F8M_int = '1';
     wait for 100 us; -- wait for initial conversions
-    Addr <= X"0C20";
-    wait for 100 ns;
+    sbwr( X"0C20", X"001C" );
     for i in 1 to 20 loop
-      wait until F8M_int'Event AND F8M_int = '1';
-      ExpRd <= '1';
-      for i in 1 to 7 loop
-        wait until F8M_int'Event AND F8M_int = '1';
-      end loop;
-      assert Data(15 DOWNTO 8) = X"10"
+      sbrd( X"0C20" );
+      assert Read_Result(15 DOWNTO 8) = X"10"
         report "Mock output does not match row/column"
         severity error;
-      assert Data(2 DOWNTO 0) = "001"
+      assert Read_Result(2 DOWNTO 0) = "001"
         report "Mock low bits do not match cvt count row"
         severity error;
       CvtdRow := CvtCnt(7 DOWNTO 3);
-      assert Data(7 Downto 3) = conv_std_logic_vector(CvtdRow,5)
-          OR Data(7 DOWNTO 3) = conv_std_logic_vector(CvtdRow-1,5)
+      assert Read_Result(7 Downto 3) = conv_std_logic_vector(CvtdRow,5)
+          OR Read_Result(7 DOWNTO 3) = conv_std_logic_vector(CvtdRow-1,5)
         report "Cvt Count does not match"
         severity error;
-      wait until F8M_int'Event AND F8M_int = '1';
-      ExpRd <= '0';
+      sbrd( X"0C21" );
+      assert Read_Result = X"001C"
+        report "Configuration readback does not match"
+        severity error;
       wait for 100 us;
     end loop;
     Done <= '1';
