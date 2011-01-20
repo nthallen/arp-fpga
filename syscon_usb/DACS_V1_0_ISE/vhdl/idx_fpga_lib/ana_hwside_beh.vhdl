@@ -50,7 +50,7 @@ ARCHITECTURE beh OF ana_hwside IS
    SIGNAL DO16_1 : std_ulogic_vector(15 DOWNTO 0);
    SIGNAL Rdy    : std_ulogic_vector(3 DOWNTO 0);
    SIGNAL WR_Addr_int : std_logic_vector(7 DOWNTO 0);
-   SIGNAL Col_Addr : std_logic_vector(2 DOWNTO 0);
+   SIGNAL Col_Addr : std_logic_vector(3 DOWNTO 0);
    SIGNAL CfgCache0 : cache_t;
    SIGNAL CfgCache1 : cache_t;
    SIGNAL CurMuxCfg : std_logic_vector(3 DOWNTO 0);
@@ -69,7 +69,7 @@ ARCHITECTURE beh OF ana_hwside IS
          NewMuxCfg : IN  std_logic_vector(3 DOWNTO 0);
          RD_Addr : OUT   std_logic_vector(7 DOWNTO 0);
          WR_Addr : OUT   std_logic_vector(7 DOWNTO 0);
-         Col_Addr : OUT  std_logic_vector(2 DOWNTO 0);
+         Col_Addr : OUT  std_logic_vector(3 DOWNTO 0);
          Conv   : OUT    std_ulogic;
          CS5    : OUT    std_ulogic;
          NxtRow : OUT    std_ulogic_vector(5 DOWNTO 0);
@@ -177,7 +177,7 @@ BEGIN
          RdyIn  => RdyIn,
          SDI    => SDI,
          CurMuxCfg => CurMuxCfg,
-         NewMuxCfg => CfgData(8 DOWNTO 5),
+         NewMuxCfg => CfgData_int(8 DOWNTO 5),
          Col_Addr => Col_Addr,
          RD_Addr => Rd_Addr_int,
          WR_Addr => WR_Addr_int,
@@ -229,23 +229,25 @@ BEGIN
     end if;
   End Process;
   
-  WData : Process(Col_Addr,CfgCache0,CfgCache1,WR_Addr_int,DO16_0,DO16_1) Is
+  WData : Process(CLK) Is
     Variable CacheUaddr : unsigned(2 DOWNTO 0);
     Variable CacheAddr : integer range 7 DOWNTO 0;
   Begin
-    for i in 0 to 2 loop
-      CacheUaddr(i) := Col_Addr(i);
-    end loop;
-    CacheAddr := conv_integer(CacheUaddr);
-
-    if WR_Addr_int(3) = '0' then
-      AcqData(15 DOWNTO 0) <= std_logic_vector(DO16_0);
-      AcqData(24 DOWNTO 16) <= CfgCache0(CacheAddr);
-      CurMuxCfg <= CfgCache0(CacheAddr)(8 DOWNTO 5);
-    else
-      AcqData(15 DOWNTO 0) <= std_logic_vector(DO16_1);
-      AcqData(24 DOWNTO 16) <= CfgCache1(CacheAddr);
-      CurMuxCfg <= CfgCache1(CacheAddr)(8 DOWNTO 5);
+    if CLK'Event AND CLK = '1' then
+      for i in 0 to 2 loop
+        CacheUaddr(i) := Col_Addr(i);
+      end loop;
+      CacheAddr := conv_integer(CacheUaddr);
+  
+      if Col_Addr(3) = '0' then
+        AcqData(15 DOWNTO 0) <= std_logic_vector(DO16_0);
+        AcqData(24 DOWNTO 16) <= CfgCache0(CacheAddr);
+        CurMuxCfg <= CfgCache0(CacheAddr)(8 DOWNTO 5);
+      else
+        AcqData(15 DOWNTO 0) <= std_logic_vector(DO16_1);
+        AcqData(24 DOWNTO 16) <= CfgCache1(CacheAddr);
+        CurMuxCfg <= CfgCache1(CacheAddr)(8 DOWNTO 5);
+      end if;
     end if;
     AcqData(31 DOWNTO 25) <= (others => '0');
   End Process;
