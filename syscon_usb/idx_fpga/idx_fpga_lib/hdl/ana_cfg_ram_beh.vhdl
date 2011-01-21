@@ -35,7 +35,6 @@ ARCHITECTURE beh OF ana_cfg_ram IS
    SIGNAL WR_DATA_int : std_logic_vector(31 DOWNTO 0);
    SIGNAL WREN    : std_ulogic;
    SIGNAL WrDelayed : std_ulogic;
-   SIGNAL Written : std_ulogic;
    COMPONENT ana_ram
       PORT (
          RD_ADDR : IN     std_logic_vector(7 DOWNTO 0);
@@ -70,11 +69,9 @@ BEGIN
     if WR_CLK'Event AND WR_CLK = '1' then
       if RST = '1' then
         WREN <= '0';
-        Written <= '0';
         WrDelayed <= '0';
-      elsif WE0 = '1' and WE1 = '1' AND Written = '0' then
+      elsif WE0 = '1' and WE1 = '1' then
         WR_Data_int(15 DOWNTO 0) <= WR_DATA;
-        Written <= '1';
         if RAM_BUSY = '0' then
           WREN <= '1';
           WrDelayed <= '0';
@@ -89,14 +86,32 @@ BEGIN
         end if;
       else
         WREN <= '0';
-        if WE0 /= '1' or WE1 /= '1' then
-          Written <= '0';
-        end if;
       end if;
     end if;
   End Process;
 
   WR_DATA_int(31 DOWNTO 16) <= (others => '0');
   RD_DATA <= RD_DATA_int(8 DOWNTO 0);
+  
+  -- pragma synthesis_off
+  WatchRD : Process (RDEN)
+  Begin
+    if RDEN'Event and RDEN = '1' then
+      assert WREN = '0'
+        report "CfgRAM WREN asserted at RDEN"
+        severity error;
+    end if;
+  End Process;
+  
+  WatchWR : Process (WREN)
+  Begin
+    if WREN'Event and WREN = '1' then
+      assert RDEN = '0'
+        report "CfgRAM RDEN asserted at WREN"
+        severity error;
+    end if;
+  End Process;
+  -- pragma synthesis_on
+  
 END ARCHITECTURE beh;
 
