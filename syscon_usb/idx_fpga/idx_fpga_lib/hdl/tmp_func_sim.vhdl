@@ -16,32 +16,52 @@ END ENTITY tmp_func;
 
 --
 ARCHITECTURE sim OF tmp_func IS
-  pure function mkaddr(
-    row : in std_logic_vector(5 DOWNTO 0);
-    bank : in std_logic_vector(0 DOWNTO 0);
-    col : in std_logic_vector(2 DOWNTO 0) 
-  ) return std_logic_vector is
-    variable rv : std_logic_vector(7 DOWNTO 0);
+  function char_string( Ain : in std_logic_vector(3 DOWNTO 0) )
+  return string is
   begin
-    rv := '0' & row(2 DOWNTO 0) & bank & col;
-    return rv;
-  end mkaddr;
-  SIGNAL Row : std_logic_vector(5 DOWNTO 0);
-  SIGNAL Bank : std_logic_vector(0 DOWNTO 0);
-  SIGNAL Col : std_logic_vector(2 DOWNTO 0);
-  SIGNAL Addr : std_logic_vector(7 DOWNTO 0);
+    case Ain is
+      when X"0" => return "0";
+      when X"1" => return "1";
+      when X"2" => return "2";
+      when X"3" => return "3";
+      when X"4" => return "4";
+      when X"5" => return "5";
+      when X"6" => return "6";
+      when X"7" => return "7";
+      when X"8" => return "8";
+      when X"9" => return "9";
+      when X"A" => return "A";
+      when X"B" => return "B";
+      when X"C" => return "C";
+      when X"D" => return "D";
+      when X"E" => return "E";
+      when X"F" => return "F";
+      when others => return "X";
+    end case;
+  end char_string;
+  
+  function word_string( Ain : in std_logic_vector(15 DOWNTO 0) )
+  return string is
+  begin
+    return
+      char_string(Ain(15 downto 12)) &
+      char_string(Ain(11 downto 8)) &
+      char_string(Ain(7 downto 4)) &
+      char_string(Ain(3 downto 0));
+  end word_string;
+  
+  SIGNAL Addr : std_logic_vector(15 DOWNTO 0);
 BEGIN
   
   test_proc : Process Is
   Begin
-    Row <= "010100";
-    Bank <= "1";
-    Col <= "010";
-    Addr <= X"00";
+    Addr <= X"0C20";
     -- pragma synthesis_off
     wait for 100 ns;
-    Addr <= mkaddr(Row,Bank,Col);
-    wait for 100 nx;
+    assert Addr = X"0000"
+      report "R1: " & word_string(Addr)
+      severity error;
+    wait for 100 ns;
     wait;
     -- pragma synthesis_on
   End Process;

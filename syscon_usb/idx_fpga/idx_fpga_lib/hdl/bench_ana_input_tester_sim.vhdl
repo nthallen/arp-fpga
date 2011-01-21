@@ -57,6 +57,41 @@ ARCHITECTURE sim OF bench_ana_input_tester IS
       );
    END COMPONENT;
    FOR ALL : mock_ad7687_chain USE ENTITY idx_fpga_lib.mock_ad7687_chain;
+   
+   function char_string( Ain : in std_logic_vector(3 DOWNTO 0) )
+   return string is
+   begin
+     case Ain is
+       when X"0" => return "0";
+       when X"1" => return "1";
+       when X"2" => return "2";
+       when X"3" => return "3";
+       when X"4" => return "4";
+       when X"5" => return "5";
+       when X"6" => return "6";
+       when X"7" => return "7";
+       when X"8" => return "8";
+       when X"9" => return "9";
+       when X"A" => return "A";
+       when X"B" => return "B";
+       when X"C" => return "C";
+       when X"D" => return "D";
+       when X"E" => return "E";
+       when X"F" => return "F";
+       when others => return "X";
+     end case;
+   end char_string;
+   
+   function word_string( Ain : in std_logic_vector(15 DOWNTO 0) )
+   return string is
+   begin
+     return
+       char_string(Ain(15 downto 12)) &
+       char_string(Ain(11 downto 8)) &
+       char_string(Ain(7 downto 4)) &
+       char_string(Ain(3 downto 0));
+   end word_string;
+   
 BEGIN
    bank0 : mock_ad7687_chain
       PORT MAP (
@@ -152,6 +187,41 @@ BEGIN
       -- pragma synthesis_on
       return;
     end procedure sbwr;
+
+    procedure check_chan( Addr_In : IN std_logic_vector(15 downto 0);
+                          Cfg_In  : IN std_logic_vector(15 downto 0) ) is
+      variable CvtdRow : unsigned(4 downto 0);
+      variable Addr_U : unsigned(15 downto 0);
+    begin
+      sbrd( Addr_In );
+      assert Read_Result(15 DOWNTO 8) = Addr_In(8 DOWNTO 1)
+        report "Mock output does not match row/column: " &
+          word_string(Read_Result) & " Addr: " &
+          word_string(Addr_In) & " match: " &
+          word_string(Read_Result(15 DOWNTO 8) & Addr_In(8 DOWNTO 1))
+        severity error;
+      assert Read_Result(2 DOWNTO 0) = Addr_In(7 DOWNTO 5)
+        report "Mock low bits do not match cvt count row: " &
+          word_string(Read_Result) & " Addr: " &
+          word_string(Addr_In) & " match: " &
+          word_string( "00000" & Read_Result(2 DOWNTO 0) &
+                       "00000" & Addr_In(8 DOWNTO 6))
+        severity error;
+      CvtdRow := CvtCnt(7 DOWNTO 3);
+      assert Read_Result(7 Downto 3) = conv_std_logic_vector(CvtdRow,5)
+          OR Read_Result(7 DOWNTO 3) = conv_std_logic_vector(CvtdRow-1,5)
+        report "Cvt Count does not match"
+      severity error;
+      for i in 15 downto 0 loop
+        Addr_U(i) := Addr_In(i);
+      end loop;
+      sbrd( conv_std_logic_vector(Addr_U+1,16) );
+      assert Read_Result = Cfg_In
+        report "Configuration readback expected: " & word_string(Cfg_In) &
+               " read: " & word_string(Read_Result)
+        severity error;
+      return;
+    end procedure check_chan;
   
   Begin
     Done <= '0';
@@ -165,23 +235,11 @@ BEGIN
     wait until F8M_int'Event AND F8M_int = '1';
     wait for 100 us; -- wait for initial conversions
     sbwr( X"0C20", X"001C" );
+    sbwr( X"0C34", X"0010" );
+    wait for 220 us;
     for i in 1 to 20 loop
-      sbrd( X"0C20" );
-      assert Read_Result(15 DOWNTO 8) = X"10"
-        report "Mock output does not match row/column"
-        severity error;
-      assert Read_Result(2 DOWNTO 0) = "001"
-        report "Mock low bits do not match cvt count row"
-        severity error;
-      CvtdRow := CvtCnt(7 DOWNTO 3);
-      assert Read_Result(7 Downto 3) = conv_std_logic_vector(CvtdRow,5)
-          OR Read_Result(7 DOWNTO 3) = conv_std_logic_vector(CvtdRow-1,5)
-        report "Cvt Count does not match"
-        severity error;
-      sbrd( X"0C21" );
-      assert Read_Result = X"001C"
-        report "Configuration readback does not match"
-        severity error;
+      check_chan( X"0C20", X"001C" );
+      check_chan( X"0C34", X"0010" );
       wait for 100 us;
     end loop;
     Done <= '1';
