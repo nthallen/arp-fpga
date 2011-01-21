@@ -188,12 +188,13 @@ BEGIN
       return;
     end procedure sbwr;
 
-    procedure check_chan( Addr_In : IN std_logic_vector(15 downto 0);
-                          Cfg_In  : IN std_logic_vector(15 downto 0) ) is
+    procedure check_chan( RD_Addr : IN std_logic_vector(15 downto 0);
+                          Cfg_In  : IN std_logic_vector(15 downto 0);
+                          Addr_In : IN std_logic_vector(15 downto 0)) is
       variable CvtdRow : unsigned(4 downto 0);
       variable Addr_U : unsigned(15 downto 0);
     begin
-      sbrd( Addr_In );
+      sbrd( RD_Addr );
       assert Read_Result(15 DOWNTO 8) = Addr_In(8 DOWNTO 1)
         report "Mock output does not match row/column: " &
           word_string(Read_Result) & " Addr: " &
@@ -207,17 +208,23 @@ BEGIN
           word_string( "00000" & Read_Result(2 DOWNTO 0) &
                        "00000" & Addr_In(8 DOWNTO 6))
         severity error;
-      CvtdRow := CvtCnt(7 DOWNTO 3);
-      assert Read_Result(7 Downto 3) = conv_std_logic_vector(CvtdRow,5)
-          OR Read_Result(7 DOWNTO 3) = conv_std_logic_vector(CvtdRow-1,5)
-        report "Cvt Count does not match"
-      severity error;
+      if RD_Addr(8) = '0' then
+        -- The CvtCnt test only applies reasonably to
+        -- non-remuxed channels.
+        CvtdRow := CvtCnt(7 DOWNTO 3);
+        assert Read_Result(7 Downto 3) = conv_std_logic_vector(CvtdRow,5)
+            OR Read_Result(7 DOWNTO 3) = conv_std_logic_vector(CvtdRow-1,5)
+          report "Cvt Count does not match: Addr: " & word_string(RD_Addr)
+          severity error;
+      end if;
       for i in 15 downto 0 loop
-        Addr_U(i) := Addr_In(i);
+        Addr_U(i) := RD_Addr(i);
       end loop;
       sbrd( conv_std_logic_vector(Addr_U+1,16) );
       assert Read_Result = Cfg_In
-        report "Configuration readback expected: " & word_string(Cfg_In) &
+        report "Configuration readback from: " &
+              word_string(conv_std_logic_vector(Addr_U+1,16) ) &
+               " expected: " & word_string(Cfg_In) &
                " read: " & word_string(Read_Result)
         severity error;
       return;
@@ -236,12 +243,17 @@ BEGIN
     wait for 100 us; -- wait for initial conversions
     sbwr( X"0C20", X"001C" );
     sbwr( X"0C34", X"0010" );
+    sbwr( X"0C46", X"0114" );
+    sbwr( X"0D00", X"0010" );
     wait for 220 us;
-    for i in 1 to 20 loop
-      check_chan( X"0C20", X"001C" );
-      check_chan( X"0C34", X"0010" );
+    for i in 1 to 10 loop
+      check_chan( X"0C20", X"001C", X"0C20" );
+      check_chan( X"0C34", X"0010", X"0C34" );
       wait for 100 us;
     end loop;
+    -- check_chan( X"0C46", X"0000", X"0C46" ); -- mux cfg never hits this
+    check_chan( X"0D00", X"0110", X"0C46" );
+    check_chan( X"0D02", X"0100", X"0C46" );
     Done <= '1';
     wait;
     -- pragma synthesis_on
