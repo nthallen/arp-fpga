@@ -127,6 +127,7 @@ ARCHITECTURE beh OF DACSbd IS
    SIGNAL idx_LimO                       : std_ulogic_vector(IDX_N_CHANNELS-1 DOWNTO 0);
    SIGNAL idx_ZR                         : std_ulogic_vector(IDX_N_CHANNELS-1 DOWNTO 0);
    SIGNAL spare_DIO                      : std_logic_vector(7 DOWNTO 0);
+   SIGNAL spare_DIO2                     : std_logic_vector(7 DOWNTO 0);
    SIGNAL dig_Dir                        : std_logic_vector( DIGIO_N_CONNECTORS*6-1 DOWNTO 0);
    SIGNAL ana_in_CS5                     : std_ulogic;
    SIGNAL ana_in_Conv                    : std_ulogic;
@@ -229,6 +230,7 @@ BEGIN
        dig_IO(23 DOWNTO 0)            => DIO(23 DOWNTO 0),
        dig_IO(31 DOWNTO 24)           => spare_DIO,
        dig_IO(87 DOWNTO 32)           => DIO(111 DOWNTO 56),
+       dig_IO(95 DOWNTO 88)           => spare_DIO2,
        ana_in_SDI                     => AI_AD_MISO,
        ana_in_CS5                     => ana_in_CS5,
        ana_in_Conv                    => ana_in_Conv,
@@ -274,7 +276,7 @@ BEGIN
   DIO(113) <= subbus_fail_leds(0);
   DIO(114) <= ana_in_row(4);
   DIO(115) <= subbus_fail_leds(1);
-  DIO(116) <= ana_in_row(6);
+  DIO(116) <= ana_in_row(5);
   DIO_DIR(2 DOWNTO 0) <= dig_Dir(2 DOWNTO 0);
   DIO_DIR(6 DOWNTO 3) <= "1100"; -- Indexer I/O ports
   DIO_DIR(14 DOWNTO 7) <= Pwr_Dir;
