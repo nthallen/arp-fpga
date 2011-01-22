@@ -37,7 +37,7 @@ BEGIN
       permute(3) := Addr(5);
       permute(4) := Addr(6);
       permute(5) := Addr(7);
-      mapped := permute + 16#37#;
+      mapped := permute + 16#36#;
       CfgAddr(2 DOWNTO 0) <= CONV_STD_LOGIC_VECTOR(mapped(2 DOWNTO 0),3);
       CfgAddr(3) <= Addr(4);
       CfgAddr(6 DOWNTO 4) <= CONV_STD_LOGIC_VECTOR(mapped(5 DOWNTO 3),3);
