@@ -12,6 +12,8 @@ USE ieee.std_logic_1164.all;
 USE ieee.std_logic_arith.all;
 
 ENTITY DigIO_Port IS
+  GENERIC ( DIGIO_FORCE_DIR : std_ulogic := '0';
+            DIGIO_FORCE_DIR_VAL : std_ulogic := '0' );
   PORT (
     D : INOUT std_logic_vector (7 DOWNTO 0);
     IO : INOUT std_logic_vector (7 DOWNTO 0);
@@ -36,7 +38,9 @@ BEGIN
   Direction : Process (Clk)
   Begin
     if Clk'Event AND Clk = '1' then
-      if RA = '1' OR ( RS = '1' AND ConnEn = '1') then
+      if DIGIO_FORCE_DIR = '1' then
+        Dir <= DIGIO_FORCE_DIR_VAL;
+      elsif RA = '1' OR ( RS = '1' AND ConnEn = '1') then
         Dir <= '1';
       elsif WrEn = '1' AND ConnEn = '1' AND CfgEn = '1' then
         Dir <= Dir_In;

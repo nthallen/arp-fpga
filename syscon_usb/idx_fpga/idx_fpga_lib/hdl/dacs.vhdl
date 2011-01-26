@@ -18,26 +18,20 @@
 --
 ----------------------------------------------------------------------------------
 library IEEE;
-use IEEE.STD_LOGIC_1164.ALL;
+use ieee.std_logic_1164.ALL;
+use ieee.std_logic_arith.ALL;
 library idx_fpga_lib;
--- use idx_fpga_lib.ALL;
-
--- Uncomment the following library declaration if using
--- arithmetic functions with Signed or Unsigned values
---use IEEE.NUMERIC_STD.ALL;
-
--- Uncomment the following library declaration if instantiating
--- any Xilinx primitives in this code.
---library UNISIM;
---use UNISIM.VComponents.all;
 
 entity dacs is
     GENERIC (
       N_INTERRUPTS : integer range 15 downto 1 := 1;
-      N_BOARDS : integer range 15 downto 1 := 5;
+      CTR_UG_N_BDS : integer range 5 downto 0 := 2;
       IDX_N_CHANNELS : integer range 15 downto 1 := 3;
       IDX_BASE_ADDR : std_logic_vector(15 downto 0) := X"0A00";
-      DIGIO_N_CONNECTORS : integer range 4 downto 1 := 2
+      DIGIO_BASE_ADDRESS : std_logic_vector (15 DOWNTO 0) := X"0800";
+      DIGIO_N_CONNECTORS : integer range 4 DOWNTO 1 := 2;
+      DIGIO_FORCE_DIR : std_ulogic_vector := "000000000000";
+      DIGIO_FORCE_DIR_VAL : std_ulogic_vector := "000000000000"
     );
     Port (
       fpga_0_rst_1_sys_rst_pin : IN std_logic;
@@ -59,6 +53,7 @@ entity dacs is
       subbus_cmdstrb : OUT std_ulogic;
       subbus_fail_leds : OUT std_logic_vector(4 downto 0);
       subbus_flt_cpu_reset : OUT std_ulogic;
+      subbus_reset : OUT std_ulogic;
       DACS_switches : IN std_logic_vector(3 downto 0);
 
       idx_Run : OUT std_ulogic_vector(IDX_N_CHANNELS-1 downto 0);
@@ -81,7 +76,7 @@ entity dacs is
       ana_in_SCK5 : OUT std_ulogic_vector(1 DOWNTO 0);
       ana_in_SDO  : OUT std_ulogic_vector(1 DOWNTO 0);
       
-      ctr_PMT     : IN std_logic_vector(7 DOWNTO 0)
+      ctr_PMT     : IN std_logic_vector(4*CTR_UG_N_BDS-1 DOWNTO 0)
     );
 end dacs;
 
@@ -168,8 +163,10 @@ architecture Behavioral of dacs is
 
   COMPONENT DigIO
      GENERIC (
-        BASE_ADDRESS : std_logic_vector (15 DOWNTO 0) := X"0800";
-        N_CONNECTORS : integer range 4 DOWNTO 1       := 2
+       DIGIO_BASE_ADDRESS : std_logic_vector (15 DOWNTO 0) := X"0800";
+       DIGIO_N_CONNECTORS : integer range 4 DOWNTO 1 := 2;
+       DIGIO_FORCE_DIR : std_ulogic_vector := "000000000000";
+       DIGIO_FORCE_DIR_VAL : std_ulogic_vector := "000000000000"
      );
      PORT (
         Addr   : IN     std_logic_vector(15 DOWNTO 0);
@@ -179,8 +176,8 @@ architecture Behavioral of dacs is
         ExpAck : OUT    std_ulogic;
         F8M    : IN     std_ulogic;
         rst    : IN     std_ulogic;
-        IO     : INOUT  std_logic_vector( N_CONNECTORS*6*8-1 DOWNTO 0);
-        Dir    : OUT    std_logic_vector( N_CONNECTORS*6-1 DOWNTO 0)
+        IO     : INOUT  std_logic_vector( DIGIO_N_CONNECTORS*6*8-1 DOWNTO 0);
+        Dir    : OUT    std_logic_vector( DIGIO_N_CONNECTORS*6-1 DOWNTO 0)
      );
   END COMPONENT;
   FOR ALL : DigIO USE ENTITY idx_fpga_lib.DigIO;
@@ -205,6 +202,8 @@ architecture Behavioral of dacs is
         Data   : INOUT  std_logic_vector(15 DOWNTO 0)
      );
   END COMPONENT;
+  FOR ALL : ana_input USE ENTITY idx_fpga_lib.ana_input;
+
   COMPONENT ctr_ungated
      GENERIC (
         BASE_ADDRESS : std_logic_vector (15 DOWNTO 0) := X"0600";
@@ -222,10 +221,7 @@ architecture Behavioral of dacs is
         PMT    : IN     std_logic_vector(N_COUNTERS-1 DOWNTO 0)
      );
   END COMPONENT;
-  FOR ALL : ana_input USE ENTITY idx_fpga_lib.ana_input;
   FOR ALL : ctr_ungated USE ENTITY idx_fpga_lib.ctr_ungated;
-
-
 
 	attribute box_type : string;
 	attribute box_type of Processor : component is "user_black_box";
@@ -242,7 +238,7 @@ architecture Behavioral of dacs is
 	SIGNAL ExpData : std_logic_vector(15 downto 0);
 	SIGNAL ExpRd : std_logic;
 	SIGNAL ExpWr : std_logic;
-	SIGNAL ExpAck : std_logic_vector (N_BOARDS-1 DOWNTO 0);
+	SIGNAL ExpAck : std_logic_vector (2+CTR_UG_N_BDS DOWNTO 0);
 	SIGNAL CmdEnbl : std_ulogic;
 	SIGNAL CmdStrb : std_ulogic;
 	SIGNAL rst : std_ulogic;
@@ -284,7 +280,7 @@ begin
 	Inst_syscon: syscon
   	 GENERIC MAP (
   	   N_INTERRUPTS => N_INTERRUPTS,
-  	   N_BOARDS => N_BOARDS
+  	   N_BOARDS => 3+CTR_UG_N_BDS
   	 )
   	 PORT MAP(
     		F8M => clk_8_0000MHz,
@@ -336,8 +332,10 @@ begin
 
  Inst_DigIO : DigIO
     GENERIC MAP (
-       BASE_ADDRESS => X"0800",
-       N_CONNECTORS => DIGIO_N_CONNECTORS
+      DIGIO_BASE_ADDRESS => DIGIO_BASE_ADDRESS,
+      DIGIO_N_CONNECTORS => DIGIO_N_CONNECTORS,
+      DIGIO_FORCE_DIR => DIGIO_FORCE_DIR,
+      DIGIO_FORCE_DIR_VAL => DIGIO_FORCE_DIR_VAL
     )
     PORT MAP (
        Addr   => ExpAddr,
@@ -370,40 +368,25 @@ begin
        SDO    => ana_in_SDO,
        Data   => ExpData
     );
-
-  ctr_0 : ctr_ungated
-    GENERIC MAP (
-       BASE_ADDRESS => X"0600",
-       N_COUNTERS   => 4,
-       N_BITS       => 20
-    )
-    PORT MAP (
-       Addr   => ExpAddr,
-       Data   => ExpData,
-       ExpRd  => ExpRd,
-       ExpWr  => ExpWr,
-       ExpAck => ExpAck(3),
-       F8M    => clk_8_0000MHz,
-       rst    => rst,
-       PMT    => ctr_PMT(3 DOWNTO 0)
-    );
-
-  ctr_1 : ctr_ungated
-    GENERIC MAP (
-       BASE_ADDRESS => X"0620",
-       N_COUNTERS   => 4,
-       N_BITS       => 20
-    )
-    PORT MAP (
-       Addr   => ExpAddr,
-       Data   => ExpData,
-       ExpRd  => ExpRd,
-       ExpWr  => ExpWr,
-       ExpAck => ExpAck(4),
-       F8M    => clk_8_0000MHz,
-       rst    => rst,
-       PMT    => ctr_PMT(7 DOWNTO 4)
-    );
+  ctrs : for i in 0 TO CTR_UG_N_BDS-1 generate
+    
+    ctr_ug: ctr_ungated
+      GENERIC MAP (
+         BASE_ADDRESS => CONV_STD_LOGIC_VECTOR(6*256+i*32,16),
+         N_COUNTERS   => 4,
+         N_BITS       => 20
+      )
+      PORT MAP (
+         Addr   => ExpAddr,
+         Data   => ExpData,
+         ExpRd  => ExpRd,
+         ExpWr  => ExpWr,
+         ExpAck => ExpAck(3+i),
+         F8M    => clk_8_0000MHz,
+         rst    => rst,
+         PMT    => ctr_PMT(i*4+3 DOWNTO i*4)
+      );
+  end generate;
 
   subbus_cmdenbl <= CmdEnbl;
   subbus_cmdstrb <= CmdStrb;
@@ -414,6 +397,7 @@ begin
   subbus_fail_leds(2) <= subbus_ctrl(5); -- Tick
   subbus_fail_leds(3) <= subbus_ctrl(3); -- CE
   subbus_fail_leds(4) <= subbus_status(3); -- TwoSecTO
+  subbus_reset <= rst;
   FTDI_WR_pin <= not xps_epc_0_PRH_Wr_n_pin;
   fpga_0_RS232_TX_pin <= '0';
 end Behavioral;

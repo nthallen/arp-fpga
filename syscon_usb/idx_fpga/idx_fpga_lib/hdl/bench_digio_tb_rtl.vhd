@@ -14,14 +14,15 @@ USE ieee.std_logic_arith.all;
 
 ENTITY bench_DigIO IS
    GENERIC (
-      BASE_ADDRESS : std_logic_vector (15 DOWNTO 0) := X"0800";
-      N_CONNECTORS : integer range 4 DOWNTO 1       := 2
+      DIGIO_BASE_ADDRESS : std_logic_vector (15 DOWNTO 0) := X"0800";
+      DIGIO_N_CONNECTORS : integer range 4 DOWNTO 1       := 2;
+      DIGIO_FORCE_DIR : std_ulogic_vector := "100000000000";
+      DIGIO_FORCE_DIR_VAL : std_ulogic_vector := "000000000000"
    );
 END bench_DigIO;
 
 
 LIBRARY idx_fpga_lib;
-USE idx_fpga_lib.ALL;
 
 
 ARCHITECTURE rtl OF bench_DigIO IS
@@ -36,16 +37,18 @@ ARCHITECTURE rtl OF bench_DigIO IS
    SIGNAL ExpAck : std_ulogic;
    SIGNAL F8M    : std_ulogic;
    SIGNAL rst    : std_ulogic;
-   SIGNAL IO     : std_logic_vector( N_CONNECTORS*6*8-1 DOWNTO 0);
-   SIGNAL Dir    : std_logic_vector( N_CONNECTORS*6-1 DOWNTO 0);
+   SIGNAL IO     : std_logic_vector( DIGIO_N_CONNECTORS*6*8-1 DOWNTO 0);
+   SIGNAL Dir    : std_logic_vector( DIGIO_N_CONNECTORS*6-1 DOWNTO 0);
    SIGNAL Done   : std_ulogic;
 
 
    -- Component declarations
    COMPONENT DigIO
       GENERIC (
-         BASE_ADDRESS : std_logic_vector (15 DOWNTO 0) := X"0800";
-         N_CONNECTORS : integer range 4 DOWNTO 1       := 2
+         DIGIO_BASE_ADDRESS : std_logic_vector (15 DOWNTO 0) := X"0800";
+         DIGIO_N_CONNECTORS : integer range 4 DOWNTO 1       := 2;
+         DIGIO_FORCE_DIR : std_ulogic_vector := "000000000001";
+         DIGIO_FORCE_DIR_VAL : std_ulogic_vector := "000000000001"
       );
       PORT (
          Addr   : IN     std_logic_vector(15 DOWNTO 0);
@@ -55,8 +58,8 @@ ARCHITECTURE rtl OF bench_DigIO IS
          ExpAck : OUT    std_ulogic;
          F8M    : IN     std_ulogic;
          rst    : IN     std_ulogic;
-         IO     : INOUT  std_logic_vector( N_CONNECTORS*6*8-1 DOWNTO 0);
-         Dir    : OUT    std_logic_vector( N_CONNECTORS*6-1 DOWNTO 0)
+         IO     : INOUT  std_logic_vector( DIGIO_N_CONNECTORS*6*8-1 DOWNTO 0);
+         Dir    : OUT    std_logic_vector( DIGIO_N_CONNECTORS*6-1 DOWNTO 0)
       );
    END COMPONENT;
 
@@ -69,8 +72,10 @@ BEGIN
 
          DUT_DigIO : DigIO
             GENERIC MAP (
-               BASE_ADDRESS => BASE_ADDRESS,
-               N_CONNECTORS => N_CONNECTORS
+               DIGIO_BASE_ADDRESS => DIGIO_BASE_ADDRESS,
+               DIGIO_N_CONNECTORS => DIGIO_N_CONNECTORS,
+               DIGIO_FORCE_DIR => DIGIO_FORCE_DIR,
+               DIGIO_FORCE_DIR_VAL => DIGIO_FORCE_DIR_VAL
             )
             PORT MAP (
                Addr   => Addr,
@@ -123,6 +128,7 @@ BEGIN
       procedure sbrd_check( addr_in : std_logic_vector (15 DOWNTO 0);
           expected : std_logic_vector(15 DOWNTO 0) ) is
       begin
+        -- pragma synthesis_off
         wait until F8M'Event AND F8M = '1';
         Addr <= addr_in;
         ExpRd <= '1';
@@ -131,6 +137,7 @@ BEGIN
         assert Data = expected report "Input Value Incorrect" severity error;
         ExpRd <= '0';
         wait for 40 ns;
+        -- pragma synthesis_on
       end procedure sbrd_check;
       
       procedure check_input( conn_in : integer; portno_in : integer;
@@ -162,56 +169,79 @@ BEGIN
       -- initialize all ports to output
       sbwr(X"0806", X"0000");
       sbwr(X"0826", X"0000");
+      sbrd_check(X"0806", X"0000");
+      sbrd_check(X"0826", X"0000");
       for conn in 0 to 1 loop
-        for byteno in 0 to 1 loop
-          for portno in 0 to 2 loop
-            portaddr := X"0800";
-            portaddr := CONV_STD_LOGIC_VECTOR(unsigned(portaddr) + conn*32 + portno*2, 16);
-            for bitno in 0 to 7 loop
-              gbitnum := conn*48+byteno*24+portno*8+bitno;
-              bitmask := X"0000";
-              bitmask(byteno*8+bitno) := '1';
-              sbwr(portaddr, bitmask);
-              ok := 1;
-              for i in 0 TO N_CONNECTORS*6*8-1 loop
-                if i = gbitnum then
-                  if IO(i) /= '1' then
-                    ok := 0;
+        for portno in 0 to 2 loop
+          if (DIGIO_FORCE_DIR(conn*6+portno) = '1' AND
+              DIGIO_FORCE_DIR_VAL(conn*6+portno) = '1') OR
+             (DIGIO_FORCE_DIR(conn*6+3+portno) = '1' AND
+              DIGIO_FORCE_DIR_VAL(conn*6+3+portno) = '1') then
+            report "Skipping port on output test due to forcing";
+          else
+            for byteno in 0 to 1 loop
+              portaddr := X"0800";
+              portaddr := CONV_STD_LOGIC_VECTOR(unsigned(portaddr) + conn*32 + portno*2, 16);
+              for bitno in 0 to 7 loop
+                gbitnum := conn*48+byteno*24+portno*8+bitno;
+                bitmask := X"0000";
+                bitmask(byteno*8+bitno) := '1';
+                sbwr(portaddr, bitmask);
+                ok := 1;
+                for portno2 in 0 TO DIGIO_N_CONNECTORS*6-1 loop
+                  if DIGIO_FORCE_DIR(portno2) = '0' OR
+                     DIGIO_FORCE_DIR_VAL(portno2) = '0' then
+                    for i in 0 TO 7 loop
+                      if i+portno2*8 = gbitnum then
+                        if IO(i+portno2*8) /= '1' then
+                          ok := 0;
+                        end if;
+                      elsif IO(i+portno2*8) /= '0' then
+                        ok := 0;
+                      end if;
+                    end loop;
                   end if;
-                elsif IO(i) /= '0' then
-                  ok := 0;
-                end if;
+                end loop;
+                assert ok = 1 report "Bad bit output" severity error;
               end loop;
-              assert ok = 1 report "Bad bit output" severity error;
+              sbwr(portaddr, X"0000");
             end loop;
-            sbwr(portaddr, X"0000");
-          end loop;
+          end if;
         end loop;
       end loop;
       -- initialize all ports to output
       sbwr(X"0806", X"1313");
       sbwr(X"0826", X"1313");
+      sbrd_check(X"0806", X"1313");
+      sbrd_check(X"0826", X"1313");
       IO <= (others => '0');
       wait for 40 ns;
       for conn in 0 to 1 loop
-        for byteno in 0 to 1 loop
-          for portno in 0 to 2 loop
-            portaddr := X"0800";
-            portaddr := CONV_STD_LOGIC_VECTOR(unsigned(portaddr) + conn*32 + portno*2, 16);
-            for bitno in 0 to 7 loop
-              gbitnum := conn*48+byteno*24+portno*8+bitno;
-              bitmask := X"0000";
-              bitmask(byteno*8+bitno) := '1';
-              IO(gbitnum) <= '1';
-              check_input(conn, portno, bitmask);
-              IO(gbitnum) <= '0';
+        for portno in 0 to 2 loop
+          if (DIGIO_FORCE_DIR(conn*6+portno) = '1' AND
+              DIGIO_FORCE_DIR_VAL(conn*6+portno) = '0') OR
+             (DIGIO_FORCE_DIR(conn*6+3+portno) = '1' AND
+              DIGIO_FORCE_DIR_VAL(conn*6+3+portno) = '0') then
+            report "Skipping port on input test due to forcing";
+          else
+            for byteno in 0 to 1 loop
+              portaddr := X"0800";
+              portaddr := CONV_STD_LOGIC_VECTOR(unsigned(portaddr) + conn*32 + portno*2, 16);
+              for bitno in 0 to 7 loop
+                gbitnum := conn*48+byteno*24+portno*8+bitno;
+                bitmask := X"0000";
+                bitmask(byteno*8+bitno) := '1';
+                IO(gbitnum) <= '1';
+                check_input(conn, portno, bitmask);
+                IO(gbitnum) <= '0';
+              end loop;
             end loop;
-          end loop;
+          end if;
         end loop;
       end loop;
-      -- pragma synthesis_on
       done <= '1';
       wait;
+      -- pragma synthesis_on
     End Process;
 
 

@@ -12,17 +12,19 @@ ENTITY Processor IS
 	PORT(
 		fpga_0_clk_1_sys_clk_pin : IN std_logic;
 		fpga_0_rst_1_sys_rst_pin : IN std_logic;
-    fpga_0_RS232_RX_pin : IN std_logic;
-    fpga_0_RS232_TX_pin : OUT std_logic;
-		fpga_0_Generic_IIC_Bus_Sda_pin : INOUT std_logic;
-		fpga_0_Generic_IIC_Bus_Scl_pin : INOUT std_logic;
+--    fpga_0_RS232_RX_pin : IN std_logic;
+--    fpga_0_RS232_TX_pin : OUT std_logic;
+--		fpga_0_Generic_IIC_Bus_Sda_pin : INOUT std_logic;
+--		fpga_0_Generic_IIC_Bus_Scl_pin : INOUT std_logic;
     clk_8_0000MHz_pin : OUT std_logic;
     clk_30_0000MHz_pin : OUT std_logic;
 		xps_epc_0_PRH_Data_pin : INOUT std_logic_vector(7 downto 0);      
-		xps_epc_0_FTDI_RXF_pin : IN std_logic;
-		xps_epc_0_FTDI_WR_pin : OUT std_logic;
+		xps_epc_0_PRH_RDY_pin : IN std_logic;
+		xps_epc_0_PRH_WR_n_pin : OUT std_logic;
 		xps_epc_0_PRH_Rd_n_pin : OUT std_logic;
 		FTDI_SI_pin : OUT std_logic;
+    FTDI_RX_RDY_pin : IN std_logic;    
+
 		xps_gpio_subbus_addr_pin : OUT std_logic_vector(15 downto 0);
 		xps_gpio_subbus_ctrl_pin : OUT std_logic_vector(6 downto 0);
 		xps_gpio_subbus_data_i_pin : IN std_logic_vector(15 downto 0);
@@ -56,7 +58,7 @@ begin
   begin
     xps_epc_0_PRH_Data_pin <= (others => 'Z');
     xps_epc_0_PRH_Rd_n_pin <= '0';
-    xps_epc_0_FTDI_Wr_pin <= '0';
+    xps_epc_0_PRH_Wr_n_pin <= '0';
     Addr <= X"0000";
     Ctrl <= "0000000";
     Data_o <= X"5555";

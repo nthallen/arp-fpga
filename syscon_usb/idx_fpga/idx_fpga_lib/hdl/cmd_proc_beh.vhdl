@@ -15,8 +15,8 @@ LIBRARY idx_fpga_lib;
 ENTITY cmd_proc IS
   GENERIC ( CMD_PROC_N_CMDS : integer := 24 );
   PORT (
-    cmd_dio : IN std_ulogic_vector( CMD_PROC_N_CMDS*2-1 DOWNTO 0 );
-    cmd_out : OUT std_ulogic_vector( CMD_PROC_N_CMDS-1 DOWNTO 0 );
+    cmd_dio : IN std_logic_vector( CMD_PROC_N_CMDS*2-1 DOWNTO 0 );
+    cmd_out : OUT std_logic_vector( CMD_PROC_N_CMDS-1 DOWNTO 0 );
     CmdStrb : IN std_ulogic;
     CmdEnbl : IN std_ulogic;
     RST : IN std_ulogic
