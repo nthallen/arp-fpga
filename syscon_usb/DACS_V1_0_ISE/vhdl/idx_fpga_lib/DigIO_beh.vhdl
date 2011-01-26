@@ -15,8 +15,10 @@ LIBRARY idx_fpga_lib;
 
 ENTITY DigIO IS
   GENERIC (
-    BASE_ADDRESS : std_logic_vector (15 DOWNTO 0) := X"0800";
-    N_CONNECTORS : integer range 4 DOWNTO 1 := 2
+    DIGIO_BASE_ADDRESS : std_logic_vector (15 DOWNTO 0) := X"0800";
+    DIGIO_N_CONNECTORS : integer range 4 DOWNTO 1 := 2;
+    DIGIO_FORCE_DIR : std_ulogic_vector := "000000000000";
+    DIGIO_FORCE_DIR_VAL : std_ulogic_vector := "000000000000"
   );
   PORT (
     Addr : IN std_logic_vector (15 DOWNTO 0);
@@ -26,14 +28,14 @@ ENTITY DigIO IS
     ExpAck  : OUT    std_ulogic;
     F8M     : IN     std_ulogic;
     rst     : IN     std_ulogic;
-    IO      : INOUT std_logic_vector( N_CONNECTORS*6*8-1 DOWNTO 0);
-    Dir     : OUT std_logic_vector( N_CONNECTORS*6-1 DOWNTO 0)
+    IO      : INOUT std_logic_vector( DIGIO_N_CONNECTORS*6*8-1 DOWNTO 0);
+    Dir     : OUT std_logic_vector( DIGIO_N_CONNECTORS*6-1 DOWNTO 0)
   );
 END ENTITY DigIO;
 
 --
 ARCHITECTURE beh OF DigIO IS
-   SIGNAL ConnEn   : std_ulogic_vector(N_CONNECTORS-1 DOWNTO 0);
+   SIGNAL ConnEn   : std_ulogic_vector(DIGIO_N_CONNECTORS-1 DOWNTO 0);
    SIGNAL PortEnLB : std_ulogic_vector(3 DOWNTO 0);
    SIGNAL PortEnHB : std_ulogic_vector(3 DOWNTO 0);
    SIGNAL RS       : std_ulogic;
@@ -71,6 +73,8 @@ ARCHITECTURE beh OF DigIO IS
       );
    END COMPONENT;
    COMPONENT DigIO_Conn
+      GENERIC ( DIGIO_FORCE_DIR : std_ulogic_vector (0 to 2) := "000";
+                DIGIO_FORCE_DIR_VAL : std_ulogic_vector (0 to 2) := "000" );
       PORT (
          D      : INOUT  std_logic_vector(7 DOWNTO 0);
          IO     : INOUT  std_logic_vector(23 DOWNTO 0);
@@ -91,8 +95,8 @@ BEGIN
 
    Dig_Addr : DigIO_Addr
       GENERIC MAP (
-         BASE_ADDRESS => BASE_ADDRESS,
-         N_CONNECTORS => N_CONNECTORS
+         BASE_ADDRESS => DIGIO_BASE_ADDRESS,
+         N_CONNECTORS => DIGIO_N_CONNECTORS
       )
       PORT MAP (
          Addr     => Addr,
@@ -117,8 +121,12 @@ BEGIN
          BdEn   => BdEn
       );
 
-  connectors : for i in N_CONNECTORS-1 DOWNTO 0 generate
+  connectors : for i in DIGIO_N_CONNECTORS-1 DOWNTO 0 generate
     LowByte : DigIO_Conn
+       GENERIC MAP (
+         DIGIO_FORCE_DIR => DIGIO_FORCE_DIR(i*6 TO i*6+2),
+         DIGIO_FORCE_DIR_VAL => DIGIO_FORCE_DIR_VAL(i*6 TO i*6+2)
+       )
        PORT MAP (
           D      => iData(7 DOWNTO 0),
           IO     => IO(i*48+23 DOWNTO i*48),
@@ -132,6 +140,10 @@ BEGIN
           Clk    => F8m
        );
     HighByte : DigIO_Conn
+      GENERIC MAP (
+        DIGIO_FORCE_DIR => DIGIO_FORCE_DIR(i*6+3 TO i*6+5),
+        DIGIO_FORCE_DIR_VAL => DIGIO_FORCE_DIR_VAL(i*6+3 TO i*6+5)
+      )
       PORT MAP (
         D      => iData(15 DOWNTO 8),
         IO     => IO(i*48+47 DOWNTO i*48+24),
