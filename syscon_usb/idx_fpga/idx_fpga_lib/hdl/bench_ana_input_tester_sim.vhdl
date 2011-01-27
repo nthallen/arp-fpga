@@ -221,12 +221,26 @@ BEGIN
         Addr_U(i) := RD_Addr(i);
       end loop;
       sbrd( conv_std_logic_vector(Addr_U+1,16) );
-      assert Read_Result = Cfg_In
-        report "Configuration readback from: " &
-              word_string(conv_std_logic_vector(Addr_U+1,16) ) &
-               " expected: " & word_string(Cfg_In) &
-               " read: " & word_string(Read_Result)
-        severity error;
+      -- In the case of a muxed channel, the configuration reported
+      -- at the base address will reflect the configuration of the
+      -- last muxed channel reported, so it isn't easily predictable.
+      -- However, at the reported addresses (RD_Addr(8)='1'), the
+      -- reported configuration should be consistent.
+      if Cfg_In(8) = '1' and RD_Addr(8) = '0' then
+        assert Read_Result(8 DOWNTO 5) = Cfg_In(8 DOWNTO 5)
+          report "Mux Cfg readback from: " &
+                word_string(conv_std_logic_vector(Addr_U+1,16) ) &
+                 " expected: " & word_string(Cfg_In) &
+                 " read: " & word_string(Read_Result)
+          severity error;
+      else
+        assert Read_Result = Cfg_In
+          report "Configuration readback from: " &
+                word_string(conv_std_logic_vector(Addr_U+1,16) ) &
+                 " expected: " & word_string(Cfg_In) &
+                 " read: " & word_string(Read_Result)
+          severity error;
+      end if;
       return;
     end procedure check_chan;
   
@@ -289,7 +303,7 @@ BEGIN
       check_chan( X"0C1E", X"0028", X"0C1E" );
       wait for 100 us;
     end loop;
-    -- check_chan( X"0C46", X"0000", X"0C46" ); -- mux cfg never hits this
+    check_chan( X"0C46", X"0100", X"0C46" ); -- low bits probably wrong
     check_chan( X"0D00", X"0100", X"0C46" );
     check_chan( X"0D02", X"0101", X"0C46" );
     check_chan( X"0D04", X"0102", X"0C46" );

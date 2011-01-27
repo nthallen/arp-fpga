@@ -35,7 +35,7 @@ ARCHITECTURE rtl OF bench_ana_acquire IS
    SIGNAL RdyIn     :     std_ulogic;
    SIGNAL SDI       :     std_ulogic_vector (1 DOWNTO 0);
    SIGNAL CS5       :     std_ulogic;
-   SIGNAL Col_Addr  :     std_logic_vector (2 DOWNTO 0);
+   SIGNAL Col_Addr  :     std_logic_vector (3 DOWNTO 0);
    SIGNAL Conv      :     std_ulogic;
    SIGNAL NxtRow    :     std_ulogic_vector (5 DOWNTO 0);
    SIGNAL RAM_BUSY  :     std_ulogic;
@@ -59,7 +59,7 @@ ARCHITECTURE rtl OF bench_ana_acquire IS
         RdyIn     : IN     std_ulogic;
         SDI       : IN     std_ulogic_vector (1 DOWNTO 0);
         CS5       : OUT    std_ulogic;
-        Col_Addr  : OUT    std_logic_vector (2 DOWNTO 0);
+        Col_Addr  : OUT    std_logic_vector (3 DOWNTO 0);
         Conv      : OUT    std_ulogic;
         NxtRow    : OUT    std_ulogic_vector (5 DOWNTO 0);
         RAM_BUSY  : OUT    std_ulogic;
