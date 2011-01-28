@@ -183,7 +183,7 @@ BEGIN
               portaddr := X"0800";
               portaddr := CONV_STD_LOGIC_VECTOR(unsigned(portaddr) + conn*32 + portno*2, 16);
               for bitno in 0 to 7 loop
-                gbitnum := conn*48+byteno*24+portno*8+bitno;
+                gbitnum := conn*48+byteno*8+portno*16+bitno;
                 bitmask := X"0000";
                 bitmask(byteno*8+bitno) := '1';
                 sbwr(portaddr, bitmask);
@@ -228,7 +228,7 @@ BEGIN
               portaddr := X"0800";
               portaddr := CONV_STD_LOGIC_VECTOR(unsigned(portaddr) + conn*32 + portno*2, 16);
               for bitno in 0 to 7 loop
-                gbitnum := conn*48+byteno*24+portno*8+bitno;
+                gbitnum := conn*48+byteno*8+portno*16+bitno;
                 bitmask := X"0000";
                 bitmask(byteno*8+bitno) := '1';
                 IO(gbitnum) <= '1';
