@@ -129,7 +129,9 @@ BEGIN
        )
        PORT MAP (
           D      => iData(7 DOWNTO 0),
-          IO     => IO(i*48+23 DOWNTO i*48),
+          IO(7 DOWNTO 0) => IO(i*48+7 DOWNTO i*48),
+          IO(15 DOWNTO 8) => IO(i*48+23 DOWNTO i*48+16),
+          IO(23 DOWNTO 16) => IO(i*48+39 DOWNTO i*48+32),
           Dir    => Dir(i*6+2 DOWNTO i*6),
           RdEn   => RdEn,
           WrEn   => WrEn,
@@ -146,7 +148,9 @@ BEGIN
       )
       PORT MAP (
         D      => iData(15 DOWNTO 8),
-        IO     => IO(i*48+47 DOWNTO i*48+24),
+        IO(7 DOWNTO 0) => IO(i*48+15 DOWNTO i*48+8),
+        IO(15 DOWNTO 8) => IO(i*48+31 DOWNTO i*48+24),
+        IO(23 DOWNTO 16) => IO(i*48+47 DOWNTO i*48+40),
         Dir    => Dir(i*6+5 DOWNTO i*6+3),
         RdEn   => RdEn,
         WrEn   => WrEn,
