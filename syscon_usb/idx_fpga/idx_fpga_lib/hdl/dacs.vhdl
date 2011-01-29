@@ -260,12 +260,12 @@ begin
      clk_8_0000MHz_pin => clk_8_0000MHz,
      clk_30_0000MHz_pin => clk_30_0000MHz,
 
-     xps_epc_0_PRH_Rdy_pin =>  not FTDI_TXE_pin,
+     xps_epc_0_PRH_Rdy_pin =>  '0', -- not FTDI_TXE_pin,
      xps_epc_0_PRH_Wr_n_pin => xps_epc_0_PRH_Wr_n_pin,
      xps_epc_0_PRH_Data_pin => xps_epc_0_PRH_Data_pin,
      xps_epc_0_PRH_Rd_n_pin => FTDI_RD_pin,
      FTDI_SI_pin => FTDI_SI_pin,
-     FTDI_RX_RDY_pin => not FTDI_RXF_pin,
+     FTDI_RX_RDY_pin => '0', -- not FTDI_RXF_pin,
 
      xps_gpio_subbus_addr_pin => subbus_addr,
      xps_gpio_subbus_data_i_pin => subbus_data_i,

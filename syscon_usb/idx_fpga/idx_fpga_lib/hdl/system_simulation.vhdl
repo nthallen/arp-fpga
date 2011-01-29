@@ -42,6 +42,9 @@ architecture Simulation of Processor is
   SIGNAL Data_o : std_logic_vector (15 DOWNTO 0);
   SIGNAL Ctrl : std_logic_vector (6 DOWNTO 0);
   SIGNAL Status : std_logic_vector (3 DOWNTO 0); -- ExpIntr,Ack,Done
+  SIGNAL Finish : std_ulogic;
+  SIGNAL TickTock : std_ulogic;
+  SIGNAL f8m : std_ulogic;
   alias RdEn is Ctrl(0);
   alias WrEn is Ctrl(1);
   alias CS is Ctrl(2);
@@ -55,13 +58,44 @@ architecture Simulation of Processor is
 
 begin
   testproc: Process
+  procedure sbwr( Addr_In : IN std_logic_vector (15 downto 0);
+                  Data_In : IN std_logic_vector (15 downto 0) ) is
+  begin
+    -- pragma synthesis_off
+    Addr <= Addr_In;
+    Data_o <= Data_in;
+    WrEn <= '1';
+    wait for 1 us;
+    assert Ack = '1' report "No acknowledge on write" severity error;
+    WrEn <= '0';
+    wait for 250 ns;
+    -- pragma synthesis_on
+    return;
+  end procedure sbwr;
+  
+  procedure sbrd_check( addr_in : std_logic_vector (15 DOWNTO 0);
+      expected : std_logic_vector(15 DOWNTO 0) ) is
+  begin
+    -- pragma synthesis_off
+    Addr <= addr_in;
+    RdEn <= '1';
+    wait for 1 us;
+    assert Ack = '1' report "No Acknowledge on read" severity error;
+    assert Data_i = expected report "Input Value Incorrect" severity error;
+    RdEn <= '0';
+    wait for 200 ns;
+    -- pragma synthesis_on
+  end procedure sbrd_check;
+
   begin
     xps_epc_0_PRH_Data_pin <= (others => 'Z');
     xps_epc_0_PRH_Rd_n_pin <= '0';
     xps_epc_0_PRH_Wr_n_pin <= '0';
+    Finish <= '0';
     Addr <= X"0000";
     Ctrl <= "0000000";
     Data_o <= X"5555";
+    TickTock <= '0';
     -- pragma synthesis_off
     wait for 300 ns;
     rst <= '1';
@@ -92,7 +126,9 @@ begin
     assert Done = '1' report "Done should be asserted" severity error;
     assert Ack = '1' report "Ack should be asserted" severity error;
     WrEn <= '0';
-    wait for 100 ns;
+    wait until f8m'Event AND f8m = '1';
+    wait until f8m'Event AND f8m = '1';
+    wait for 50 ns;
     assert Done = '0' report "Done should not be asserted" severity error;
     assert Ack = '0' report "Ack should not be asserted" severity error;
     
@@ -107,27 +143,56 @@ begin
     wait for 300 ns;
     assert Done = '0' report "Done should not be asserted" severity error;
     assert Ack = '0' report "Ack should not be asserted" severity error;
+    
+    -- end of low level test. Now to test my cmd problem:
+    TickTock <= not TickTock;
+    arm <= '1';
+    CE <= '1';
+    sbwr(X"0810", X"0100");
+    CS <= '1';
+    wait for 1 us;
+    CS <= '0';
+    sbwr(X"0810", X"0000");
+    sbrd_check(X"0822", X"0010");
+    
+    sbwr(X"0810", X"0200");
+    CS <= '1';
+    wait for 1 us;
+    CS <= '0';
+    sbwr(X"0810", X"0000");
+    sbrd_check(X"0822", X"0000");
+    
+    Finish <= '1';
     wait;
+    
     -- pragma synthesis_on
   end Process;
 
   f8m_clk : Process
   Begin
-    clk_8_0000MHz_pin <= '0';
     -- pragma synthesis_off
-   wait for 62 ns;
-    clk_8_0000MHz_pin <= '1';
-   wait for 63 ns;
+    wait for 40 ns;
+    while Finish = '0' loop
+      f8m <= '0';
+     wait for 62 ns;
+      f8m <= '1';
+     wait for 63 ns;
+   end loop;
+   wait;
     -- pragma synthesis_on
   End Process;
 
   f30m_clk : Process -- actually 25MHz
   Begin
-    clk_30_0000MHz_pin <= '0';
     -- pragma synthesis_off
-   wait for 20 ns;
-    clk_8_0000MHz_pin <= '1';
-   wait for 20 ns;
+    wait for 40 ns;
+    while Finish = '0' loop
+      clk_30_0000MHz_pin <= '0';
+     wait for 20 ns;
+      clk_30_0000MHz_pin <= '1';
+     wait for 20 ns;
+    end loop;
+    wait;
     -- pragma synthesis_on
   End Process;
 
@@ -136,5 +201,7 @@ begin
   xps_gpio_subbus_data_o_pin <= Data_o;
   xps_gpio_subbus_ctrl_pin <= Ctrl;
   xps_gpio_subbus_addr_pin <= Addr;
+  tick <= TickTock;
+  clk_8_0000MHz_pin <= f8m;
 end Simulation;
 
