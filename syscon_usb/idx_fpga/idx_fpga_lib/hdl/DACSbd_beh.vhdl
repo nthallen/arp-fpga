@@ -31,13 +31,20 @@ ENTITY DACSbd IS
     AI_AFE_SCK : OUT std_ulogic_vector ( 1 DOWNTO 0 );
     AI_MUX0_A : OUT std_ulogic_vector ( 2 DOWNTO 0 );
     AI_MUX1_A : OUT std_ulogic_vector ( 2 DOWNTO 0 );
+
     DA_CS_B : OUT std_logic_vector ( 1 DOWNTO 0 );
+    DA_CLR_B : OUT std_ulogic;
+    DA_LDAC_B : OUT std_ulogic;
+    DA_SCK : OUT std_ulogic;
+    DA_SDI : OUT std_ulogic;
+
     DIO : INOUT std_logic_vector ( 119 DOWNTO 0 );
     DIO_DIR : OUT std_logic_vector ( 14 DOWNTO 0 );
-    GPIO_LED : OUT std_logic_vector ( 3 DOWNTO 0 );
-    GPIO_SW : IN std_logic_vector ( 3 DOWNTO 0 );
     DIO_OE : IN std_ulogic;
     DIO_OE_B : IN std_ulogic;
+
+    GPIO_LED : OUT std_logic_vector ( 3 DOWNTO 0 );
+    GPIO_SW : IN std_logic_vector ( 3 DOWNTO 0 );
     FPGA_CMDENBL : OUT std_ulogic;
     FPGA_CMDENBL_B : OUT std_ulogic;
     FPGA_CMDSTRB : OUT std_ulogic;
@@ -61,10 +68,6 @@ ENTITY DACSbd IS
     COUNT : IN std_logic_vector ( 7 DOWNTO 0 );
     COUNT_LE : IN std_logic_vector ( 7 DOWNTO 0 );
     COUNT_SDN : IN std_ulogic;
-    DA_CLR_B : IN std_ulogic;
-    DA_LDAC_B : IN std_ulogic;
-    DA_SCK : INOUT std_ulogic;
-    DA_SDI : INOUT std_ulogic;
     FPGA_CSO_B : IN std_ulogic;
     FPGA_D0_DIN_MISO_MISO1 : IN std_ulogic;
     FPGA_D1_MISO2 : IN std_ulogic;
@@ -195,7 +198,13 @@ ARCHITECTURE beh OF DACSbd IS
        ana_in_SCK5                    : OUT    std_ulogic_vector(1 DOWNTO 0);
        ana_in_SDO                     : OUT    std_ulogic_vector(1 DOWNTO 0);
 
-       ctr_PMT                        : IN std_logic_vector(4*CTR_UG_N_BDS-1 DOWNTO 0)
+       ctr_PMT                        : IN std_logic_vector(4*CTR_UG_N_BDS-1 DOWNTO 0);
+       
+       DA_CLR_B                       : OUT std_logic;
+       DA_CS_B                        : OUT std_logic_vector(1 DOWNTO 0);
+       DA_LDAC_B                      : OUT std_logic;
+       DA_SCK                         : OUT std_logic;
+       DA_SDI                         : OUT std_logic
      );
    END COMPONENT;
    COMPONENT cmd_proc
@@ -278,7 +287,12 @@ BEGIN
        ctr_PMT(1)                     => COUNT(3),
        ctr_PMT(4 DOWNTO 2)            => COUNT(7 DOWNTO 5),
        ctr_PMT(10 DOWNTO 5)           => DIO(35 DOWNTO 30),
-       ctr_PMT(11)                    => '0'
+       ctr_PMT(11)                    => '0',
+       DA_CLR_B                       => DA_CLR_B,
+       DA_CS_B                        => DA_CS_B,
+       DA_LDAC_B                      => DA_LDAC_B,
+       DA_SCK                         => DA_SCK,
+       DA_SDI                         => DA_SDI
     );
 
     cmd_proc_i : cmd_proc
@@ -336,6 +350,5 @@ BEGIN
   FPGA_CMDSTRB_B	<= not subbus_cmdstrb;
   GPIO_ERROR_LED	<= subbus_fail_leds(0);
   GPIO_LED <= subbus_fail_leds(4 DOWNTO 1);
-  DA_CS_B <= "00";
 END ARCHITECTURE beh;
 

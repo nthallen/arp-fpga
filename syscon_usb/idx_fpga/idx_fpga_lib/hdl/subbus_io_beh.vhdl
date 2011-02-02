@@ -44,7 +44,7 @@ BEGIN
 
   
   -- WrEn_int needs to be qualified with BdEn_In
-  -- to make sure WrEn is occurs during BdEn
+  -- to make sure WrEn occurs during BdEn
   WrEnbl : Process (F8M) Is
   Begin
     if F8M'Event and F8M = '1' then
@@ -103,28 +103,6 @@ BEGIN
       end if;
     end if;
   end process;
---  
---  DataBus : process (F8M) is
---  begin
---    if F8M'event and F8M = '1' then
---      if rst = '1' then
---        iData <= (others => 'Z');
---        Data <= (others => 'Z');
---      elsif ExpRd = '1' and BdEn = '1' then
---        if RdEn_int = '0' then
---          iData <= (others => 'Z');
---          Data <= (others => 'Z');
---        else
---          Data <= iData;
---        end if;
---      elsif RdEn_int = '1' then
---        Data <= ( others => 'Z' );
---        iData <= ( others => 'Z' );
---      else
---        iData <= Data;
---      end if;
---    end if;
---  end process;
 
   RdEn <= RdEn_int;
   WrEn <= WrEn_int;

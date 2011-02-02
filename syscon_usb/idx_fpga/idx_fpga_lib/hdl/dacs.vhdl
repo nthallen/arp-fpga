@@ -76,7 +76,13 @@ entity dacs is
       ana_in_SCK5 : OUT std_ulogic_vector(1 DOWNTO 0);
       ana_in_SDO  : OUT std_ulogic_vector(1 DOWNTO 0);
       
-      ctr_PMT     : IN std_logic_vector(4*CTR_UG_N_BDS-1 DOWNTO 0)
+      ctr_PMT     : IN std_logic_vector(4*CTR_UG_N_BDS-1 DOWNTO 0);
+      
+      DA_CLR_B    : OUT std_logic;
+      DA_CS_B     : OUT std_logic_vector(1 DOWNTO 0);
+      DA_LDAC_B   : OUT std_logic;
+      DA_SCK      : OUT std_logic;
+      DA_SDI      : OUT std_logic
     );
 end dacs;
 
@@ -87,6 +93,7 @@ architecture Behavioral of dacs is
 		fpga_0_rst_1_sys_rst_pin : IN std_logic;
 		clk_8_0000MHz_pin : OUT std_logic;
 		clk_30_0000MHz_pin : OUT std_logic;
+    clk_66_6667MHz_pin : OUT std_logic;
 
 		xps_epc_0_PRH_Rdy_pin : IN std_logic;
 		xps_epc_0_PRH_Data_pin : INOUT std_logic_vector(7 downto 0);      
@@ -221,13 +228,32 @@ architecture Behavioral of dacs is
         PMT    : IN     std_logic_vector(N_COUNTERS-1 DOWNTO 0)
      );
   END COMPONENT;
+  COMPONENT ao
+     PORT (
+        Addr      : IN     std_logic_vector(15 DOWNTO 0);
+        ExpRd     : IN     std_ulogic;
+        ExpWr     : IN     std_ulogic;
+        F66M      : IN     std_logic;
+        F8M       : IN     std_ulogic;
+        rst       : IN     std_ulogic;
+        DA_CLR_B  : OUT    std_logic;
+        DA_CS_B   : OUT    std_logic_vector(1 DOWNTO 0);
+        DA_LDAC_B : OUT    std_logic;
+        DA_SCK    : OUT    std_logic;
+        DA_SDI    : OUT    std_logic;
+        ExpAck    : OUT    std_ulogic;
+        Data      : INOUT  std_logic_vector(15 DOWNTO 0)
+     );
+  END COMPONENT;
   FOR ALL : ctr_ungated USE ENTITY idx_fpga_lib.ctr_ungated;
+  FOR ALL : ao USE ENTITY idx_fpga_lib.ao;
 
 	attribute box_type : string;
 	attribute box_type of Processor : component is "user_black_box";
 	
 	SIGNAL clk_8_0000MHz : std_logic;
 	SIGNAL clk_30_0000MHz : std_logic;
+	SIGNAL clk_66_6667MHz : std_logic;
   SIGNAL xps_epc_0_PRH_Wr_n_pin : std_logic;
 	SIGNAL subbus_addr : std_logic_vector(15 downto 0);
 	SIGNAL subbus_data_i : std_logic_vector(15 downto 0);      
@@ -238,7 +264,7 @@ architecture Behavioral of dacs is
 	SIGNAL ExpData : std_logic_vector(15 downto 0);
 	SIGNAL ExpRd : std_logic;
 	SIGNAL ExpWr : std_logic;
-	SIGNAL ExpAck : std_logic_vector (2+CTR_UG_N_BDS DOWNTO 0);
+	SIGNAL ExpAck : std_logic_vector (3+CTR_UG_N_BDS DOWNTO 0);
 	SIGNAL CmdEnbl : std_ulogic;
 	SIGNAL CmdStrb : std_ulogic;
 	SIGNAL rst : std_ulogic;
@@ -259,6 +285,7 @@ begin
      fpga_0_rst_1_sys_rst_pin => fpga_0_rst_1_sys_rst_pin,
      clk_8_0000MHz_pin => clk_8_0000MHz,
      clk_30_0000MHz_pin => clk_30_0000MHz,
+     clk_66_6667MHz_pin => clk_66_6667MHz,
 
      xps_epc_0_PRH_Rdy_pin =>  '0', -- not FTDI_TXE_pin,
      xps_epc_0_PRH_Wr_n_pin => xps_epc_0_PRH_Wr_n_pin,
@@ -280,7 +307,7 @@ begin
 	Inst_syscon: syscon
   	 GENERIC MAP (
   	   N_INTERRUPTS => N_INTERRUPTS,
-  	   N_BOARDS => 3+CTR_UG_N_BDS
+  	   N_BOARDS => 4+CTR_UG_N_BDS
   	 )
   	 PORT MAP(
     		F8M => clk_8_0000MHz,
@@ -368,6 +395,24 @@ begin
        SDO    => ana_in_SDO,
        Data   => ExpData
     );
+
+  Inst_ao : ao
+     PORT MAP (
+        Addr      => subbus_addr,
+        ExpRd     => ExpRd,
+        ExpWr     => ExpWr,
+        F66M      => clk_66_6667MHz,
+        F8M       => clk_8_0000MHz,
+        rst       => rst,
+        DA_CLR_B  => DA_CLR_B,
+        DA_CS_B   => DA_CS_B,
+        DA_LDAC_B => DA_LDAC_B,
+        DA_SCK    => DA_SCK,
+        DA_SDI    => DA_SDI,
+        ExpAck    => ExpAck(3),
+        Data      => ExpData
+     );
+
   ctrs : for i in 0 TO CTR_UG_N_BDS-1 generate
     
     ctr_ug: ctr_ungated
@@ -381,7 +426,7 @@ begin
          Data   => ExpData,
          ExpRd  => ExpRd,
          ExpWr  => ExpWr,
-         ExpAck => ExpAck(3+i),
+         ExpAck => ExpAck(4+i),
          F8M    => clk_8_0000MHz,
          rst    => rst,
          PMT    => ctr_PMT(i*4+3 DOWNTO i*4)
