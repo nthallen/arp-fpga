@@ -124,8 +124,8 @@ BEGIN
   connectors : for i in DIGIO_N_CONNECTORS-1 DOWNTO 0 generate
     LowByte : DigIO_Conn
        GENERIC MAP (
-         DIGIO_FORCE_DIR => DIGIO_FORCE_DIR(i*6 TO i*6+2),
-         DIGIO_FORCE_DIR_VAL => DIGIO_FORCE_DIR_VAL(i*6 TO i*6+2)
+         DIGIO_FORCE_DIR => DIGIO_FORCE_DIR(i*6) & DIGIO_FORCE_DIR(i*6+2) & DIGIO_FORCE_DIR(i*6+4),
+         DIGIO_FORCE_DIR_VAL => DIGIO_FORCE_DIR_VAL(i*6) & DIGIO_FORCE_DIR_VAL(i*6+2) & DIGIO_FORCE_DIR_VAL(i*6+4)
        )
        PORT MAP (
           D      => iData(7 DOWNTO 0),
@@ -145,8 +145,8 @@ BEGIN
        );
     HighByte : DigIO_Conn
       GENERIC MAP (
-        DIGIO_FORCE_DIR => DIGIO_FORCE_DIR(i*6+3 TO i*6+5),
-        DIGIO_FORCE_DIR_VAL => DIGIO_FORCE_DIR_VAL(i*6+3 TO i*6+5)
+        DIGIO_FORCE_DIR => DIGIO_FORCE_DIR(i*6+1) & DIGIO_FORCE_DIR(i*6+3) & DIGIO_FORCE_DIR(i*6+5),
+        DIGIO_FORCE_DIR_VAL => DIGIO_FORCE_DIR_VAL(i*6+1) & DIGIO_FORCE_DIR_VAL(i*6+3) & DIGIO_FORCE_DIR_VAL(i*6+5)
       )
       PORT MAP (
         D      => iData(15 DOWNTO 8),

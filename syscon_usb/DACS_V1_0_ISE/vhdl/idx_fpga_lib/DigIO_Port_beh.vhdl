@@ -61,9 +61,14 @@ BEGIN
   
   IObuf : Process (Dir, Dout)
   Begin
-    if Dir = '0' then
+    if DIGIO_FORCE_DIR = '1' AND DIGIO_FORCE_DIR_VAL = '0' then
       IO <= Dout;
-    else IO <= (others => 'Z');
+    elsif DIGIO_FORCE_DIR = '1' AND DIGIO_FORCE_DIR_VAL /= '0' then
+      IO <= (others => 'Z');
+    elsif DIGIO_FORCE_DIR = '0' AND Dir = '0' then
+      IO <= Dout;
+    else
+      IO <= (others => 'Z');
     end if;
   End Process;
   
