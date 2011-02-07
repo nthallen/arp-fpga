@@ -10,11 +10,6 @@ unitName "std_logic_1164"
 library "ieee"
 unitName "std_logic_arith"
 )
-(DmPackageRef
-library "idx_fpga_lib"
-unitName "All"
-itemName ""
-)
 ]
 machine (Machine
 name "csm"
@@ -79,19 +74,19 @@ value "C:\\HDS\\idx_fpga\\idx_fpga_lib\\hds\\ptrh_i2c_sm"
 )
 (vvPair
 variable "date"
-value "02/ 6/2011"
+value "02/ 7/2011"
 )
 (vvPair
 variable "day"
-value "Sun"
+value "Mon"
 )
 (vvPair
 variable "day_long"
-value "Sunday"
+value "Monday"
 )
 (vvPair
 variable "dd"
-value "06"
+value "07"
 )
 (vvPair
 variable "entity_name"
@@ -215,7 +210,7 @@ value "fsm"
 )
 (vvPair
 variable "time"
-value "16:24:51"
+value "16:00:37"
 )
 (vvPair
 variable "unit"
@@ -269,8 +264,8 @@ uid 41,0
 va (VaSet
 font "arial,10,1"
 )
-xt "27628,15182,30928,16382"
-st "i2c_0"
+xt "27478,15182,31078,16382"
+st "i2ci_0"
 ju 0
 blo "29278,16182"
 tm "ONodeName"
@@ -686,8 +681,8 @@ uid 88,0
 va (VaSet
 font "arial,8,1"
 )
-xt "19750,19500,21950,20500"
-st "i2c_0"
+xt "19750,19500,22150,20500"
+st "i2ci_0"
 blo "19750,20300"
 tm "LinkName"
 )
@@ -775,8 +770,8 @@ uid 99,0
 va (VaSet
 font "arial,8,1"
 )
-xt "19750,14500,21950,15500"
-st "i2c_0"
+xt "19750,14500,22150,15500"
+st "i2ci_0"
 blo "19750,15300"
 tm "LinkName"
 )
@@ -1125,8 +1120,8 @@ uid 233,0
 va (VaSet
 font "arial,10,1"
 )
-xt "35421,15791,38721,16991"
-st "i2c_1"
+xt "35271,15791,38871,16991"
+st "i2ci_1"
 ju 0
 blo "37071,16791"
 tm "ONodeName"
@@ -1292,8 +1287,8 @@ uid 250,0
 va (VaSet
 font "arial,10,1"
 )
-xt "43799,15815,47099,17015"
-st "i2c_2"
+xt "43649,15815,47249,17015"
+st "i2ci_2"
 ju 0
 blo "45449,16815"
 tm "ONodeName"
@@ -1453,8 +1448,8 @@ uid 267,0
 va (VaSet
 font "arial,10,1"
 )
-xt "60255,15815,63555,17015"
-st "i2c_3"
+xt "60105,15815,63705,17015"
+st "i2ci_3"
 ju 0
 blo "61905,16815"
 tm "ONodeName"
@@ -1614,8 +1609,8 @@ uid 314,0
 va (VaSet
 font "arial,10,1"
 )
-xt "68429,16072,71729,17272"
-st "i2c_4"
+xt "68279,16072,71879,17272"
+st "i2ci_4"
 ju 0
 blo "70079,17072"
 tm "ONodeName"
@@ -1781,8 +1776,8 @@ uid 341,0
 va (VaSet
 font "arial,10,1"
 )
-xt "76672,15900,79972,17100"
-st "i2c_5"
+xt "76522,15900,80122,17100"
+st "i2ci_5"
 ju 0
 blo "78322,16900"
 tm "ONodeName"
@@ -1941,8 +1936,8 @@ uid 398,0
 va (VaSet
 font "arial,10,1"
 )
-xt "92861,15900,96161,17100"
-st "icq_6"
+xt "92711,15900,96311,17100"
+st "i2ci_6"
 ju 0
 blo "94511,16900"
 tm "ONodeName"
@@ -2102,8 +2097,8 @@ uid 425,0
 va (VaSet
 font "arial,10,1"
 )
-xt "102523,16016,105823,17216"
-st "i2c_7"
+xt "102373,16016,105973,17216"
+st "i2ci_7"
 ju 0
 blo "104173,17016"
 tm "ONodeName"
@@ -2269,8 +2264,8 @@ uid 442,0
 va (VaSet
 font "arial,10,1"
 )
-xt "111109,15844,114409,17044"
-st "i2c_8"
+xt "110959,15844,114559,17044"
+st "i2ci_8"
 ju 0
 blo "112759,16844"
 tm "ONodeName"
@@ -2429,8 +2424,8 @@ uid 459,0
 va (VaSet
 font "arial,10,1"
 )
-xt "127298,15844,130598,17044"
-st "icq_9"
+xt "127148,15844,130748,17044"
+st "i2ci_9"
 ju 0
 blo "128948,16844"
 tm "ONodeName"
@@ -4684,7 +4679,6 @@ st "CASE: expr"
 tm "SmCaseExpr"
 )
 )
-impLoop 0
 )
 *41 (State
 uid 904,0
@@ -9538,6 +9532,7 @@ st "CASE: expr"
 tm "SmCaseExpr"
 )
 )
+impLoop 0
 )
 *71 (Transition
 uid 100,0
@@ -16371,7 +16366,6 @@ arrow 1
 )
 start &70
 end &28
-cond "condition"
 tb (TransitionBlock
 uid 2045,0
 ps "CenterOffsetStrategy"
@@ -16379,11 +16373,12 @@ shape (Rectangle
 uid 2046,0
 va (VaSet
 vasetType 1
+isHidden 1
 fg "65535,65535,65535"
 bg "0,0,0"
 lineColor "0,32768,49152"
 )
-xt "13654,153039,18054,155039"
+xt "13079,154454,17479,155464"
 )
 autoResize 1
 lineShape (Line
@@ -16392,10 +16387,10 @@ va (VaSet
 vasetType 3
 isHidden 1
 )
-xt "15854,154939,15854,154939"
+xt "15279,155859,15279,155859"
 pts [
-"15854,154939"
-"15854,154939"
+"15279,155859"
+"15279,155859"
 ]
 )
 condition (MLText
@@ -16403,8 +16398,7 @@ uid 2048,0
 va (VaSet
 font "arial,8,0"
 )
-xt "14154,153539,17554,154539"
-st "condition"
+xt "13579,154459,16979,155459"
 tm "Condition"
 )
 actions (MLText
@@ -16412,7 +16406,7 @@ uid 2049,0
 va (VaSet
 font "arial,8,0"
 )
-xt "15854,154939,15854,154939"
+xt "15279,155859,15279,155859"
 tm "Actions"
 )
 )
@@ -16475,12 +16469,11 @@ uid 29,0
 va (VaSet
 font "arial,8,0"
 )
-xt "0,4000,10900,9000"
+xt "0,4000,10900,8000"
 st "LIBRARY ieee;
 USE ieee.std_logic_1164.all;
 USE ieee.std_logic_arith.all;
-LIBRARY idx_fpga_lib;
-USE idx_fpga_lib.All;"
+LIBRARY idx_fpga_lib;"
 tm "SmPackageListTextMgr"
 )
 ]
@@ -16561,8 +16554,8 @@ tm "SmCompilerDirectivesTextMgr"
 ]
 associable 1
 )
-windowSize "0,0,1281,778"
-viewArea "25867,20360,106183,67974"
+windowSize "0,51,1281,829"
+viewArea "-13457,-12517,70078,38694"
 cachedDiagramExtent "0,-1000,137001,183763"
 pageSetupInfo (PageSetupInfo
 ptrCmd ""
@@ -16665,25 +16658,25 @@ uid 7,0
 va (VaSet
 font "arial,8,1"
 )
-xt "58100,-1000,67000,0"
+xt "62238,-1000,71138,0"
 st "Process Declarations"
-blo "58100,-200"
+blo "62238,-200"
 )
 *159 (Text
 uid 8,0
 va (VaSet
 font "arial,8,1"
 )
-xt "58100,0,65300,1000"
+xt "62238,0,69438,1000"
 st "Clocked Process:"
-blo "58100,800"
+blo "62238,800"
 )
 *160 (MLText
 uid 9,0
 va (VaSet
 font "Courier New,8,0"
 )
-xt "58100,-1000,58100,-1000"
+xt "62238,-1000,62238,-1000"
 tm "ProcessDeclTextMgr"
 )
 *161 (Text
@@ -16691,16 +16684,16 @@ uid 10,0
 va (VaSet
 font "arial,8,1"
 )
-xt "58100,1000,65000,2000"
+xt "62238,1000,69138,2000"
 st "Output Process:"
-blo "58100,1800"
+blo "62238,1800"
 )
 *162 (MLText
 uid 11,0
 va (VaSet
 font "Courier New,8,0"
 )
-xt "58100,2000,58100,2000"
+xt "62238,2000,62238,2000"
 tm "ProcessDeclTextMgr"
 )
 ]
@@ -16956,7 +16949,7 @@ stateOrder [
 name "csm"
 )
 ]
-lastUid 2102,0
+lastUid 2218,0
 commonDM (CommonDM
 ldm (LogicalDM
 emptyRow *172 (LEmptyRow
@@ -17063,7 +17056,7 @@ decl (Decl
 n "i2c_addr"
 t "std_logic_vector"
 b "(6 DOWNTO 0)"
-o 5
+o 6
 )
 )
 uid 160,0
@@ -17074,7 +17067,7 @@ decl (Decl
 n "i2c_wdata"
 t "std_logic_vector"
 b "(7 DOWNTO 0)"
-o 6
+o 7
 )
 )
 uid 162,0
@@ -17084,7 +17077,7 @@ port (LogicalPort
 decl (Decl
 n "rst"
 t "std_ulogic"
-o 7
+o 8
 )
 )
 uid 164,0
@@ -17096,7 +17089,7 @@ port (LogicalPort
 decl (Decl
 n "wb_ack_o"
 t "std_logic"
-o 8
+o 9
 )
 )
 uid 166,0
@@ -17107,7 +17100,7 @@ decl (Decl
 n "wb_dat_o"
 t "std_logic_vector"
 b "(7 DOWNTO 0)"
-o 9
+o 10
 )
 )
 uid 168,0
@@ -17117,7 +17110,7 @@ port (LogicalPort
 decl (Decl
 n "wb_inta_o"
 t "std_logic"
-o 10
+o 11
 )
 )
 uid 170,0
@@ -17128,7 +17121,7 @@ m 1
 decl (Decl
 n "Done"
 t "std_logic"
-o 11
+o 12
 )
 )
 uid 172,0
@@ -17141,7 +17134,7 @@ m 1
 decl (Decl
 n "Err"
 t "std_logic"
-o 12
+o 13
 )
 )
 uid 174,0
@@ -17155,7 +17148,7 @@ decl (Decl
 n "i2c_rdata"
 t "std_logic_vector"
 b "(23 DOWNTO 0)"
-o 13
+o 14
 )
 )
 uid 176,0
@@ -17169,7 +17162,7 @@ decl (Decl
 n "wb_adr_i"
 t "std_logic_vector"
 b "(2 DOWNTO 0)"
-o 14
+o 15
 )
 )
 uid 178,0
@@ -17182,7 +17175,7 @@ m 1
 decl (Decl
 n "wb_cyc_i"
 t "std_logic"
-o 15
+o 16
 )
 )
 uid 180,0
@@ -17196,7 +17189,7 @@ decl (Decl
 n "wb_dat_i"
 t "std_logic_vector"
 b "(7 DOWNTO 0)"
-o 16
+o 17
 )
 )
 uid 182,0
@@ -17209,7 +17202,7 @@ m 1
 decl (Decl
 n "wb_stb_i"
 t "std_logic"
-o 17
+o 18
 )
 )
 uid 184,0
@@ -17222,7 +17215,7 @@ m 1
 decl (Decl
 n "wb_we_i"
 t "std_logic"
-o 18
+o 19
 )
 )
 uid 186,0
@@ -17235,7 +17228,7 @@ m 4
 decl (Decl
 n "Rd3_int"
 t "std_logic"
-o 19
+o 20
 )
 )
 uid 541,0
@@ -17247,11 +17240,10 @@ port (LogicalPort
 decl (Decl
 n "WrStop"
 t "std_logic"
-o 20
+o 5
 )
 )
 uid 2099,0
-scheme 1
 )
 *211 (LeafLogPort
 port (LogicalPort
@@ -17318,109 +17310,109 @@ uid 215,0
 )
 *217 (MRCItem
 litem &191
-pos 0
+pos 2
 dimension 20
 uid 153,0
 )
 *218 (MRCItem
 litem &192
-pos 1
+pos 6
 dimension 20
 uid 155,0
 )
 *219 (MRCItem
 litem &193
-pos 2
+pos 7
 dimension 20
 uid 157,0
 )
 *220 (MRCItem
 litem &194
-pos 3
+pos 17
 dimension 20
 uid 159,0
 )
 *221 (MRCItem
 litem &195
-pos 5
+pos 3
 dimension 20
 uid 161,0
 )
 *222 (MRCItem
 litem &196
-pos 6
+pos 5
 dimension 20
 uid 163,0
 )
 *223 (MRCItem
 litem &197
-pos 7
+pos 8
 dimension 20
 uid 165,0
 )
 *224 (MRCItem
 litem &198
-pos 8
+pos 9
 dimension 20
 uid 167,0
 )
 *225 (MRCItem
 litem &199
-pos 9
+pos 13
 dimension 20
 uid 169,0
 )
 *226 (MRCItem
 litem &200
-pos 10
+pos 14
 dimension 20
 uid 171,0
 )
 *227 (MRCItem
 litem &201
-pos 11
+pos 0
 dimension 20
 uid 173,0
 )
 *228 (MRCItem
 litem &202
-pos 12
+pos 1
 dimension 20
 uid 175,0
 )
 *229 (MRCItem
 litem &203
-pos 13
+pos 4
 dimension 20
 uid 177,0
 )
 *230 (MRCItem
 litem &204
-pos 14
+pos 10
 dimension 20
 uid 179,0
 )
 *231 (MRCItem
 litem &205
-pos 15
+pos 11
 dimension 20
 uid 181,0
 )
 *232 (MRCItem
 litem &206
-pos 16
+pos 12
 dimension 20
 uid 183,0
 )
 *233 (MRCItem
 litem &207
-pos 17
+pos 15
 dimension 20
 uid 185,0
 )
 *234 (MRCItem
 litem &208
-pos 18
+pos 16
 dimension 20
 uid 187,0
 )
@@ -17432,7 +17424,7 @@ uid 542,0
 )
 *236 (MRCItem
 litem &210
-pos 4
+pos 18
 dimension 20
 uid 2100,0
 )

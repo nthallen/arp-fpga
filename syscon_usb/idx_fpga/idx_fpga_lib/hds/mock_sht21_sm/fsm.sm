@@ -73,19 +73,19 @@ value "C:\\HDS\\idx_fpga\\idx_fpga_lib\\hds\\mock_sht21_sm"
 )
 (vvPair
 variable "date"
-value "02/ 3/2011"
+value "02/ 7/2011"
 )
 (vvPair
 variable "day"
-value "Thu"
+value "Mon"
 )
 (vvPair
 variable "day_long"
-value "Thursday"
+value "Monday"
 )
 (vvPair
 variable "dd"
-value "03"
+value "07"
 )
 (vvPair
 variable "entity_name"
@@ -209,7 +209,7 @@ value "fsm"
 )
 (vvPair
 variable "time"
-value "15:35:19"
+value "16:20:06"
 )
 (vvPair
 variable "unit"
@@ -4349,7 +4349,7 @@ arrow 1
 start &2
 end &19
 es 0
-cond "SCL = '1' AND To_X01(SDA) = '0'"
+cond "To_X01(SCL) = '1' AND To_X01(SDA) = '0'"
 tb (TransitionBlock
 uid 240,0
 ps "CenterOffsetStrategy"
@@ -4361,7 +4361,7 @@ fg "65535,65535,65535"
 bg "0,0,0"
 lineColor "0,32768,49152"
 )
-xt "40553,13093,54553,15093"
+xt "37631,8935,54831,10935"
 )
 autoResize 1
 lineShape (Line
@@ -4370,10 +4370,10 @@ va (VaSet
 vasetType 3
 isHidden 1
 )
-xt "42753,14993,42753,14993"
+xt "39831,10835,39831,10835"
 pts [
-"42753,14993"
-"42753,14993"
+"39831,10835"
+"39831,10835"
 ]
 )
 condition (MLText
@@ -4381,8 +4381,8 @@ uid 243,0
 va (VaSet
 font "arial,8,0"
 )
-xt "41053,13593,54053,14593"
-st "SCL = '1' AND To_X01(SDA) = '0'"
+xt "38131,9435,54331,10435"
+st "To_X01(SCL) = '1' AND To_X01(SDA) = '0'"
 tm "Condition"
 )
 actions (MLText
@@ -4390,7 +4390,7 @@ uid 244,0
 va (VaSet
 font "arial,8,0"
 )
-xt "47553,14993,47553,14993"
+xt "46231,10835,46231,10835"
 tm "Actions"
 )
 )
@@ -4441,7 +4441,7 @@ start &19
 end &20
 ss 0
 es 0
-cond "SCL = '0'"
+cond "To_X01(SCL) = '0'"
 tb (TransitionBlock
 uid 267,0
 ps "CenterOffsetStrategy"
@@ -4453,7 +4453,7 @@ fg "65535,65535,65535"
 bg "0,0,0"
 lineColor "0,32768,49152"
 )
-xt "57170,17470,63870,20870"
+xt "58220,17270,66420,21070"
 )
 autoResize 1
 lineShape (Line
@@ -4461,10 +4461,10 @@ uid 269,0
 va (VaSet
 vasetType 3
 )
-xt "57670,19170,63370,19170"
+xt "58720,19170,65920,19170"
 pts [
-"57670,19170"
-"63370,19170"
+"58720,19170"
+"65920,19170"
 ]
 )
 condition (MLText
@@ -4472,8 +4472,8 @@ uid 270,0
 va (VaSet
 font "arial,8,0"
 )
-xt "58720,17770,62320,18770"
-st "SCL = '0'"
+xt "58720,17770,65920,18770"
+st "To_X01(SCL) = '0'"
 tm "Condition"
 )
 actions (MLText
@@ -4481,7 +4481,7 @@ uid 271,0
 va (VaSet
 font "arial,8,0"
 )
-xt "57670,19570,63370,20570"
+xt "59470,19570,65170,20570"
 st "NB <= \"0000\";"
 tm "Actions"
 )
@@ -4532,7 +4532,7 @@ arrow 1
 )
 start &20
 end &21
-cond "SCL = '1'"
+cond "To_X01(SCL) = '1'"
 tb (TransitionBlock
 uid 298,0
 ps "CenterOffsetStrategy"
@@ -4544,7 +4544,7 @@ fg "65535,65535,65535"
 bg "0,0,0"
 lineColor "0,32768,49152"
 )
-xt "36671,18634,53771,23434"
+xt "38471,18634,55571,23434"
 )
 autoResize 1
 lineShape (Line
@@ -4552,10 +4552,10 @@ uid 300,0
 va (VaSet
 vasetType 3
 )
-xt "37171,20534,53271,20534"
+xt "38971,20534,55071,20534"
 pts [
-"37171,20534"
-"53271,20534"
+"38971,20534"
+"55071,20534"
 ]
 )
 condition (MLText
@@ -4563,8 +4563,8 @@ uid 301,0
 va (VaSet
 font "arial,8,0"
 )
-xt "43421,19134,47021,20134"
-st "SCL = '1'"
+xt "43421,19134,50621,20134"
+st "To_X01(SCL) = '1'"
 tm "Condition"
 )
 actions (MLText
@@ -4572,7 +4572,7 @@ uid 302,0
 va (VaSet
 font "arial,8,0"
 )
-xt "37171,20934,53271,22934"
+xt "38971,20934,55071,22934"
 st "SR <= SR(6 DOWNTO 0) & To_X01(SDA);
 NB <= NB + 1;"
 tm "Actions"
@@ -4624,7 +4624,7 @@ arrow 1
 )
 start &21
 end &20
-cond "SCL = '0' AND
+cond "To_X01(SCL) = '0' AND
  NB /= 8"
 tb (TransitionBlock
 uid 308,0
@@ -4637,7 +4637,7 @@ fg "65535,65535,65535"
 bg "0,0,0"
 lineColor "0,32768,49152"
 )
-xt "41480,27080,48380,30080"
+xt "41480,27080,51980,30080"
 )
 autoResize 1
 lineShape (Line
@@ -4657,8 +4657,8 @@ uid 311,0
 va (VaSet
 font "arial,8,0"
 )
-xt "41980,27580,47880,29580"
-st "SCL = '0' AND
+xt "41980,27580,51480,29580"
+st "To_X01(SCL) = '0' AND
  NB /= 8"
 tm "Condition"
 )
@@ -4667,7 +4667,7 @@ uid 312,0
 va (VaSet
 font "arial,8,0"
 )
-xt "44930,29980,44930,29980"
+xt "46730,29980,46730,29980"
 tm "Actions"
 )
 )
@@ -4715,7 +4715,7 @@ arrow 1
 start &21
 end &23
 es 0
-cond "SCL = '0' AND NB = 8"
+cond "To_X01(SCL) = '0' AND NB = 8"
 tb (TransitionBlock
 uid 352,0
 ps "CenterOffsetStrategy"
@@ -4727,7 +4727,7 @@ fg "65535,65535,65535"
 bg "0,0,0"
 lineColor "0,32768,49152"
 )
-xt "31215,30657,41115,32657"
+xt "31215,30657,44315,32657"
 )
 autoResize 1
 lineShape (Line
@@ -4747,8 +4747,8 @@ uid 355,0
 va (VaSet
 font "arial,8,0"
 )
-xt "31715,31157,40615,32157"
-st "SCL = '0' AND NB = 8"
+xt "31715,31157,43815,32157"
+st "To_X01(SCL) = '0' AND NB = 8"
 tm "Condition"
 )
 actions (MLText
@@ -4756,7 +4756,7 @@ uid 356,0
 va (VaSet
 font "arial,8,0"
 )
-xt "36165,32557,36165,32557"
+xt "37765,32557,37765,32557"
 tm "Actions"
 )
 )
@@ -4893,7 +4893,7 @@ arrow 1
 )
 start &22
 end &2
-cond "SCL = '1' AND To_X01(SDA) = '1'"
+cond "To_X01(SCL) = '1' AND To_X01(SDA) = '1'"
 tb (TransitionBlock
 uid 372,0
 ps "CenterOffsetStrategy"
@@ -4905,7 +4905,7 @@ fg "65535,65535,65535"
 bg "0,0,0"
 lineColor "0,32768,49152"
 )
-xt "22026,17966,36026,19966"
+xt "22026,17966,39226,19966"
 )
 autoResize 1
 lineShape (Line
@@ -4925,8 +4925,8 @@ uid 375,0
 va (VaSet
 font "arial,8,0"
 )
-xt "22526,18466,35526,19466"
-st "SCL = '1' AND To_X01(SDA) = '1'"
+xt "22526,18466,38726,19466"
+st "To_X01(SCL) = '1' AND To_X01(SDA) = '1'"
 tm "Condition"
 )
 actions (MLText
@@ -4934,7 +4934,7 @@ uid 376,0
 va (VaSet
 font "arial,8,0"
 )
-xt "29026,19866,29026,19866"
+xt "30626,19866,30626,19866"
 tm "Actions"
 )
 )
@@ -4986,7 +4986,7 @@ end &24
 ss 0
 es 0
 cond "SR(7 DOWNTO 1)
- = \"1000000\""
+ = I2C_Addr"
 tb (TransitionBlock
 uid 399,0
 ps "CenterOffsetStrategy"
@@ -4998,7 +4998,7 @@ fg "65535,65535,65535"
 bg "0,0,0"
 lineColor "0,32768,49152"
 )
-xt "38600,34345,46900,38745"
+xt "38600,34145,46900,38945"
 )
 autoResize 1
 lineShape (Line
@@ -5019,7 +5019,7 @@ font "arial,8,0"
 )
 xt "39100,34645,46400,36645"
 st "SR(7 DOWNTO 1)
- = \"1000000\""
+ = I2C_Addr"
 tm "Condition"
 )
 actions (MLText
@@ -5077,7 +5077,7 @@ start &24
 end &25
 ss 0
 es 0
-cond "SCL = '1'"
+cond "To_X01(SCL) = '1'"
 tb (TransitionBlock
 uid 443,0
 ps "CenterOffsetStrategy"
@@ -5089,7 +5089,7 @@ fg "65535,65535,65535"
 bg "0,0,0"
 lineColor "0,32768,49152"
 )
-xt "52145,40535,56745,42535"
+xt "52145,40535,60345,42535"
 )
 autoResize 1
 lineShape (Line
@@ -5109,8 +5109,8 @@ uid 446,0
 va (VaSet
 font "arial,8,0"
 )
-xt "52645,41035,56245,42035"
-st "SCL = '1'"
+xt "52645,41035,59845,42035"
+st "To_X01(SCL) = '1'"
 tm "Condition"
 )
 actions (MLText
@@ -5118,7 +5118,7 @@ uid 447,0
 va (VaSet
 font "arial,8,0"
 )
-xt "54445,42435,54445,42435"
+xt "56245,42435,56245,42435"
 tm "Actions"
 )
 )
@@ -5167,7 +5167,7 @@ arrow 1
 )
 start &25
 end &36
-cond "SCL = '0' AND SR(0) = '0'"
+cond "To_X01(SCL) = '0' AND SR(0) = '0'"
 tb (TransitionBlock
 uid 453,0
 ps "CenterOffsetStrategy"
@@ -5179,7 +5179,7 @@ fg "65535,65535,65535"
 bg "0,0,0"
 lineColor "0,32768,49152"
 )
-xt "37707,44625,49007,48425"
+xt "37707,44625,52207,48425"
 )
 autoResize 1
 lineShape (Line
@@ -5187,10 +5187,10 @@ uid 455,0
 va (VaSet
 vasetType 3
 )
-xt "38207,46525,48507,46525"
+xt "38207,46525,51707,46525"
 pts [
 "38207,46525"
-"48507,46525"
+"51707,46525"
 ]
 )
 condition (MLText
@@ -5198,8 +5198,8 @@ uid 456,0
 va (VaSet
 font "arial,8,0"
 )
-xt "38207,45125,48507,46125"
-st "SCL = '0' AND SR(0) = '0'"
+xt "38207,45125,51707,46125"
+st "To_X01(SCL) = '0' AND SR(0) = '0'"
 tm "Condition"
 )
 actions (MLText
@@ -5207,7 +5207,7 @@ uid 457,0
 va (VaSet
 font "arial,8,0"
 )
-xt "40907,46925,45807,47925"
+xt "42507,46925,47407,47925"
 st "SDA <= 'Z';"
 tm "Actions"
 )
@@ -5256,7 +5256,7 @@ arrow 1
 start &25
 end &27
 es 0
-cond "SCL = '0' AND
+cond "To_X01(SCL) = '0' AND
 SR(0) = '1'"
 tb (TransitionBlock
 uid 480,0
@@ -5269,7 +5269,7 @@ fg "65535,65535,65535"
 bg "0,0,0"
 lineColor "0,32768,49152"
 )
-xt "61054,43735,67954,49535"
+xt "61054,43735,71554,49535"
 )
 autoResize 1
 lineShape (Line
@@ -5277,10 +5277,10 @@ uid 482,0
 va (VaSet
 vasetType 3
 )
-xt "61554,46635,67454,46635"
+xt "61554,46635,71054,46635"
 pts [
 "61554,46635"
-"67454,46635"
+"71054,46635"
 ]
 )
 condition (MLText
@@ -5288,8 +5288,8 @@ uid 483,0
 va (VaSet
 font "arial,8,0"
 )
-xt "61554,44235,67454,46235"
-st "SCL = '0' AND
+xt "61554,44235,71054,46235"
+st "To_X01(SCL) = '0' AND
 SR(0) = '1'"
 tm "Condition"
 )
@@ -5298,7 +5298,7 @@ uid 484,0
 va (VaSet
 font "arial,8,0"
 )
-xt "61654,47035,67354,49035"
+xt "63454,47035,69154,49035"
 st "SR <= X\"55\";
 NB <= \"0000\";"
 tm "Actions"
@@ -5348,7 +5348,7 @@ arrow 1
 )
 start &27
 end &28
-cond "SCL = '1'"
+cond "To_X01(SCL) = '1'"
 tb (TransitionBlock
 uid 507,0
 ps "CenterOffsetStrategy"
@@ -5360,7 +5360,7 @@ fg "65535,65535,65535"
 bg "0,0,0"
 lineColor "0,32768,49152"
 )
-xt "83790,42490,90290,45890"
+xt "84740,42290,92940,46090"
 )
 autoResize 1
 lineShape (Line
@@ -5368,10 +5368,10 @@ uid 509,0
 va (VaSet
 vasetType 3
 )
-xt "84290,44190,89790,44190"
+xt "85240,44190,92440,44190"
 pts [
-"84290,44190"
-"89790,44190"
+"85240,44190"
+"92440,44190"
 ]
 )
 condition (MLText
@@ -5379,8 +5379,8 @@ uid 510,0
 va (VaSet
 font "arial,8,0"
 )
-xt "85240,42790,88840,43790"
-st "SCL = '1'"
+xt "85240,42790,92440,43790"
+st "To_X01(SCL) = '1'"
 tm "Condition"
 )
 actions (MLText
@@ -5388,7 +5388,7 @@ uid 511,0
 va (VaSet
 font "arial,8,0"
 )
-xt "84290,44590,89790,45590"
+xt "86090,44590,91590,45590"
 st "NB <= NB+1;"
 tm "Actions"
 )
@@ -5439,7 +5439,7 @@ arrow 1
 )
 start &28
 end &27
-cond "SCL = '0' AND
+cond "To_X01(SCL) = '0' AND
  NB /= 8"
 tb (TransitionBlock
 uid 517,0
@@ -5452,7 +5452,7 @@ fg "65535,65535,65535"
 bg "0,0,0"
 lineColor "0,32768,49152"
 )
-xt "79960,49760,93060,54560"
+xt "81760,49760,94860,54560"
 )
 autoResize 1
 lineShape (Line
@@ -5460,10 +5460,10 @@ uid 519,0
 va (VaSet
 vasetType 3
 )
-xt "80460,52660,92560,52660"
+xt "82260,52660,94360,52660"
 pts [
-"80460,52660"
-"92560,52660"
+"82260,52660"
+"94360,52660"
 ]
 )
 condition (MLText
@@ -5471,8 +5471,8 @@ uid 520,0
 va (VaSet
 font "arial,8,0"
 )
-xt "83560,50260,89460,52260"
-st "SCL = '0' AND
+xt "83560,50260,93060,52260"
+st "To_X01(SCL) = '0' AND
  NB /= 8"
 tm "Condition"
 )
@@ -5481,7 +5481,7 @@ uid 521,0
 va (VaSet
 font "arial,8,0"
 )
-xt "80460,53060,92560,54060"
+xt "82260,53060,94360,54060"
 st "SR <= SR(6 DOWNTO 0) & '0';"
 tm "Actions"
 )
@@ -5530,7 +5530,7 @@ arrow 1
 start &28
 end &29
 es 0
-cond "SCL = '0' AND
+cond "To_X01(SCL) = '0' AND
 NB = 8"
 tb (TransitionBlock
 uid 544,0
@@ -5543,7 +5543,7 @@ fg "65535,65535,65535"
 bg "0,0,0"
 lineColor "0,32768,49152"
 )
-xt "97120,52506,104020,57306"
+xt "97120,52506,107620,57306"
 )
 autoResize 1
 lineShape (Line
@@ -5551,10 +5551,10 @@ uid 546,0
 va (VaSet
 vasetType 3
 )
-xt "97620,55406,103520,55406"
+xt "97620,55406,107120,55406"
 pts [
 "97620,55406"
-"103520,55406"
+"107120,55406"
 ]
 )
 condition (MLText
@@ -5562,8 +5562,8 @@ uid 547,0
 va (VaSet
 font "arial,8,0"
 )
-xt "97620,53006,103520,55006"
-st "SCL = '0' AND
+xt "97620,53006,107120,55006"
+st "To_X01(SCL) = '0' AND
 NB = 8"
 tm "Condition"
 )
@@ -5572,7 +5572,7 @@ uid 548,0
 va (VaSet
 font "arial,8,0"
 )
-xt "98120,55806,103020,56806"
+xt "99920,55806,104820,56806"
 st "SDA <= 'Z';"
 tm "Actions"
 )
@@ -5620,7 +5620,7 @@ arrow 1
 )
 start &29
 end &30
-cond "SCL = '1' AND To_X01(SDA) = '0'"
+cond "To_X01(SCL) = '1' AND To_X01(SDA) = '0'"
 tb (TransitionBlock
 uid 571,0
 ps "CenterOffsetStrategy"
@@ -5632,7 +5632,7 @@ fg "65535,65535,65535"
 bg "0,0,0"
 lineColor "0,32768,49152"
 )
-xt "81794,60069,95794,62069"
+xt "81794,60069,98994,62069"
 )
 autoResize 1
 lineShape (Line
@@ -5652,8 +5652,8 @@ uid 574,0
 va (VaSet
 font "arial,8,0"
 )
-xt "82294,60569,95294,61569"
-st "SCL = '1' AND To_X01(SDA) = '0'"
+xt "82294,60569,98494,61569"
+st "To_X01(SCL) = '1' AND To_X01(SDA) = '0'"
 tm "Condition"
 )
 actions (MLText
@@ -5661,7 +5661,7 @@ uid 575,0
 va (VaSet
 font "arial,8,0"
 )
-xt "88794,61969,88794,61969"
+xt "90394,61969,90394,61969"
 tm "Actions"
 )
 )
@@ -5708,7 +5708,7 @@ arrow 1
 )
 start &30
 end &27
-cond "SCL = '0'"
+cond "To_X01(SCL) = '0'"
 tb (TransitionBlock
 uid 581,0
 ps "CenterOffsetStrategy"
@@ -5720,7 +5720,7 @@ fg "65535,65535,65535"
 bg "0,0,0"
 lineColor "0,32768,49152"
 )
-xt "70805,53180,77505,57980"
+xt "71855,53180,80055,57980"
 )
 autoResize 1
 lineShape (Line
@@ -5728,10 +5728,10 @@ uid 583,0
 va (VaSet
 vasetType 3
 )
-xt "71305,55080,77005,55080"
+xt "72355,55080,79555,55080"
 pts [
-"71305,55080"
-"77005,55080"
+"72355,55080"
+"79555,55080"
 ]
 )
 condition (MLText
@@ -5739,8 +5739,8 @@ uid 584,0
 va (VaSet
 font "arial,8,0"
 )
-xt "72355,53680,75955,54680"
-st "SCL = '0'"
+xt "72355,53680,79555,54680"
+st "To_X01(SCL) = '0'"
 tm "Condition"
 )
 actions (MLText
@@ -5748,7 +5748,7 @@ uid 585,0
 va (VaSet
 font "arial,8,0"
 )
-xt "71305,55480,77005,57480"
+xt "73105,55480,78805,57480"
 st "NB <= \"0000\";
 SR <= X\"AA\";"
 tm "Actions"
@@ -5801,7 +5801,7 @@ start &29
 end &31
 ss 0
 es 0
-cond "SCL = '1' AND To_X01(SDA) /= '0'"
+cond "To_X01(SCL) = '1' AND To_X01(SDA) /= '0'"
 tb (TransitionBlock
 uid 625,0
 ps "CenterOffsetStrategy"
@@ -5813,7 +5813,7 @@ fg "65535,65535,65535"
 bg "0,0,0"
 lineColor "0,32768,49152"
 )
-xt "97595,68795,111795,70795"
+xt "97595,68795,115395,70795"
 )
 autoResize 1
 lineShape (Line
@@ -5833,8 +5833,8 @@ uid 628,0
 va (VaSet
 font "arial,8,0"
 )
-xt "98095,69295,111295,70295"
-st "SCL = '1' AND To_X01(SDA) /= '0'"
+xt "98095,69295,114895,70295"
+st "To_X01(SCL) = '1' AND To_X01(SDA) /= '0'"
 tm "Condition"
 )
 actions (MLText
@@ -5842,7 +5842,7 @@ uid 629,0
 va (VaSet
 font "arial,8,0"
 )
-xt "104695,70695,104695,70695"
+xt "106495,70695,106495,70695"
 tm "Actions"
 )
 )
@@ -5892,7 +5892,7 @@ arrow 1
 start &31
 end &22
 ss 0
-cond "SCL = '0'"
+cond "To_X01(SCL) = '0'"
 tb (TransitionBlock
 uid 635,0
 ps "CenterOffsetStrategy"
@@ -5904,7 +5904,7 @@ fg "65535,65535,65535"
 bg "0,0,0"
 lineColor "0,32768,49152"
 )
-xt "33122,91899,37722,93899"
+xt "33122,91899,41322,93899"
 )
 autoResize 1
 lineShape (Line
@@ -5924,8 +5924,8 @@ uid 638,0
 va (VaSet
 font "arial,8,0"
 )
-xt "33622,92399,37222,93399"
-st "SCL = '0'"
+xt "33622,92399,40822,93399"
+st "To_X01(SCL) = '0'"
 tm "Condition"
 )
 actions (MLText
@@ -5933,7 +5933,7 @@ uid 639,0
 va (VaSet
 font "arial,8,0"
 )
-xt "35422,93799,35422,93799"
+xt "37222,93799,37222,93799"
 tm "Actions"
 )
 )
@@ -5983,7 +5983,7 @@ arrow 1
 )
 start &26
 end &32
-cond "SCL = '1'"
+cond "To_X01(SCL) = '1'"
 tb (TransitionBlock
 uid 672,0
 ps "CenterOffsetStrategy"
@@ -5995,7 +5995,7 @@ fg "65535,65535,65535"
 bg "0,0,0"
 lineColor "0,32768,49152"
 )
-xt "33858,60248,50958,65048"
+xt "35658,60248,52758,65048"
 )
 autoResize 1
 lineShape (Line
@@ -6003,10 +6003,10 @@ uid 674,0
 va (VaSet
 vasetType 3
 )
-xt "34358,62148,50458,62148"
+xt "36158,62148,52258,62148"
 pts [
-"34358,62148"
-"50458,62148"
+"36158,62148"
+"52258,62148"
 ]
 )
 condition (MLText
@@ -6014,8 +6014,8 @@ uid 675,0
 va (VaSet
 font "arial,8,0"
 )
-xt "40608,60748,44208,61748"
-st "SCL = '1'"
+xt "40608,60748,47808,61748"
+st "To_X01(SCL) = '1'"
 tm "Condition"
 )
 actions (MLText
@@ -6023,7 +6023,7 @@ uid 676,0
 va (VaSet
 font "arial,8,0"
 )
-xt "34358,62548,50458,64548"
+xt "36158,62548,52258,64548"
 st "SR <= SR(6 DOWNTO 0) & To_X01(SDA);
 NB <= NB + 1;"
 tm "Actions"
@@ -6075,7 +6075,7 @@ arrow 1
 )
 start &32
 end &26
-cond "SCL = '0' AND
+cond "To_X01(SCL) = '0' AND
  NB /= 8"
 tb (TransitionBlock
 uid 682,0
@@ -6088,7 +6088,7 @@ fg "65535,65535,65535"
 bg "0,0,0"
 lineColor "0,32768,49152"
 )
-xt "24988,60752,31888,63752"
+xt "24988,60752,35488,63752"
 )
 autoResize 1
 lineShape (Line
@@ -6108,8 +6108,8 @@ uid 685,0
 va (VaSet
 font "arial,8,0"
 )
-xt "25488,61252,31388,63252"
-st "SCL = '0' AND
+xt "25488,61252,34988,63252"
+st "To_X01(SCL) = '0' AND
  NB /= 8"
 tm "Condition"
 )
@@ -6118,7 +6118,7 @@ uid 686,0
 va (VaSet
 font "arial,8,0"
 )
-xt "28438,63652,28438,63652"
+xt "30238,63652,30238,63652"
 tm "Actions"
 )
 )
@@ -6167,7 +6167,7 @@ start &32
 end &33
 ss 0
 es 0
-cond "SCL = '0' AND
+cond "To_X01(SCL) = '0' AND
 NB = 8"
 tb (TransitionBlock
 uid 709,0
@@ -6180,7 +6180,7 @@ fg "65535,65535,65535"
 bg "0,0,0"
 lineColor "0,32768,49152"
 )
-xt "39856,68169,46756,72969"
+xt "39856,68169,50356,72969"
 )
 autoResize 1
 lineShape (Line
@@ -6188,10 +6188,10 @@ uid 711,0
 va (VaSet
 vasetType 3
 )
-xt "40356,71069,46256,71069"
+xt "40356,71069,49856,71069"
 pts [
 "40356,71069"
-"46256,71069"
+"49856,71069"
 ]
 )
 condition (MLText
@@ -6199,8 +6199,8 @@ uid 712,0
 va (VaSet
 font "arial,8,0"
 )
-xt "40356,68669,46256,70669"
-st "SCL = '0' AND
+xt "40356,68669,49856,70669"
+st "To_X01(SCL) = '0' AND
 NB = 8"
 tm "Condition"
 )
@@ -6209,7 +6209,7 @@ uid 713,0
 va (VaSet
 font "arial,8,0"
 )
-xt "40906,71469,45706,72469"
+xt "42706,71469,47506,72469"
 st "SDA <= '0';"
 tm "Actions"
 )
@@ -6258,7 +6258,7 @@ arrow 1
 start &33
 end &34
 es 0
-cond "SCL = '1'"
+cond "To_X01(SCL) = '1'"
 tb (TransitionBlock
 uid 753,0
 ps "CenterOffsetStrategy"
@@ -6270,7 +6270,7 @@ fg "65535,65535,65535"
 bg "0,0,0"
 lineColor "0,32768,49152"
 )
-xt "52231,74721,56831,76721"
+xt "52231,74721,60431,76721"
 )
 autoResize 1
 lineShape (Line
@@ -6290,8 +6290,8 @@ uid 756,0
 va (VaSet
 font "arial,8,0"
 )
-xt "52731,75221,56331,76221"
-st "SCL = '1'"
+xt "52731,75221,59931,76221"
+st "To_X01(SCL) = '1'"
 tm "Condition"
 )
 actions (MLText
@@ -6299,7 +6299,7 @@ uid 757,0
 va (VaSet
 font "arial,8,0"
 )
-xt "54531,76621,54531,76621"
+xt "56331,76621,56331,76621"
 tm "Actions"
 )
 )
@@ -6348,7 +6348,7 @@ arrow 1
 )
 start &34
 end &35
-cond "SCL = '0'"
+cond "To_X01(SCL) = '0'"
 tb (TransitionBlock
 uid 763,0
 ps "CenterOffsetStrategy"
@@ -6360,7 +6360,7 @@ fg "65535,65535,65535"
 bg "0,0,0"
 lineColor "0,32768,49152"
 )
-xt "40969,78943,46869,82343"
+xt "41619,78743,49819,82543"
 )
 autoResize 1
 lineShape (Line
@@ -6368,10 +6368,10 @@ uid 765,0
 va (VaSet
 vasetType 3
 )
-xt "41469,80643,46369,80643"
+xt "42119,80643,49319,80643"
 pts [
-"41469,80643"
-"46369,80643"
+"42119,80643"
+"49319,80643"
 ]
 )
 condition (MLText
@@ -6379,8 +6379,8 @@ uid 766,0
 va (VaSet
 font "arial,8,0"
 )
-xt "42119,79243,45719,80243"
-st "SCL = '0'"
+xt "42119,79243,49319,80243"
+st "To_X01(SCL) = '0'"
 tm "Condition"
 )
 actions (MLText
@@ -6388,7 +6388,7 @@ uid 767,0
 va (VaSet
 font "arial,8,0"
 )
-xt "41469,81043,46369,82043"
+xt "43269,81043,48169,82043"
 st "SDA <= 'Z';"
 tm "Actions"
 )
@@ -6441,7 +6441,7 @@ arrow 1
 )
 start &35
 end &19
-cond "SCL = '1' AND To_X01(SDA) = '1'"
+cond "To_X01(SCL) = '1' AND To_X01(SDA) = '1'"
 tb (TransitionBlock
 uid 790,0
 ps "CenterOffsetStrategy"
@@ -6453,7 +6453,7 @@ fg "65535,65535,65535"
 bg "0,0,0"
 lineColor "0,32768,49152"
 )
-xt "47893,85032,61893,87032"
+xt "47893,85032,65093,87032"
 )
 autoResize 1
 lineShape (Line
@@ -6473,8 +6473,8 @@ uid 793,0
 va (VaSet
 font "arial,8,0"
 )
-xt "48393,85532,61393,86532"
-st "SCL = '1' AND To_X01(SDA) = '1'"
+xt "48393,85532,64593,86532"
+st "To_X01(SCL) = '1' AND To_X01(SDA) = '1'"
 tm "Condition"
 )
 actions (MLText
@@ -6482,7 +6482,7 @@ uid 794,0
 va (VaSet
 font "arial,8,0"
 )
-xt "54893,86932,54893,86932"
+xt "56493,86932,56493,86932"
 tm "Actions"
 )
 )
@@ -6531,7 +6531,7 @@ arrow 1
 start &35
 end &22
 es 0
-cond "SCL = '1' AND To_X01(SDA) /= '1'"
+cond "To_X01(SCL) = '1' AND To_X01(SDA) /= '1'"
 tb (TransitionBlock
 uid 810,0
 ps "CenterOffsetStrategy"
@@ -6543,7 +6543,7 @@ fg "65535,65535,65535"
 bg "0,0,0"
 lineColor "0,32768,49152"
 )
-xt "15412,77609,29612,79609"
+xt "15412,77609,33212,79609"
 )
 autoResize 1
 lineShape (Line
@@ -6563,8 +6563,8 @@ uid 813,0
 va (VaSet
 font "arial,8,0"
 )
-xt "15912,78109,29112,79109"
-st "SCL = '1' AND To_X01(SDA) /= '1'"
+xt "15912,78109,32712,79109"
+st "To_X01(SCL) = '1' AND To_X01(SDA) /= '1'"
 tm "Condition"
 )
 actions (MLText
@@ -6572,7 +6572,7 @@ uid 814,0
 va (VaSet
 font "arial,8,0"
 )
-xt "22512,79509,22512,79509"
+xt "24312,79509,24312,79509"
 tm "Actions"
 )
 )
@@ -6619,7 +6619,7 @@ arrow 1
 )
 start &36
 end &22
-cond "SCL = '1' AND To_X01(SDA) = '0'"
+cond "To_X01(SCL) = '1' AND To_X01(SDA) = '0'"
 tb (TransitionBlock
 uid 941,0
 ps "CenterOffsetStrategy"
@@ -6631,7 +6631,7 @@ fg "65535,65535,65535"
 bg "0,0,0"
 lineColor "0,32768,49152"
 )
-xt "20425,40788,34425,42788"
+xt "20425,40788,37625,42788"
 )
 autoResize 1
 lineShape (Line
@@ -6651,8 +6651,8 @@ uid 944,0
 va (VaSet
 font "arial,8,0"
 )
-xt "20925,41288,33925,42288"
-st "SCL = '1' AND To_X01(SDA) = '0'"
+xt "20925,41288,37125,42288"
+st "To_X01(SCL) = '1' AND To_X01(SDA) = '0'"
 tm "Condition"
 )
 actions (MLText
@@ -6660,7 +6660,7 @@ uid 945,0
 va (VaSet
 font "arial,8,0"
 )
-xt "27425,42688,27425,42688"
+xt "29025,42688,29025,42688"
 tm "Actions"
 )
 )
@@ -6671,6 +6671,7 @@ shape (Circle
 uid 947,0
 va (VaSet
 vasetType 1
+isHidden 1
 fg "65535,65535,65535"
 bg "0,0,0"
 )
@@ -6680,6 +6681,7 @@ radius 781
 pr (Text
 uid 948,0
 va (VaSet
+isHidden 1
 font "arial,8,0"
 )
 xt "28827,42771,29627,43771"
@@ -6707,7 +6709,7 @@ arrow 1
 )
 start &36
 end &37
-cond "SCL = '1' AND To_X01(SDA) = '1'"
+cond "To_X01(SCL) = '1' AND To_X01(SDA) = '1'"
 tb (TransitionBlock
 uid 968,0
 ps "CenterOffsetStrategy"
@@ -6719,7 +6721,7 @@ fg "65535,65535,65535"
 bg "0,0,0"
 lineColor "0,32768,49152"
 )
-xt "42173,51121,56173,53121"
+xt "42173,51121,59373,53121"
 )
 autoResize 1
 lineShape (Line
@@ -6739,8 +6741,8 @@ uid 971,0
 va (VaSet
 font "arial,8,0"
 )
-xt "42673,51621,55673,52621"
-st "SCL = '1' AND To_X01(SDA) = '1'"
+xt "42673,51621,58873,52621"
+st "To_X01(SCL) = '1' AND To_X01(SDA) = '1'"
 tm "Condition"
 )
 actions (MLText
@@ -6748,7 +6750,7 @@ uid 972,0
 va (VaSet
 font "arial,8,0"
 )
-xt "49173,53021,49173,53021"
+xt "50773,53021,50773,53021"
 tm "Actions"
 )
 )
@@ -6795,7 +6797,7 @@ arrow 1
 )
 start &37
 end &26
-cond "SCL = '0'"
+cond "To_X01(SCL) = '0'"
 tb (TransitionBlock
 uid 978,0
 ps "CenterOffsetStrategy"
@@ -6807,7 +6809,7 @@ fg "65535,65535,65535"
 bg "0,0,0"
 lineColor "0,32768,49152"
 )
-xt "39731,54832,46431,58232"
+xt "40781,54632,48981,58432"
 )
 autoResize 1
 lineShape (Line
@@ -6815,10 +6817,10 @@ uid 980,0
 va (VaSet
 vasetType 3
 )
-xt "40231,56532,45931,56532"
+xt "41281,56532,48481,56532"
 pts [
-"40231,56532"
-"45931,56532"
+"41281,56532"
+"48481,56532"
 ]
 )
 condition (MLText
@@ -6826,8 +6828,8 @@ uid 981,0
 va (VaSet
 font "arial,8,0"
 )
-xt "41281,55132,44881,56132"
-st "SCL = '0'"
+xt "41281,55132,48481,56132"
+st "To_X01(SCL) = '0'"
 tm "Condition"
 )
 actions (MLText
@@ -6835,7 +6837,7 @@ uid 982,0
 va (VaSet
 font "arial,8,0"
 )
-xt "40231,56932,45931,57932"
+xt "42031,56932,47731,57932"
 st "NB <= \"0000\";"
 tm "Actions"
 )
@@ -6983,8 +6985,8 @@ tm "SmCompilerDirectivesTextMgr"
 ]
 associable 1
 )
-windowSize "128,102,1197,903"
-viewArea "-2600,9174,92793,79287"
+windowSize "121,95,1192,896"
+viewArea "883,3357,96501,73470"
 cachedDiagramExtent "0,-1000,137030,99940"
 pageSetupInfo (PageSetupInfo
 ptrCmd ""
@@ -7338,7 +7340,7 @@ stateOrder [
 name "csm"
 )
 ]
-lastUid 985,0
+lastUid 1045,0
 commonDM (CommonDM
 ldm (LogicalDM
 emptyRow *94 (LEmptyRow
@@ -7703,6 +7705,14 @@ tm "GenericPragmaColHdrMgr"
 *155 (EolColHdr
 tm "GenericEolColHdrMgr"
 )
+*156 (LogGeneric
+generic (GiElement
+name "I2C_Addr"
+type "std_logic_vector(6 DOWNTO 0)"
+value "\"1000000\""
+)
+uid 1015,0
+)
 ]
 )
 pdm (PhysicalDM
@@ -7710,7 +7720,7 @@ displayShortBounds 1
 editShortBounds 1
 uid 850,0
 optionalChildren [
-*156 (Sheet
+*157 (Sheet
 sheetRow (SheetRow
 headerVa (MVa
 cellColor "49152,49152,49152"
@@ -7727,31 +7737,37 @@ cellColor "39936,56832,65280"
 fontColor "0,0,0"
 font "Tahoma,10,0"
 )
-emptyMRCItem *157 (MRCItem
+emptyMRCItem *158 (MRCItem
 litem &144
-pos 0
+pos 1
 dimension 20
 )
 uid 852,0
 optionalChildren [
-*158 (MRCItem
+*159 (MRCItem
 litem &145
 pos 0
 dimension 20
 uid 853,0
 )
-*159 (MRCItem
+*160 (MRCItem
 litem &146
 pos 1
 dimension 23
 uid 854,0
 )
-*160 (MRCItem
+*161 (MRCItem
 litem &147
 pos 2
 hidden 1
 dimension 20
 uid 855,0
+)
+*162 (MRCItem
+litem &156
+pos 0
+dimension 20
+uid 1016,0
 )
 ]
 )
@@ -7764,43 +7780,43 @@ textAngle 90
 )
 uid 856,0
 optionalChildren [
-*161 (MRCItem
+*163 (MRCItem
 litem &148
 pos 0
 dimension 20
 uid 857,0
 )
-*162 (MRCItem
+*164 (MRCItem
 litem &150
 pos 1
 dimension 50
 uid 858,0
 )
-*163 (MRCItem
+*165 (MRCItem
 litem &151
 pos 2
 dimension 100
 uid 859,0
 )
-*164 (MRCItem
+*166 (MRCItem
 litem &152
 pos 3
-dimension 100
+dimension 185
 uid 860,0
 )
-*165 (MRCItem
+*167 (MRCItem
 litem &153
 pos 4
 dimension 50
 uid 861,0
 )
-*166 (MRCItem
+*168 (MRCItem
 litem &154
 pos 5
 dimension 50
 uid 862,0
 )
-*167 (MRCItem
+*169 (MRCItem
 litem &155
 pos 6
 dimension 80

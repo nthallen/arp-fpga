@@ -22,7 +22,7 @@ ENTITY ptrh_dprams IS
       WrEn    : IN     std_ulogic_vector(12 DOWNTO 0);
       hold_D1 : IN     std_ulogic;
       hold_D2 : IN     std_ulogic;
-      wData   : IN     std_logic_vector(15 DOWNTO 0);
+      wData   : IN     std_logic_vector(23 DOWNTO 0);
       Full    : OUT    std_ulogic_vector(12 DOWNTO 0);
       iData   : OUT    std_logic_vector(15 DOWNTO 0)
    );
@@ -53,18 +53,35 @@ BEGIN
   hold(8 DOWNTO 0) <= (others => '0');
   
   rams : for i in 0 to 12 generate
-   ram : ptrh_dpram
-      PORT MAP (
-         RegEn => RegEn(i),
-         F8M   => F8M,
-         RdEn  => RdEn,
-         hold  => hold(i),
-         iData => iData,
-         wData => wData,
-         WrEn  => WrEn(i),
-         F25M  => F25M,
-         Full  => Full(i)
-      );
+    reg24 : if i = 10 OR i = 12 generate
+      hi: ptrh_dpram
+        PORT MAP (
+           RegEn => RegEn(i),
+           F8M   => F8M,
+           RdEn  => RdEn,
+           hold  => hold(i),
+           iData => iData,
+           wData(7 DOWNTO 0) => wData(23 DOWNTO 16),
+           wData(15 DOWNTO 8) => X"00",
+           WrEn  => WrEn(i),
+           F25M  => F25M,
+           Full  => Full(i)
+        );
+    end generate;
+    reg16 : if i /= 10 AND i /= 12 generate
+      lo: ptrh_dpram
+        PORT MAP (
+           RegEn => RegEn(i),
+           F8M   => F8M,
+           RdEn  => RdEn,
+           hold  => hold(i),
+           iData => iData,
+           wData => wData(15 DOWNTO 0),
+           WrEn  => WrEn(i),
+           F25M  => F25M,
+           Full  => Full(i)
+        );
+    end generate;
   end generate;
 END ARCHITECTURE beh;
 

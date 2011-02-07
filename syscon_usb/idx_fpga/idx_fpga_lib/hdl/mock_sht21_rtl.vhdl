@@ -31,6 +31,9 @@ ARCHITECTURE rtl OF mock_sht21 IS
    SIGNAL SDA : std_logic;
 
    COMPONENT mock_sht21_sm
+      GENERIC (
+        I2C_Addr : std_logic_vector(6 DOWNTO 0) := "1000000"
+      );
       PORT (
          CLK : IN     std_logic;
          SCL : IN     std_logic;
@@ -43,6 +46,7 @@ BEGIN
 
 
   SM : mock_sht21_sm
+    GENERIC MAP ( I2C_Addr => "1000000" )
     PORT MAP (
        CLK => CLK,
        SCL => SCL,
