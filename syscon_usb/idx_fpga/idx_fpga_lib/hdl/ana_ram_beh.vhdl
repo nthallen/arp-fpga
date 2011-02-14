@@ -64,8 +64,8 @@ END ENTITY ana_ram;
 ARCHITECTURE beh OF ana_ram IS
   SIGNAL WE : std_logic_vector(3 DOWNTO 0);
   SIGNAL RD_DATA_int : std_logic_vector(31 DOWNTO 0);
-  SIGNAL RAM_RD_ADDR : std_logic_vector(7 DOWNTO 0);
-  SIGNAL RAM_WR_ADDR : std_logic_vector(7 DOWNTO 0);
+  SIGNAL RAM_RD_ADDR : std_logic_vector(8 DOWNTO 0);
+  SIGNAL RAM_WR_ADDR : std_logic_vector(8 DOWNTO 0);
 
   COMPONENT BRAM_SDP_MACRO is
   generic (
@@ -247,7 +247,7 @@ ARCHITECTURE beh OF ana_ram IS
 BEGIN
   bram_sdp_macro_inst : bram_sdp_macro
   generic map (
-     BRAM_SIZE => "9Kb", -- Target BRAM, "18Kb" or "36Kb"
+     BRAM_SIZE => "18Kb", -- Target BRAM, "18Kb" or "36Kb"
      DEVICE => "SPARTAN6", -- Target device: "VIRTEX5", "VIRTEX6", "SPARTAN6"
      WRITE_WIDTH => 32,    -- Valid values are 1-72 (37-72 only valid when BRAM_SIZE="36Kb")
      READ_WIDTH => 32,     -- Valid values are 1-72 (37-72 only valid when BRAM_SIZE="36Kb")
@@ -424,8 +424,8 @@ BEGIN
      WREN => WREN           -- Input write port enable
   );
   
-  RAM_RD_ADDR <= RD_ADDR;
-  RAM_WR_ADDR <= WR_ADDR;
+  RAM_RD_ADDR <= '0' & RD_ADDR;
+  RAM_WR_ADDR <= '0' & WR_ADDR;
   RD_DATA <= RD_DATA_int;
   WE <= (others => WREN);
 End Architecture beh;
