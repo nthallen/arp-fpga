@@ -170,8 +170,8 @@ BEGIN
       -- pragma synthesis_off
       wait until RdEn = '1' AND WrEn = '1';
       wait until CLK'Event AND CLK = '1';
-      assert RD_Addr = AcqData(15 DOWNTO 8)
-        report "Invalid AcqData"
+      assert WR_Addr = AcqData(15 DOWNTO 8)
+        report "Invalid addr bits in AcqData"
         severity error;
       assert AcqData(31 DOWNTO 25) = "0000000" OR AcqData(31 DOWNTO 25) = "0000000"
         report "Nonzero CfgData in readback"

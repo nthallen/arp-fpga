@@ -47,7 +47,7 @@ BEGIN
           SReg <= X"FFFF";
           ConvCnt <= ConvCnt + 1;
         else
-          SReg <= '0' & CurRow & Bank & To_StdULogicVector(conv_std_logic_vector(Col,3))
+          SReg <= '0' & CurRow & Bank & To_StdULogicVector(not conv_std_logic_vector(Col,3))
             & To_StdULogicVector(conv_std_logic_vector(ConvCnt,8));
           Col <= Col+1;
         end if;
