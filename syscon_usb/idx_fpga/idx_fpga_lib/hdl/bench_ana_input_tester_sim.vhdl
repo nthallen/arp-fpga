@@ -155,6 +155,7 @@ BEGIN
 
   test_proc : Process
     Variable CvtdRow : unsigned(4 DOWNTO 0);
+    Variable AddrV : unsigned(15 DOWNTO 0);
     
     procedure sbrd( addr_in : std_logic_vector (15 DOWNTO 0) ) is
     begin
@@ -254,64 +255,90 @@ BEGIN
     wait until F8M_int'Event AND F8M_int = '1';
     RST_int <= '0';
     wait for 100 us; -- wait for initial conversions
-    sbwr( X"0C20", X"001C" );
-    sbwr( X"0C34", X"0010" );
-    sbwr( X"0C46", X"0114" );
-    sbwr( X"0D00", X"0000" );
-    sbwr( X"0D02", X"0001" );
-    sbwr( X"0D04", X"0002" );
-    sbwr( X"0D06", X"0003" );
-    sbwr( X"0D08", X"0004" );
-    sbwr( X"0D0A", X"0005" );
-    sbwr( X"0D0C", X"0006" );
-    sbwr( X"0D0E", X"0007" );
-    sbwr( X"0C00", X"0011" );
-    sbwr( X"0C02", X"0012" );
-    sbwr( X"0C04", X"0013" );
-    sbwr( X"0C06", X"0014" );
-    sbwr( X"0C08", X"0015" );
-    sbwr( X"0C0A", X"0016" );
-    sbwr( X"0C0C", X"0017" );
-    sbwr( X"0C0E", X"0018" );
-    sbwr( X"0C10", X"0021" );
-    sbwr( X"0C12", X"0022" );
-    sbwr( X"0C14", X"0023" );
-    sbwr( X"0C16", X"0024" );
-    sbwr( X"0C18", X"0025" );
-    sbwr( X"0C1A", X"0026" );
-    sbwr( X"0C1C", X"0027" );
-    sbwr( X"0C1E", X"0028" );
-    wait for 220 us;
-    for i in 1 to 10 loop
-      check_chan( X"0C20", X"001C", X"0C20" );
-      check_chan( X"0C34", X"0010", X"0C34" );
-      check_chan( X"0C00", X"0011", X"0C00" );
-      check_chan( X"0C02", X"0012", X"0C02" );
-      check_chan( X"0C04", X"0013", X"0C04" );
-      check_chan( X"0C06", X"0014", X"0C06" );
-      check_chan( X"0C08", X"0015", X"0C08" );
-      check_chan( X"0C0A", X"0016", X"0C0A" );
-      check_chan( X"0C0C", X"0017", X"0C0C" );
-      check_chan( X"0C0E", X"0018", X"0C0E" );
-      check_chan( X"0C10", X"0021", X"0C10" );
-      check_chan( X"0C12", X"0022", X"0C12" );
-      check_chan( X"0C14", X"0023", X"0C14" );
-      check_chan( X"0C16", X"0024", X"0C16" );
-      check_chan( X"0C18", X"0025", X"0C18" );
-      check_chan( X"0C1A", X"0026", X"0C1A" );
-      check_chan( X"0C1C", X"0027", X"0C1C" );
-      check_chan( X"0C1E", X"0028", X"0C1E" );
-      wait for 100 us;
+    for row in 0 to 7 loop
+      for col in 0 to 7 loop
+        AddrV := conv_unsigned(16#C00# + row*32 + col*2,16);
+        sbwr( std_logic_vector(AddrV), X"0014" );
+        AddrV := conv_unsigned(16#C10# + row*32 + col*2,16);
+        sbwr( std_logic_vector(AddrV), X"0014" );
+      end loop;
     end loop;
-    check_chan( X"0C46", X"0100", X"0C46" ); -- low bits probably wrong
-    check_chan( X"0D00", X"0100", X"0C46" );
-    check_chan( X"0D02", X"0101", X"0C46" );
-    check_chan( X"0D04", X"0102", X"0C46" );
-    check_chan( X"0D06", X"0103", X"0C46" );
-    check_chan( X"0D08", X"0104", X"0C46" );
-    check_chan( X"0D0A", X"0105", X"0C46" );
-    check_chan( X"0D0C", X"0106", X"0C46" );
-    check_chan( X"0D0E", X"0107", X"0C46" );
+    sbwr( X"0C20", X"0000" );
+    sbwr( X"0C60", X"0000" );
+    sbwr( X"0CA0", X"0000" );
+    sbwr( X"0CE0", X"0000" );
+    sbwr( X"0C0E", X"0008" );
+    sbwr( X"0C4E", X"0008" );
+    sbwr( X"0C8E", X"0008" );
+    sbwr( X"0CCE", X"0008" );
+    wait for 220 us;
+    for row in 0 to 7 loop
+      for col in 0 to 7 loop
+        AddrV := conv_unsigned(16#C00# + row*32 + col*2,16);
+        check_chan( std_logic_vector(AddrV), X"0014", std_logic_vector(AddrV) );
+        AddrV := conv_unsigned(16#C10# + row*32 + col*2,16);
+        check_chan( std_logic_vector(AddrV), X"0014", std_logic_vector(AddrV) );
+      end loop;
+    end loop;
+        
+--    sbwr( X"0C20", X"001C" );
+--    sbwr( X"0C34", X"0010" );
+--    sbwr( X"0C46", X"0114" );
+--    sbwr( X"0D00", X"0000" );
+--    sbwr( X"0D02", X"0001" );
+--    sbwr( X"0D04", X"0002" );
+--    sbwr( X"0D06", X"0003" );
+--    sbwr( X"0D08", X"0004" );
+--    sbwr( X"0D0A", X"0005" );
+--    sbwr( X"0D0C", X"0006" );
+--    sbwr( X"0D0E", X"0007" );
+--    sbwr( X"0C00", X"0011" );
+--    sbwr( X"0C02", X"0012" );
+--    sbwr( X"0C04", X"0013" );
+--    sbwr( X"0C06", X"0014" );
+--    sbwr( X"0C08", X"0015" );
+--    sbwr( X"0C0A", X"0016" );
+--    sbwr( X"0C0C", X"0017" );
+--    sbwr( X"0C0E", X"0018" );
+--    sbwr( X"0C10", X"0021" );
+--    sbwr( X"0C12", X"0022" );
+--    sbwr( X"0C14", X"0023" );
+--    sbwr( X"0C16", X"0024" );
+--    sbwr( X"0C18", X"0025" );
+--    sbwr( X"0C1A", X"0026" );
+--    sbwr( X"0C1C", X"0027" );
+--    sbwr( X"0C1E", X"0028" );
+--    wait for 220 us;
+--    for i in 1 to 10 loop
+--      check_chan( X"0C20", X"001C", X"0C20" );
+--      check_chan( X"0C34", X"0010", X"0C34" );
+--      check_chan( X"0C00", X"0011", X"0C00" );
+--      check_chan( X"0C02", X"0012", X"0C02" );
+--      check_chan( X"0C04", X"0013", X"0C04" );
+--      check_chan( X"0C06", X"0014", X"0C06" );
+--      check_chan( X"0C08", X"0015", X"0C08" );
+--      check_chan( X"0C0A", X"0016", X"0C0A" );
+--      check_chan( X"0C0C", X"0017", X"0C0C" );
+--      check_chan( X"0C0E", X"0018", X"0C0E" );
+--      check_chan( X"0C10", X"0021", X"0C10" );
+--      check_chan( X"0C12", X"0022", X"0C12" );
+--      check_chan( X"0C14", X"0023", X"0C14" );
+--      check_chan( X"0C16", X"0024", X"0C16" );
+--      check_chan( X"0C18", X"0025", X"0C18" );
+--      check_chan( X"0C1A", X"0026", X"0C1A" );
+--      check_chan( X"0C1C", X"0027", X"0C1C" );
+--      check_chan( X"0C1E", X"0028", X"0C1E" );
+--      wait for 100 us;
+--    end loop;
+--    check_chan( X"0C46", X"0100", X"0C46" ); -- low bits probably wrong
+--    check_chan( X"0D00", X"0100", X"0C46" );
+--    check_chan( X"0D02", X"0101", X"0C46" );
+--    check_chan( X"0D04", X"0102", X"0C46" );
+--    check_chan( X"0D06", X"0103", X"0C46" );
+--    check_chan( X"0D08", X"0104", X"0C46" );
+--    check_chan( X"0D0A", X"0105", X"0C46" );
+--    check_chan( X"0D0C", X"0106", X"0C46" );
+--    check_chan( X"0D0E", X"0107", X"0C46" );
     Done <= '1';
     wait;
     -- pragma synthesis_on
