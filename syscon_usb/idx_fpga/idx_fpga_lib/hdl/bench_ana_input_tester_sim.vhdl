@@ -128,6 +128,7 @@ BEGIN
     -- pragma synthesis_on
   End Process;
 
+  -- clock30 is actually 25MHz due to XPS limitations
   clock30 : Process
   Begin
     F30M <= '0';
@@ -135,9 +136,9 @@ BEGIN
     wait for 40 ns;
     while Done = '0' loop
       F30M <= '0';
-      wait for 16 ns;
+      wait for 20 ns;
       F30M <= '1';
-      wait for 17 ns;
+      wait for 20 ns;
     end loop;
     wait;
     -- pragma synthesis_on
