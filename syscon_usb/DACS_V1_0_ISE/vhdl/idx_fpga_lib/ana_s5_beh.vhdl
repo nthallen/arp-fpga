@@ -81,6 +81,7 @@ BEGIN
           RDI(0) <= DI;
           if N_CFG = "00" then
             N_CFG <= "01";
+            SRDI <= DI;
           elsif N_CFG = "01" then
             N_CFG <= "10";
           else
@@ -89,10 +90,9 @@ BEGIN
         elsif Start = '1' AND Started = '0' then
           if N_CFG = "10" then
             N_CFG <= "01";
-            SRDI <= RDI(1);
+            SRDI <= RDI(0);
           else
             N_CFG <= "00";
-            SRDI <= RDI(0);
           end if;
         end if;
         Started <= Start;
