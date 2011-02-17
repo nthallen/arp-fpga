@@ -401,7 +401,7 @@ begin
 
   Inst_ao : ao
      PORT MAP (
-        Addr      => subbus_addr,
+        Addr      => ExpAddr,
         ExpRd     => ExpRd,
         ExpWr     => ExpWr,
         F66M      => clk_66_6667MHz,

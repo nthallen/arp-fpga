@@ -197,7 +197,7 @@ ARCHITECTURE beh OF DACSbd IS
        ana_in_SCK16                   : OUT    std_ulogic_vector(1 DOWNTO 0);
        ana_in_SCK5                    : OUT    std_ulogic_vector(1 DOWNTO 0);
        ana_in_SDO                     : OUT    std_ulogic_vector(1 DOWNTO 0);
-       ana_in_AIEn                    : IN std_ulogic;
+       ana_in_AIEn                    : IN     std_ulogic;
 
        ctr_PMT                        : IN std_logic_vector(4*CTR_UG_N_BDS-1 DOWNTO 0);
        
@@ -284,6 +284,7 @@ BEGIN
        ana_in_SCK16                   => AI_AD_SCK,
        ana_in_SCK5                    => AI_AFE_SCK,
        ana_in_SDO                     => AI_AFE_MOSI,
+       ana_in_AIEn                    => not cmd_out(31),
        ctr_PMT(0)                     => COUNT(1),
        ctr_PMT(1)                     => COUNT(3),
        ctr_PMT(4 DOWNTO 2)            => COUNT(7 DOWNTO 5),
@@ -314,7 +315,6 @@ BEGIN
   AI_AFE_CS_B(1) <= ana_in_CS5;
   AI_MUX0_A <= ana_in_Row(2 DOWNTO 0);
   AI_MUX1_A <= ana_in_Row(2 DOWNTO 0);
-  ana_in_AIEn <= not cmd_out(31);
 
   DIO(3 DOWNTO 0) <= cmd_out(27 DOWNTO 24);
   DIO(4) <=	idx_Step(0);
