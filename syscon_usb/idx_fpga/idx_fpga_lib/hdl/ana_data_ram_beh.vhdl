@@ -23,6 +23,7 @@ ENTITY ana_data_ram IS
     RD_CLK  : IN std_ulogic;
     WR_CLK  : IN std_ulogic;
     RAM_BUSY : IN std_ulogic;
+    RAM_Ack : OUT std_ulogic;
     RST     : IN std_ulogic
     );
 END ENTITY ana_data_ram;
@@ -88,13 +89,13 @@ ARCHITECTURE beh OF ana_data_ram IS
          RD_CLK      : IN     std_ulogic;
          RST         : IN     std_ulogic;
          RAM_RD_EN   : OUT    std_ulogic;
+         RAM_Ack     : OUT    std_ulogic;
          RD_DATA     : OUT    std_logic_vector(15 DOWNTO 0)
       );
    END COMPONENT;
    FOR ALL : ana_ram USE ENTITY idx_fpga_lib.ana_ram;
    FOR ALL : ana_data_rd USE ENTITY idx_fpga_lib.ana_data_rd;
 BEGIN
-   --  hds hds_inst
    ana_ram_i : ana_ram
       PORT MAP (
          RD_ADDR => RD_ADDR(8 DOWNTO 1),
@@ -117,6 +118,7 @@ BEGIN
          RD_CLK      => RD_CLK,
          RST         => RST,
          RAM_RD_EN   => RAM_RD_EN,
+         RAM_Ack     => RAM_Ack,
          RD_DATA     => RD_DATA_int
       );
   

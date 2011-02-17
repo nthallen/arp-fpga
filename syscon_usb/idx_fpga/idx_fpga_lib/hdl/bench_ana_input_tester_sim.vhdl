@@ -30,7 +30,8 @@ ENTITY bench_ana_input_tester IS
       F30M   : OUT    std_ulogic;
       RST    : OUT    std_ulogic;
       SDI    : OUT    std_ulogic_vector (1 DOWNTO 0);
-      Data   : INOUT  std_logic_vector (15 DOWNTO 0)
+      Data   : INOUT  std_logic_vector (15 DOWNTO 0);
+      AIEn   : OUT    std_ulogic
    );
 
 -- Declarations
@@ -162,9 +163,11 @@ BEGIN
     begin
       Addr <= addr_in;
       -- pragma synthesis_off
-      wait for 125 ns;
+      wait until F8M_int'Event AND F8M_int = '1';
       ExpRd <= '1';
-      wait for 1 us;
+      for i in 1 to 8 loop
+        wait until F8M_int'Event AND F8M_int = '1';
+      end loop;
       assert ExpAck = '1' report "No Acknowledge on read" severity error;
       Read_Result <= Data;
       ExpRd <= '0';
@@ -179,9 +182,11 @@ BEGIN
       Addr <= Addr_In;
       Data <= Data_in;
       -- pragma synthesis_off
-      wait for 40 ns;
+      wait until F8M_int'Event AND F8M_int = '1';
       ExpWr <= '1';
-      wait for 1 us;
+      for i in 1 to 8 loop
+        wait until F8M_int'Event AND F8M_int = '1';
+      end loop;
       assert ExpAck = '1' report "No acknowledge on write" severity error;
       ExpWr <= '0';
       wait for 250 ns;
@@ -252,6 +257,7 @@ BEGIN
     ExpWr <= '0';
     Data <= (others => 'Z');
     RST_int <= '1';
+    AIEn <= '1';
     -- pragma synthesis_off
     wait until F8M_int'Event AND F8M_int = '1';
     RST_int <= '0';
@@ -340,6 +346,10 @@ BEGIN
 --    check_chan( X"0D0A", X"0105", X"0C46" );
 --    check_chan( X"0D0C", X"0106", X"0C46" );
 --    check_chan( X"0D0E", X"0107", X"0C46" );
+    AIEn <= '0';
+    wait for 220 us;
+    AIEn <= '1';
+    wait for 220 us;
     Done <= '1';
     wait;
     -- pragma synthesis_on
