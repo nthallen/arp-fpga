@@ -15,17 +15,16 @@ LIBRARY idx_fpga_lib;
 
 ENTITY ana_cfg_ram IS
   PORT (
-    RD_ADDR : IN std_logic_vector(7 DOWNTO 0);
-    WR_ADDR : IN std_logic_vector(7 DOWNTO 0);
-    RD_DATA : OUT std_logic_vector(8 DOWNTO 0);
-    WR_DATA : IN  std_logic_vector(15 DOWNTO 0);
-    WE0 : IN std_ulogic;
-    WE1 : IN std_ulogic;
-    RDEN : IN std_ulogic;
-    RD_CLK : IN std_ulogic;
-    WR_CLK : IN std_ulogic;
-    RAM_BUSY : IN std_ulogic;
-    RST  : IN std_ulogic
+    RD_ADDR  : IN std_logic_vector(7 DOWNTO 0);
+    WR_ADDR  : IN std_logic_vector(7 DOWNTO 0);
+    RD_DATA  : OUT std_logic_vector(8 DOWNTO 0);
+    WR_DATA  : IN  std_logic_vector(15 DOWNTO 0);
+    WE       : IN std_ulogic;
+    RDEN     : IN std_ulogic;
+    RD_CLK   : IN std_ulogic;
+    WR_CLK   : IN std_ulogic;
+    RAM_BUSY : OUT std_ulogic;
+    RST      : IN std_ulogic
   );
 END ENTITY ana_cfg_ram;
 
@@ -34,7 +33,6 @@ ARCHITECTURE beh OF ana_cfg_ram IS
    SIGNAL RD_DATA_int : std_logic_vector(31 DOWNTO 0);
    SIGNAL WR_DATA_int : std_logic_vector(31 DOWNTO 0);
    SIGNAL WREN    : std_ulogic;
-   SIGNAL WrDelayed : std_ulogic;
    COMPONENT ana_ram
       PORT (
          RD_ADDR : IN     std_logic_vector(7 DOWNTO 0);
@@ -69,26 +67,25 @@ BEGIN
     if WR_CLK'Event AND WR_CLK = '1' then
       if RST = '1' then
         WREN <= '0';
-        WrDelayed <= '0';
-      elsif WE0 = '1' and WE1 = '1' then
+      elsif WE = '1' then
         WR_Data_int(15 DOWNTO 0) <= WR_DATA;
-        if RAM_BUSY = '0' then
-          WREN <= '1';
-          WrDelayed <= '0';
-        else
-          WREN <= '0';
-          WrDelayed <= '1';
-        end if;
-      elsif WrDelayed = '1' then
-        if RAM_BUSY = '0' then
-          WREN <= '1';
-          WrDelayed <= '0';
-        end if;
+        WREN <= '1';
       else
         WREN <= '0';
       end if;
     end if;
   End Process;
+  
+  Busy : Process (RD_CLK) IS
+  Begin
+    if RD_CLK'Event AND RD_CLK = '1' then
+      if WE = '1' OR WREN = '1' then
+        RAM_BUSY <= '1';
+      else
+        RAM_BUSY <= '0';
+      end if;
+    end if;
+  end Process;
 
   WR_DATA_int(31 DOWNTO 16) <= (others => '0');
   RD_DATA <= RD_DATA_int(8 DOWNTO 0);

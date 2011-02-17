@@ -287,6 +287,9 @@ BEGIN
         check_chan( std_logic_vector(AddrV), X"0014", std_logic_vector(AddrV) );
       end loop;
     end loop;
+    
+    sbwr( X"0C02", X"0100" );
+    sbwr( X"0C12", X"0120" );
         
 --    sbwr( X"0C20", X"001C" );
 --    sbwr( X"0C34", X"0010" );
@@ -346,10 +349,11 @@ BEGIN
 --    check_chan( X"0D0A", X"0105", X"0C46" );
 --    check_chan( X"0D0C", X"0106", X"0C46" );
 --    check_chan( X"0D0E", X"0107", X"0C46" );
-    AIEn <= '0';
-    wait for 220 us;
-    AIEn <= '1';
-    wait for 220 us;
+
+--    AIEn <= '0';
+--    wait for 220 us;
+--    AIEn <= '1';
+--    wait for 220 us;
     Done <= '1';
     wait;
     -- pragma synthesis_on

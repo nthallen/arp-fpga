@@ -46,6 +46,7 @@ ARCHITECTURE rtl OF bench_ana_acquire IS
    SIGNAL Start     :     std_ulogic;
    SIGNAL WR_Addr   :     std_logic_vector (7 DOWNTO 0);
    SIGNAL WrEn      :     std_ulogic;
+   SIGNAL AIEn      :     std_ulogic;
    SIGNAL Done      :     std_ulogic;
 
 
@@ -58,11 +59,12 @@ ARCHITECTURE rtl OF bench_ana_acquire IS
         RST       : IN     std_ulogic;
         RdyIn     : IN     std_ulogic;
         SDI       : IN     std_ulogic_vector (1 DOWNTO 0);
+        AIEn      : IN     std_ulogic;
         CS5       : OUT    std_ulogic;
         Col_Addr  : OUT    std_logic_vector (3 DOWNTO 0);
         Conv      : OUT    std_ulogic;
         NxtRow    : OUT    std_ulogic_vector (5 DOWNTO 0);
-        RAM_BUSY  : OUT    std_ulogic;
+        RAM_BUSY  : IN     std_ulogic;
         RD_Addr   : OUT    std_logic_vector (7 DOWNTO 0);
         RdEn      : OUT    std_ulogic;
         RdyOut    : OUT    std_ulogic;
@@ -88,6 +90,7 @@ BEGIN
       RST => RST,
       RdyIn => RdyIn,
       SDI => SDI,
+      AIEn => AIEn,
       CS5 => CS5,
       Col_Addr => Col_Addr,
       Conv => Conv,
@@ -109,9 +112,9 @@ BEGIN
     wait for 40 ns;
     while Done = '0' loop
       CLK <= '0';
-      wait for 16 ns;
+      wait for 20 ns;
       CLK <= '1';
-      wait for 17 ns;
+      wait for 20 ns;
     end loop;
     wait;
     -- pragma synthesis_on
@@ -140,8 +143,10 @@ BEGIN
       if RST = '1' then
         NewMuxCfg <= "0000";
       else
-        if RdEn = '1' AND RD_Addr = "00100100" then -- r 2 b 0 c 4
+        if RdEn = '1' AND RD_Addr = "00110110" then -- r 3 b 0 c 6
           NewMuxCfg <= "1010";
+        elsif RdEn = '1' AND Rd_Addr = "00101010" then
+          NewMuxCfg <= "1100";
         else
           NewMuxCfg <= "0000";
         end if;
@@ -153,25 +158,70 @@ BEGIN
   Begin
     if WR_Addr = "00110110" then -- r 3 b 0 c 6
       CurMuxCfg <= "1010";
+    elsif Wr_Addr = "00101010" then
+      CurMuxCfg <= "1100";
     else
       CurMuxCfg <= "0000";
     end if;
   end Process;
   
+  SDI_p : Process
+  Begin
+    SDI <= "00";
+    wait until Conv'Event AND Conv = '1';
+    SDI <= "11";
+    while Done = '0' loop
+      wait until Conv'Event AND Conv = '0';
+      wait for 100 ns;
+      SDI <= "00";
+      wait until Conv'Event AND Conv = '1';
+      wait for 100 ns;
+      SDI <= "11";
+    end loop;
+    wait;
+  end Process;
+  
   test_proc : Process
     Begin
-      SDI <= "00";
       Done <= '0';
+      AIEn <= '1';
+      RAM_BUSY <= '0';
       RST <= '1';
       -- pragma synthesis_off
       wait for 200 ns;
       RST <= '0';
-      for i in 1 to 10 loop
-        SDI <= "00";
-        wait for 100 ns;
-        SDI <= "11";
-        wait until Conv <= '0';
-      end loop;
+
+      wait until Conv'Event AND Conv = '1';
+      wait until Start'Event AND Start = '1';
+      wait until Start'Event AND Start = '1';
+      RAM_BUSY <= '1';
+      wait for 281 ns; -- Test wait at acq_2
+      RAM_BUSY <= '0';
+      
+      wait until Conv'Event AND Conv = '1';
+      wait until WrEn'Event AND WrEn = '1';
+      RAM_BUSY <= '1';
+      wait for 280 ns; -- Test wait at acq_7 or acq_9
+      RAM_BUSY <= '0';
+
+      wait until Conv'Event AND Conv = '1';
+      wait until WrEn'Event AND WrEn = '1';
+      wait until WrEn'Event AND WrEn = '1';
+      RAM_BUSY <= '1';
+      wait for 281 ns; -- Test wait at acq_11 or acq_12
+      RAM_BUSY <= '0';
+
+      wait until WrEn'Event AND WrEn = '1' AND CurMuxCfg(3) = '1' AND RD_Addr(3) = '0';
+      RAM_BUSY <= '1';
+      wait for 281 ns; -- Test wait at acq_busy1
+      RAM_BUSY <= '0';
+
+      wait until WrEn'Event AND WrEn = '1' AND CurMuxCfg(3) = '1' AND RD_Addr(3) = '1';
+      RAM_BUSY <= '1';
+      wait for 281 ns; -- Test wait at acq_busy2
+      RAM_BUSY <= '0';
+
+      wait until Conv'Event AND Conv = '1';
       Done <= '1';
       wait;
       -- pragma synthesis_on
