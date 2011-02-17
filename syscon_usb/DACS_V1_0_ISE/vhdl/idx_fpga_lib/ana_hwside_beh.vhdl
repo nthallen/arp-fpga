@@ -19,7 +19,8 @@ ENTITY ana_hwside IS
   );
   PORT (
     CLK    : IN std_logic;
-    RST    : IN std_logic;
+    RST    : IN std_ulogic;
+    AIEn   : IN std_ulogic;
     Row    : OUT std_ulogic_vector(5 DOWNTO 0);
     CfgData : IN std_logic_vector(8 DOWNTO 0);
     AcqData : OUT std_logic_vector(31 DOWNTO 0);
@@ -78,7 +79,8 @@ ARCHITECTURE beh OF ana_hwside IS
          RAM_Busy : OUT  std_ulogic;
          RdyOut : OUT    std_ulogic;
          S5WE   : OUT    std_ulogic_vector(1 DOWNTO 0);
-         Start  : OUT    std_ulogic
+         Start  : OUT    std_ulogic;
+         AIEn   : IN     std_ulogic
       );
    END COMPONENT;
 
@@ -189,7 +191,8 @@ BEGIN
          RAM_Busy => RAM_Busy,
          RdyOut => RdyOut,
          S5WE   => S5WE,
-         Start  => Start
+         Start  => Start,
+         AIEn   => AIEn
       );
 
   Ready : Process (Rdy) Is

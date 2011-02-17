@@ -75,6 +75,7 @@ entity dacs is
       ana_in_SCK16 : OUT std_ulogic_vector(1 DOWNTO 0);
       ana_in_SCK5 : OUT std_ulogic_vector(1 DOWNTO 0);
       ana_in_SDO  : OUT std_ulogic_vector(1 DOWNTO 0);
+      ana_in_AIEn : IN std_ulogic;
       
       ctr_PMT     : IN std_logic_vector(4*CTR_UG_N_BDS-1 DOWNTO 0);
       
@@ -190,24 +191,25 @@ architecture Behavioral of dacs is
   FOR ALL : DigIO USE ENTITY idx_fpga_lib.DigIO;
   
   COMPONENT ana_input
-     PORT (
-        Addr   : IN     std_logic_vector(15 DOWNTO 0);
-        ExpRd  : IN     std_ulogic;
-        ExpWr  : IN     std_ulogic;
-        F8M    : IN     std_ulogic;
-        F30M   : IN     std_ulogic;
-        RST    : IN     std_ulogic;
-        SDI    : IN     std_ulogic_vector(1 DOWNTO 0);
-        CS5    : OUT    std_ulogic;
-        Conv   : OUT    std_ulogic;
-        ExpAck : OUT    std_ulogic;
-        RdyOut : OUT    std_ulogic;
-        Row    : OUT    std_ulogic_vector(5 DOWNTO 0);
-        SCK16  : OUT    std_ulogic_vector(1 DOWNTO 0);
-        SCK5   : OUT    std_ulogic_vector(1 DOWNTO 0);
-        SDO    : OUT    std_ulogic_vector(1 DOWNTO 0);
-        Data   : INOUT  std_logic_vector(15 DOWNTO 0)
-     );
+    PORT (
+      AIEn   : IN     std_ulogic;
+      Addr   : IN     std_logic_vector(15 DOWNTO 0);
+      ExpRd  : IN     std_ulogic;
+      ExpWr  : IN     std_ulogic;
+      F30M   : IN     std_ulogic;
+      F8M    : IN     std_ulogic;
+      SDI    : IN     std_ulogic_vector(1 DOWNTO 0);
+      RST    : IN     std_ulogic;
+      CS5    : OUT    std_ulogic;
+      Conv   : OUT    std_ulogic;
+      ExpAck : OUT    std_ulogic;
+      RdyOut : OUT    std_ulogic;
+      Row    : OUT    std_ulogic_vector(5 DOWNTO 0);
+      SCK16  : OUT    std_ulogic_vector(1 DOWNTO 0);
+      SCK5   : OUT    std_ulogic_vector(1 DOWNTO 0);
+      SDO    : OUT    std_ulogic_vector(1 DOWNTO 0);
+      Data   : INOUT  std_logic_vector(15 DOWNTO 0)
+   );
   END COMPONENT;
   FOR ALL : ana_input USE ENTITY idx_fpga_lib.ana_input;
 
@@ -378,6 +380,7 @@ begin
 
  Inst_ana_in : ana_input
     PORT MAP (
+       AIEn   => ana_in_AIEn,
        Addr   => ExpAddr,
        ExpRd  => ExpRd,
        ExpWr  => ExpWr,
