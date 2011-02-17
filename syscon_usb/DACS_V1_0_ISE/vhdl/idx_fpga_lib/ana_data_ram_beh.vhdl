@@ -22,8 +22,7 @@ ENTITY ana_data_ram IS
     WR_ADDR : IN std_logic_vector(7 DOWNTO 0);
     RD_CLK  : IN std_ulogic;
     WR_CLK  : IN std_ulogic;
-    RAM_BUSY : IN std_ulogic;
-    RAM_Ack : OUT std_ulogic;
+    RAM_BUSY : OUT std_ulogic;
     RST     : IN std_ulogic
     );
 END ENTITY ana_data_ram;
@@ -82,14 +81,13 @@ ARCHITECTURE beh OF ana_data_ram IS
 
    COMPONENT ana_data_rd
       PORT (
-         RAM_BUSY    : IN     std_ulogic;
          RAM_RD_DATA : IN     std_logic_vector(31 DOWNTO 0);
          RDEN        : IN     std_ulogic;
          RD_ADDR     : IN     std_logic_vector(8 DOWNTO 0);
          RD_CLK      : IN     std_ulogic;
          RST         : IN     std_ulogic;
          RAM_RD_EN   : OUT    std_ulogic;
-         RAM_Ack     : OUT    std_ulogic;
+         RAM_BUSY    : OUT    std_ulogic;
          RD_DATA     : OUT    std_logic_vector(15 DOWNTO 0)
       );
    END COMPONENT;
@@ -111,14 +109,13 @@ BEGIN
    --  hds hds_inst
    rdctrl : ana_data_rd
       PORT MAP (
-         RAM_BUSY    => RAM_BUSY,
          RAM_RD_DATA => RAM_RD_DATA,
          RDEN        => RDEN,
          RD_ADDR     => RD_ADDR,
          RD_CLK      => RD_CLK,
          RST         => RST,
          RAM_RD_EN   => RAM_RD_EN,
-         RAM_Ack     => RAM_Ack,
+         RAM_BUSY    => RAM_BUSY,
          RD_DATA     => RD_DATA_int
       );
   

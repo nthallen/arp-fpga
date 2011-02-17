@@ -7,6 +7,10 @@
 --
 -- using Mentor Graphics HDL Designer(TM) 2009.2 (Build 10)
 --
+-- Both RdEn and WrEn are qualified with BdEn
+-- WrEn will be one clock pulse long
+-- RdEn will be longer
+--
 LIBRARY ieee;
 USE ieee.std_logic_1164.all;
 USE ieee.std_logic_arith.all;
@@ -29,8 +33,9 @@ ENTITY subbus_io IS
   -- iData is the internal data bus that goes to the circuit
   -- ExpRd,ExpWr,ExpAck all external.
   -- RdEn, WrEn are our qualified versions
-  -- RdEn is qualified with BdEn
-  -- WrEn is unqualified, for use with downstream enables
+  -- RdEn and WrEn are both qualified with BdEn
+  -- WrEn is one clock pulse long.
+  -- RdEn is longer
   -- BdEn is 1 when Addr selects an element
 
 END ENTITY subbus_io;

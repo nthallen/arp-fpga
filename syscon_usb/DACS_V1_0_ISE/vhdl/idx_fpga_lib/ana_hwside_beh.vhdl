@@ -26,7 +26,8 @@ ENTITY ana_hwside IS
     AcqData : OUT std_logic_vector(31 DOWNTO 0);
     RD_Addr : OUT std_logic_vector(7 DOWNTO 0);
     WR_Addr : OUT std_logic_vector(7 DOWNTO 0);
-    RAM_Busy : OUT std_ulogic;
+    RAM_BusyR : IN std_ulogic;
+    RAM_BusyW : IN std_ulogic;
     RdEn    : OUT std_ulogic;
     WrEn    : OUT std_ulogic;
     RdyOut  : OUT std_ulogic;
@@ -59,6 +60,7 @@ ARCHITECTURE beh OF ana_hwside IS
    SIGNAL RD_Addr_cache : std_logic_vector(3 DOWNTO 0);
    SIGNAL CfgData_int : std_logic_vector(8 DOWNTO 0);
    SIGNAL RdEn_int : std_ulogic;
+   SIGNAL RAM_Busy : std_ulogic;
 
    COMPONENT ana_acquire
       PORT (
@@ -76,7 +78,7 @@ ARCHITECTURE beh OF ana_hwside IS
          NxtRow : OUT    std_ulogic_vector(5 DOWNTO 0);
          RdEn   : OUT    std_ulogic;
          WrEn   : OUT    std_ulogic;
-         RAM_Busy : OUT  std_ulogic;
+         RAM_Busy : IN  std_ulogic;
          RdyOut : OUT    std_ulogic;
          S5WE   : OUT    std_ulogic_vector(1 DOWNTO 0);
          Start  : OUT    std_ulogic;
@@ -273,6 +275,15 @@ BEGIN
     end if;
     CfgData_int(4 DOWNTO 0) <= CfgData(4 DOWNTO 0);
   End Process;
+  
+  Busy : Process (RAM_BusyR, RAM_BusyW) Is
+  Begin
+    if RAM_BusyR = '1' or RAM_BusyW = '1' then
+      RAM_Busy <= '1';
+    else
+      RAM_Busy <= '0';
+    end if;
+  end Process;
   
   RdEn <= RdEn_int;
   RD_Addr <= RD_Addr_int;
