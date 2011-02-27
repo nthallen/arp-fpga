@@ -59,17 +59,58 @@ architecture Simulation of Processor is
 
 begin
   testproc: Process
+  
+  function char_string( Ain : in std_logic_vector(3 DOWNTO 0) )
+  return string is
+  begin
+    case Ain is
+      when X"0" => return "0";
+      when X"1" => return "1";
+      when X"2" => return "2";
+      when X"3" => return "3";
+      when X"4" => return "4";
+      when X"5" => return "5";
+      when X"6" => return "6";
+      when X"7" => return "7";
+      when X"8" => return "8";
+      when X"9" => return "9";
+      when X"A" => return "A";
+      when X"B" => return "B";
+      when X"C" => return "C";
+      when X"D" => return "D";
+      when X"E" => return "E";
+      when X"F" => return "F";
+      when others => return "X";
+    end case;
+  end char_string;
+  
+  function word_string( Ain : in std_logic_vector(15 DOWNTO 0) )
+  return string is
+  begin
+    return
+      char_string(Ain(15 downto 12)) &
+      char_string(Ain(11 downto 8)) &
+      char_string(Ain(7 downto 4)) &
+      char_string(Ain(3 downto 0));
+  end word_string;
+
   procedure sbwr( Addr_In : IN std_logic_vector (15 downto 0);
                   Data_In : IN std_logic_vector (15 downto 0) ) is
   begin
     -- pragma synthesis_off
     Addr <= Addr_In;
     Data_o <= Data_in;
+    assert Done = '0'
+      report "Done not clear before sbwr"
+      severity error;
     WrEn <= '1';
-    wait for 1 us;
-    assert Ack = '1' report "No acknowledge on write" severity error;
+    wait until Done = '1';
+    assert Ack = '1'
+      report "No acknowledge on writing to " & word_string(Addr_In)
+      severity error;
     WrEn <= '0';
-    wait for 250 ns;
+    wait until Done = '0';
+    -- wait for 250 ns;
     -- pragma synthesis_on
     return;
   end procedure sbwr;
@@ -79,12 +120,21 @@ begin
   begin
     -- pragma synthesis_off
     Addr <= addr_in;
+    assert Done = '0'
+      report "Done not clear before sbwr"
+      severity error;
     RdEn <= '1';
-    wait for 1 us;
-    assert Ack = '1' report "No Acknowledge on read" severity error;
-    assert Data_i = expected report "Input Value Incorrect" severity error;
+    wait until Done = '1';
+    assert Ack = '1'
+      report "No Acknowledge on reading from " & word_string(addr_in)
+      severity error;
+    assert Data_i = expected
+      report "Read(" & word_string(addr_in) & " Read: " &
+        word_string(Data_i) & " Expected: " & word_string(expected)
+      severity error;
     RdEn <= '0';
-    wait for 200 ns;
+    wait until Done = '0';
+    -- wait for 200 ns;
     -- pragma synthesis_on
     return;
   end procedure sbrd_check;
@@ -101,68 +151,67 @@ begin
     -- pragma synthesis_off
     wait for 300 ns;
     rst <= '1';
-    wait for 100 ns;
+    wait for 500 ns;
     rst <= '0';
-    wait for 100 ns;
-    RdEn <= '1';
-    wait for 200 ns;
-    wait until Done = '1';
-    wait for 1000 ns;
-    assert Ack = '0' report "Ack should not be asserted" severity error;
-    RdEn <= '0';
-    wait for 300 ns;
-    assert Done = '0' report "Done should not be asserted" severity error;
-    assert Ack = '0' report "Ack should not be asserted" severity error;
-    
-    Data_o <= X"5555";
-    Addr <= X"0A0C";
-    wait for 100 ns;
-    WrEn <= '1';
-    wait for 300 ns;
-    assert Done = '0' report "Done should not be asserted" severity error;
-    assert Ack = '0' report "Ack should not be asserted" severity error;
-    wait for 300 ns;
-    assert Ack = '1' report "Ack should be asserted" severity error;
-    wait for 600 ns;
-    wait for 100 ns;
-    assert Done = '1' report "Done should be asserted" severity error;
-    assert Ack = '1' report "Ack should be asserted" severity error;
-    WrEn <= '0';
-    wait until f8m'Event AND f8m = '1';
-    wait until f8m'Event AND f8m = '1';
-    wait for 50 ns;
-    assert Done = '0' report "Done should not be asserted" severity error;
-    assert Ack = '0' report "Ack should not be asserted" severity error;
-    
-    RdEn <= '1';
-    wait for 200 ns;
-    wait until Done = '1';
-    wait for 1000 ns;
-    assert Done = '1' report "Done should be asserted" severity error;
-    assert Ack = '1' report "Ack should be asserted" severity error;
-    assert Data_i = X"5555" report "Data_i should be 5555" severity error;
-    RdEn <= '0';
-    wait for 300 ns;
-    assert Done = '0' report "Done should not be asserted" severity error;
-    assert Ack = '0' report "Ack should not be asserted" severity error;
+    wait for 10 us;
     
     -- end of low level test. Now to test my cmd problem:
-    TickTock <= not TickTock;
-    arm <= '1';
-    CE <= '1';
-    sbwr(X"0810", X"0100");
-    CS <= '1';
-    wait for 1 us;
-    CS <= '0';
-    sbwr(X"0810", X"0000");
-    sbrd_check(X"0822", X"0010");
+--    TickTock <= not TickTock;
+--    arm <= '1';
+--    CE <= '1';
+--    sbwr(X"0810", X"0100");
+--    CS <= '1';
+--    wait for 1 us;
+--    CS <= '0';
+--    sbwr(X"0810", X"0000");
+--    sbrd_check(X"0822", X"0010");
+--    
+--    sbwr(X"0810", X"0200");
+--    CS <= '1';
+--    wait for 1 us;
+--    CS <= '0';
+--    sbwr(X"0810", X"0000");
+--    sbrd_check(X"0822", X"0000");
+
+    -- Test of counter input
+    -- Config all counters for 8 Hz
+    sbwr( X"0600", X"0100" );
+    sbwr( X"0620", X"0100" );
+    sbwr( X"0640", X"0100" );
     
-    sbwr(X"0810", X"0200");
-    CS <= '1';
-    wait for 1 us;
-    CS <= '0';
-    sbwr(X"0810", X"0000");
-    sbrd_check(X"0822", X"0000");
+    for i in 0 to 20 loop
+      sbrd_check( X"0600", X"0100" );
+      sbrd_check( X"0610", X"0000" );
+      sbrd_check( X"0612", X"0000" );
+      sbrd_check( X"0614", X"0000" );
+      sbrd_check( X"0616", X"0000" );
+      sbrd_check( X"0618", X"0000" );
+      sbrd_check( X"061A", X"0000" );
+      sbrd_check( X"061C", X"0000" );
+      sbrd_check( X"061E", X"0000" );
+      
+      sbrd_check( X"0620", X"0100" );
+      sbrd_check( X"0630", X"0000" );
+      sbrd_check( X"0632", X"0000" );
+      sbrd_check( X"0634", X"0000" );
+      sbrd_check( X"0636", X"0000" );
+      sbrd_check( X"0638", X"0000" );
+      sbrd_check( X"063A", X"0000" );
+      sbrd_check( X"063C", X"0000" );
+      sbrd_check( X"063E", X"0000" );
+
+      sbrd_check( X"0640", X"0100" );
+      sbrd_check( X"0650", X"0000" );
+      sbrd_check( X"0652", X"0000" );
+      sbrd_check( X"0654", X"0000" );
+      sbrd_check( X"0656", X"0000" );
+      sbrd_check( X"0658", X"0000" );
+      sbrd_check( X"065A", X"0000" );
+      sbrd_check( X"065C", X"0000" );
+      sbrd_check( X"065E", X"0000" );
+      wait for 125 ms;
+
+    end loop;
     
     Finish <= '1';
     wait;

@@ -75,6 +75,7 @@ entity dacs is
       ana_in_SCK16 : OUT std_ulogic_vector(1 DOWNTO 0);
       ana_in_SCK5 : OUT std_ulogic_vector(1 DOWNTO 0);
       ana_in_SDO  : OUT std_ulogic_vector(1 DOWNTO 0);
+      ana_in_AIEn : IN std_ulogic;
       
       ctr_PMT     : IN std_logic_vector(4*CTR_UG_N_BDS-1 DOWNTO 0);
       
@@ -190,24 +191,25 @@ architecture Behavioral of dacs is
   FOR ALL : DigIO USE ENTITY idx_fpga_lib.DigIO;
   
   COMPONENT ana_input
-     PORT (
-        Addr   : IN     std_logic_vector(15 DOWNTO 0);
-        ExpRd  : IN     std_ulogic;
-        ExpWr  : IN     std_ulogic;
-        F8M    : IN     std_ulogic;
-        F30M   : IN     std_ulogic;
-        RST    : IN     std_ulogic;
-        SDI    : IN     std_ulogic_vector(1 DOWNTO 0);
-        CS5    : OUT    std_ulogic;
-        Conv   : OUT    std_ulogic;
-        ExpAck : OUT    std_ulogic;
-        RdyOut : OUT    std_ulogic;
-        Row    : OUT    std_ulogic_vector(5 DOWNTO 0);
-        SCK16  : OUT    std_ulogic_vector(1 DOWNTO 0);
-        SCK5   : OUT    std_ulogic_vector(1 DOWNTO 0);
-        SDO    : OUT    std_ulogic_vector(1 DOWNTO 0);
-        Data   : INOUT  std_logic_vector(15 DOWNTO 0)
-     );
+    PORT (
+      AIEn   : IN     std_ulogic;
+      Addr   : IN     std_logic_vector(15 DOWNTO 0);
+      ExpRd  : IN     std_ulogic;
+      ExpWr  : IN     std_ulogic;
+      F30M   : IN     std_ulogic;
+      F8M    : IN     std_ulogic;
+      SDI    : IN     std_ulogic_vector(1 DOWNTO 0);
+      RST    : IN     std_ulogic;
+      CS5    : OUT    std_ulogic;
+      Conv   : OUT    std_ulogic;
+      ExpAck : OUT    std_ulogic;
+      RdyOut : OUT    std_ulogic;
+      Row    : OUT    std_ulogic_vector(5 DOWNTO 0);
+      SCK16  : OUT    std_ulogic_vector(1 DOWNTO 0);
+      SCK5   : OUT    std_ulogic_vector(1 DOWNTO 0);
+      SDO    : OUT    std_ulogic_vector(1 DOWNTO 0);
+      Data   : INOUT  std_logic_vector(15 DOWNTO 0)
+   );
   END COMPONENT;
   FOR ALL : ana_input USE ENTITY idx_fpga_lib.ana_input;
 
@@ -273,7 +275,8 @@ architecture Behavioral of dacs is
   SIGNAL Fail_outputs : std_logic_vector(4 DOWNTO 0);
   SIGNAL Fail_inputs : std_logic_vector(4 DOWNTO 0);
   SIGNAL ana_in_RdyOut : std_ulogic; -- Not used?
-
+  SIGNAL not_FTDI_TXE_pin : std_ulogic; --  not FTDI_TXE_pin
+  SIGNAL not_FTDI_RXF_pin : std_ulogic; --  not FTDI_RXF_pin
 begin
 	Inst_Processor: Processor
 	 PORT MAP(
@@ -287,12 +290,12 @@ begin
      clk_30_0000MHz_pin => clk_30_0000MHz,
      clk_66_6667MHz_pin => clk_66_6667MHz,
 
-     xps_epc_0_PRH_Rdy_pin =>  not FTDI_TXE_pin,
+     xps_epc_0_PRH_Rdy_pin =>  not_FTDI_TXE_pin,
      xps_epc_0_PRH_Wr_n_pin => xps_epc_0_PRH_Wr_n_pin,
      xps_epc_0_PRH_Data_pin => xps_epc_0_PRH_Data_pin,
      xps_epc_0_PRH_Rd_n_pin => FTDI_RD_pin,
      FTDI_SI_pin => FTDI_SI_pin,
-     FTDI_RX_RDY_pin => not FTDI_RXF_pin,
+     FTDI_RX_RDY_pin => not_FTDI_RXF_pin,
 
      xps_gpio_subbus_addr_pin => subbus_addr,
      xps_gpio_subbus_data_i_pin => subbus_data_i,
@@ -378,6 +381,7 @@ begin
 
  Inst_ana_in : ana_input
     PORT MAP (
+       AIEn   => ana_in_AIEn,
        Addr   => ExpAddr,
        ExpRd  => ExpRd,
        ExpWr  => ExpWr,
@@ -398,7 +402,7 @@ begin
 
   Inst_ao : ao
      PORT MAP (
-        Addr      => subbus_addr,
+        Addr      => ExpAddr,
         ExpRd     => ExpRd,
         ExpWr     => ExpWr,
         F66M      => clk_66_6667MHz,
@@ -445,5 +449,8 @@ begin
   subbus_reset <= rst;
   FTDI_WR_pin <= not xps_epc_0_PRH_Wr_n_pin;
   fpga_0_RS232_TX_pin <= '0';
+  not_FTDI_TXE_pin <= not FTDI_TXE_pin;
+  not_FTDI_RXF_pin <= not FTDI_RXF_pin;
+
 end Behavioral;
 

@@ -40,8 +40,8 @@ ENTITY DACSbd IS
 
     DIO : INOUT std_logic_vector ( 119 DOWNTO 0 );
     DIO_DIR : OUT std_logic_vector ( 14 DOWNTO 0 );
-    DIO_OE : IN std_ulogic;
-    DIO_OE_B : IN std_ulogic;
+    DIO_OE : OUT std_ulogic;
+    DIO_OE_B : OUT std_ulogic;
 
     GPIO_LED : OUT std_logic_vector ( 3 DOWNTO 0 );
     GPIO_SW : IN std_logic_vector ( 3 DOWNTO 0 );
@@ -197,6 +197,7 @@ ARCHITECTURE beh OF DACSbd IS
        ana_in_SCK16                   : OUT    std_ulogic_vector(1 DOWNTO 0);
        ana_in_SCK5                    : OUT    std_ulogic_vector(1 DOWNTO 0);
        ana_in_SDO                     : OUT    std_ulogic_vector(1 DOWNTO 0);
+       ana_in_AIEn                    : IN     std_ulogic;
 
        ctr_PMT                        : IN std_logic_vector(4*CTR_UG_N_BDS-1 DOWNTO 0);
        
@@ -283,6 +284,7 @@ BEGIN
        ana_in_SCK16                   => AI_AD_SCK,
        ana_in_SCK5                    => AI_AFE_SCK,
        ana_in_SDO                     => AI_AFE_MOSI,
+       ana_in_AIEn                    => not cmd_out(31),
        ctr_PMT(0)                     => COUNT(1),
        ctr_PMT(1)                     => COUNT(3),
        ctr_PMT(4 DOWNTO 2)            => COUNT(7 DOWNTO 5),
@@ -343,6 +345,9 @@ BEGIN
   DIO_DIR(12) <= dig_dir(17);
   DIO_DIR(13) <= dig_dir(18);
   DIO_DIR(14) <= dig_dir(23);
+  
+  DIO_OE <= '1';
+  DIO_OE_B <= '0';
 
   FPGA_CMDENBL	<= subbus_cmdenbl;
   FPGA_CMDENBL_B	<= not subbus_cmdenbl;
