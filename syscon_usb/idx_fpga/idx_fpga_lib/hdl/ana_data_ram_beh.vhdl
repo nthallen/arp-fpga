@@ -119,14 +119,8 @@ BEGIN
          RD_DATA     => RD_DATA_int
       );
   
-  Out_En : Process (RDEN,RD_DATA_int) Is
-  Begin
-    if RDEN = '1' then
-      RD_DATA <= RD_DATA_int;
-    else
-      RD_DATA <= (others => 'Z');
-    end if;
-  End Process;
+   RD_DATA <= RD_DATA_int;
+  
 
 END ARCHITECTURE beh;
 

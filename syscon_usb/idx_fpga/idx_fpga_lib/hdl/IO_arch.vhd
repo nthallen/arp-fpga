@@ -125,18 +125,8 @@ BEGIN
     
   End Process;
   
-  ReadBack : Process ( F8M ) Is
-  Begin
-    if F8M'event and F8M = '1' then
-      if RdEn = '1' and CfgEn = '1' then
-        RData(7 downto 0) <= StatusPort;
-        RData(15 downto 8) <= (others => '0');
-      else
-        RData <= (others => 'Z');
-      end if;
-    end if;
-  End Process;
-  
+  RData(7 downto 0) <= StatusPort;
+  RData(15 downto 8) <= (others => '0');
   
 END ARCHITECTURE arch;
 

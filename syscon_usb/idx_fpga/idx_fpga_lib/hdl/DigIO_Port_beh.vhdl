@@ -15,7 +15,8 @@ ENTITY DigIO_Port IS
   GENERIC ( DIGIO_FORCE_DIR : std_ulogic := '0';
             DIGIO_FORCE_DIR_VAL : std_ulogic := '0' );
   PORT (
-    D : INOUT std_logic_vector (7 DOWNTO 0);
+    DW : IN    std_logic_vector (7 DOWNTO 0);
+    DR : OUT   std_logic_vector (7 DOWNTO 0);
     IO : INOUT std_logic_vector (7 DOWNTO 0);
     ConnEn : IN std_ulogic;
     PortEn : IN std_ulogic;
@@ -25,7 +26,6 @@ ENTITY DigIO_Port IS
     Dir_Out : OUT std_logic;
     CfgEn : IN std_ulogic;
     WrEn : IN std_ulogic;
-    RdEn : IN std_ulogic;
     Clk : In std_ulogic
   );
 END ENTITY DigIO_Port;
@@ -54,7 +54,7 @@ BEGIN
       if RA = '1' OR ( RS = '1' AND ConnEn = '1') then
         Dout <= (others => '0');
       elsif WrEn = '1' AND ConnEn = '1' AND PortEn = '1' then
-        Dout <= D;
+        Dout <= DW;
       end if;
     end if;
   End Process;
@@ -67,15 +67,7 @@ BEGIN
     end if;
   End Process;
   
-  Dbus : Process ( RdEn, ConnEn, PortEn, IO )
-  Begin
-    if RdEn = '1' AND ConnEn = '1' AND PortEn = '1' then
-      D <= IO;
-    else
-      D <= (others => 'Z' );
-    end if;
-  End Process;
-  
+  DR <= IO;
   Dir_Out <= Dir;
     
 END ARCHITECTURE beh;

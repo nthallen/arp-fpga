@@ -20,7 +20,7 @@ appVersion "2009.2 (Build 10)"
 model (Symbol
 commonDM (CommonDM
 ldm (LogicalDM
-suid 21,0
+suid 22,0
 usingSuid 1
 emptyRow *1 (LEmptyRow
 )
@@ -135,18 +135,6 @@ uid 330,0
 *20 (LogPort
 port (LogicalPort
 decl (Decl
-n "iData"
-t "std_logic_vector"
-b "(15 DOWNTO 0)"
-o 4
-suid 18,0
-)
-)
-uid 334,0
-)
-*21 (LogPort
-port (LogicalPort
-decl (Decl
 n "rst"
 t "std_ulogic"
 o 5
@@ -155,18 +143,18 @@ suid 19,0
 )
 uid 336,0
 )
-*22 (LogPort
+*21 (LogPort
 port (LogicalPort
 decl (Decl
 n "WrEn"
 t "std_ulogic"
-o 3
+o 4
 suid 20,0
 )
 )
 uid 338,0
 )
-*23 (LogPort
+*22 (LogPort
 port (LogicalPort
 decl (Decl
 n "F66M"
@@ -176,6 +164,18 @@ suid 21,0
 )
 )
 uid 502,0
+)
+*23 (LogPort
+port (LogicalPort
+decl (Decl
+n "WData"
+t "std_logic_vector"
+b "(15 DOWNTO 0)"
+o 3
+suid 22,0
+)
+)
+uid 532,0
 )
 ]
 )
@@ -265,27 +265,27 @@ uid 331,0
 )
 *35 (MRCItem
 litem &20
-pos 9
-dimension 20
-uid 335,0
-)
-*36 (MRCItem
-litem &21
 pos 3
 dimension 20
 uid 337,0
 )
-*37 (MRCItem
-litem &22
+*36 (MRCItem
+litem &21
 pos 2
 dimension 20
 uid 339,0
 )
-*38 (MRCItem
-litem &23
+*37 (MRCItem
+litem &22
 pos 1
 dimension 20
 uid 501,0
+)
+*38 (MRCItem
+litem &23
+pos 9
+dimension 20
+uid 531,0
 )
 ]
 )
@@ -556,19 +556,19 @@ value "C:\\HDS\\idx_fpga\\idx_fpga_lib\\hds\\ao_sm"
 )
 (vvPair
 variable "date"
-value "02/ 2/2011"
+value "02/27/2011"
 )
 (vvPair
 variable "day"
-value "Wed"
+value "Sun"
 )
 (vvPair
 variable "day_long"
-value "Wednesday"
+value "Sunday"
 )
 (vvPair
 variable "dd"
-value "02"
+value "27"
 )
 (vvPair
 variable "entity_name"
@@ -692,7 +692,7 @@ value "symbol"
 )
 (vvPair
 variable "time"
-value "14:20:24"
+value "23:25:09"
 )
 (vvPair
 variable "unit"
@@ -1009,52 +1009,6 @@ suid 16,0
 )
 )
 *78 (CptPort
-uid 305,0
-ps "OnEdgeStrategy"
-shape (Triangle
-uid 306,0
-ro 90
-va (VaSet
-vasetType 1
-fg "0,65535,0"
-)
-xt "14250,8625,15000,9375"
-)
-tg (CPTG
-uid 307,0
-ps "CptPortTextPlaceStrategy"
-stg "VerticalLayoutStrategy"
-f (Text
-uid 308,0
-va (VaSet
-font "arial,8,0"
-)
-xt "16000,8500,18200,9500"
-st "iData"
-blo "16000,9300"
-tm "CptPortNameMgr"
-)
-)
-dt (MLText
-uid 309,0
-va (VaSet
-font "Courier New,8,0"
-)
-xt "44000,4400,71500,5200"
-st "iData     : IN     std_logic_vector (15 DOWNTO 0) ;
-"
-)
-thePort (LogicalPort
-decl (Decl
-n "iData"
-t "std_logic_vector"
-b "(15 DOWNTO 0)"
-o 4
-suid 18,0
-)
-)
-)
-*79 (CptPort
 uid 310,0
 ps "OnEdgeStrategy"
 shape (Triangle
@@ -1099,7 +1053,7 @@ suid 19,0
 )
 )
 )
-*80 (CptPort
+*79 (CptPort
 uid 315,0
 ps "OnEdgeStrategy"
 shape (Triangle
@@ -1131,7 +1085,7 @@ uid 319,0
 va (VaSet
 font "Courier New,8,0"
 )
-xt "44000,3600,61500,4400"
+xt "44000,4400,61500,5200"
 st "WrEn      : IN     std_ulogic  ;
 "
 )
@@ -1139,12 +1093,12 @@ thePort (LogicalPort
 decl (Decl
 n "WrEn"
 t "std_ulogic"
-o 3
+o 4
 suid 20,0
 )
 )
 )
-*81 (CptPort
+*80 (CptPort
 uid 503,0
 ps "OnEdgeStrategy"
 shape (Triangle
@@ -1189,6 +1143,52 @@ suid 21,0
 )
 )
 )
+*81 (CptPort
+uid 533,0
+ps "OnEdgeStrategy"
+shape (Triangle
+uid 534,0
+ro 90
+va (VaSet
+vasetType 1
+fg "0,65535,0"
+)
+xt "14250,15625,15000,16375"
+)
+tg (CPTG
+uid 535,0
+ps "CptPortTextPlaceStrategy"
+stg "VerticalLayoutStrategy"
+f (Text
+uid 536,0
+va (VaSet
+font "arial,8,0"
+)
+xt "16000,15500,18700,16500"
+st "WData"
+blo "16000,16300"
+tm "CptPortNameMgr"
+)
+)
+dt (MLText
+uid 537,0
+va (VaSet
+font "Courier New,8,0"
+)
+xt "44000,3600,71500,4400"
+st "WData     : IN     std_logic_vector (15 DOWNTO 0) ;
+"
+)
+thePort (LogicalPort
+decl (Decl
+n "WData"
+t "std_logic_vector"
+b "(15 DOWNTO 0)"
+o 3
+suid 22,0
+)
+)
+)
 ]
 shape (Rectangle
 uid 9,0
@@ -1198,7 +1198,7 @@ fg "0,65535,0"
 lineColor "0,32896,0"
 lineWidth 2
 )
-xt "15000,6000,24000,16000"
+xt "15000,6000,24000,17000"
 )
 oxt "15000,6000,23000,16000"
 biTextGroup (BiTextGroup
@@ -1860,6 +1860,6 @@ xt "42000,0,42000,0"
 tm "SyDeclarativeTextMgr"
 )
 )
-lastUid 507,0
+lastUid 537,0
 activeModelName "Symbol:CDM"
 )

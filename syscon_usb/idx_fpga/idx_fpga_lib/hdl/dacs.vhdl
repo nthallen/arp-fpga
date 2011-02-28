@@ -55,6 +55,7 @@ entity dacs is
       subbus_flt_cpu_reset : OUT std_ulogic;
       subbus_reset : OUT std_ulogic;
       DACS_switches : IN std_logic_vector(3 downto 0);
+      Collision : OUT std_ulogic;
 
       idx_Run : OUT std_ulogic_vector(IDX_N_CHANNELS-1 downto 0);
       idx_Step : OUT std_ulogic_vector(IDX_N_CHANNELS-1 downto 0);
@@ -128,11 +129,13 @@ architecture Behavioral of dacs is
     		Status : OUT std_logic_vector(3 downto 0);
     		ExpRd : OUT std_logic;
     		ExpWr : OUT std_logic;
-      ExpData : INOUT std_logic_vector(15 downto 0);
+      WData : OUT std_logic_vector (15 DOWNTO 0);
+      RData : IN std_logic_vector (16*N_BOARDS-1 DOWNTO 0);
       ExpAddr : OUT std_logic_vector(15 downto 0);
       ExpAck : IN std_logic_vector (N_BOARDS-1 DOWNTO 0);
       BdIntr : IN std_ulogic_vector(N_INTERRUPTS-1 downto 0);
       INTA    : OUT std_ulogic;
+      Collision : OUT std_ulogic;
       CmdEnbl : OUT std_ulogic;
       CmdStrb : OUT std_ulogic;
       ExpReset : OUT std_ulogic;
@@ -165,7 +168,8 @@ architecture Behavioral of dacs is
 			Dir         : OUT    std_ulogic_vector (N_CHANNELS-1 DOWNTO 0);
 			Run         : OUT    std_ulogic_vector (N_CHANNELS-1 DOWNTO 0);
 			Step        : OUT    std_ulogic_vector (N_CHANNELS-1 DOWNTO 0);
-			Data        : INOUT  std_logic_vector (15 DOWNTO 0)
+			WData       : IN     std_logic_vector (15 DOWNTO 0);
+      RData       : OUT    std_logic_vector (15 DOWNTO 0)
 		);
 	END COMPONENT;
 
@@ -178,7 +182,8 @@ architecture Behavioral of dacs is
      );
      PORT (
         Addr   : IN     std_logic_vector(15 DOWNTO 0);
-        Data   : INOUT  std_logic_vector(15 DOWNTO 0);
+        WData  : IN     std_logic_vector(15 DOWNTO 0);
+        RData  : OUT    std_logic_vector(15 DOWNTO 0);
         ExpRd  : IN     std_ulogic;
         ExpWr  : IN     std_ulogic;
         ExpAck : OUT    std_ulogic;
@@ -208,7 +213,8 @@ architecture Behavioral of dacs is
       SCK16  : OUT    std_ulogic_vector(1 DOWNTO 0);
       SCK5   : OUT    std_ulogic_vector(1 DOWNTO 0);
       SDO    : OUT    std_ulogic_vector(1 DOWNTO 0);
-      Data   : INOUT  std_logic_vector(15 DOWNTO 0)
+      WData  : IN     std_logic_vector(15 DOWNTO 0);
+      RData  : OUT    std_logic_vector(15 DOWNTO 0)
    );
   END COMPONENT;
   FOR ALL : ana_input USE ENTITY idx_fpga_lib.ana_input;
@@ -221,7 +227,8 @@ architecture Behavioral of dacs is
      );
      PORT (
         Addr   : IN     std_logic_vector(15 DOWNTO 0);
-        Data   : INOUT  std_logic_vector(15 DOWNTO 0);
+        WData  : IN     std_logic_vector(15 DOWNTO 0);
+        RData  : OUT    std_logic_vector(15 DOWNTO 0);
         ExpRd  : IN     std_ulogic;
         ExpWr  : IN     std_ulogic;
         ExpAck : OUT    std_ulogic;
@@ -230,6 +237,7 @@ architecture Behavioral of dacs is
         PMT    : IN     std_logic_vector(N_COUNTERS-1 DOWNTO 0)
      );
   END COMPONENT;
+
   COMPONENT ao
      PORT (
         Addr      : IN     std_logic_vector(15 DOWNTO 0);
@@ -244,7 +252,8 @@ architecture Behavioral of dacs is
         DA_SCK    : OUT    std_logic;
         DA_SDI    : OUT    std_logic;
         ExpAck    : OUT    std_ulogic;
-        Data      : INOUT  std_logic_vector(15 DOWNTO 0)
+        WData     : IN     std_logic_vector(15 DOWNTO 0);
+        RData     : OUT    std_logic_vector(15 DOWNTO 0)
      );
   END COMPONENT;
   FOR ALL : ctr_ungated USE ENTITY idx_fpga_lib.ctr_ungated;
@@ -253,6 +262,7 @@ architecture Behavioral of dacs is
 	attribute box_type : string;
 	attribute box_type of Processor : component is "user_black_box";
 	
+	CONSTANT N_BOARDS : integer := 4+CTR_UG_N_BDS;
 	SIGNAL clk_8_0000MHz : std_logic;
 	SIGNAL clk_30_0000MHz : std_logic;
 	SIGNAL clk_66_6667MHz : std_logic;
@@ -263,10 +273,11 @@ architecture Behavioral of dacs is
 	SIGNAL subbus_ctrl : std_logic_vector(6 downto 0);
 	SIGNAL subbus_status : std_logic_vector(3 downto 0);
 	SIGNAL ExpAddr : std_logic_vector(15 downto 0);
-	SIGNAL ExpData : std_logic_vector(15 downto 0);
+	SIGNAL WData  : std_logic_vector(15 DOWNTO 0);
+	SIGNAL iRData : std_logic_vector((N_BOARDS-1)*16+15 downto 0);
 	SIGNAL ExpRd : std_logic;
 	SIGNAL ExpWr : std_logic;
-	SIGNAL ExpAck : std_logic_vector (3+CTR_UG_N_BDS DOWNTO 0);
+	SIGNAL ExpAck : std_logic_vector (N_BOARDS-1 DOWNTO 0);
 	SIGNAL CmdEnbl : std_ulogic;
 	SIGNAL CmdStrb : std_ulogic;
 	SIGNAL rst : std_ulogic;
@@ -310,7 +321,7 @@ begin
 	Inst_syscon: syscon
   	 GENERIC MAP (
   	   N_INTERRUPTS => N_INTERRUPTS,
-  	   N_BOARDS => 4+CTR_UG_N_BDS
+  	   N_BOARDS => N_BOARDS
   	 )
   	 PORT MAP(
     		F8M => clk_8_0000MHz,
@@ -321,11 +332,13 @@ begin
     		Status => subbus_status,
     		ExpRd => ExpRd,
     		ExpWr => ExpWr,
-    		ExpData => ExpData,
+    		WData => WData,
+    		RData => iRData,
     		ExpAddr => ExpAddr,
     		ExpAck => ExpAck,
     		BdIntr => BdIntr,
     		INTA => INTA,
+    		Collision => Collision,
     		CmdEnbl => CmdEnbl,
     		CmdStrb => CmdStrb,
       ExpReset => rst,
@@ -352,12 +365,13 @@ begin
        LimI        => idx_LimI,
        LimO        => idx_LimO,
        ZR          => idx_ZR,
-       ExpAck      => ExpAck(0),
-       BdIntr      => BdIntr(0),
        Dir         => idx_Dir,
        Run         => idx_Run,
        Step        => idx_Step,
-       Data        => ExpData
+       WData       => WData,
+       ExpAck      => ExpAck(0),
+       BdIntr      => BdIntr(0),
+       RData       => iRData(15 DOWNTO 0)
    	);
 
  Inst_DigIO : DigIO
@@ -369,14 +383,15 @@ begin
     )
     PORT MAP (
        Addr   => ExpAddr,
-       Data   => ExpData,
        ExpRd  => ExpRd,
        ExpWr  => ExpWr,
-       ExpAck => ExpAck(1),
        F8M    => clk_8_0000MHz,
        rst    => rst,
        IO     => dig_IO,
-       Dir    => dig_Dir
+       Dir    => dig_Dir,
+       WData  => WData,
+       ExpAck => ExpAck(1),
+       Rdata  => iRData(16*1+15 DOWNTO 16*1)
     );
 
  Inst_ana_in : ana_input
@@ -391,13 +406,14 @@ begin
        SDI    => ana_in_SDI,
        CS5    => ana_in_CS5,
        Conv   => ana_in_Conv,
-       ExpAck => ExpAck(2),
        RdyOut => ana_in_RdyOut,
        Row    => ana_in_Row,
        SCK16  => ana_in_SCK16,
        SCK5   => ana_in_SCK5,
        SDO    => ana_in_SDO,
-       Data   => ExpData
+       WData  => WData,
+       ExpAck => ExpAck(2),
+       RData  => iRData(16*2+15 DOWNTO 16*2)
     );
 
   Inst_ao : ao
@@ -413,8 +429,9 @@ begin
         DA_LDAC_B => DA_LDAC_B,
         DA_SCK    => DA_SCK,
         DA_SDI    => DA_SDI,
+        WData     => WData,
         ExpAck    => ExpAck(3),
-        Data      => ExpData
+        RData     => iRData(16*3+15 DOWNTO 16*3)
      );
 
   ctrs : for i in 0 TO CTR_UG_N_BDS-1 generate
@@ -427,13 +444,14 @@ begin
       )
       PORT MAP (
          Addr   => ExpAddr,
-         Data   => ExpData,
          ExpRd  => ExpRd,
          ExpWr  => ExpWr,
-         ExpAck => ExpAck(4+i),
          F8M    => clk_8_0000MHz,
          rst    => rst,
-         PMT    => ctr_PMT(i*4+3 DOWNTO i*4)
+         PMT    => ctr_PMT(i*4+3 DOWNTO i*4),
+         WData  => WData,
+         ExpAck => ExpAck(4+i),
+         RData  => iRData(16*(4+i)+15 DOWNTO 16*(4+i))
       );
   end generate;
 

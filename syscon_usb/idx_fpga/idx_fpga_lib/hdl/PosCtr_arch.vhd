@@ -23,7 +23,8 @@ ENTITY PosCtr IS
       ClkEn    : IN     std_ulogic;
       DirOut   : IN     std_ulogic;
       ResetPos : IN     std_ulogic;
-      Data     : INOUT  std_logic_vector ( 15 DOWNTO 0 )
+      WData    : IN     std_logic_vector ( 15 DOWNTO 0 );
+      PosData  : OUT    std_logic_vector ( 15 DOWNTO 0 )
    );
 
 -- Declarations
@@ -43,7 +44,7 @@ BEGIN
           Position <= (others => '0');
         elsif Ld = '1' then
           if PosEn = '1' then
-            Position <= unsigned(Data);
+            Position <= unsigned(WData);
           end if;
         elsif ClkEn = '1' then
           if DirOut = '1' then
@@ -58,12 +59,10 @@ BEGIN
   PROCESS (F8M, rst)
     BEGIN
       if rst = '1' then
-        Data <= ( others => 'Z' );
+        PosData <= ( others => '0' );
       elsif F8M'event AND F8M = '1' then
         if RdEn = '1' and PosEn = '1' then
-          Data <= std_logic_vector(Position);
-        else
-          Data <= ( others => 'Z' );
+          PosData <= std_logic_vector(Position);
         end if;
       end if;
     END PROCESS;

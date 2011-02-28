@@ -21,8 +21,9 @@ ENTITY DigIO IS
     DIGIO_FORCE_DIR_VAL : std_ulogic_vector := "000000000000"
   );
   PORT (
-    Addr : IN std_logic_vector (15 DOWNTO 0);
-    Data    : INOUT  std_logic_vector (15 DOWNTO 0);
+    Addr    : IN std_logic_vector (15 DOWNTO 0);
+    WData   : IN     std_logic_vector (15 DOWNTO 0);
+    RData   : OUT    std_logic_vector (15 DOWNTO 0);
     ExpRd   : IN     std_ulogic;
     ExpWr   : IN     std_ulogic;
     ExpAck  : OUT    std_ulogic;
@@ -40,7 +41,7 @@ ARCHITECTURE beh OF DigIO IS
    SIGNAL PortEnHB : std_ulogic_vector(3 DOWNTO 0);
    SIGNAL RS       : std_ulogic;
    SIGNAL BdEn     : std_ulogic;
-   SIGNAL iData    : std_logic_vector(15 DOWNTO 0);
+   SIGNAL iRData   : std_logic_vector((DIGIO_N_CONNECTORS-1)*16+15 DOWNTO 0);
    SIGNAL RdEn     : std_ulogic;
    SIGNAL WrEn     : std_ulogic;
 
@@ -60,13 +61,10 @@ ARCHITECTURE beh OF DigIO IS
    END COMPONENT;
    COMPONENT subbus_io
       PORT (
-         Data   : INOUT  std_logic_vector(15 DOWNTO 0);
          ExpRd  : IN     std_ulogic;
          ExpWr  : IN     std_ulogic;
          ExpAck : OUT    std_ulogic;
          F8M    : IN     std_ulogic;
-         rst    : IN     std_ulogic;
-         iData  : INOUT  std_logic_vector(15 DOWNTO 0);
          RdEn   : OUT    std_ulogic;
          WrEn   : OUT    std_ulogic;
          BdEn   : IN     std_ulogic
@@ -76,10 +74,10 @@ ARCHITECTURE beh OF DigIO IS
       GENERIC ( DIGIO_FORCE_DIR : std_ulogic_vector (0 to 2) := "000";
                 DIGIO_FORCE_DIR_VAL : std_ulogic_vector (0 to 2) := "000" );
       PORT (
-         D      : INOUT  std_logic_vector(7 DOWNTO 0);
+         DW     : IN     std_logic_vector(7 DOWNTO 0);
+         DR     : OUT    std_logic_vector(7 DOWNTO 0);
          IO     : INOUT  std_logic_vector(23 DOWNTO 0);
          Dir    : OUT    std_logic_vector(2 DOWNTO 0);
-         RdEn   : IN     std_ulogic;
          WrEn   : IN     std_ulogic;
          ConnEn : IN     std_ulogic;
          PortEn : IN     std_ulogic_vector(3 DOWNTO 0);
@@ -109,13 +107,10 @@ BEGIN
 
    Dig_decode : subbus_io
       PORT MAP (
-         Data   => Data,
          ExpRd  => ExpRd,
          ExpWr  => ExpWr,
          ExpAck => ExpAck,
          F8M    => F8M,
-         rst    => rst,
-         iData  => iData,
          RdEn   => RdEn,
          WrEn   => WrEn,
          BdEn   => BdEn
@@ -128,14 +123,14 @@ BEGIN
          DIGIO_FORCE_DIR_VAL => DIGIO_FORCE_DIR_VAL(i*6) & DIGIO_FORCE_DIR_VAL(i*6+2) & DIGIO_FORCE_DIR_VAL(i*6+4)
        )
        PORT MAP (
-          D      => iData(7 DOWNTO 0),
+          DW      => WData(7 DOWNTO 0),
+          DR      => iRData(i*16+7 DOWNTO i*16),
           IO(7 DOWNTO 0) => IO(i*48+7 DOWNTO i*48),
           IO(15 DOWNTO 8) => IO(i*48+23 DOWNTO i*48+16),
           IO(23 DOWNTO 16) => IO(i*48+39 DOWNTO i*48+32),
           Dir(0) => Dir(i*6),
           Dir(1) => Dir(i*6+2),
           Dir(2) => Dir(i*6+4),
-          RdEn   => RdEn,
           WrEn   => WrEn,
           ConnEn => ConnEn(i),
           PortEn => PortEnLB,
@@ -149,14 +144,14 @@ BEGIN
         DIGIO_FORCE_DIR_VAL => DIGIO_FORCE_DIR_VAL(i*6+1) & DIGIO_FORCE_DIR_VAL(i*6+3) & DIGIO_FORCE_DIR_VAL(i*6+5)
       )
       PORT MAP (
-        D      => iData(15 DOWNTO 8),
+        DW     => WData(15 DOWNTO 8),
+        DR      => iRData(i*16+15 DOWNTO i*16+8),
         IO(7 DOWNTO 0) => IO(i*48+15 DOWNTO i*48+8),
         IO(15 DOWNTO 8) => IO(i*48+31 DOWNTO i*48+24),
         IO(23 DOWNTO 16) => IO(i*48+47 DOWNTO i*48+40),
         Dir(0) => Dir(i*6+1),
         Dir(1) => Dir(i*6+3),
         Dir(2) => Dir(i*6+5),
-        RdEn   => RdEn,
         WrEn   => WrEn,
         ConnEn => ConnEn(i),
         PortEn => PortEnHB,
@@ -165,5 +160,15 @@ BEGIN
         Clk    => F8m
       );
   end generate;
-END ARCHITECTURE beh;
 
+  RData_bus : Process (ConnEn,iRData) Is
+  Begin
+    RData <= (others => '0');
+    for i in DIGIO_N_CONNECTORS-1 DOWNTO 0 loop
+      if ConnEn(i) = '1' then
+        RData <= iRData(i*16+15 DOWNTO i*16);
+      end if;
+    end loop;
+  End Process;
+    
+END ARCHITECTURE beh;

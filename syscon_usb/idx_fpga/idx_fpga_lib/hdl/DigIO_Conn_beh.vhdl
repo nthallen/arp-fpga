@@ -18,10 +18,10 @@ ENTITY DigIO_Conn IS
   GENERIC ( DIGIO_FORCE_DIR : std_ulogic_vector (0 to 2) := "000";
             DIGIO_FORCE_DIR_VAL : std_ulogic_vector (0 to 2) := "000" );
   PORT (
-    D : INOUT std_logic_vector (7 DOWNTO 0);
+    DW : IN    std_logic_vector (7 DOWNTO 0);
+    DR : OUT   std_logic_vector (7 DOWNTO 0);
     IO : INOUT std_logic_vector (23 DOWNTO 0);
     Dir : OUT std_logic_vector (2 DOWNTO 0);
-    RdEn : IN std_ulogic;
     WrEn : IN std_ulogic;
     ConnEn : IN std_ulogic;
     PortEn : IN std_ulogic_vector (3 DOWNTO 0);
@@ -37,7 +37,8 @@ ARCHITECTURE beh OF DigIO_Conn IS
      GENERIC ( DIGIO_FORCE_DIR : std_ulogic := '0';
                DIGIO_FORCE_DIR_VAL : std_ulogic := '0' );
       PORT (
-         D       : INOUT  std_logic_vector(7 DOWNTO 0);
+         DW      : IN     std_logic_vector(7 DOWNTO 0);
+         DR      : OUT    std_logic_vector(7 DOWNTO 0);
          IO      : INOUT  std_logic_vector(7 DOWNTO 0);
          ConnEn  : IN     std_ulogic;
          PortEn  : IN     std_ulogic;
@@ -47,12 +48,11 @@ ARCHITECTURE beh OF DigIO_Conn IS
          Dir_Out : OUT    std_logic;
          CfgEn   : IN     std_ulogic;
          WrEn    : IN     std_ulogic;
-         RdEn    : IN     std_ulogic;
          Clk     : IN     std_ulogic
       );
    END COMPONENT;
    FOR ALL : DigIO_Port USE ENTITY idx_fpga_lib.DigIO_Port;
-   SIGNAL D_int : std_logic_vector(7 DOWNTO 0);
+   SIGNAL iDR     : std_logic_vector(23 DOWNTO 0);
    SIGNAL DIR_int : std_logic_vector(2 DOWNTO 0);
 BEGIN
    Port1 : DigIO_Port
@@ -61,17 +61,17 @@ BEGIN
          DIGIO_FORCE_DIR_VAL => DIGIO_FORCE_DIR_VAL(0)
       )
       PORT MAP (
-         D       => D_int,
+         DW      => DW,
+         DR      => iDR(7 DOWNTO 0),
          IO      => IO(7 DOWNTO 0),
          ConnEn  => ConnEn,
          PortEn  => PortEn(0),
          RS      => RS,
          RA      => RA,
-         Dir_In  => D(4),
+         Dir_In  => DW(4),
          Dir_Out => Dir_int(0),
          CfgEn   => PortEn(3),
          WrEn    => WrEn,
-         RdEn    => RdEn,
          Clk     => Clk
       );
    Port2 : DigIO_Port
@@ -80,17 +80,17 @@ BEGIN
         DIGIO_FORCE_DIR_VAL => DIGIO_FORCE_DIR_VAL(1)
      )
      PORT MAP (
-        D       => D_int,
+        DW      => DW,
+        DR      => iDR(15 DOWNTO 8),
         IO      => IO(15 DOWNTO 8),
         ConnEn  => ConnEn,
         PortEn  => PortEn(1),
         RS      => RS,
         RA      => RA,
-        Dir_In  => D(1),
+        Dir_In  => DW(1),
         Dir_Out => Dir_int(1),
         CfgEn   => PortEn(3),
         WrEn    => WrEn,
-        RdEn    => RdEn,
         Clk     => Clk
      );
    Port3 : DigIO_Port
@@ -99,42 +99,37 @@ BEGIN
         DIGIO_FORCE_DIR_VAL => DIGIO_FORCE_DIR_VAL(2)
      )
      PORT MAP (
-        D       => D_int,
+        DW      => DW,
+        DR      => iDR(23 DOWNTO 16),
         IO      => IO(23 DOWNTO 16),
         ConnEn  => ConnEn,
         PortEn  => PortEn(2),
         RS      => RS,
         RA      => RA,
-        Dir_In  => D(0),
+        Dir_In  => DW(0),
         Dir_Out => Dir_int(2),
         CfgEn   => PortEn(3),
         WrEn    => WrEn,
-        RdEn    => RdEn,
         Clk     => Clk
      );
-
-  RdBuf : Process (RdEn, ConnEn, D) Is
-  Begin
-    if RdEn = '1' and ConnEn = '1' then
-      D_int <= (others => 'Z');
-    else
-      D_int <= D;
-    end if;
-  End Process;
 
   RdCfg : Process (Clk) Is
   Begin
     if Clk'Event AND Clk = '1' then
-      if RdEn = '1' and ConnEn = '1' and PortEn(3) = '1' then
-        D(0) <= Dir_int(2);
-        D(1) <= Dir_int(1);
-        D(4) <= Dir_int(0);
-        D(3 DOWNTO 2) <= "00";
-        D(7 DOWNTO 5) <= "000";
-      elsif RdEn = '1' and ConnEn = '1' then
-        D <= D_int;
+      if PortEn(0) = '1' then
+        DR <= iDR(7 DOWNTO 0);
+      elsif PortEn(1) = '1' then
+        DR <= iDR(15 DOWNTO 8);
+      elsif PortEn(2) = '1' then
+        DR <= iDR(23 DOWNTO 16);
+      elsif PortEn(3) = '1' then
+        DR(0) <= Dir_int(2);
+        DR(1) <= Dir_int(1);
+        DR(4) <= Dir_int(0);
+        DR(3 DOWNTO 2) <= "00";
+        DR(7 DOWNTO 5) <= "000";
       else
-        D <= (others => 'Z');
+        DR <= (others => '0');
       end if;
     end if;
   End Process;

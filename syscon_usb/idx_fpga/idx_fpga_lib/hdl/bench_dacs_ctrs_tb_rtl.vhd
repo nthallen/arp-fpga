@@ -75,6 +75,7 @@ ARCHITECTURE rtl OF bench_dacs_ctrs IS
    SIGNAL DA_LDAC_B                      : std_logic;
    SIGNAL DA_SCK                         : std_logic;
    SIGNAL DA_SDI                         : std_logic;
+   SIGNAL Collision                      : std_ulogic;
 
 
    -- Component declarations
@@ -107,6 +108,7 @@ ARCHITECTURE rtl OF bench_dacs_ctrs IS
          subbus_fail_leds               : OUT    std_logic_vector(4 downto 0);
          subbus_flt_cpu_reset           : OUT    std_ulogic;
          subbus_reset                   : OUT    std_ulogic;
+         Collision                      : OUT    std_ulogic;
          DACS_switches                  : IN     std_logic_vector(3 downto 0);
          idx_Run                        : OUT    std_ulogic_vector(IDX_N_CHANNELS-1 downto 0);
          idx_Step                       : OUT    std_ulogic_vector(IDX_N_CHANNELS-1 downto 0);
@@ -171,6 +173,7 @@ BEGIN
                subbus_fail_leds               => subbus_fail_leds,
                subbus_flt_cpu_reset           => subbus_flt_cpu_reset,
                subbus_reset                   => subbus_reset,
+               Collision                      => Collision,
                DACS_switches                  => DACS_switches,
                idx_Run                        => idx_Run,
                idx_Step                       => idx_Step,

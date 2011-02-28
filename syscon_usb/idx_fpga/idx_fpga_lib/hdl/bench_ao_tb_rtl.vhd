@@ -32,7 +32,8 @@ ARCHITECTURE rtl OF bench_ao IS
    SIGNAL DA_LDAC_B : std_logic;
    SIGNAL DA_SCK    : std_logic;
    SIGNAL DA_SDI    : std_logic;
-   SIGNAL Data      : std_logic_vector(15 DOWNTO 0);
+   SIGNAL WData     : std_logic_vector(15 DOWNTO 0);
+   SIGNAL RData     : std_logic_vector(15 DOWNTO 0);
    SIGNAL ExpAck    : std_ulogic;
    SIGNAL ExpRd     : std_ulogic;
    SIGNAL ExpWr     : std_ulogic;
@@ -52,7 +53,8 @@ ARCHITECTURE rtl OF bench_ao IS
          DA_LDAC_B : OUT    std_logic;
          DA_SCK    : OUT    std_logic;
          DA_SDI    : OUT    std_logic;
-         Data      : INOUT  std_logic_vector(15 DOWNTO 0);
+         WData     : IN     std_logic_vector (15 DOWNTO 0);
+         RData     : OUT    std_logic_vector (15 DOWNTO 0);
          ExpAck    : OUT    std_ulogic;
          ExpRd     : IN     std_ulogic;
          ExpWr     : IN     std_ulogic;
@@ -77,7 +79,8 @@ BEGIN
                DA_LDAC_B => DA_LDAC_B,
                DA_SCK    => DA_SCK,
                DA_SDI    => DA_SDI,
-               Data      => Data,
+               WData     => WData,
+               RData     => RData,
                ExpAck    => ExpAck,
                ExpRd     => ExpRd,
                ExpWr     => ExpWr,
@@ -128,7 +131,7 @@ BEGIN
       ExpRd <= '1';
       wait for 1 us;
       assert ExpAck = '1' report "No Acknowledge on read" severity error;
-      Read_Result <= Data;
+      Read_Result <= RData;
       ExpRd <= '0';
       wait for 125 ns;
       -- pragma synthesis_on
@@ -139,7 +142,7 @@ BEGIN
                     Data_In : IN std_logic_vector (15 downto 0) ) is
     begin
       Addr <= Addr_In;
-      Data <= Data_in;
+      WData <= Data_in;
       -- pragma synthesis_off
       wait for 40 ns;
       ExpWr <= '1';
@@ -147,7 +150,6 @@ BEGIN
       assert ExpAck = '1' report "No acknowledge on write" severity error;
       ExpWr <= '0';
       wait for 250 ns;
-      Data <= (others => 'Z');
       -- pragma synthesis_on
       return;
     end procedure sbwr;
@@ -165,7 +167,7 @@ Begin
     Done <= '0';
     rst <= '1';
     Addr <= X"0000";
-    Data <= X"0000";
+    WData <= X"0000";
     ExpWr <= '0';
     ExpRd <= '0';
     -- pragma synthesis_off

@@ -32,7 +32,8 @@ ENTITY gxidx IS
       Dir         : OUT    std_ulogic_vector (N_CHANNELS-1 DOWNTO 0);
       Run         : OUT    std_ulogic_vector (N_CHANNELS-1 DOWNTO 0);
       Step        : OUT    std_ulogic_vector (N_CHANNELS-1 DOWNTO 0);
-      Data        : INOUT  std_logic_vector (15 DOWNTO 0)
+      WData       : IN     std_logic_vector (15 DOWNTO 0);
+      RData       : OUT    std_logic_vector (15 DOWNTO 0)
    );
 
 -- Declarations
@@ -64,9 +65,10 @@ ARCHITECTURE struct OF gxidx IS
    SIGNAL OpCd    : std_logic_vector(2 DOWNTO 0);
    SIGNAL RdEn    : std_ulogic;
    SIGNAL WrEn    : std_ulogic;
-   SIGNAL iData   : std_logic_vector(15 DOWNTO 0);
    SIGNAL Ireq    : std_ulogic_vector (N_CHANNELS-1 DOWNTO 0);
    SIGNAL Running_int : std_ulogic_vector (N_CHANNELS-1 DOWNTO 0);
+   SIGNAL BdEn        : std_ulogic;
+   SIGNAL iRData      : std_logic_vector((N_CHANNELS-1)*16+15 DOWNTO 0);
 
 
    -- Component Declarations
@@ -91,67 +93,89 @@ ARCHITECTURE struct OF gxidx IS
          Run      : OUT    std_ulogic;
          Running  : OUT    std_ulogic;
          Step     : OUT    std_ulogic;
-         Data     : INOUT  std_logic_vector( 15 DOWNTO 0 )
+         WData    : IN     std_logic_vector ( 15 DOWNTO 0 );
+         RData    : OUT    std_logic_vector (15 DOWNTO 0)
       );
    END COMPONENT;
    
-   COMPONENT decode
-   GENERIC (
-      N_CHANNELS : integer range 15 downto 1 := 1;
-      BASE_ADDR : std_logic_vector (15 DOWNTO 0) := X"0A00"
-   );
-   PORT (
-      Addr    : IN     std_logic_vector (15 DOWNTO 0);
-      ExpRd   : IN     std_ulogic ;
-      ExpWr   : IN     std_ulogic ;
-      F8M     : IN     std_ulogic ;
-      rst     : IN     std_ulogic ;
-      ExpAck  : OUT    std_ulogic ;
-      WrEn    : OUT    std_ulogic ;
-      BdIntr  : OUT    std_ulogic ;
-      Chan    : OUT    std_ulogic_vector (N_CHANNELS-1 DOWNTO 0);
-      Running : IN     std_ulogic_vector (N_CHANNELS-1 DOWNTO 0);
-      Ireq    : IN     std_ulogic_vector (N_CHANNELS-1 DOWNTO 0);
-      OpCd    : OUT    std_logic_vector (2 DOWNTO 0);
-      Data    : INOUT  std_logic_vector (15 DOWNTO 0);
-      iData   : INOUT  std_logic_vector (15 DOWNTO 0);
-      RdEn    : OUT    std_ulogic ;
-      F4M     : OUT    std_ulogic 
-   );
+   COMPONENT subbus_io
+      PORT (
+         ExpRd  : IN     std_ulogic;
+         ExpWr  : IN     std_ulogic;
+         ExpAck : OUT    std_ulogic;
+         F8M    : IN     std_ulogic;
+         RdEn   : OUT    std_ulogic;
+         WrEn   : OUT    std_ulogic;
+         BdEn   : IN     std_ulogic
+      );
+   END COMPONENT;
+
+   COMPONENT idx_addr
+      GENERIC (
+         N_CHANNELS : integer range 15 downto 1      := 1;
+         BASE_ADDR  : std_logic_vector (15 DOWNTO 0) := X"0A00"
+      );
+      PORT (
+         Addr    : IN     std_logic_vector(15 DOWNTO 0);
+         BdEn    : OUT    std_ulogic;
+         Chan    : OUT    std_ulogic_vector(N_CHANNELS-1 DOWNTO 0);
+         OpCd    : OUT    std_logic_vector(2 DOWNTO 0);
+         Ireq    : IN     std_ulogic_vector(N_CHANNELS-1 DOWNTO 0);
+         BdIntr  : OUT    std_ulogic;
+         Running : IN     std_ulogic_vector(N_CHANNELS-1 DOWNTO 0);
+         RData   : OUT    std_logic_vector(15 DOWNTO 0);
+         iRData  : IN     std_logic_vector((N_CHANNELS-1)*16+15 DOWNTO 0);
+         RdEn    : IN     std_ulogic;
+         WData5  : IN     std_logic;
+         WrEn    : IN     std_ulogic;
+         F8M     : IN     std_ulogic;
+         F4M     : OUT    std_ulogic;
+         rst     : IN     std_ulogic
+      );
    END COMPONENT;
 
    -- Optional embedded configurations
    -- pragma synthesis_off
    FOR ALL : channel USE ENTITY idx_fpga_lib.channel;
-   FOR ALL : decode USE ENTITY idx_fpga_lib.decode;
+   FOR ALL : subbus_io USE ENTITY idx_fpga_lib.subbus_io;
+   FOR ALL : idx_addr USE ENTITY idx_fpga_lib.idx_addr;
    -- pragma synthesis_on
-
 
 BEGIN
 
-  decode_i : decode
-    GENERIC MAP (
-      N_CHANNELS => N_CHANNELS,
-      BASE_ADDR => BASE_ADDR
-    )
-    PORT MAP (
-      Addr    => Addr,
-      ExpRd   => ExpRd,
-      ExpWr   => ExpWr,
-      F8M     => F8M,
-      rst     => rst,
-      ExpAck  => ExpAck,
-      WrEn    => WrEn,
-      BdIntr  => BdIntr,
-      Chan    => Chan,
-      Running => Running_int,
-      Ireq    => Ireq,
-      OpCd    => OpCd,
-      Data    => Data,
-      iData   => iData,
-      RdEn    => RdEn,
-      F4M     => F4M
-    );
+  idx_addr_i : idx_addr
+     GENERIC MAP (
+        N_CHANNELS => N_CHANNELS,
+        BASE_ADDR  => BASE_ADDR
+     )
+     PORT MAP (
+        Addr    => Addr,
+        BdEn    => BdEn,
+        Chan    => Chan,
+        OpCd    => OpCd,
+        Ireq    => Ireq,
+        BdIntr  => BdIntr,
+        Running => Running_int,
+        RData   => RData,
+        iRData  => iRData,
+        RdEn    => RdEn,
+        WData5  => WData(5),
+        WrEn    => WrEn,
+        F8M     => F8M,
+        F4M     => F4M,
+        rst     => rst
+     );
+     
+  idx_io : subbus_io
+     PORT MAP (
+        ExpRd  => ExpRd,
+        ExpWr  => ExpWr,
+        ExpAck => ExpAck,
+        F8M    => F8M,
+        RdEn   => RdEn,
+        WrEn   => WrEn,
+        BdEn   => BdEn
+     );
     
   channels : for chno in 0 to N_CHANNELS-1 generate
     Ch : channel
@@ -175,7 +199,8 @@ BEGIN
          Run     => Run(chno),
          Running => Running_int(chno),
          Step    => Step(chno),
-         Data    => iData
+         WData   => WData,
+         RData   => iRData(chno*16+15 DOWNTO chno*16)
       );
   end generate;
 

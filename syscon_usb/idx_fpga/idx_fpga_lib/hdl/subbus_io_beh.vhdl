@@ -16,21 +16,15 @@ USE ieee.std_logic_1164.all;
 USE ieee.std_logic_arith.all;
 
 ENTITY subbus_io IS
-  PORT( 
-    Data    : INOUT  std_logic_vector (15 DOWNTO 0);
+  PORT(
     ExpRd   : IN     std_ulogic;
     ExpWr   : IN     std_ulogic;
     ExpAck  : OUT    std_ulogic;
     F8M     : IN     std_ulogic;
-    rst     : IN     std_ulogic;
-  
-    iData   : INOUT  std_logic_vector (15 DOWNTO 0);
     RdEn    : OUT    std_ulogic;
     WrEn    : OUT    std_ulogic;
     BdEn    : IN     std_ulogic
   );
-  -- Data is the external data bus
-  -- iData is the internal data bus that goes to the circuit
   -- ExpRd,ExpWr,ExpAck all external.
   -- RdEn, WrEn are our qualified versions
   -- RdEn and WrEn are both qualified with BdEn
@@ -79,32 +73,6 @@ BEGIN
       else
         RdEn_int <= '0';
         ExpAck <= '0';
-      end if;
-    end if;
-  end process;
-  
-  DataBus : process (F8M) is
-  begin
-    if F8M'event and F8M = '1' then
-      if rst = '1' then
-        Data <= (others => 'Z');
-      elsif ExpRd = '1' and BdEn = '1' then
-        Data <= iData;
-      else
-        Data <= (others => 'Z');
-      end if;
-    end if;
-  end process;
-
-  iDataBus : process (F8M) is
-  begin
-    if F8M'event and F8M = '1' then
-      if rst = '1' then
-        iData <= (others => 'Z');
-      elsif ExpRd = '1' and BdEn = '1' then
-        iData <= (others => 'Z');
-      else
-        iData <= Data;
       end if;
     end if;
   end process;

@@ -31,7 +31,8 @@ ARCHITECTURE rtl OF bench_DigIO IS
 
    -- Internal signal declarations
    SIGNAL Addr   : std_logic_vector(15 DOWNTO 0);
-   SIGNAL Data   : std_logic_vector(15 DOWNTO 0);
+   SIGNAL WData  : std_logic_vector(15 DOWNTO 0);
+   SIGNAL RData  : std_logic_vector(15 DOWNTO 0);
    SIGNAL ExpRd  : std_ulogic;
    SIGNAL ExpWr  : std_ulogic;
    SIGNAL ExpAck : std_ulogic;
@@ -52,7 +53,8 @@ ARCHITECTURE rtl OF bench_DigIO IS
       );
       PORT (
          Addr   : IN     std_logic_vector(15 DOWNTO 0);
-         Data   : INOUT  std_logic_vector(15 DOWNTO 0);
+         WData  : IN     std_logic_vector(15 DOWNTO 0);
+         RData  : OUT    std_logic_vector(15 DOWNTO 0);
          ExpRd  : IN     std_ulogic;
          ExpWr  : IN     std_ulogic;
          ExpAck : OUT    std_ulogic;
@@ -67,27 +69,62 @@ ARCHITECTURE rtl OF bench_DigIO IS
    -- pragma synthesis_off
    FOR DUT_DigIO : DigIO USE ENTITY idx_fpga_lib.DigIO;
    -- pragma synthesis_on
+   
+   function char_string( Ain : in std_logic_vector(3 DOWNTO 0) )
+   return string is
+   begin
+     case Ain is
+       when X"0" => return "0";
+       when X"1" => return "1";
+       when X"2" => return "2";
+       when X"3" => return "3";
+       when X"4" => return "4";
+       when X"5" => return "5";
+       when X"6" => return "6";
+       when X"7" => return "7";
+       when X"8" => return "8";
+       when X"9" => return "9";
+       when X"A" => return "A";
+       when X"B" => return "B";
+       when X"C" => return "C";
+       when X"D" => return "D";
+       when X"E" => return "E";
+       when X"F" => return "F";
+       when others => return "X";
+     end case;
+   end char_string;
+   
+   function word_string( Ain : in std_logic_vector(15 DOWNTO 0) )
+   return string is
+   begin
+     return
+       char_string(Ain(15 downto 12)) &
+       char_string(Ain(11 downto 8)) &
+       char_string(Ain(7 downto 4)) &
+       char_string(Ain(3 downto 0));
+   end word_string;
 
 BEGIN
 
-         DUT_DigIO : DigIO
-            GENERIC MAP (
-               DIGIO_BASE_ADDRESS => DIGIO_BASE_ADDRESS,
-               DIGIO_N_CONNECTORS => DIGIO_N_CONNECTORS,
-               DIGIO_FORCE_DIR => DIGIO_FORCE_DIR,
-               DIGIO_FORCE_DIR_VAL => DIGIO_FORCE_DIR_VAL
-            )
-            PORT MAP (
-               Addr   => Addr,
-               Data   => Data,
-               ExpRd  => ExpRd,
-               ExpWr  => ExpWr,
-               ExpAck => ExpAck,
-               F8M    => F8M,
-               rst    => rst,
-               IO     => IO,
-               Dir    => Dir
-            );
+  DUT_DigIO : DigIO
+    GENERIC MAP (
+       DIGIO_BASE_ADDRESS => DIGIO_BASE_ADDRESS,
+       DIGIO_N_CONNECTORS => DIGIO_N_CONNECTORS,
+       DIGIO_FORCE_DIR => DIGIO_FORCE_DIR,
+       DIGIO_FORCE_DIR_VAL => DIGIO_FORCE_DIR_VAL
+    )
+    PORT MAP (
+       Addr   => Addr,
+       WData  => WData,
+       RData  => RData,
+       ExpRd  => ExpRd,
+       ExpWr  => ExpWr,
+       ExpAck => ExpAck,
+       F8M    => F8M,
+       rst    => rst,
+       IO     => IO,
+       Dir    => Dir
+    );
 
     clock : Process
     Begin
@@ -114,13 +151,12 @@ BEGIN
         -- pragma synthesis_off
         wait until F8M'Event AND F8M = '1';
         Addr <= Addr_In;
-        Data <= Data_in;
+        WData <= Data_in;
         ExpWr <= '1';
         wait for 1 us;
         assert ExpAck = '1' report "No acknowledge on write" severity error;
         ExpWr <= '0';
         wait for 250 ns;
-        Data <= (others => 'Z');
         -- pragma synthesis_on
         return;
       end procedure sbwr;
@@ -134,7 +170,10 @@ BEGIN
         ExpRd <= '1';
         wait for 1 us;
         assert ExpAck = '1' report "No Acknowledge on read" severity error;
-        assert Data = expected report "Input Value Incorrect" severity error;
+        assert RData = expected
+         report "Input " & word_string(addr_in) & " Incorrect: "
+                & word_string(RData) & " expected " & word_string(expected)
+         severity error;
         ExpRd <= '0';
         wait for 40 ns;
         -- pragma synthesis_on
@@ -209,10 +248,10 @@ BEGIN
           end if;
         end loop;
       end loop;
-      -- initialize all ports to output
+      -- initialize all ports to input
       sbwr(X"0806", X"1313");
       sbwr(X"0826", X"1313");
-      sbrd_check(X"0806", X"1313");
+      sbrd_check(X"0806", X"1303"); -- Would be 1313, but we forced output on that port
       sbrd_check(X"0826", X"1313");
       IO <= (others => '0');
       wait for 40 ns;

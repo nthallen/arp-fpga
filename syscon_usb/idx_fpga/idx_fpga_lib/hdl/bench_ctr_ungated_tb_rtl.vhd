@@ -31,7 +31,8 @@ ARCHITECTURE rtl OF bench_ctr_ungated IS
 
    -- Internal signal declarations
    SIGNAL Addr   : std_logic_vector(15 DOWNTO 0);
-   SIGNAL Data   : std_logic_vector(15 DOWNTO 0);
+   SIGNAL WData  : std_logic_vector(15 DOWNTO 0);
+   SIGNAL RData  : std_logic_vector(15 DOWNTO 0);
    SIGNAL ExpRd  : std_ulogic;
    SIGNAL ExpWr  : std_ulogic;
    SIGNAL ExpAck : std_ulogic;
@@ -49,7 +50,8 @@ ARCHITECTURE rtl OF bench_ctr_ungated IS
       );
       PORT (
          Addr   : IN     std_logic_vector(15 DOWNTO 0);
-         Data   : INOUT  std_logic_vector(15 DOWNTO 0);
+         WData  : IN     std_logic_vector(15 DOWNTO 0);
+         RData  : OUT    std_logic_vector(15 DOWNTO 0);
          ExpRd  : IN     std_ulogic;
          ExpWr  : IN     std_ulogic;
          ExpAck : OUT    std_ulogic;
@@ -67,7 +69,8 @@ ARCHITECTURE rtl OF bench_ctr_ungated IS
       );
       PORT (
          Addr   : OUT    std_logic_vector(15 DOWNTO 0);
-         Data   : INOUT  std_logic_vector(15 DOWNTO 0);
+         WData  : OUT    std_logic_vector(15 DOWNTO 0);
+         RData  : IN     std_logic_vector(15 DOWNTO 0);
          ExpRd  : OUT    std_ulogic;
          ExpWr  : OUT    std_ulogic;
          ExpAck : IN     std_ulogic;
@@ -93,7 +96,8 @@ BEGIN
             )
             PORT MAP (
                Addr   => Addr,
-               Data   => Data,
+               WData  => WData,
+               RData  => RData,
                ExpRd  => ExpRd,
                ExpWr  => ExpWr,
                ExpAck => ExpAck,
@@ -110,7 +114,8 @@ BEGIN
             )
             PORT MAP (
                Addr   => Addr,
-               Data   => Data,
+               WData  => WData,
+               RData  => RData,
                ExpRd  => ExpRd,
                ExpWr  => ExpWr,
                ExpAck => ExpAck,

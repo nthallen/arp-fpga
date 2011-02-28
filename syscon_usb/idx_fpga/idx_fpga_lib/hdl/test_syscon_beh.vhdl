@@ -13,7 +13,7 @@ USE ieee.std_logic_arith.all;
 USE ieee.std_logic_unsigned.all;
 LIBRARY idx_fpga_lib;
 
-ENTITY syscon IS
+ENTITY test_syscon IS
   GENERIC(
     N_INTERRUPTS : integer range 15 downto 0 := 1;
     N_BOARDS : integer range 15 downto 0 := 1
@@ -41,10 +41,10 @@ ENTITY syscon IS
     Fail_Out : OUT std_ulogic;
     Flt_CPU_Reset : OUT std_ulogic -- 1sec reset pulse
   );
-END ENTITY syscon;
+END ENTITY test_syscon;
 
 --
-ARCHITECTURE arch OF syscon IS
+ARCHITECTURE arch OF test_syscon IS
   SIGNAL DataIn : std_logic_vector (15 DOWNTO 0);
   SIGNAL Addr_int : std_logic_vector(15 DOWNTO 0);
   SIGNAL Ctrl_int : std_logic_vector (6 DOWNTO 0); -- Arm_in, Tick, Rst, CE,CS,Wr,Rd
@@ -58,7 +58,6 @@ ARCHITECTURE arch OF syscon IS
   SIGNAL current_state : STATE_TYPE;
   TYPE DSTATE_TYPE IS ( d0, d1, d2, d3 );
   SIGNAL dcnt_state : DSTATE_TYPE;
-  SIGNAL Collision_int : std_ulogic;
 
   COMPONENT syscon_tick
      GENERIC (
@@ -130,14 +129,12 @@ BEGIN
   
   -- ExpAck is not qualified here by RdEn or WrEn, because it
   -- should be qualified downstream.
-  ackr : process (ExpAck, INTA_int, rst, Collision_int) is
+  ackr : process (ExpAck, INTA_int, rst) is
     Variable ack_i: std_ulogic;
     Variable n_ack: integer range N_BOARDS-1 DOWNTO 0;
-    Variable coll: std_ulogic;
   begin
       if rst = '1' then
-        Ack_int <= '0';
-        Collision_int <= '0';
+        Collision <= '0';
       else
         ack_i := INTA_int;
         if INTA_int = '1' then
@@ -152,15 +149,11 @@ BEGIN
           end if;
         end loop;
         Ack_int <= ack_i;
-        coll := Collision_int;
         if n_ack > 1 then
-          coll := '1';
+          Collision <= '1';
         end if;
-        Collision_int <= coll;
       end if;
   end process;
-  
-  Collision <= Collision_int;
   
   Failer : Process (Fail_In, TwoMinuteTO) IS
   Begin

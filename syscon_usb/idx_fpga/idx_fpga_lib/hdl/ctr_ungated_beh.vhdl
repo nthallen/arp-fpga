@@ -21,7 +21,8 @@ ENTITY ctr_ungated IS
   );
   PORT (
     Addr : IN std_logic_vector (15 DOWNTO 0);
-    Data    : INOUT  std_logic_vector (15 DOWNTO 0);
+    WData   : IN     std_logic_vector (15 DOWNTO 0);
+    RData   : OUT    std_logic_vector (15 DOWNTO 0);
     ExpRd   : IN     std_ulogic;
     ExpWr   : IN     std_ulogic;
     ExpAck  : OUT    std_ulogic;
@@ -36,7 +37,6 @@ ENTITY ctr_ungated IS
    type ctrdata_t is array (natural range <>) of
      std_logic_vector(15 downto 0);
    SIGNAL CtrData : ctrdata_t(N_COUNTERS-1 downto 0);
-   SIGNAL iData : std_logic_vector(15 DOWNTO 0);
    SIGNAL RdEn  : std_ulogic;
    SIGNAL WrEn  : std_ulogic;
    SIGNAL BdEn  : std_ulogic;
@@ -57,13 +57,10 @@ ENTITY ctr_ungated IS
    
    COMPONENT subbus_io
       PORT (
-         Data   : INOUT  std_logic_vector(15 DOWNTO 0);
          ExpRd  : IN     std_ulogic;
          ExpWr  : IN     std_ulogic;
          ExpAck : OUT    std_ulogic;
          F8M    : IN     std_ulogic;
-         rst    : IN     std_ulogic;
-         iData  : INOUT  std_logic_vector(15 DOWNTO 0);
          RdEn   : OUT    std_ulogic;
          WrEn   : OUT    std_ulogic;
          BdEn   : IN     std_ulogic
@@ -138,13 +135,10 @@ ENTITY ctr_ungated IS
 BEGIN
    subbus_io_i : subbus_io
       PORT MAP (
-         Data   => Data,
          ExpRd  => ExpRd,
          ExpWr  => ExpWr,
          ExpAck => ExpAck,
          F8M    => F8M,
-         rst    => rst,
-         iData  => iData,
          RdEn   => RdEn,
          WrEn   => WrEn,
          BdEn   => BdEn
@@ -211,25 +205,21 @@ BEGIN
     Status : process (F8M) is
     Begin
       if F8M'Event and F8M = '1' then
-        if RdEn = '1' then
-          if StatEn = '1' then
-            iData(N_COUNTERS-1 DOWNTO 0) <= OVF;
-            iData(2*N_COUNTERS-1 DOWNTO N_COUNTERS) <= OVF16;
-            iData(11 DOWNTO 8) <= std_logic_vector(Divisor);
-            iData(13 DOWNTO 12) <= (others => '0');
-            iData(14) <= L2Stat;
-            iData(15) <= ResynchStat;
-          elsif RevEn = '1' then
-            iData <= X"0002";
-          elsif CtrsEn = '1' then
-            iData <= CtrData(CtrEn);
-          else
-            iData <= (others => 'Z');
-          end if;
+        if StatEn = '1' then
+          RData(N_COUNTERS-1 DOWNTO 0) <= OVF;
+          RData(2*N_COUNTERS-1 DOWNTO N_COUNTERS) <= OVF16;
+          RData(11 DOWNTO 8) <= std_logic_vector(Divisor);
+          RData(13 DOWNTO 12) <= (others => '0');
+          RData(14) <= L2Stat;
+          RData(15) <= ResynchStat;
+        elsif RevEn = '1' then
+          RData <= X"0002";
+        elsif CtrsEn = '1' then
+          RData <= CtrData(CtrEn);
         else
-          iData <= (others => 'Z');
+          RData <= (others => '0');
         end if;
-      end if;
+    end if;
     End Process;
     
     DivReg : Process (F8M) is
@@ -238,7 +228,7 @@ BEGIN
         if rst = '1' then
           Divisor <= X"F";
         elsif WrEn = '1' and StatEn = '1' then
-          Divisor <= unsigned(iData(11 DOWNTO 8));
+          Divisor <= unsigned(WData(11 DOWNTO 8));
         end if;
       end if;
     End Process;

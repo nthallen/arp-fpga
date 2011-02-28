@@ -1,5 +1,5 @@
 --
--- VHDL Test Bench idx_fpga_lib.bench_syscon.syscon_tester
+-- VHDL Test Bench idx_fpga_lib.bench_test_syscon.test_syscon_tester
 --
 -- Created:
 --          by - nort.UNKNOWN (NORT-NBX200T)
@@ -13,18 +13,18 @@ USE ieee.std_logic_arith.all;
 USE ieee.std_logic_unsigned.all;
 
 
-ENTITY bench_syscon IS
+ENTITY bench_test_syscon IS
    GENERIC (
       N_INTERRUPTS : integer range 15 downto 0 := 1;
       N_BOARDS     : integer range 15 downto 0 := 3
    );
-END bench_syscon;
+END bench_test_syscon;
 
 
 LIBRARY idx_fpga_lib;
 
 
-ARCHITECTURE rtl OF bench_syscon IS
+ARCHITECTURE rtl OF bench_test_syscon IS
 
    -- Architecture declarations
 
@@ -64,7 +64,7 @@ ARCHITECTURE rtl OF bench_syscon IS
 
 
    -- Component declarations
-   COMPONENT syscon
+   COMPONENT test_syscon
       GENERIC (
          N_INTERRUPTS : integer range 15 downto 0 := 1;
          N_BOARDS     : integer range 15 downto 0 := 1
@@ -96,12 +96,12 @@ ARCHITECTURE rtl OF bench_syscon IS
 
    -- embedded configurations
    -- pragma synthesis_off
-   FOR DUT_syscon : syscon USE ENTITY idx_fpga_lib.syscon;
+   FOR DUT_test_syscon : test_syscon USE ENTITY idx_fpga_lib.test_syscon;
    -- pragma synthesis_on
 
 BEGIN
 
-  DUT_syscon : syscon
+  DUT_test_syscon : test_syscon
     GENERIC MAP (
        N_INTERRUPTS => N_INTERRUPTS,
        N_BOARDS     => N_BOARDS

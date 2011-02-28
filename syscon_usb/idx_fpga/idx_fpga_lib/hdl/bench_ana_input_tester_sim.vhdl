@@ -30,7 +30,8 @@ ENTITY bench_ana_input_tester IS
       F30M   : OUT    std_ulogic;
       RST    : OUT    std_ulogic;
       SDI    : OUT    std_ulogic_vector (1 DOWNTO 0);
-      Data   : INOUT  std_logic_vector (15 DOWNTO 0);
+      WData  : OUT    std_logic_vector (15 DOWNTO 0);
+      RData  : IN     std_logic_vector (15 DOWNTO 0);
       AIEn   : OUT    std_ulogic
    );
 
@@ -169,7 +170,7 @@ BEGIN
         wait until F8M_int'Event AND F8M_int = '1';
       end loop;
       assert ExpAck = '1' report "No Acknowledge on read" severity error;
-      Read_Result <= Data;
+      Read_Result <= RData;
       ExpRd <= '0';
       wait for 125 ns;
       -- pragma synthesis_on
@@ -180,7 +181,7 @@ BEGIN
                     Data_In : IN std_logic_vector (15 downto 0) ) is
     begin
       Addr <= Addr_In;
-      Data <= Data_in;
+      WData <= Data_in;
       -- pragma synthesis_off
       wait until F8M_int'Event AND F8M_int = '1';
       ExpWr <= '1';
@@ -190,7 +191,6 @@ BEGIN
       assert ExpAck = '1' report "No acknowledge on write" severity error;
       ExpWr <= '0';
       wait for 250 ns;
-      Data <= (others => 'Z');
       -- pragma synthesis_on
       return;
     end procedure sbwr;
@@ -255,7 +255,7 @@ BEGIN
     Done <= '0';
     ExpRd <= '0';
     ExpWr <= '0';
-    Data <= (others => 'Z');
+    WData <= (others => '0');
     RST_int <= '1';
     AIEn <= '1';
     -- pragma synthesis_off

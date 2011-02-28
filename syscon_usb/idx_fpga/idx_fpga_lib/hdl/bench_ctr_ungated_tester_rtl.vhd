@@ -21,7 +21,8 @@ ENTITY bench_ctr_ungated_tester IS
    );
    PORT (
       Addr   : OUT    std_logic_vector(15 DOWNTO 0);
-      Data   : INOUT  std_logic_vector(15 DOWNTO 0);
+      WData  : OUT    std_logic_vector(15 DOWNTO 0);
+      RData  : IN     std_logic_vector(15 DOWNTO 0);
       ExpRd  : OUT    std_ulogic;
       ExpWr  : OUT    std_ulogic;
       ExpAck : IN     std_ulogic;
@@ -106,7 +107,7 @@ BEGIN
         ExpRd <= '1';
         wait for 1 us;
         assert ExpAck = '1' report "No Acknowledge on read" severity error;
-        Read_Result <= Data;
+        Read_Result <= RData;
         ExpRd <= '0';
         wait for 125 ns;
         -- pragma synthesis_on
@@ -117,7 +118,7 @@ BEGIN
                       Data_In : IN std_logic_vector (15 downto 0) ) is
       begin
         Addr <= Addr_In;
-        Data <= Data_in;
+        WData <= Data_in;
         -- pragma synthesis_off
         wait for 40 ns;
         ExpWr <= '1';
@@ -125,7 +126,6 @@ BEGIN
         assert ExpAck = '1' report "No acknowledge on write" severity error;
         ExpWr <= '0';
         wait for 250 ns;
-        Data <= (others => 'Z');
         -- pragma synthesis_on
         return;
       end procedure sbwr;
@@ -141,7 +141,7 @@ BEGIN
         ExpRd <= '1';
         wait for 1 us;
         assert ExpAck = '1' report Tstr & ": No Acknowledge on read" severity error;
-        assert Data = expected report Tstr & ": Read did not match expected"
+        assert RData = expected report Tstr & ": Read did not match expected"
             severity error;
         ExpRd <= '0';
         wait for 125 ns;
@@ -244,7 +244,7 @@ BEGIN
     Begin
       Done <= '0';
       Addr <= (others => '0');
-      Data <= (others => 'Z');
+      WData <= (others => '0');
       ExpRd <= '0';
       ExpWr <= '0';
       rst <= '1';

@@ -141,6 +141,7 @@ ARCHITECTURE beh OF DACSbd IS
    SIGNAL cmd_dio                        : std_logic_vector(CMD_PROC_N_CMDS*2-1 DOWNTO 0);
    SIGNAL cmd_out                        : std_logic_vector(CMD_PROC_N_CMDS-1 DOWNTO 0);
    SIGNAL RST                            : std_ulogic;
+   SIGNAL Collision                      : std_ulogic;
    
    COMPONENT dacs
      GENERIC (
@@ -175,6 +176,7 @@ ARCHITECTURE beh OF DACSbd IS
        subbus_fail_leds               : OUT    std_logic_vector(4 downto 0);
        subbus_flt_cpu_reset           : OUT    std_ulogic;
        subbus_reset                   : OUT    std_ulogic;
+       Collision                      : OUT    std_ulogic;
 
        DACS_switches                  : IN     std_logic_vector(3 downto 0);
 
@@ -251,6 +253,7 @@ BEGIN
        subbus_fail_leds               => subbus_fail_leds,
        subbus_flt_cpu_reset           => subbus_flt_cpu_reset,
        subbus_reset                   => RST,
+       Collision                      => Collision,
        DACS_switches                  => GPIO_SW,
        idx_Run                        => idx_Run,
        idx_Step                       => idx_Step,
@@ -354,6 +357,8 @@ BEGIN
   FPGA_CMDSTRB	<= subbus_cmdstrb;
   FPGA_CMDSTRB_B	<= not subbus_cmdstrb;
   GPIO_ERROR_LED	<= subbus_fail_leds(0);
-  GPIO_LED <= subbus_fail_leds(4 DOWNTO 1);
+  GPIO_LED(2 DOWNTO 0) <= subbus_fail_leds(3 DOWNTO 1);
+  GPIO_LED(3) <= Collision;
+  -- GPIO_LED <= subbus_fail_leds(4 DOWNTO 1);
 END ARCHITECTURE beh;
 
