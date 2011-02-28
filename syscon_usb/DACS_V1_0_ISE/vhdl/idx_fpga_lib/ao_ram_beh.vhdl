@@ -13,12 +13,13 @@ USE ieee.std_logic_arith.all;
 
 ENTITY ao_ram IS
    PORT( 
-      Addr  : IN     std_logic_vector (15 DOWNTO 0);
       F8M   : IN     std_ulogic;
       RdEn  : IN     std_ulogic;
       WrEn  : IN     std_ulogic;
       rst   : IN     std_ulogic;
-      iData : INOUT  std_logic_vector (15 DOWNTO 0)
+      WData : IN     std_logic_vector (15 DOWNTO 0);
+      RData : OUT    std_logic_vector (15 DOWNTO 0);
+      Addr  : IN     std_logic_vector (15 DOWNTO 0)
    );
 
 -- Declarations
@@ -45,7 +46,7 @@ BEGIN
         for i in 3 downto 0 loop
           cacheaddr(i) := Addr(i+1);
         end loop;
-        ao_cache(conv_integer(cacheaddr)) <= iData;
+        ao_cache(conv_integer(cacheaddr)) <= WData;
       end if;
     end if;
   End Process;
@@ -58,9 +59,7 @@ BEGIN
         for i in 3 downto 0 loop
           cacheaddr(i) := Addr(i+1);
         end loop;
-        iData <= ao_cache(conv_integer(cacheaddr));
-      else
-        iData <= (others => 'Z');
+        RData <= ao_cache(conv_integer(cacheaddr));
       end if;
     end if;
   End Process;

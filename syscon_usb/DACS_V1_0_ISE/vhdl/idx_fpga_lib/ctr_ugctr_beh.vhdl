@@ -16,15 +16,15 @@ ENTITY ctr_ugctr IS
     N_BITS : integer range 32 DOWNTO 16 := 20
   );
   PORT (
-    PMT : IN std_ulogic;
-    CntEn : IN std_ulogic;
-    RegEn : IN std_ulogic;
+    PMT    : IN std_ulogic;
+    CntEn  : IN std_ulogic;
+    RegEn  : IN std_ulogic;
     CntClr : IN std_ulogic;
-    F8M : IN std_ulogic;
-    HW_En : IN std_ulogic;
-    Data : OUT std_logic_vector (15 DOWNTO 0);
-    OVF : OUT std_ulogic;
-    OVF16 : OUT std_ulogic
+    F8M    : IN std_ulogic;
+    HW_En  : IN std_ulogic;
+    Data   : OUT std_logic_vector (15 DOWNTO 0);
+    OVF    : OUT std_ulogic;
+    OVF16  : OUT std_ulogic
   );
 END ENTITY ctr_ugctr;
 

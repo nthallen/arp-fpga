@@ -27,17 +27,19 @@ ENTITY syscon IS
     Status : OUT std_logic_vector (3 DOWNTO 0); -- 2SecTO, ExpIntr,Ack,Done
     ExpRd : OUT std_logic;
     ExpWr : OUT std_logic;
-    ExpData : INOUT std_logic_vector (15 DOWNTO 0);
+    WData : OUT std_logic_vector (15 DOWNTO 0);
+    RData : IN std_logic_vector (16*N_BOARDS-1 DOWNTO 0);
     ExpAddr : OUT std_logic_vector (15 DOWNTO 0);
     ExpAck : IN std_logic_vector (N_BOARDS-1 DOWNTO 0);
     BdIntr : IN std_ulogic_vector(N_INTERRUPTS-1 downto 0);
+    Collision : OUT std_ulogic;
     INTA    : OUT std_ulogic;
-	  CmdEnbl : OUT std_ulogic;
-	  CmdStrb : OUT std_ulogic;
-	  ExpReset : OUT std_ulogic;
-	  Fail_In : IN std_ulogic;
-	  Fail_Out : OUT std_ulogic;
-	  Flt_CPU_Reset : OUT std_ulogic -- 1sec reset pulse
+    CmdEnbl : OUT std_ulogic;
+    CmdStrb : OUT std_ulogic;
+    ExpReset : OUT std_ulogic;
+    Fail_In : IN std_ulogic;
+    Fail_Out : OUT std_ulogic;
+    Flt_CPU_Reset : OUT std_ulogic -- 1sec reset pulse
   );
 END ENTITY syscon;
 
@@ -56,6 +58,7 @@ ARCHITECTURE arch OF syscon IS
   SIGNAL current_state : STATE_TYPE;
   TYPE DSTATE_TYPE IS ( d0, d1, d2, d3 );
   SIGNAL dcnt_state : DSTATE_TYPE;
+  SIGNAL Collision_int : std_ulogic;
 
   COMPONENT syscon_tick
      GENERIC (
@@ -101,14 +104,11 @@ BEGIN
       F8M         => F8M
     );
 
+  -- Synchronize to F8M
   ExpAddrDataBus : process (F8M) is
   begin
     if F8M'Event and F8M = '1' then
-      if RdEn = '1' then
-        ExpData <= (others => 'Z');
-      else
-        ExpData <= Data_o;
-      end if;
+      WData <= Data_o;
       Addr_int <= Addr;
       Ctrl_int <= Ctrl;
     end if;
@@ -130,17 +130,37 @@ BEGIN
   
   -- ExpAck is not qualified here by RdEn or WrEn, because it
   -- should be qualified downstream.
-  ackr : process (ExpAck, INTA_int) is
+  ackr : process (ExpAck, INTA_int, rst, Collision_int) is
     Variable ack_i: std_ulogic;
+    Variable n_ack: integer range N_BOARDS-1 DOWNTO 0;
+    Variable coll: std_ulogic;
   begin
-    ack_i := INTA_int;
-    for i in N_BOARDS-1 DOWNTO 0 loop
-      if ExpAck(i) = '1' then
-        ack_i := '1';
+      if rst = '1' then
+        Ack_int <= '0';
+        Collision_int <= '0';
+      else
+        ack_i := INTA_int;
+        if INTA_int = '1' then
+          n_ack := 1;
+        else
+          n_ack := 0;
+        end if;
+        for i in N_BOARDS-1 DOWNTO 0 loop
+          if ExpAck(i) = '1' then
+            ack_i := '1';
+            n_ack := n_ack+1;
+          end if;
+        end loop;
+        Ack_int <= ack_i;
+        coll := Collision_int;
+        if n_ack > 1 then
+          coll := '1';
+        end if;
+        Collision_int <= coll;
       end if;
-    end loop;
-    Ack_int <= ack_i;
-end process;
+  end process;
+  
+  Collision <= Collision_int;
   
   Failer : Process (Fail_In, TwoMinuteTO) IS
   Begin
@@ -160,6 +180,7 @@ end process;
 
   -- outputs ExpRd, INTA_int, ExpWr, Ack, DataIn, Start
   clocked_proc : PROCESS ( F8M )
+    variable ack_n : integer range N_BOARDS-1 downto 0;
   BEGIN
     IF (F8M'EVENT AND F8M = '1') THEN
       if rst = '1' then
@@ -206,7 +227,15 @@ end process;
               ExpRd <= '0';
             else
               Ack <= ack_int;
-              DataIn <= ExpData;
+              if ack_int = '1' then
+                ack_n := 0;
+                for i in 0 to N_BOARDS-1 loop
+                  if ExpAck(i) = '1' then
+                    ack_n := i;
+                  end if;
+                end loop;
+                DataIn <= RData(16*ack_n+15 DOWNTO 16*ack_n);
+              end if;
             end if;
           WHEN sc1w =>
             if Done_int = '1' then
