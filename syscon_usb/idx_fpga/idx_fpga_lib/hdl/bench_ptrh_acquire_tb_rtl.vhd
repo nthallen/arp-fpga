@@ -36,7 +36,6 @@ ARCHITECTURE rtl OF bench_ptrh_acquire IS
    SIGNAL SDA   : std_logic;
    SIGNAL Done  : std_ulogic;
 
-
    -- Component declarations
    COMPONENT ptrh_acquire
       PORT (
@@ -49,27 +48,50 @@ ARCHITECTURE rtl OF bench_ptrh_acquire IS
          WrEn  : OUT    std_ulogic_vector(12 DOWNTO 0)
       );
    END COMPONENT;
-   COMPONENT mock_sht21_sm
+
+   COMPONENT i2c_slave
       GENERIC (
-         I2C_Addr : std_logic_vector(6 DOWNTO 0) := "1000000"
+         I2C_ADDR : std_logic_vector(6 DOWNTO 0) := "1000000"
       );
       PORT (
-         CLK : IN     std_logic;
-         SCL : IN     std_logic;
-         rst : IN     std_logic;
-         SDA : INOUT  std_logic
+         clk : IN     std_ulogic;
+         rst : IN     std_ulogic;
+         scl : IN     std_logic;
+         sda : INOUT  std_logic
       );
    END COMPONENT;
 
    -- embedded configurations
    -- pragma synthesis_off
-   FOR U_0 : ptrh_acquire USE ENTITY idx_fpga_lib.ptrh_acquire;
-   FOR ALL : mock_sht21_sm USE ENTITY idx_fpga_lib.mock_sht21_sm;
+   FOR DUT : ptrh_acquire USE ENTITY idx_fpga_lib.ptrh_acquire;
+   FOR ALL : i2c_slave USE ENTITY idx_fpga_lib.i2c_slave;
    -- pragma synthesis_on
 
 BEGIN
+   --  hds hds_inst
+   sht21 : i2c_slave
+      GENERIC MAP (
+         I2C_ADDR => "1000000"
+      )
+      PORT MAP (
+         clk => F25M,
+         rst => rst,
+         scl => SCL,
+         sda => SDA
+      );
 
-   U_0 : ptrh_acquire
+     ms5607 : i2c_slave
+     GENERIC MAP (
+        I2C_Addr => "1110111"
+     )
+     PORT MAP (
+        clk => F25M,
+        scl => SCL,
+        rst => rst,
+        sda => SDA
+     );
+
+   DUT : ptrh_acquire
       PORT MAP (
          F25M  => F25M,
          Full  => Full,
@@ -98,17 +120,6 @@ BEGIN
     SCL <= 'H';
     SDA <= 'H';
     Full <= (others => '0');
-
-   sht21 : mock_sht21_sm
-      GENERIC MAP (
-         I2C_Addr => "1000000"
-      )
-      PORT MAP (
-         CLK => F25M,
-         SCL => SCL,
-         rst => rst,
-         SDA => SDA
-      );
 
   test_proc : Process Is
   Begin
