@@ -11,7 +11,6 @@ LIBRARY ieee;
 USE ieee.std_logic_1164.all;
 USE ieee.std_logic_arith.all;
 LIBRARY idx_fpga_lib;
-USE idx_fpga_lib.All;
 
 ENTITY ptrh_dprams IS
    PORT (
@@ -24,20 +23,21 @@ ENTITY ptrh_dprams IS
       hold_D2 : IN     std_ulogic;
       wData   : IN     std_logic_vector(23 DOWNTO 0);
       Full    : OUT    std_ulogic_vector(12 DOWNTO 0);
-      iData   : OUT    std_logic_vector(15 DOWNTO 0)
+      rData   : OUT    std_logic_vector(15 DOWNTO 0)
    );
 END ptrh_dprams;
 
 --
 ARCHITECTURE beh OF ptrh_dprams IS
+   type iRData_t is array (12 DOWNTO 0) of std_logic_vector(15 DOWNTO 0);
    SIGNAL hold : std_logic_vector(12 DOWNTO 0);
+   SIGNAL iRData : iRData_t;
    COMPONENT ptrh_dpram
       PORT (
-         RegEn : IN     std_logic;
          F8M   : IN     std_ulogic;
          RdEn  : IN     std_ulogic;
          hold  : IN     std_logic;
-         iData : OUT    std_logic_vector(15 DOWNTO 0);
+         rData : OUT    std_logic_vector(15 DOWNTO 0);
          wData : IN     std_logic_vector(15 DOWNTO 0);
          WrEn  : IN     std_ulogic;
          F25M  : IN     std_ulogic;
@@ -56,11 +56,10 @@ BEGIN
     reg24 : if i = 10 OR i = 12 generate
       hi: ptrh_dpram
         PORT MAP (
-           RegEn => RegEn(i),
            F8M   => F8M,
            RdEn  => RdEn,
            hold  => hold(i),
-           iData => iData,
+           rData => iRData(i),
            wData(7 DOWNTO 0) => wData(23 DOWNTO 16),
            wData(15 DOWNTO 8) => X"00",
            WrEn  => WrEn(i),
@@ -71,11 +70,10 @@ BEGIN
     reg16 : if i /= 10 AND i /= 12 generate
       lo: ptrh_dpram
         PORT MAP (
-           RegEn => RegEn(i),
            F8M   => F8M,
            RdEn  => RdEn,
            hold  => hold(i),
-           iData => iData,
+           rData => iRData(i),
            wData => wData(15 DOWNTO 0),
            WrEn  => WrEn(i),
            F25M  => F25M,
@@ -83,5 +81,15 @@ BEGIN
         );
     end generate;
   end generate;
+  
+  rData_p : Process (RegEn, iRData) Is
+  Begin
+    rData <= (others => '0');
+    for i in 12 DOWNTO 0 loop
+      if RegEn(i) = '1' then
+        rData <= iRData(i);
+      end if;
+    end loop;
+  End Process;
 END ARCHITECTURE beh;
 

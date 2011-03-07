@@ -13,7 +13,7 @@ USE ieee.std_logic_1164.all;
 
 ENTITY bench_i2c_master_top IS
    GENERIC (
-      ARST_LVL : std_logic := '0'
+      ARST_LVL : std_logic := '1'
    );
 END bench_i2c_master_top;
 
@@ -242,7 +242,7 @@ BEGIN
       End Procedure;
                           
     Begin
-      arst_i <= '0';
+      arst_i <= '1';
       wb_rst_i <= '0';
       Done <= '0';
       wb_stb_i <= '0';
@@ -250,7 +250,7 @@ BEGIN
       wb_cyc_i <= '0';
       -- pragma synthesis_off
       wait for 1 us;
-      arst_i <= '1';
+      arst_i <= '0';
       wait for 1 us;
       wait until wb_clk_i'Event AND wb_clk_i = '1';
       wb_wr( "000", X"2D" ); -- Set prescale register (try higher value...)

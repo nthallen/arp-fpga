@@ -13,11 +13,10 @@ USE ieee.std_logic_arith.all;
 
 ENTITY ptrh_dpram IS
    PORT( 
-      RegEn : IN     std_logic;
       F8M   : IN     std_ulogic;
       RdEn  : IN     std_ulogic;
       hold  : IN     std_logic;
-      iData : OUT    std_logic_vector (15 DOWNTO 0);
+      rData : OUT    std_logic_vector (15 DOWNTO 0);
       wData : IN     std_logic_vector (15 DOWNTO 0);
       WrEn  : IN     std_ulogic;
       F25M  : IN     std_ulogic;
@@ -47,17 +46,6 @@ BEGIN
     end if;
   End Process;
   
-  D_proc : Process (F8M) IS
-  Begin
-    if F8M'Event AND F8M = '1' then
-      if RdEn = '1' and RegEn = '1' then
-        iData <= R1;
-      else
-        iData <= (others => 'Z');
-      end if;
-    end if;
-  End Process;
-  
   R0_proc : Process (F25M) IS
   Begin
     if F25M'Event AND F25M = '1' then
@@ -71,6 +59,7 @@ BEGIN
   End Process;
   
   Full <= Full_int;
+  rData <= R1;
   
 END ARCHITECTURE beh;
 
