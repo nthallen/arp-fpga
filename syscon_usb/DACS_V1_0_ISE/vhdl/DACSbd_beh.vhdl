@@ -168,8 +168,8 @@ ARCHITECTURE beh OF DACSbd IS
        fpga_0_RS232_RX_pin            : IN     std_logic;
        fpga_0_RS232_TX_pin            : OUT    std_logic;
 
-       fpga_0_Generic_IIC_Bus_Sda_pin : INOUT  std_logic;
-       fpga_0_Generic_IIC_Bus_Scl_pin : INOUT  std_logic;
+       IIC_Sda_pin                    : INOUT  std_logic;
+       IIC_Scl_pin                    : INOUT  std_logic;
 
        subbus_cmdenbl                 : OUT    std_ulogic;
        subbus_cmdstrb                 : OUT    std_ulogic;
@@ -246,8 +246,8 @@ BEGIN
 
        fpga_0_RS232_RX_pin            => USB_1_RX,
        fpga_0_RS232_TX_pin            => USB_1_TX,
-       fpga_0_Generic_IIC_Bus_Sda_pin => IIC_SDA,
-       fpga_0_Generic_IIC_Bus_Scl_pin => IIC_SCL,
+       IIC_Sda_pin                    => IIC_SDA,
+       IIC_Scl_pin                    => IIC_SCL,
        subbus_cmdenbl                 => subbus_cmdenbl,
        subbus_cmdstrb                 => subbus_cmdstrb,
        subbus_fail_leds               => subbus_fail_leds,
