@@ -157,8 +157,10 @@ BEGIN
   
 
   test_proc : Process
+    type cfg_array_t is array(7 DOWNTO 0) of std_logic_vector(15 DOWNTO 0);
     Variable CvtdRow : unsigned(4 DOWNTO 0);
     Variable AddrV : unsigned(15 DOWNTO 0);
+    Variable cfg_vals : cfg_array_t;
     
     procedure sbrd( addr_in : std_logic_vector (15 DOWNTO 0) ) is
     begin
@@ -258,6 +260,15 @@ BEGIN
     WData <= (others => '0');
     RST_int <= '1';
     AIEn <= '1';
+    cfg_vals(0) := X"0001";
+    cfg_vals(1) := X"0002";
+    cfg_vals(2) := X"0000";
+    cfg_vals(3) := X"0008";
+    cfg_vals(4) := X"0010";
+    cfg_vals(5) := X"0018";
+    cfg_vals(6) := X"0014";
+    cfg_vals(7) := X"001C";
+
     -- pragma synthesis_off
     wait until F8M_int'Event AND F8M_int = '1';
     RST_int <= '0';
@@ -265,31 +276,41 @@ BEGIN
     for row in 0 to 7 loop
       for col in 0 to 7 loop
         AddrV := conv_unsigned(16#C00# + row*32 + col*2,16);
-        sbwr( std_logic_vector(AddrV), X"0014" );
+        -- sbwr( std_logic_vector(AddrV), X"0014" );
+        sbwr( std_logic_vector(AddrV), cfg_vals(row) );
         AddrV := conv_unsigned(16#C10# + row*32 + col*2,16);
-        sbwr( std_logic_vector(AddrV), X"0014" );
+        -- sbwr( std_logic_vector(AddrV), X"0014" );
+        sbwr( std_logic_vector(AddrV), cfg_vals(row) );
       end loop;
     end loop;
-    sbwr( X"0C20", X"0000" );
-    sbwr( X"0C60", X"0000" );
-    sbwr( X"0CA0", X"0000" );
-    sbwr( X"0CE0", X"0000" );
-    sbwr( X"0C0E", X"0008" );
-    sbwr( X"0C4E", X"0008" );
-    sbwr( X"0C8E", X"0008" );
-    sbwr( X"0CCE", X"0008" );
+    sbwr( X"0C1E", X"0100" );
+--    sbwr( X"0C20", X"0000" );
+--    sbwr( X"0C60", X"0000" );
+--    sbwr( X"0CA0", X"0000" );
+--    sbwr( X"0CE0", X"0000" );
+--    sbwr( X"0C0E", X"0008" );
+--    sbwr( X"0C4E", X"0008" );
+--    sbwr( X"0C8E", X"0008" );
+--    sbwr( X"0CCE", X"0008" );
     wait for 220 us;
-    for row in 0 to 7 loop
-      for col in 0 to 7 loop
-        AddrV := conv_unsigned(16#C00# + row*32 + col*2,16);
-        check_chan( std_logic_vector(AddrV), X"0014", std_logic_vector(AddrV) );
-        AddrV := conv_unsigned(16#C10# + row*32 + col*2,16);
-        check_chan( std_logic_vector(AddrV), X"0014", std_logic_vector(AddrV) );
+    
+    for loopcnt in 0 to 50 loop
+      for row in 0 to 7 loop
+        for col in 0 to 7 loop
+          AddrV := conv_unsigned(16#C00# + row*32 + col*2,16);
+          check_chan( std_logic_vector(AddrV), cfg_vals(row), std_logic_vector(AddrV) );
+          AddrV := conv_unsigned(16#C10# + row*32 + col*2,16);
+          if Addrv = 16#C1E# then
+            check_chan( std_logic_vector(AddrV), X"0100", std_logic_vector(AddrV) );
+          else
+            check_chan( std_logic_vector(AddrV), cfg_vals(row), std_logic_vector(AddrV) );
+          end if;
+        end loop;
       end loop;
     end loop;
     
-    sbwr( X"0C02", X"0100" );
-    sbwr( X"0C12", X"0120" );
+--    sbwr( X"0C02", X"0100" );
+--    sbwr( X"0C12", X"0120" );
         
 --    sbwr( X"0C20", X"001C" );
 --    sbwr( X"0C34", X"0010" );

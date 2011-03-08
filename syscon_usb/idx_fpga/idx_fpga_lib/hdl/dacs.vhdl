@@ -46,8 +46,8 @@ entity dacs is
       
       fpga_0_RS232_RX_pin : IN std_logic;
       fpga_0_RS232_TX_pin : OUT std_logic;
-      fpga_0_Generic_IIC_Bus_Sda_pin : INOUT std_logic;
-      fpga_0_Generic_IIC_Bus_Scl_pin : INOUT std_logic;
+      IIC_Sda_pin : INOUT std_logic;
+      IIC_Scl_pin : INOUT std_logic;
       
       subbus_cmdenbl : OUT std_ulogic;
       subbus_cmdstrb : OUT std_ulogic;
@@ -256,13 +256,33 @@ architecture Behavioral of dacs is
         RData     : OUT    std_logic_vector(15 DOWNTO 0)
      );
   END COMPONENT;
+  
+  COMPONENT ptrh
+     GENERIC (
+        BASE_ADDR : unsigned(15 DOWNTO 0) := X"0300"
+     );
+     PORT (
+        Addr   : IN     std_logic_vector(15 DOWNTO 0);
+        ExpRd  : IN     std_ulogic;
+        ExpWr  : IN     std_ulogic;
+        F25M   : IN     std_ulogic;
+        F8M    : IN     std_ulogic;
+        rst    : IN     std_ulogic;
+        ExpAck : OUT    std_ulogic;
+        rData  : OUT    std_logic_vector(15 DOWNTO 0);
+        scl    : INOUT  std_logic;
+        sda    : INOUT  std_logic
+     );
+  END COMPONENT;
+  
   FOR ALL : ctr_ungated USE ENTITY idx_fpga_lib.ctr_ungated;
   FOR ALL : ao USE ENTITY idx_fpga_lib.ao;
+  FOR ALL : ptrh USE ENTITY idx_fpga_lib.ptrh;
 
 	attribute box_type : string;
 	attribute box_type of Processor : component is "user_black_box";
 	
-	CONSTANT N_BOARDS : integer := 4+CTR_UG_N_BDS;
+	CONSTANT N_BOARDS : integer := 5+CTR_UG_N_BDS;
 	SIGNAL clk_8_0000MHz : std_logic;
 	SIGNAL clk_30_0000MHz : std_logic;
 	SIGNAL clk_66_6667MHz : std_logic;
@@ -288,11 +308,10 @@ architecture Behavioral of dacs is
   SIGNAL ana_in_RdyOut : std_ulogic; -- Not used?
   SIGNAL not_FTDI_TXE_pin : std_ulogic; --  not FTDI_TXE_pin
   SIGNAL not_FTDI_RXF_pin : std_ulogic; --  not FTDI_RXF_pin
+
 begin
 	Inst_Processor: Processor
 	 PORT MAP(
-     -- fpga_0_Generic_IIC_Bus_Sda_pin => fpga_0_Generic_IIC_Bus_Sda_pin,
-     -- fpga_0_Generic_IIC_Bus_Scl_pin => fpga_0_Generic_IIC_Bus_Scl_pin,
      -- fpga_0_RS232_RX_pin => fpga_0_RS232_RX_pin,
      -- fpga_0_RS232_TX_pin => fpga_0_RS232_TX_pin,
      fpga_0_clk_1_sys_clk_pin => fpga_0_clk_1_sys_clk_pin,
@@ -434,6 +453,23 @@ begin
         RData     => iRData(16*3+15 DOWNTO 16*3)
      );
 
+   ptrh_i : ptrh
+      GENERIC MAP (
+         BASE_ADDR => X"0300"
+      )
+      PORT MAP (
+         Addr   => ExpAddr,
+         ExpRd  => ExpRd,
+         ExpWr  => ExpWr,
+         F25M   => clk_30_0000MHz,
+         F8M    => clk_8_0000MHz,
+         rst    => rst,
+         ExpAck => ExpAck(4),
+         rData  => iRData(16*4+15 DOWNTO 16*4),
+         scl    => IIC_SCL_pin,
+         sda    => IIC_SDA_pin
+      );
+
   ctrs : for i in 0 TO CTR_UG_N_BDS-1 generate
     
     ctr_ug: ctr_ungated
@@ -448,12 +484,13 @@ begin
          ExpWr  => ExpWr,
          F8M    => clk_8_0000MHz,
          rst    => rst,
-         PMT    => ctr_PMT(i*4+3 DOWNTO i*4),
+         PMT    => ctr_PMT(i*5+3 DOWNTO i*5),
          WData  => WData,
-         ExpAck => ExpAck(4+i),
-         RData  => iRData(16*(4+i)+15 DOWNTO 16*(4+i))
+         ExpAck => ExpAck(5+i),
+         RData  => iRData(16*(5+i)+15 DOWNTO 16*(5+i))
       );
   end generate;
+
 
   subbus_cmdenbl <= CmdEnbl;
   subbus_cmdstrb <= CmdStrb;
