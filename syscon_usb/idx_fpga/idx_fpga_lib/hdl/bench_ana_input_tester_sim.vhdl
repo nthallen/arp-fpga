@@ -200,7 +200,8 @@ BEGIN
     procedure check_chan( RD_Addr : IN std_logic_vector(15 downto 0);
                           Cfg_In  : IN std_logic_vector(15 downto 0);
                           Addr_In : IN std_logic_vector(15 downto 0)) is
-      variable CvtdRow : unsigned(4 downto 0);
+      variable CvtdRow : unsigned(15 downto 0);
+      variable ReadRow : unsigned(15 downto 0);
       variable Addr_U : unsigned(15 downto 0);
     begin
       sbrd( RD_Addr );
@@ -220,10 +221,17 @@ BEGIN
       if RD_Addr(8) = '0' then
         -- The CvtCnt test only applies reasonably to
         -- non-remuxed channels.
-        CvtdRow := CvtCnt(7 DOWNTO 3);
-        assert Read_Result(7 Downto 3) = conv_std_logic_vector(CvtdRow,5)
-            OR Read_Result(7 DOWNTO 3) = conv_std_logic_vector(CvtdRow-1,5)
-          report "Cvt Count does not match: Addr: " & word_string(RD_Addr)
+        CvtdRow := (others => '0');
+        CvtdRow(4 DOWNTO 0) := CvtCnt(7 DOWNTO 3);
+        ReadRow := (others => '0');
+        for i in 4 downto 0 loop
+          ReadRow(i) := Read_Result(i+3);
+        end loop;
+        assert ( CvtdRow >= 16 AND ReadRow <= CvtdRow AND ReadRow >= CvtdRow-16) OR
+            ( CvtdRow < 16 AND ( ReadRow <= CvtdRow OR ReadRow >= CvtdRow+16 ))
+          report "Cvt Count does not match: Addr: " & word_string(RD_Addr) &
+            " Read: " & word_string(conv_std_logic_vector(ReadRow,16)) &
+            " Cvtd: " & word_string(conv_std_logic_vector(CvtdRow,16))
           severity error;
       end if;
       for i in 15 downto 0 loop
@@ -284,14 +292,8 @@ BEGIN
       end loop;
     end loop;
     sbwr( X"0C1E", X"0100" );
---    sbwr( X"0C20", X"0000" );
---    sbwr( X"0C60", X"0000" );
---    sbwr( X"0CA0", X"0000" );
---    sbwr( X"0CE0", X"0000" );
---    sbwr( X"0C0E", X"0008" );
---    sbwr( X"0C4E", X"0008" );
---    sbwr( X"0C8E", X"0008" );
---    sbwr( X"0CCE", X"0008" );
+    sbwr( X"0C5E", X"0120" );
+    sbwr( X"0C9E", X"0140" );
     wait for 220 us;
     
     for loopcnt in 0 to 50 loop
@@ -302,6 +304,10 @@ BEGIN
           AddrV := conv_unsigned(16#C10# + row*32 + col*2,16);
           if Addrv = 16#C1E# then
             check_chan( std_logic_vector(AddrV), X"0100", std_logic_vector(AddrV) );
+          elsif Addrv = 16#C5E# then
+            check_chan( std_logic_vector(AddrV), X"0120", std_logic_vector(AddrV) );
+          elsif Addrv = 16#C9E# then
+            check_chan( std_logic_vector(AddrV), X"0140", std_logic_vector(AddrV) );
           else
             check_chan( std_logic_vector(AddrV), cfg_vals(row), std_logic_vector(AddrV) );
           end if;
@@ -309,72 +315,40 @@ BEGIN
       end loop;
     end loop;
     
---    sbwr( X"0C02", X"0100" );
---    sbwr( X"0C12", X"0120" );
-        
---    sbwr( X"0C20", X"001C" );
---    sbwr( X"0C34", X"0010" );
---    sbwr( X"0C46", X"0114" );
---    sbwr( X"0D00", X"0000" );
---    sbwr( X"0D02", X"0001" );
---    sbwr( X"0D04", X"0002" );
---    sbwr( X"0D06", X"0003" );
---    sbwr( X"0D08", X"0004" );
---    sbwr( X"0D0A", X"0005" );
---    sbwr( X"0D0C", X"0006" );
---    sbwr( X"0D0E", X"0007" );
---    sbwr( X"0C00", X"0011" );
---    sbwr( X"0C02", X"0012" );
---    sbwr( X"0C04", X"0013" );
---    sbwr( X"0C06", X"0014" );
---    sbwr( X"0C08", X"0015" );
---    sbwr( X"0C0A", X"0016" );
---    sbwr( X"0C0C", X"0017" );
---    sbwr( X"0C0E", X"0018" );
---    sbwr( X"0C10", X"0021" );
---    sbwr( X"0C12", X"0022" );
---    sbwr( X"0C14", X"0023" );
---    sbwr( X"0C16", X"0024" );
---    sbwr( X"0C18", X"0025" );
---    sbwr( X"0C1A", X"0026" );
---    sbwr( X"0C1C", X"0027" );
---    sbwr( X"0C1E", X"0028" );
---    wait for 220 us;
---    for i in 1 to 10 loop
---      check_chan( X"0C20", X"001C", X"0C20" );
---      check_chan( X"0C34", X"0010", X"0C34" );
---      check_chan( X"0C00", X"0011", X"0C00" );
---      check_chan( X"0C02", X"0012", X"0C02" );
---      check_chan( X"0C04", X"0013", X"0C04" );
---      check_chan( X"0C06", X"0014", X"0C06" );
---      check_chan( X"0C08", X"0015", X"0C08" );
---      check_chan( X"0C0A", X"0016", X"0C0A" );
---      check_chan( X"0C0C", X"0017", X"0C0C" );
---      check_chan( X"0C0E", X"0018", X"0C0E" );
---      check_chan( X"0C10", X"0021", X"0C10" );
---      check_chan( X"0C12", X"0022", X"0C12" );
---      check_chan( X"0C14", X"0023", X"0C14" );
---      check_chan( X"0C16", X"0024", X"0C16" );
---      check_chan( X"0C18", X"0025", X"0C18" );
---      check_chan( X"0C1A", X"0026", X"0C1A" );
---      check_chan( X"0C1C", X"0027", X"0C1C" );
---      check_chan( X"0C1E", X"0028", X"0C1E" );
---      wait for 100 us;
---    end loop;
---    check_chan( X"0C46", X"0100", X"0C46" ); -- low bits probably wrong
---    check_chan( X"0D00", X"0100", X"0C46" );
---    check_chan( X"0D02", X"0101", X"0C46" );
---    check_chan( X"0D04", X"0102", X"0C46" );
---    check_chan( X"0D06", X"0103", X"0C46" );
---    check_chan( X"0D08", X"0104", X"0C46" );
---    check_chan( X"0D0A", X"0105", X"0C46" );
---    check_chan( X"0D0C", X"0106", X"0C46" );
---    check_chan( X"0D0E", X"0107", X"0C46" );
+    for row in 0 to 7 loop
+      for col in 0 to 7 loop
+        AddrV := conv_unsigned(16#C00# + row*32 + col*2,16);
+        -- sbwr( std_logic_vector(AddrV), X"0014" );
+        sbwr( std_logic_vector(AddrV), cfg_vals(col) );
+        AddrV := conv_unsigned(16#C10# + row*32 + col*2,16);
+        -- sbwr( std_logic_vector(AddrV), X"0014" );
+        sbwr( std_logic_vector(AddrV), cfg_vals(col) );
+      end loop;
+    end loop;
+    sbwr( X"0C1E", X"0100" );
+    sbwr( X"0C5E", X"0120" );
+    sbwr( X"0C9E", X"0140" );
+    wait for 220 us;
+    
+    for loopcnt in 0 to 50 loop
+      for row in 0 to 7 loop
+        for col in 0 to 7 loop
+          AddrV := conv_unsigned(16#C00# + row*32 + col*2,16);
+          check_chan( std_logic_vector(AddrV), cfg_vals(col), std_logic_vector(AddrV) );
+          AddrV := conv_unsigned(16#C10# + row*32 + col*2,16);
+          if Addrv = 16#C1E# then
+            check_chan( std_logic_vector(AddrV), X"0100", std_logic_vector(AddrV) );
+          elsif Addrv = 16#C5E# then
+            check_chan( std_logic_vector(AddrV), X"0120", std_logic_vector(AddrV) );
+          elsif Addrv = 16#C9E# then
+            check_chan( std_logic_vector(AddrV), X"0140", std_logic_vector(AddrV) );
+          else
+            check_chan( std_logic_vector(AddrV), cfg_vals(col), std_logic_vector(AddrV) );
+          end if;
+        end loop;
+      end loop;
+    end loop;
 
---    AIEn <= '0';
---    wait for 220 us;
---    AIEn <= '1';
---    wait for 220 us;
     Done <= '1';
     wait;
     -- pragma synthesis_on
