@@ -31,6 +31,7 @@ ARCHITECTURE beh OF ana_data_ram IS
    SIGNAL RAM_RD_DATA : std_logic_vector(31 DOWNTO 0);
    SIGNAL RAM_RD_EN   : std_ulogic;
    SIGNAL RD_DATA_int : std_logic_vector(15 DOWNTO 0);
+   SIGNAL RAM_BUSYR : std_ulogic;
    COMPONENT ana_ram
      generic (
        INIT_00 : bit_vector := X"0000000000000000000000000000000000000000000000000000000000000000";
@@ -115,11 +116,18 @@ BEGIN
          RD_CLK      => RD_CLK,
          RST         => RST,
          RAM_RD_EN   => RAM_RD_EN,
-         RAM_BUSY    => RAM_BUSY,
+         RAM_BUSY    => RAM_BUSYR,
          RD_DATA     => RD_DATA_int
       );
   
    RD_DATA <= RD_DATA_int;
+   
+   RB : Process (WR_CLK) IS
+   Begin
+     if WR_CLK'Event AND WR_CLK = '1' then
+       RAM_BUSY <= RAM_BUSYR;
+     end if;
+   End Process;
   
 
 END ARCHITECTURE beh;
