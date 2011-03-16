@@ -94,7 +94,11 @@ BEGIN
       else
         InLimit <= InLim;
         OutLimit <= OutLim;
-        ZeroRef <= ZRP or ZrefDisable;
+        if ZrefDisable = '1' then
+          ZeroRef <= '0';
+        else
+          ZeroRef <= ZRP;
+        end if;
         Dir <= DirOut xor DirPolarity;
         Run <= Running xor RunPolarity;
         Step <= StepClk xor StepPolarity;
