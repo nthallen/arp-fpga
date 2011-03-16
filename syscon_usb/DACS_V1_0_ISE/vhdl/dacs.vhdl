@@ -48,6 +48,8 @@ entity dacs is
       fpga_0_RS232_TX_pin : OUT std_logic;
       IIC_Sda_pin : INOUT std_logic;
       IIC_Scl_pin : INOUT std_logic;
+      SPV_SDA_pin : INOUT std_logic;
+      SPV_SCK_pin : INOUT std_logic;
       
       subbus_cmdenbl : OUT std_ulogic;
       subbus_cmdstrb : OUT std_ulogic;
@@ -282,7 +284,7 @@ architecture Behavioral of dacs is
 	attribute box_type : string;
 	attribute box_type of Processor : component is "user_black_box";
 	
-	CONSTANT N_BOARDS : integer := 5+CTR_UG_N_BDS;
+	CONSTANT N_BOARDS : integer := 6+CTR_UG_N_BDS;
 	SIGNAL clk_8_0000MHz : std_logic;
 	SIGNAL clk_30_0000MHz : std_logic;
 	SIGNAL clk_66_6667MHz : std_logic;
@@ -453,7 +455,7 @@ begin
         RData     => iRData(16*3+15 DOWNTO 16*3)
      );
 
-   ptrh_i : ptrh
+   dacs_ptrh_i : ptrh
       GENERIC MAP (
          BASE_ADDR => X"0300"
       )
@@ -470,6 +472,23 @@ begin
          sda    => IIC_SDA_pin
       );
 
+   spv_ptrh_i : ptrh
+      GENERIC MAP (
+         BASE_ADDR => X"0320"
+      )
+      PORT MAP (
+         Addr   => ExpAddr,
+         ExpRd  => ExpRd,
+         ExpWr  => ExpWr,
+         F25M   => clk_30_0000MHz,
+         F8M    => clk_8_0000MHz,
+         rst    => rst,
+         ExpAck => ExpAck(5),
+         rData  => iRData(16*5+15 DOWNTO 16*5),
+         scl    => SPV_SCL_pin,
+         sda    => SPV_SDA_pin
+      );
+
   ctrs : for i in 0 TO CTR_UG_N_BDS-1 generate
     
     ctr_ug: ctr_ungated
@@ -484,10 +503,10 @@ begin
          ExpWr  => ExpWr,
          F8M    => clk_8_0000MHz,
          rst    => rst,
-         PMT    => ctr_PMT(i*5+3 DOWNTO i*5),
+         PMT    => ctr_PMT(i*4+3 DOWNTO i*4),
          WData  => WData,
-         ExpAck => ExpAck(5+i),
-         RData  => iRData(16*(5+i)+15 DOWNTO 16*(5+i))
+         ExpAck => ExpAck(6+i),
+         RData  => iRData(16*(6+i)+15 DOWNTO 16*(6+i))
       );
   end generate;
 
