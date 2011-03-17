@@ -29,8 +29,7 @@ ARCHITECTURE rtl OF bench_ana_s5s_tb IS
 
    -- Internal signal declarations
    SIGNAL clk   : std_ulogic;
-   SIGNAL DI    : std_logic_vector(4 DOWNTO 0);
-   SIGNAL DO    : std_logic_vector(4 DOWNTO 0);
+   SIGNAL DI    : std_logic_vector(8 DOWNTO 0);
    SIGNAL RDY   : std_ulogic;
    SIGNAL rst   : std_ulogic;
    SIGNAL SCK   : std_ulogic;
@@ -43,12 +42,11 @@ ARCHITECTURE rtl OF bench_ana_s5s_tb IS
    COMPONENT ana_s5s
       PORT (
          clk   : IN     std_ulogic;
-         DI    : IN     std_logic_vector(4 DOWNTO 0);
+         DI    : IN     std_logic_vector(8 DOWNTO 0);
          RDY   : OUT    std_ulogic;
          rst   : IN     std_ulogic;
          SCK   : OUT    std_ulogic;
          SDO   : OUT    std_ulogic;
-         DO    : OUT    std_logic_vector(4 DOWNTO 0);
          Start : IN     std_ulogic
       );
    END COMPONENT;
@@ -68,7 +66,6 @@ BEGIN
          rst   => rst,
          SCK   => SCK,
          SDO   => SDO,
-         DO    => DO,
          Start => Start
       );
 
@@ -90,7 +87,7 @@ BEGIN
   test_proc : Process
   Begin
     Done <= '0';
-    DI <= "11001";
+    DI <= "000011001";
     Start <= '0';
     rst <= '1';
     -- pragma synthesis_off
@@ -106,7 +103,7 @@ BEGIN
     wait until RDY = '0';
     wait until RDY = '1';
     wait for 35 ns;
-    DI <= "01100";
+    DI <= "000001100";
     Start <= '1';
     wait until clk'Event AND clk = '1';
     Start <= '0';

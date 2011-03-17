@@ -20,7 +20,7 @@ LIBRARY ieee;
 USE ieee.std_logic_1164.all;
 USE ieee.std_logic_arith.all;
 LIBRARY idx_fpga_lib;
-USE idx_fpga_lib.ALL;
+
 
 
 ARCHITECTURE rtl OF bench_ctr_resynch IS

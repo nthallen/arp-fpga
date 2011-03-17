@@ -33,8 +33,8 @@ ARCHITECTURE rtl OF bench_ao_sm IS
    SIGNAL DA_LDAC_B : std_logic;
    SIGNAL DA_SCK    : std_logic;
    SIGNAL DA_SDI    : std_logic;
-   SIGNAL F25M      : std_logic;
-   SIGNAL iData     : std_logic_vector(15 DOWNTO 0);
+   SIGNAL F66M      : std_logic;
+   SIGNAL WData     : std_logic_vector(15 DOWNTO 0);
    SIGNAL rst       : std_ulogic;
    SIGNAL WrEn      : std_ulogic;
    SIGNAL Done      : std_ulogic;
@@ -49,8 +49,8 @@ ARCHITECTURE rtl OF bench_ao_sm IS
          DA_LDAC_B : OUT    std_logic;
          DA_SCK    : OUT    std_logic;
          DA_SDI    : OUT    std_logic;
-         F25M      : IN     std_logic;
-         iData     : IN     std_logic_vector(15 DOWNTO 0);
+         F66M      : IN     std_logic;
+         WData     : IN     std_logic_vector(15 DOWNTO 0);
          rst       : IN     std_ulogic;
          WrEn      : IN     std_ulogic
       );
@@ -71,8 +71,8 @@ BEGIN
            DA_LDAC_B => DA_LDAC_B,
            DA_SCK    => DA_SCK,
            DA_SDI    => DA_SDI,
-           F25M      => F25M,
-           iData     => iData,
+           F66M      => F66M,
+           WData     => WData,
            rst       => rst,
            WrEn      => WrEn
         );
@@ -80,14 +80,14 @@ BEGIN
     -- Approximately 25 MHz
     clock : Process
     Begin
-      F25M <= '0';
+      F66M <= '0';
       -- pragma synthesis_off
-      wait for 40 ns;
+      wait for 16 ns;
       while Done = '0' loop
-        F25M <= '0';
-        wait for 20 ns;
-        F25M <= '1';
-        wait for 20 ns;
+        F66M <= '0';
+        wait for 8 ns;
+        F66M <= '1';
+        wait for 8 ns;
       end loop;
       wait;
       -- pragma synthesis_on
@@ -98,39 +98,39 @@ BEGIN
         Done <= '0';
         rst <= '1';
         Addr <= X"0000";
-        iData <= X"0000";
+        WData <= X"0000";
         WrEn <= '0';
         -- pragma synthesis_off
-        wait until F25M'Event AND F25M = '1';
-        wait until F25M'Event AND F25M = '1';
+        wait until F66M'Event AND F66M = '1';
+        wait until F66M'Event AND F66M = '1';
         rst <= '0';
-        wait until F25M'Event AND F25M = '1';
-        wait until F25M'Event AND F25M = '1';
-        wait until F25M'Event AND F25M = '1';
+        wait until F66M'Event AND F66M = '1';
+        wait until F66M'Event AND F66M = '1';
+        wait until F66M'Event AND F66M = '1';
         Addr <= X"0406";
-        iData <= X"1234";
+        WData <= X"1234";
         WrEn <= '1';
-        wait until F25M'Event AND F25M = '1';
+        wait until F66M'Event AND F66M = '1';
         WrEn <= '0';
         wait for 10 ns;
         assert DA_CS_B = "10"
           report "Expected DA_CS_B as 10"
           severity error;
         wait until DA_CS_B = "11";
-        wait until F25M'Event AND F25M = '1';
-        wait until F25M'Event AND F25M = '1';
+        wait until F66M'Event AND F66M = '1';
+        wait until F66M'Event AND F66M = '1';
         Addr <= X"0414";
-        iData <= X"55AA";
+        WData <= X"55AA";
         WrEn <= '1';
-        wait until F25M'Event AND F25M = '1';
+        wait until F66M'Event AND F66M = '1';
         WrEn <= '0';
         wait for 10 ns;
         assert DA_CS_B = "01"
           report "Expected DA_CS_B as 01"
           severity error;
         wait until DA_CS_B = "11";
-        wait until F25M'Event AND F25M = '1';
-        wait until F25M'Event AND F25M = '1';
+        wait until F66M'Event AND F66M = '1';
+        wait until F66M'Event AND F66M = '1';
         Done <= '1';
         wait;
         -- pragma synthesis_on

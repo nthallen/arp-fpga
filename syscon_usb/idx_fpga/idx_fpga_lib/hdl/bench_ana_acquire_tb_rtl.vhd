@@ -168,6 +168,7 @@ BEGIN
   SDI_p : Process
   Begin
     SDI <= "00";
+    -- pragma synthesis_off
     wait until Conv'Event AND Conv = '1';
     SDI <= "11";
     while Done = '0' loop
@@ -179,6 +180,7 @@ BEGIN
       SDI <= "11";
     end loop;
     wait;
+    -- pragma synthesis_on
   end Process;
   
   test_proc : Process

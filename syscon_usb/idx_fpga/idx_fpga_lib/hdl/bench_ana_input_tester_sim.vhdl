@@ -47,6 +47,12 @@ ARCHITECTURE sim OF bench_ana_input_tester IS
    SIGNAL CvtCnt : unsigned(7 DOWNTO 0);
    SIGNAL Done : std_ulogic;
    SIGNAL Read_Result : std_logic_vector(15 DOWNTO 0);
+   type cfg_array_t is array(7 DOWNTO 0) of std_logic_vector(15 DOWNTO 0);
+   SIGNAL cfg_vals : cfg_array_t;
+   SIGNAL ByRow : std_ulogic;
+   SIGNAL SR50 : std_logic_vector(4 DOWNTO 0);
+   SIGNAL SR51 : std_logic_vector(4 DOWNTO 0);
+   SIGNAL ChkSD5 : std_logic;
    
    COMPONENT mock_ad7687_chain
       PORT (
@@ -93,6 +99,58 @@ ARCHITECTURE sim OF bench_ana_input_tester IS
        char_string(Ain(7 downto 4)) &
        char_string(Ain(3 downto 0));
    end word_string;
+   
+   function pos_string( N : in integer )
+   return string is
+     Variable M : integer;
+     Variable R : integer;
+     Variable isneg : std_logic;
+   begin
+     if N = 0 then
+       return "0";
+     end if;
+       M := N/10;
+       R := N - M*10;
+       if M = 0 then
+         case R is
+           when 0 => return "0";
+           when 1 => return "1";
+           when 2 => return "2";
+           when 3 => return "3";
+           when 4 => return "4";
+           when 5 => return "5";
+           when 6 => return "6";
+           when 7 => return "7";
+           when 8 => return "8";
+           when 9 => return "9";
+           when others => return "X";
+         end case;
+       else
+         case R is
+           when 0 => return pos_string(M) & "0";
+           when 1 => return pos_string(M) & "1";
+           when 2 => return pos_string(M) & "2";
+           when 3 => return pos_string(M) & "3";
+           when 4 => return pos_string(M) & "4";
+           when 5 => return pos_string(M) & "5";
+           when 6 => return pos_string(M) & "6";
+           when 7 => return pos_string(M) & "7";
+           when 8 => return pos_string(M) & "8";
+           when 9 => return pos_string(M) & "9";
+           when others => return pos_string(M) & "X";
+         end case;
+       end if;
+   end pos_string;
+   
+   function int_string( N : in integer )
+   return string is
+   begin
+     if N < 0 then
+       return "-" & pos_string(-N);
+     else
+       return pos_string(N);
+     end if;
+   end int_string;
    
 BEGIN
    bank0 : mock_ad7687_chain
@@ -155,12 +213,59 @@ BEGIN
     end if;
   End Process;
   
+  
+  ChkSD5_p : Process IS
+    Variable n_bits : integer;
+    Variable col_no : integer;
+    Variable row_no : integer;
+    Variable cfgbits : std_logic_vector(15 DOWNTO 0);
+  Begin
+    wait for 100 ns;
+    while Done = '0' loop
+      wait until ChkSD5'Event AND ChkSD5 = '1';
+      while ChkSD5 = '1' loop
+        wait until CS5'Event AND CS5 = '0';
+        col_no := 7;
+        while col_no >= 0 loop
+          n_bits := 0;
+          while n_bits < 5 loop
+            wait until SCK5(0)'Event AND SCK5(0) = '1';
+            SR50(4 DOWNTO 1) <= SR50(3 DOWNTO 0);
+            SR50(0) <= SDO(0);
+            n_bits := n_bits+1;
+          end loop;
+          wait for 10 ns;
+          cfgbits(4 downto 0) := SR50;
+          cfgbits(15 downto 5) := (others => '0');
+          if ByRow = '1' then
+            row_no := 0;
+            for i in 2 downto 0 loop
+              row_no := row_no * 2;
+              if Row(i) = '1' then
+                row_no := row_no + 1;
+              end if;
+            end loop;
+            assert cfgbits = cfg_vals(row_no)
+              report "Config shift bits incorrect by row: (" & int_string(row_no)
+                & ", " & int_string(col_no) & "): " & word_string(cfg_vals(row_no))
+                & "/" & word_string(cfgbits)
+              severity error;
+          else
+            assert cfgbits = cfg_vals(col_no)
+              report "Config shift bits incorrect by column: (" & int_string(row_no)
+                & ", " & int_string(col_no) & "): " & word_string(cfg_vals(row_no))
+                & "/" & word_string(cfgbits)
+              severity error;
+          end if;
+          col_no := col_no-1;
+        end loop;
+      end loop;
+    end loop;
+  End Process;
 
   test_proc : Process
-    type cfg_array_t is array(7 DOWNTO 0) of std_logic_vector(15 DOWNTO 0);
     Variable CvtdRow : unsigned(4 DOWNTO 0);
     Variable AddrV : unsigned(15 DOWNTO 0);
-    Variable cfg_vals : cfg_array_t;
     
     procedure sbrd( addr_in : std_logic_vector (15 DOWNTO 0) ) is
     begin
@@ -266,16 +371,18 @@ BEGIN
     ExpRd <= '0';
     ExpWr <= '0';
     WData <= (others => '0');
-    RST_int <= '1';
     AIEn <= '1';
-    cfg_vals(0) := X"0001";
-    cfg_vals(1) := X"0002";
-    cfg_vals(2) := X"0000";
-    cfg_vals(3) := X"0008";
-    cfg_vals(4) := X"0010";
-    cfg_vals(5) := X"0018";
-    cfg_vals(6) := X"0014";
-    cfg_vals(7) := X"001C";
+    cfg_vals(0) <= X"0001";
+    cfg_vals(1) <= X"0002";
+    cfg_vals(2) <= X"0000";
+    cfg_vals(3) <= X"0008";
+    cfg_vals(4) <= X"0010";
+    cfg_vals(5) <= X"0018";
+    cfg_vals(6) <= X"0014";
+    cfg_vals(7) <= X"001C";
+    ByRow <= '1';
+    ChkSD5 <= '0';
+    RST_int <= '1';
 
     -- pragma synthesis_off
     wait until F8M_int'Event AND F8M_int = '1';
@@ -294,9 +401,11 @@ BEGIN
     sbwr( X"0C1E", X"0100" );
     sbwr( X"0C5E", X"0120" );
     sbwr( X"0C9E", X"0140" );
-    wait for 220 us;
+    wait for 800 us;
+    ChkSD5 <= '1';
+    wait for 2200 us;
     
-    for loopcnt in 0 to 50 loop
+    for loopcnt in 0 to 5 loop
       for row in 0 to 7 loop
         for col in 0 to 7 loop
           AddrV := conv_unsigned(16#C00# + row*32 + col*2,16);
@@ -314,6 +423,8 @@ BEGIN
         end loop;
       end loop;
     end loop;
+    ChkSD5 <= '0';
+    wait until CS5'Event AND CS5 = '1';
     
     for row in 0 to 7 loop
       for col in 0 to 7 loop
@@ -328,9 +439,12 @@ BEGIN
     sbwr( X"0C1E", X"0100" );
     sbwr( X"0C5E", X"0120" );
     sbwr( X"0C9E", X"0140" );
-    wait for 220 us;
+    wait for 800 us;
+    ByRow <= '0';
+    ChkSD5 <= '1';
+    wait for 2200 us;
     
-    for loopcnt in 0 to 50 loop
+    for loopcnt in 0 to 5 loop
       for row in 0 to 7 loop
         for col in 0 to 7 loop
           AddrV := conv_unsigned(16#C00# + row*32 + col*2,16);

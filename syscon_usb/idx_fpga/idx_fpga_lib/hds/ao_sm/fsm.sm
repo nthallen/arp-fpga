@@ -73,19 +73,19 @@ value "C:\\HDS\\idx_fpga\\idx_fpga_lib\\hds\\ao_sm"
 )
 (vvPair
 variable "date"
-value "02/27/2011"
+value "03/16/2011"
 )
 (vvPair
 variable "day"
-value "Sun"
+value "Wed"
 )
 (vvPair
 variable "day_long"
-value "Sunday"
+value "Wednesday"
 )
 (vvPair
 variable "dd"
-value "27"
+value "16"
 )
 (vvPair
 variable "entity_name"
@@ -133,7 +133,7 @@ value "$HDS_PROJECT_DIR/idx_fpga_lib/work"
 )
 (vvPair
 variable "mm"
-value "02"
+value "03"
 )
 (vvPair
 variable "module_name"
@@ -141,11 +141,11 @@ value "ao_sm"
 )
 (vvPair
 variable "month"
-value "Feb"
+value "Mar"
 )
 (vvPair
 variable "month_long"
-value "February"
+value "March"
 )
 (vvPair
 variable "p"
@@ -209,7 +209,7 @@ value "fsm"
 )
 (vvPair
 variable "time"
-value "23:25:09"
+value "21:11:15"
 )
 (vvPair
 variable "unit"
@@ -794,7 +794,7 @@ va (VaSet
 fg "0,0,32768"
 bg "0,0,32768"
 )
-xt "85164,98625,93864,99625"
+xt "85164,98625,93964,99625"
 st "
 by %user on %dd %month %year
 "
@@ -2212,7 +2212,6 @@ arrow 1
 start &2
 end &19
 es 0
-cond "rst /= '1'"
 tb (TransitionBlock
 uid 252,0
 ps "CenterOffsetStrategy"
@@ -2224,7 +2223,7 @@ fg "65535,65535,65535"
 bg "0,0,0"
 lineColor "0,32768,49152"
 )
-xt "40635,14249,50835,18049"
+xt "40635,15239,50835,18049"
 )
 autoResize 1
 lineShape (Line
@@ -2244,7 +2243,6 @@ va (VaSet
 font "arial,8,0"
 )
 xt "43935,14749,47535,15749"
-st "rst /= '1'"
 tm "Condition"
 )
 actions (MLText
@@ -2395,7 +2393,6 @@ start &19
 end &21
 ss 0
 es 0
-cond "WrEn = '1' AND Addr(4) /= '1'"
 tb (TransitionBlock
 uid 293,0
 ps "CenterOffsetStrategy"
@@ -2407,7 +2404,7 @@ fg "65535,65535,65535"
 bg "0,0,0"
 lineColor "0,32768,49152"
 )
-xt "42343,22379,54743,26179"
+xt "42343,23369,54743,26179"
 )
 autoResize 1
 lineShape (Line
@@ -2427,7 +2424,6 @@ va (VaSet
 font "arial,8,0"
 )
 xt "42843,22879,54243,23879"
-st "WrEn = '1' AND Addr(4) /= '1'"
 tm "Condition"
 )
 actions (MLText
@@ -2447,7 +2443,6 @@ shape (Circle
 uid 299,0
 va (VaSet
 vasetType 1
-isHidden 1
 fg "65535,65535,65535"
 bg "0,0,0"
 )
@@ -2457,11 +2452,10 @@ radius 781
 pr (Text
 uid 300,0
 va (VaSet
-isHidden 1
 font "arial,8,0"
 )
 xt "52272,19550,53072,20550"
-st "2"
+st "3"
 ju 0
 blo "52672,20350"
 tm "TransitionPriority"
@@ -2543,7 +2537,6 @@ shape (Circle
 uid 309,0
 va (VaSet
 vasetType 1
-isHidden 1
 fg "65535,65535,65535"
 bg "0,0,0"
 )
@@ -2553,11 +2546,10 @@ radius 781
 pr (Text
 uid 310,0
 va (VaSet
-isHidden 1
 font "arial,8,0"
 )
 xt "56544,19362,57344,20362"
-st "3"
+st "2"
 ju 0
 blo "56944,20162"
 tm "TransitionPriority"
@@ -2672,7 +2664,6 @@ arrow 1
 )
 start &21
 end &20
-cond "BN /= 24"
 tb (TransitionBlock
 uid 340,0
 ps "CenterOffsetStrategy"
@@ -2680,11 +2671,12 @@ shape (Rectangle
 uid 341,0
 va (VaSet
 vasetType 1
+isHidden 1
 fg "65535,65535,65535"
 bg "0,0,0"
 lineColor "0,32768,49152"
 )
-xt "44092,31235,48492,33235"
+xt "44092,31730,48492,32740"
 )
 autoResize 1
 lineShape (Line
@@ -2705,7 +2697,6 @@ va (VaSet
 font "arial,8,0"
 )
 xt "44592,31735,47992,32735"
-st "BN /= 24"
 tm "Condition"
 )
 actions (MLText
@@ -2724,7 +2715,6 @@ shape (Circle
 uid 346,0
 va (VaSet
 vasetType 1
-isHidden 1
 fg "65535,65535,65535"
 bg "0,0,0"
 )
@@ -2734,11 +2724,10 @@ radius 781
 pr (Text
 uid 347,0
 va (VaSet
-isHidden 1
 font "arial,8,0"
 )
 xt "50959,32365,51759,33365"
-st "1"
+st "2"
 ju 0
 blo "51359,33165"
 tm "TransitionPriority"
@@ -2776,7 +2765,7 @@ fg "65535,65535,65535"
 bg "0,0,0"
 lineColor "0,32768,49152"
 )
-xt "59897,32636,64097,34636"
+xt "60797,32726,64997,34726"
 )
 autoResize 1
 lineShape (Line
@@ -2785,10 +2774,10 @@ va (VaSet
 vasetType 3
 isHidden 1
 )
-xt "62097,34536,62097,34536"
+xt "62997,34626,62997,34626"
 pts [
-"62097,34536"
-"62097,34536"
+"62997,34626"
+"62997,34626"
 ]
 )
 condition (MLText
@@ -2796,7 +2785,7 @@ uid 370,0
 va (VaSet
 font "arial,8,0"
 )
-xt "60397,33136,63597,34136"
+xt "61297,33226,64497,34226"
 st "BN = 24"
 tm "Condition"
 )
@@ -2805,7 +2794,7 @@ uid 371,0
 va (VaSet
 font "arial,8,0"
 )
-xt "61997,34536,61997,34536"
+xt "62897,34626,62897,34626"
 tm "Actions"
 )
 )
@@ -2816,7 +2805,6 @@ shape (Circle
 uid 373,0
 va (VaSet
 vasetType 1
-isHidden 1
 fg "65535,65535,65535"
 bg "0,0,0"
 )
@@ -2826,11 +2814,10 @@ radius 781
 pr (Text
 uid 374,0
 va (VaSet
-isHidden 1
 font "arial,8,0"
 )
 xt "58849,33743,59649,34743"
-st "2"
+st "1"
 ju 0
 blo "59249,34543"
 tm "TransitionPriority"
@@ -3133,8 +3120,8 @@ tm "SmCompilerDirectivesTextMgr"
 ]
 associable 1
 )
-windowSize "64,40,1083,730"
-viewArea "19900,-5370,91810,43320"
+windowSize "64,40,1084,730"
+viewArea "19900,-5400,91900,40770"
 cachedDiagramExtent "0,-1000,121964,99625"
 pageSetupInfo (PageSetupInfo
 ptrCmd ""
@@ -3478,7 +3465,7 @@ stateOrder [
 name "csm"
 )
 ]
-lastUid 525,0
+lastUid 554,0
 commonDM (CommonDM
 ldm (LogicalDM
 emptyRow *62 (LEmptyRow

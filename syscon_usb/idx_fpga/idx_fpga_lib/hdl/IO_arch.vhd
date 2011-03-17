@@ -94,7 +94,14 @@ BEGIN
       else
         InLimit <= InLim;
         OutLimit <= OutLim;
-        ZeroRef <= ZRP or ZrefDisable;
+        -- When ZeroRef is Disabled, we always assert the internal signal
+        -- in order to reset the position as soon as we turn around from
+        -- the in limit
+        if ZrefDisable = '1' then
+          ZeroRef <= '1';
+        else
+          ZeroRef <= ZRP;
+        end if;
         Dir <= DirOut xor DirPolarity;
         Run <= Running xor RunPolarity;
         Step <= StepClk xor StepPolarity;
