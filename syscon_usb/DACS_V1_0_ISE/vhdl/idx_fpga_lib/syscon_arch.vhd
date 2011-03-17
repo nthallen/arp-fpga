@@ -130,11 +130,13 @@ BEGIN
   
   -- ExpAck is not qualified here by RdEn or WrEn, because it
   -- should be qualified downstream.
-  ackr : process (ExpAck, INTA_int, rst, Collision_int) is
+  -- Make the collision check synchronous to avoid latch
+  ackr : process (F8M) is
     Variable ack_i: std_ulogic;
     Variable n_ack: integer range N_BOARDS-1 DOWNTO 0;
     Variable coll: std_ulogic;
   begin
+    if F8M'Event AND F8M = '1' then
       if rst = '1' then
         Ack_int <= '0';
         Collision_int <= '0';
@@ -158,6 +160,7 @@ BEGIN
         end if;
         Collision_int <= coll;
       end if;
+    end if;
   end process;
   
   Collision <= Collision_int;
