@@ -20,6 +20,7 @@ ENTITY ana_cfg_ram IS
     RD_DATA  : OUT std_logic_vector(8 DOWNTO 0);
     WR_DATA  : IN  std_logic_vector(15 DOWNTO 0);
     WE       : IN std_ulogic;
+    CfgEn    : IN std_ulogic;
     RDEN     : IN std_ulogic;
     RD_CLK   : IN std_ulogic;
     WR_CLK   : IN std_ulogic;
@@ -67,7 +68,7 @@ BEGIN
     if WR_CLK'Event AND WR_CLK = '1' then
       if RST = '1' then
         WREN <= '0';
-      elsif WE = '1' then
+      elsif WE = '1' AND CfgEn = '1' then
         WR_Data_int(15 DOWNTO 0) <= WR_DATA;
         WREN <= '1';
       else
@@ -79,7 +80,7 @@ BEGIN
   Busy : Process (RD_CLK) IS
   Begin
     if RD_CLK'Event AND RD_CLK = '1' then
-      if WE = '1' OR WREN = '1' then
+      if (WE = '1' AND CfgEn = '1') OR WREN = '1' then
         RAM_BUSY <= '1';
       else
         RAM_BUSY <= '0';

@@ -78,7 +78,6 @@ entity dacs is
       ana_in_SCK16 : OUT std_ulogic_vector(1 DOWNTO 0);
       ana_in_SCK5 : OUT std_ulogic_vector(1 DOWNTO 0);
       ana_in_SDO  : OUT std_ulogic_vector(1 DOWNTO 0);
-      ana_in_AIEn : IN std_ulogic;
       
       ctr_PMT     : IN std_logic_vector(4*CTR_UG_N_BDS-1 DOWNTO 0);
       
@@ -199,7 +198,6 @@ architecture Behavioral of dacs is
   
   COMPONENT ana_input
     PORT (
-      AIEn   : IN     std_ulogic;
       Addr   : IN     std_logic_vector(15 DOWNTO 0);
       ExpRd  : IN     std_ulogic;
       ExpWr  : IN     std_ulogic;
@@ -417,7 +415,6 @@ begin
 
  Inst_ana_in : ana_input
     PORT MAP (
-       AIEn   => ana_in_AIEn,
        Addr   => ExpAddr,
        ExpRd  => ExpRd,
        ExpWr  => ExpWr,
@@ -485,7 +482,7 @@ begin
          rst    => rst,
          ExpAck => ExpAck(5),
          rData  => iRData(16*5+15 DOWNTO 16*5),
-         scl    => SPV_SCL_pin,
+         scl    => SPV_SCK_pin,
          sda    => SPV_SDA_pin
       );
 

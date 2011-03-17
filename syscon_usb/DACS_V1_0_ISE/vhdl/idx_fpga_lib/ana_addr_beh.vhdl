@@ -13,8 +13,10 @@ USE ieee.std_logic_arith.all;
 
 ENTITY ana_addr IS
   PORT (
-    Addr : IN  std_logic_vector(15 DOWNTO 0);
-    BdEn : OUT std_ulogic;
+    Addr    : IN  std_logic_vector(15 DOWNTO 0);
+    BdEn    : OUT std_ulogic;
+    CfgEn   : OUT std_ulogic;
+    CtrlEn  : OUT std_ulogic;
     CfgAddr : OUT std_logic_vector(7 DOWNTO 0);
     AcqAddr : OUT std_logic_vector(8 DOWNTO 0)
   );
@@ -30,8 +32,17 @@ BEGIN
     AcqAddr <= Addr(8 DOWNTO 0);
     if Addr(15 DOWNTO 9) = "0000110" then
       BdEn <= '1';
+      if Addr = X"0C01" then
+        CtrlEn <= '1';
+        CfgEn <= '0';
+      else
+        CtrlEn <= '0';
+        CfgEn <= '1';
+      end if;
     else
       BdEn <= '0';
+      CfgEn <= '0';
+      CtrlEn <= '0';
     end if;
   end process;
 
