@@ -18,10 +18,10 @@ ENTITY ana_hwside IS
      DEF_CFG : std_logic_vector(8 DOWNTO 0) := "000010100"
   );
   PORT (
-    CLK    : IN std_logic;
-    RST    : IN std_ulogic;
-    AIEn   : IN std_ulogic;
-    Row    : OUT std_ulogic_vector(5 DOWNTO 0);
+    CLK     : IN std_logic;
+    RST     : IN std_ulogic;
+    AICtrl  : IN std_logic_vector(7 DOWNTO 0);
+    Row     : OUT std_ulogic_vector(5 DOWNTO 0);
     CfgData : IN std_logic_vector(8 DOWNTO 0);
     AcqData : OUT std_logic_vector(31 DOWNTO 0);
     RD_Addr : OUT std_logic_vector(7 DOWNTO 0);
@@ -64,25 +64,25 @@ ARCHITECTURE beh OF ana_hwside IS
 
    COMPONENT ana_acquire
       PORT (
-         CLK    : IN     std_ulogic;
-         RST    : IN     std_ulogic;
-         RdyIn  : IN     std_ulogic;
-         SDI    : IN     std_ulogic_vector(1 DOWNTO 0);
+         CLK      : IN     std_ulogic;
+         RST      : IN     std_ulogic;
+         RdyIn    : IN     std_ulogic;
+         SDI      : IN     std_ulogic_vector(1 DOWNTO 0);
          CurMuxCfg : IN  std_logic_vector(3 DOWNTO 0);
          NewMuxCfg : IN  std_logic_vector(3 DOWNTO 0);
-         RD_Addr : OUT   std_logic_vector(7 DOWNTO 0);
-         WR_Addr : OUT   std_logic_vector(7 DOWNTO 0);
+         RD_Addr  : OUT   std_logic_vector(7 DOWNTO 0);
+         WR_Addr  : OUT   std_logic_vector(7 DOWNTO 0);
          Col_Addr : OUT  std_logic_vector(3 DOWNTO 0);
-         Conv   : OUT    std_ulogic;
-         CS5    : OUT    std_ulogic;
-         NxtRow : OUT    std_ulogic_vector(5 DOWNTO 0);
-         RdEn   : OUT    std_ulogic;
-         WrEn   : OUT    std_ulogic;
+         Conv     : OUT    std_ulogic;
+         CS5      : OUT    std_ulogic;
+         NxtRow   : OUT    std_ulogic_vector(5 DOWNTO 0);
+         RdEn     : OUT    std_ulogic;
+         WrEn     : OUT    std_ulogic;
          RAM_Busy : IN  std_ulogic;
-         RdyOut : OUT    std_ulogic;
-         S5WE   : OUT    std_ulogic_vector(1 DOWNTO 0);
-         Start  : OUT    std_ulogic;
-         AIEn   : IN     std_ulogic
+         RdyOut   : OUT    std_ulogic;
+         S5WE     : OUT    std_ulogic_vector(1 DOWNTO 0);
+         Start    : OUT    std_ulogic;
+         AICtrl   : IN     std_logic_vector(7 DOWNTO 0)
       );
    END COMPONENT;
 
@@ -194,7 +194,7 @@ BEGIN
          RdyOut => RdyOut,
          S5WE   => S5WE,
          Start  => Start,
-         AIEn   => AIEn
+         AICtrl   => AICtrl
       );
 
   Ready : Process (Rdy) Is

@@ -38,6 +38,7 @@ ENTITY DACSbd IS
     DA_SCK : OUT std_ulogic;
     DA_SDI : OUT std_ulogic;
 
+    BIO : INOUT std_logic_vector ( 15 DOWNTO 0 );
     DIO : INOUT std_logic_vector ( 119 DOWNTO 0 );
     DIO_DIR : OUT std_logic_vector ( 14 DOWNTO 0 );
     DIO_OE : OUT std_ulogic;
@@ -64,7 +65,6 @@ ENTITY DACSbd IS
     USB_1_RX : IN std_logic;
     USB_1_TX : OUT std_logic;
     -- UNUSED BELOW HERE
-    BIO : IN std_logic_vector ( 15 DOWNTO 0 );
     COUNT : IN std_logic_vector ( 7 DOWNTO 0 );
     COUNT_LE : IN std_logic_vector ( 7 DOWNTO 0 );
     COUNT_SDN : IN std_ulogic;
@@ -170,6 +170,8 @@ ARCHITECTURE beh OF DACSbd IS
 
        IIC_Sda_pin                    : INOUT  std_logic;
        IIC_Scl_pin                    : INOUT  std_logic;
+       SPV_SDA_pin                    : INOUT  std_logic;
+       SPV_SCK_pin                    : INOUT  std_logic;
 
        subbus_cmdenbl                 : OUT    std_ulogic;
        subbus_cmdstrb                 : OUT    std_ulogic;
@@ -199,7 +201,6 @@ ARCHITECTURE beh OF DACSbd IS
        ana_in_SCK16                   : OUT    std_ulogic_vector(1 DOWNTO 0);
        ana_in_SCK5                    : OUT    std_ulogic_vector(1 DOWNTO 0);
        ana_in_SDO                     : OUT    std_ulogic_vector(1 DOWNTO 0);
-       ana_in_AIEn                    : IN     std_ulogic;
 
        ctr_PMT                        : IN std_logic_vector(4*CTR_UG_N_BDS-1 DOWNTO 0);
        
@@ -248,6 +249,8 @@ BEGIN
        fpga_0_RS232_TX_pin            => USB_1_TX,
        IIC_Sda_pin                    => IIC_SDA,
        IIC_Scl_pin                    => IIC_SCL,
+       SPV_SDA_pin                    => BIO(4),
+       SPV_SCK_pin                    => BIO(5),
        subbus_cmdenbl                 => subbus_cmdenbl,
        subbus_cmdstrb                 => subbus_cmdstrb,
        subbus_fail_leds               => subbus_fail_leds,
@@ -287,7 +290,6 @@ BEGIN
        ana_in_SCK16                   => AI_AD_SCK,
        ana_in_SCK5                    => AI_AFE_SCK,
        ana_in_SDO                     => AI_AFE_MOSI,
-       ana_in_AIEn                    => not cmd_out(31),
        ctr_PMT(0)                     => COUNT(1),
        ctr_PMT(1)                     => COUNT(3),
        ctr_PMT(4 DOWNTO 2)            => COUNT(7 DOWNTO 5),
@@ -319,6 +321,8 @@ BEGIN
   AI_MUX0_A <= ana_in_Row(2 DOWNTO 0);
   AI_MUX1_A <= ana_in_Row(2 DOWNTO 0);
 
+  BIO(3 DOWNTO 0) <= (others => 'Z');
+  BIO(15 DOWNTO 6) <= (others => 'Z');
   DIO(3 DOWNTO 0) <= cmd_out(27 DOWNTO 24);
   DIO(4) <=	idx_Step(0);
   DIO(5) <=	idx_Run(0);

@@ -31,8 +31,7 @@ ENTITY bench_ana_input_tester IS
       RST    : OUT    std_ulogic;
       SDI    : OUT    std_ulogic_vector (1 DOWNTO 0);
       WData  : OUT    std_logic_vector (15 DOWNTO 0);
-      RData  : IN     std_logic_vector (15 DOWNTO 0);
-      AIEn   : OUT    std_ulogic
+      RData  : IN     std_logic_vector (15 DOWNTO 0)
    );
 
 -- Declarations
@@ -371,7 +370,6 @@ BEGIN
     ExpRd <= '0';
     ExpWr <= '0';
     WData <= (others => '0');
-    AIEn <= '1';
     cfg_vals(0) <= X"0001";
     cfg_vals(1) <= X"0002";
     cfg_vals(2) <= X"0000";
@@ -462,6 +460,15 @@ BEGIN
         end loop;
       end loop;
     end loop;
+    
+    sbwr(X"0C01", X"0080" ); -- Disable Engine
+    wait for 1 ms;
+    sbwr(X"0C01", X"0040" ); -- Fix Row at 0
+    wait for 1 ms;
+    sbwr(X"0C01", X"0047" ); -- Fix Row at 7
+    wait for 1 ms;
+    sbwr(X"0C01", X"0000" ); -- Back to normal
+    wait for 2200 us;
 
     Done <= '1';
     wait;
