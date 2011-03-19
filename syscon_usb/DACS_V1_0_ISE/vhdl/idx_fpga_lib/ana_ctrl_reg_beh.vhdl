@@ -17,9 +17,9 @@ ENTITY ana_ctrl_reg IS
       F30M   : IN     std_ulogic;
       F8M    : IN     std_ulogic;
       rst    : IN     std_ulogic;
-      WData  : IN     std_logic_vector (7 DOWNTO 0);
+      WData  : IN     std_logic_vector (9 DOWNTO 0);
       WrEn   : IN     std_ulogic;
-      AICtrl : OUT    std_logic_vector (7 DOWNTO 0)
+      AICtrl : OUT    std_logic_vector (9 DOWNTO 0)
    );
 
 -- Declarations
@@ -28,13 +28,13 @@ END ana_ctrl_reg ;
 
 --
 ARCHITECTURE beh OF ana_ctrl_reg IS
-  SIGNAL AICtrl_In : std_logic_vector(7 DOWNTO 0);
+  SIGNAL AICtrl_In : std_logic_vector(9 DOWNTO 0);
 BEGIN
   W : Process (F8M) IS
   Begin
     if F8M'Event and F8M = '1' then
       if rst = '1' then
-        AICtrl_In <= X"00";
+        AICtrl_In <= (others => '0');
       elsif CtrlEn = '1' AND WrEn = '1' then
         AICtrl_In <= WData;
       end if;
