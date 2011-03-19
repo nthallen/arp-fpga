@@ -20,7 +20,7 @@ ENTITY ana_hwside IS
   PORT (
     CLK     : IN std_logic;
     RST     : IN std_ulogic;
-    AICtrl  : IN std_logic_vector(7 DOWNTO 0);
+    AICtrl  : IN std_logic_vector(9 DOWNTO 0);
     Row     : OUT std_ulogic_vector(5 DOWNTO 0);
     CfgData : IN std_logic_vector(8 DOWNTO 0);
     AcqData : OUT std_logic_vector(31 DOWNTO 0);
@@ -82,7 +82,7 @@ ARCHITECTURE beh OF ana_hwside IS
          RdyOut   : OUT    std_ulogic;
          S5WE     : OUT    std_ulogic_vector(1 DOWNTO 0);
          Start    : OUT    std_ulogic;
-         AICtrl   : IN     std_logic_vector(7 DOWNTO 0)
+         AICtrl   : IN     std_logic_vector(9 DOWNTO 0)
       );
    END COMPONENT;
 

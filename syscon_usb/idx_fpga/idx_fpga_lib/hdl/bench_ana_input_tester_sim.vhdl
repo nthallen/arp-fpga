@@ -469,6 +469,29 @@ BEGIN
     wait for 1 ms;
     sbwr(X"0C01", X"0000" ); -- Back to normal
     wait for 2200 us;
+    sbwr(X"0C01", X"0200" ); -- XtraSettle
+    wait for 5000 us;
+    sbwr(X"0C01", X"013F" ); -- Count Backwards
+    wait for 2200 us;
+    
+    for loopcnt in 0 to 5 loop
+      for row in 0 to 7 loop
+        for col in 0 to 7 loop
+          AddrV := conv_unsigned(16#C00# + row*32 + col*2,16);
+          check_chan( std_logic_vector(AddrV), cfg_vals(col), std_logic_vector(AddrV) );
+          AddrV := conv_unsigned(16#C10# + row*32 + col*2,16);
+          if Addrv = 16#C1E# then
+            check_chan( std_logic_vector(AddrV), X"0100", std_logic_vector(AddrV) );
+          elsif Addrv = 16#C5E# then
+            check_chan( std_logic_vector(AddrV), X"0120", std_logic_vector(AddrV) );
+          elsif Addrv = 16#C9E# then
+            check_chan( std_logic_vector(AddrV), X"0140", std_logic_vector(AddrV) );
+          else
+            check_chan( std_logic_vector(AddrV), cfg_vals(col), std_logic_vector(AddrV) );
+          end if;
+        end loop;
+      end loop;
+    end loop;
 
     Done <= '1';
     wait;
