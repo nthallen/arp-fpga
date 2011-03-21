@@ -323,7 +323,8 @@ BEGIN
 
   BIO(3 DOWNTO 0) <= (others => 'Z');
   BIO(15 DOWNTO 6) <= (others => 'Z');
-  DIO(3 DOWNTO 0) <= cmd_out(27 DOWNTO 24);
+  DIO(0) <= not cmd_out(24);
+  DIO(3 DOWNTO 1) <= cmd_out(27 DOWNTO 25);
   DIO(4) <=	idx_Step(0);
   DIO(5) <=	idx_Run(0);
   DIO(6) <=	idx_Dir(0);
