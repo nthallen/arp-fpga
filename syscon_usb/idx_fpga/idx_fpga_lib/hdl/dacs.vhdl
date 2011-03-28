@@ -24,6 +24,8 @@ library idx_fpga_lib;
 
 entity dacs is
     GENERIC (
+      DACS_BUILD_NUMBER : std_logic_vector(15 DOWNTO 0) := X"0007";
+      INSTRUMENT_ID : std_logic_vector(15 DOWNTO 0) := X"0001";
       N_INTERRUPTS : integer range 15 downto 1 := 1;
       CTR_UG_N_BDS : integer range 5 downto 0 := 2;
       IDX_N_CHANNELS : integer range 15 downto 1 := 3;
@@ -118,6 +120,8 @@ architecture Behavioral of dacs is
 
 	COMPONENT syscon
     GENERIC(
+      DACS_BUILD_NUMBER : std_logic_vector(15 DOWNTO 0) := X"0007";
+      INSTRUMENT_ID : std_logic_vector(15 DOWNTO 0) := X"0001";
       N_INTERRUPTS : integer range 15 downto 0 := 1;
       N_BOARDS : integer range 15 downto 0 := 1
     );
@@ -339,6 +343,8 @@ begin
 	
 	Inst_syscon: syscon
   	 GENERIC MAP (
+      DACS_BUILD_NUMBER => DACS_BUILD_NUMBER,
+      INSTRUMENT_ID => INSTRUMENT_ID,
   	   N_INTERRUPTS => N_INTERRUPTS,
   	   N_BOARDS => N_BOARDS
   	 )

@@ -43,8 +43,8 @@ ARCHITECTURE rtl OF bench_dacs_ctrs IS
    SIGNAL FTDI_SI_pin                    : std_logic;
    SIGNAL fpga_0_RS232_RX_pin            : std_logic;
    SIGNAL fpga_0_RS232_TX_pin            : std_logic;
-   SIGNAL fpga_0_Generic_IIC_Bus_Sda_pin : std_logic;
-   SIGNAL fpga_0_Generic_IIC_Bus_Scl_pin : std_logic;
+   SIGNAL IIC_Sda_pin                    : std_logic;
+   SIGNAL IIC_Scl_pin                    : std_logic;
    SIGNAL subbus_cmdenbl                 : std_ulogic;
    SIGNAL subbus_cmdstrb                 : std_ulogic;
    SIGNAL subbus_fail_leds               : std_logic_vector(4 downto 0);
@@ -68,7 +68,6 @@ ARCHITECTURE rtl OF bench_dacs_ctrs IS
    SIGNAL ana_in_SCK16                   : std_ulogic_vector(1 DOWNTO 0);
    SIGNAL ana_in_SCK5                    : std_ulogic_vector(1 DOWNTO 0);
    SIGNAL ana_in_SDO                     : std_ulogic_vector(1 DOWNTO 0);
-   SIGNAL ana_in_AIEn                    : std_ulogic;
    SIGNAL ctr_PMT                        : std_logic_vector(4*CTR_UG_N_BDS-1 DOWNTO 0);
    SIGNAL DA_CLR_B                       : std_logic;
    SIGNAL DA_CS_B                        : std_logic_vector(1 DOWNTO 0);
@@ -101,8 +100,8 @@ ARCHITECTURE rtl OF bench_dacs_ctrs IS
          FTDI_SI_pin                    : OUT    std_logic;
          fpga_0_RS232_RX_pin            : IN     std_logic;
          fpga_0_RS232_TX_pin            : OUT    std_logic;
-         fpga_0_Generic_IIC_Bus_Sda_pin : INOUT  std_logic;
-         fpga_0_Generic_IIC_Bus_Scl_pin : INOUT  std_logic;
+         IIC_Sda_pin                    : INOUT std_logic;
+         IIC_Scl_pin                    : INOUT std_logic;
          subbus_cmdenbl                 : OUT    std_ulogic;
          subbus_cmdstrb                 : OUT    std_ulogic;
          subbus_fail_leds               : OUT    std_logic_vector(4 downto 0);
@@ -127,7 +126,6 @@ ARCHITECTURE rtl OF bench_dacs_ctrs IS
          ana_in_SCK16                   : OUT    std_ulogic_vector(1 DOWNTO 0);
          ana_in_SCK5                    : OUT    std_ulogic_vector(1 DOWNTO 0);
          ana_in_SDO                     : OUT    std_ulogic_vector(1 DOWNTO 0);
-         ana_in_AIEn                    : IN     std_ulogic;
          ctr_PMT                        : IN     std_logic_vector(4*CTR_UG_N_BDS-1 DOWNTO 0);
          DA_CLR_B                       : OUT    std_logic;
          DA_CS_B                        : OUT    std_logic_vector(1 DOWNTO 0);
@@ -166,8 +164,8 @@ BEGIN
                FTDI_SI_pin                    => FTDI_SI_pin,
                fpga_0_RS232_RX_pin            => fpga_0_RS232_RX_pin,
                fpga_0_RS232_TX_pin            => fpga_0_RS232_TX_pin,
-               fpga_0_Generic_IIC_Bus_Sda_pin => fpga_0_Generic_IIC_Bus_Sda_pin,
-               fpga_0_Generic_IIC_Bus_Scl_pin => fpga_0_Generic_IIC_Bus_Scl_pin,
+               IIC_Sda_pin                    => IIC_Sda_pin,
+               IIC_Scl_pin                    => IIC_Scl_pin,
                subbus_cmdenbl                 => subbus_cmdenbl,
                subbus_cmdstrb                 => subbus_cmdstrb,
                subbus_fail_leds               => subbus_fail_leds,
@@ -192,7 +190,6 @@ BEGIN
                ana_in_SCK16                   => ana_in_SCK16,
                ana_in_SCK5                    => ana_in_SCK5,
                ana_in_SDO                     => ana_in_SDO,
-               ana_in_AIEn                    => ana_in_AIEn,
                ctr_PMT                        => ctr_PMT,
                DA_CLR_B                       => DA_CLR_B,
                DA_CS_B                        => DA_CS_B,

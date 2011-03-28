@@ -178,6 +178,9 @@ begin
     sbwr( X"0600", X"0100" );
     sbwr( X"0620", X"0100" );
     sbwr( X"0640", X"0100" );
+    sbrd_check( X"0080", X"1234" );
+    sbrd_check( X"0081", X"4321" );
+    wait for 500 ms; -- need to wait for 1.75 new periods and .25 old periods
     
     for i in 0 to 20 loop
       sbrd_check( X"0600", X"0100" );

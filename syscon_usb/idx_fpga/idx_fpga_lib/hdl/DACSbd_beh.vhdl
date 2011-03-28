@@ -15,6 +15,7 @@ LIBRARY idx_fpga_lib;
 
 ENTITY DACSbd IS
   GENERIC (
+    INSTRUMENT_ID : std_logic_vector(15 DOWNTO 0) := X"0001";
     CTR_UG_N_BDS : integer range 5 downto 0 := 3;
     IDX_N_CHANNELS : integer range 15 downto 1 := 1;
     DIGIO_N_CONNECTORS : integer range 4 DOWNTO 1 := 4;
@@ -145,6 +146,8 @@ ARCHITECTURE beh OF DACSbd IS
    
    COMPONENT dacs
      GENERIC (
+       DACS_BUILD_NUMBER : std_logic_vector(15 DOWNTO 0) := X"0007";
+       INSTRUMENT_ID : std_logic_vector(15 DOWNTO 0) := X"0001";
        N_INTERRUPTS : integer range 15 downto 1 := 1;
        CTR_UG_N_BDS : integer range 5 downto 0 := 2;
        IDX_N_CHANNELS : integer range 15 downto 1 := 3;
@@ -228,6 +231,7 @@ ARCHITECTURE beh OF DACSbd IS
 BEGIN
   dacs_i : dacs
     GENERIC MAP (
+      INSTRUMENT_ID => INSTRUMENT_ID,
       CTR_UG_N_BDS => CTR_UG_N_BDS,
       IDX_N_CHANNELS => IDX_N_CHANNELS,
       DIGIO_N_CONNECTORS => DIGIO_N_CONNECTORS,
@@ -323,7 +327,8 @@ BEGIN
 
   BIO(3 DOWNTO 0) <= (others => 'Z');
   BIO(15 DOWNTO 6) <= (others => 'Z');
-  DIO(3 DOWNTO 0) <= cmd_out(27 DOWNTO 24);
+  DIO(0) <= not cmd_out(24);
+  DIO(3 DOWNTO 1) <= cmd_out(27 DOWNTO 25);
   DIO(4) <=	idx_Step(0);
   DIO(5) <=	idx_Run(0);
   DIO(6) <=	idx_Dir(0);
