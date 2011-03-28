@@ -17,6 +17,8 @@ ENTITY ana_addr IS
     BdEn    : OUT std_ulogic;
     CfgEn   : OUT std_ulogic;
     CtrlEn  : OUT std_ulogic;
+    DataEn   : OUT std_ulogic;
+    StatEn  : OUT std_ulogic;
     CfgAddr : OUT std_logic_vector(7 DOWNTO 0);
     AcqAddr : OUT std_logic_vector(8 DOWNTO 0)
   );
@@ -30,19 +32,22 @@ BEGIN
   Begin
     CfgAddr <= Addr(8 downto 1);
     AcqAddr <= Addr(8 DOWNTO 0);
+    BdEn <= '0';
+    DataEn <= '0';
+    CtrlEn <= '0';
+    CfgEn <= '0';
+    StatEn <= '0';
     if Addr(15 DOWNTO 9) = "0000110" then
       BdEn <= '1';
+      DataEn <= '1';
       if Addr = X"0C01" then
         CtrlEn <= '1';
-        CfgEn <= '0';
       else
-        CtrlEn <= '0';
         CfgEn <= '1';
       end if;
-    else
-      BdEn <= '0';
-      CfgEn <= '0';
-      CtrlEn <= '0';
+    elsif Addr = X"0E00" then
+      BdEn <= '1';
+      StatEn <= '1';
     end if;
   end process;
 

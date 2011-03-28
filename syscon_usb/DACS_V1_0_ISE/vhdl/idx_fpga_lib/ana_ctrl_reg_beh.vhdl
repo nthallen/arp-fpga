@@ -14,12 +14,12 @@ USE ieee.std_logic_arith.all;
 ENTITY ana_ctrl_reg IS
    PORT( 
       CtrlEn : IN     std_ulogic;
-      F30M   : IN     std_ulogic;
       F8M    : IN     std_ulogic;
       rst    : IN     std_ulogic;
       WData  : IN     std_logic_vector (9 DOWNTO 0);
       WrEn   : IN     std_ulogic;
-      AICtrl : OUT    std_logic_vector (9 DOWNTO 0)
+      AICtrl : OUT    std_logic_vector (9 DOWNTO 0);
+      F30M   : IN     std_ulogic
    );
 
 -- Declarations
