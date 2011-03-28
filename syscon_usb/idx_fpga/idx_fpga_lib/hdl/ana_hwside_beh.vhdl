@@ -26,6 +26,7 @@ ENTITY ana_hwside IS
     AcqData : OUT std_logic_vector(31 DOWNTO 0);
     RD_Addr : OUT std_logic_vector(7 DOWNTO 0);
     WR_Addr : OUT std_logic_vector(7 DOWNTO 0);
+    Status  : OUT std_ulogic_vector(3 DOWNTO 0);
     RAM_BusyR : IN std_ulogic;
     RAM_BusyW : IN std_ulogic;
     RdEn    : OUT std_ulogic;
@@ -82,6 +83,7 @@ ARCHITECTURE beh OF ana_hwside IS
          RdyOut   : OUT    std_ulogic;
          S5WE     : OUT    std_ulogic_vector(1 DOWNTO 0);
          Start    : OUT    std_ulogic;
+         Status   : OUT    std_ulogic_vector(3 DOWNTO 0);
          AICtrl   : IN     std_logic_vector(9 DOWNTO 0)
       );
    END COMPONENT;
@@ -194,6 +196,7 @@ BEGIN
          RdyOut => RdyOut,
          S5WE   => S5WE,
          Start  => Start,
+         Status => Status,
          AICtrl   => AICtrl
       );
 

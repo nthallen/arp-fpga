@@ -52,6 +52,7 @@ ARCHITECTURE sim OF bench_ana_input_tester IS
    SIGNAL SR50 : std_logic_vector(4 DOWNTO 0);
    SIGNAL SR51 : std_logic_vector(4 DOWNTO 0);
    SIGNAL ChkSD5 : std_logic;
+   SIGNAL ChkCnvCnt : std_ulogic;
    
    COMPONENT mock_ad7687_chain
       PORT (
@@ -315,16 +316,19 @@ BEGIN
           word_string(Addr_In) & " match: " &
           word_string(Read_Result(15 DOWNTO 8) & Addr_In(8 DOWNTO 1))
         severity error;
-      assert Read_Result(2 DOWNTO 0) = Addr_In(7 DOWNTO 5)
-        report "Mock low bits do not match cvt count row: " &
-          word_string(Read_Result) & " Addr: " &
-          word_string(Addr_In) & " match: " &
-          word_string( "00000" & Read_Result(2 DOWNTO 0) &
-                       "00000" & Addr_In(8 DOWNTO 6))
-        severity error;
-      if RD_Addr(8) = '0' then
+      if ChkCnvCnt = '1' then
+        assert Read_Result(2 DOWNTO 0) = Addr_In(7 DOWNTO 5)
+          report "Mock low bits do not match cvt count row: " &
+            word_string(Read_Result) & " Addr: " &
+            word_string(Addr_In) & " match: " &
+            word_string( "00000" & Read_Result(2 DOWNTO 0) &
+                         "00000" & Addr_In(8 DOWNTO 6))
+          severity error;
+      end if;
+      if RD_Addr(8) = '0' AND ChkCnvCnt = '1' then
         -- The CvtCnt test only applies reasonably to
         -- non-remuxed channels.
+        -- Also does not apply when muxing in a non-standard order
         CvtdRow := (others => '0');
         CvtdRow(4 DOWNTO 0) := CvtCnt(7 DOWNTO 3);
         ReadRow := (others => '0');
@@ -381,11 +385,12 @@ BEGIN
     ByRow <= '1';
     ChkSD5 <= '0';
     RST_int <= '1';
+    ChkCnvCnt <= '1';
 
     -- pragma synthesis_off
     wait until F8M_int'Event AND F8M_int = '1';
     RST_int <= '0';
-    wait for 100 us; -- wait for initial conversions
+    -- wait for 100 us; -- wait for initial conversions
     for row in 0 to 7 loop
       for col in 0 to 7 loop
         AddrV := conv_unsigned(16#C00# + row*32 + col*2,16);
@@ -460,9 +465,17 @@ BEGIN
         end loop;
       end loop;
     end loop;
-    
+    ChkCnvCnt <= '0'; -- Now we're messing with mux direction.
+    sbrd(X"0E00"); -- Check status address
+    assert Read_Result = X"0000"
+      report "Status readback non-zero"
+      severity error;
     sbwr(X"0C01", X"0080" ); -- Disable Engine
     wait for 1 ms;
+    sbrd(X"0E00");
+    assert Read_Result = X"0005"
+      report "Status readback should be 5"
+      severity error;
     sbwr(X"0C01", X"0040" ); -- Fix Row at 0
     wait for 1 ms;
     sbwr(X"0C01", X"0047" ); -- Fix Row at 7
@@ -473,6 +486,10 @@ BEGIN
     wait for 5000 us;
     sbwr(X"0C01", X"013F" ); -- Count Backwards
     wait for 2200 us;
+    sbrd(X"0E00");
+    assert Read_Result = X"0004"
+      report "Status readback should be 4"
+      severity error;
     
     for loopcnt in 0 to 5 loop
       for row in 0 to 7 loop
