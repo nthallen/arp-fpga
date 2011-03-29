@@ -133,19 +133,19 @@ value "C:\\HDS\\idx_fpga\\idx_fpga_lib\\hds\\ana_input"
 )
 (vvPair
 variable "date"
-value "03/28/2011"
+value "03/29/2011"
 )
 (vvPair
 variable "day"
-value "Mon"
+value "Tue"
 )
 (vvPair
 variable "day_long"
-value "Monday"
+value "Tuesday"
 )
 (vvPair
 variable "dd"
-value "28"
+value "29"
 )
 (vvPair
 variable "entity_name"
@@ -269,7 +269,7 @@ value "struct"
 )
 (vvPair
 variable "time"
-value "10:25:33"
+value "16:52:35"
 )
 (vvPair
 variable "unit"
@@ -2920,7 +2920,7 @@ m 1
 decl (Decl
 n "Status"
 t "std_ulogic_vector"
-b "(3 DOWNTO 0)"
+b "(11 DOWNTO 0)"
 o 9
 )
 )
@@ -4656,7 +4656,15 @@ iconName "VhdlFileViewIcon.png"
 iconMaskName "VhdlFileViewIcon.msk"
 ftype 10
 )
+ordering 1
 viewiconposition 0
+blkPorts [
+"DataEn"
+"RD_DATA1"
+"StatEn"
+"Status"
+"RData"
+]
 )
 *148 (Net
 uid 2660,0
@@ -4697,10 +4705,11 @@ st "SIGNAL RD_DATA1  : std_logic_vector(15 DOWNTO 0)
 )
 *150 (Net
 uid 2706,0
+lang 10
 decl (Decl
 n "Status"
 t "std_ulogic_vector"
-b "(3 DOWNTO 0)"
+b "(11 DOWNTO 0)"
 o 37
 suid 60,0
 )
@@ -4709,8 +4718,8 @@ uid 2707,0
 va (VaSet
 font "Courier New,8,0"
 )
-xt "22000,29400,48000,30200"
-st "SIGNAL Status    : std_ulogic_vector(3 DOWNTO 0)
+xt "22000,29400,48500,30200"
+st "SIGNAL Status    : std_ulogic_vector(11 DOWNTO 0)
 "
 )
 )
@@ -6941,7 +6950,7 @@ tm "BdCompilerDirectivesTextMgr"
 associable 1
 )
 windowSize "0,0,1281,800"
-viewArea "23820,27131,109172,79501"
+viewArea "23800,27100,108680,79180"
 cachedDiagramExtent "0,0,137000,103000"
 pageSetupInfo (PageSetupInfo
 ptrCmd "\\\\proteus\\Ansel,winspool,"
@@ -6966,7 +6975,7 @@ exportStdPackageRefs 1
 )
 hasePageBreakOrigin 1
 pageBreakOrigin "0,0"
-lastUid 2727,0
+lastUid 2774,0
 defaultCommentText (CommentText
 shape (Rectangle
 layer 0
@@ -8480,11 +8489,12 @@ uid 2724,0
 )
 *292 (LeafLogPort
 port (LogicalPort
+lang 10
 m 4
 decl (Decl
 n "Status"
 t "std_ulogic_vector"
-b "(3 DOWNTO 0)"
+b "(11 DOWNTO 0)"
 o 37
 suid 60,0
 )
