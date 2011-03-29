@@ -30,7 +30,7 @@
  PORT xps_gpio_subbus_data_o_pin = xps_gpio_subbus_data_o, DIR = O, VEC = [15:0]
  PORT xps_gpio_subbus_status_pin = xps_gpio_subbus_status, DIR = I, VEC = [3:0]
  PORT xps_gpio_subbus_leds_pin = xps_gpio_subbus_leds, DIR = O, VEC = [4:0]
- PORT xps_gpio_subbus_switches_pin = xps_gpio_subbus_switches, DIR = I, VEC = [3:0]
+ PORT xps_gpio_subbus_switches_pin = xps_gpio_subbus_switches, DIR = I, VEC = [0:7]
  PORT xps_gpio_subbus_leds_readback_pin = xps_gpio_subbus_leds_readback, DIR = I, VEC = [4:0]
  PORT FTDI_RX_RDY_pin = FTDI_RX_RDY, DIR = I
  PORT clk_66_6667MHz_pin = clk_66_6667MHz, DIR = O, SIGIS = CLK, CLK_FREQ = 66666666
@@ -255,7 +255,7 @@ END
 BEGIN xps_gpio
  PARAMETER INSTANCE = xps_gpio_sb_switches
  PARAMETER HW_VER = 2.00.a
- PARAMETER C_GPIO_WIDTH = 4
+ PARAMETER C_GPIO_WIDTH = 8
  PARAMETER C_ALL_INPUTS = 1
  PARAMETER C_BASEADDR = 0x81400000
  PARAMETER C_HIGHADDR = 0x8140ffff
