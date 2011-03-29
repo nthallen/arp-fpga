@@ -15,6 +15,8 @@ LIBRARY idx_fpga_lib;
 
 ENTITY syscon IS
   GENERIC(
+    DACS_BUILD_NUMBER : std_logic_vector(15 DOWNTO 0) := X"0007";
+    INSTRUMENT_ID : std_logic_vector(15 DOWNTO 0) := X"0001";
     N_INTERRUPTS : integer range 15 downto 0 := 1;
     N_BOARDS : integer range 15 downto 0 := 1
   );
@@ -53,8 +55,9 @@ ARCHITECTURE arch OF syscon IS
   SIGNAL Done_int : std_ulogic;
   SIGNAL Ack_int : std_ulogic;
   SIGNAL Start : std_ulogic;
+  SIGNAL BldNoEn : std_ulogic;
   SIGNAL TwoMinuteTO : std_ulogic;
-  TYPE STATE_TYPE IS ( sc0, sc1i, sc1r, sc1w, sc2 );
+  TYPE STATE_TYPE IS ( sc0, sc1i, sc1r, sclbn, sc1w, sc2 );
   SIGNAL current_state : STATE_TYPE;
   TYPE DSTATE_TYPE IS ( d0, d1, d2, d3 );
   SIGNAL dcnt_state : DSTATE_TYPE;
@@ -193,6 +196,7 @@ BEGIN
         ExpRd <= '0';
         ExpWr <= '0';
         INTA_int <= '0';
+        BldNoEn <= '0';
       else
         CASE current_state IS
           WHEN sc0 =>
@@ -200,6 +204,11 @@ BEGIN
               current_state <= sc1i;
               INTA_int <= '1';
               Start <= '1';
+            elsif RdEn = '1' AND WrEn = '0' AND
+                 Addr_int(15 DOWNTO 1) = "000000001000000" then
+              current_state <= sclbn;
+              Start <= '1';
+              BldNoEn <= '1';
             elsif RdEn = '1' AND WrEn = '0' then
               current_state <= sc1r;
               ExpRd <= '1';
@@ -214,6 +223,7 @@ BEGIN
               ExpRd <= '0';
               ExpWr <= '0';
               INTA_int <= '0';
+              BldNoEn <= '0';
             end if;
           WHEN sc1i =>
             if Done_int = '1' then
@@ -238,6 +248,18 @@ BEGIN
                   end if;
                 end loop;
                 DataIn <= RData(16*ack_n+15 DOWNTO 16*ack_n);
+              end if;
+            end if;
+          WHEN sclbn =>
+            if Done_int = '1' then
+              current_state <= sc2;
+              BldNoEn <= '0';
+            else
+              Ack <= '1';
+              if Addr_int(0) = '0' then
+                DataIn <= DACS_BUILD_NUMBER;
+              else
+                DataIn <= INSTRUMENT_ID;
               end if;
             end if;
           WHEN sc1w =>
