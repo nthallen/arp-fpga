@@ -11,7 +11,6 @@ LIBRARY ieee;
 USE ieee.std_logic_1164.all;
 USE ieee.std_logic_arith.all;
 LIBRARY idx_fpga_lib;
--- USE idx_fpga_lib.All;
 
 ENTITY ana_hwside IS
   GENERIC (
@@ -20,7 +19,7 @@ ENTITY ana_hwside IS
   PORT (
     CLK     : IN std_logic;
     RST     : IN std_ulogic;
-    AICtrl  : IN std_logic_vector(9 DOWNTO 0);
+    AICtrl  : IN std_logic_vector(10 DOWNTO 0);
     Row     : OUT std_ulogic_vector(5 DOWNTO 0);
     CfgData : IN std_logic_vector(8 DOWNTO 0);
     AcqData : OUT std_logic_vector(31 DOWNTO 0);
@@ -62,6 +61,8 @@ ARCHITECTURE beh OF ana_hwside IS
    SIGNAL CfgData_int : std_logic_vector(8 DOWNTO 0);
    SIGNAL RdEn_int : std_ulogic;
    SIGNAL RAM_Busy : std_ulogic;
+   SIGNAL AI_ALT_RST : std_logic;
+   SIGNAL AI_RST : std_ulogic;
 
    COMPONENT ana_acquire
       PORT (
@@ -133,7 +134,7 @@ BEGIN
          WE    => S5WE(0),
          Start => Start,
          CLK   => CLK,
-         RST   => RST,
+         RST   => AI_RST,
          DO    => DO5_0,
          RDY   => RDY(0)
       );
@@ -149,7 +150,7 @@ BEGIN
         WE    => S5WE(1),
         Start => Start,
         CLK   => CLK,
-        RST   => RST,
+        RST   => AI_RST,
         DO    => DO5_1,
         RDY   => RDY(1)
      );
@@ -157,7 +158,7 @@ BEGIN
   ana_s16_0 : ana_s16
     PORT MAP (
        CLK   => CLK,
-       RST   => RST,
+       RST   => AI_RST,
        SDI   => SDI(0),
        Start => Start,
        DO    => DO16_0,
@@ -168,7 +169,7 @@ BEGIN
   ana_s16_1 : ana_s16
      PORT MAP (
         CLK   => CLK,
-        RST   => RST,
+        RST   => AI_RST,
         SDI   => SDI(1),
         Start => Start,
         DO    => DO16_1,
@@ -179,7 +180,7 @@ BEGIN
    ana_acquire_i : ana_acquire
       PORT MAP (
          CLK    => CLK,
-         RST    => RST,
+         RST    => AI_RST,
          RdyIn  => RdyIn,
          SDI    => SDI,
          CurMuxCfg => CurMuxCfg,
@@ -197,7 +198,7 @@ BEGIN
          S5WE   => S5WE,
          Start  => Start,
          Status => Status,
-         AICtrl   => AICtrl
+         AICtrl   => AICtrl(9 DOWNTO 0)
       );
 
   Ready : Process (Rdy) Is
@@ -214,7 +215,7 @@ BEGIN
     Variable CacheAddr : integer range 7 DOWNTO 0;
   Begin
     if CLK'Event AND CLK = '1' then
-      if RST = '1' then
+      if AI_RST = '1' then
         for i in 0 to 7 loop
           CfgCache0(i) <= DEF_CFG;
           CfgCache1(i) <= DEF_CFG;
@@ -288,6 +289,16 @@ BEGIN
     end if;
   end Process;
   
+  Reset : Process (RST, AI_ALT_RST) IS
+  Begin
+    if RST = '1' OR AI_ALT_RST = '1' then
+      AI_RST <= '1';
+    else
+      AI_RST <= '0';
+    end if;
+  End Process;
+
+  AI_ALT_RST <= AICtrl(10);  
   RdEn <= RdEn_int;
   RD_Addr <= RD_Addr_int;
   WR_Addr <= WR_Addr_int;

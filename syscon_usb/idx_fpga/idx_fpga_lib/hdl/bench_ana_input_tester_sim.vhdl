@@ -490,6 +490,15 @@ BEGIN
     assert Read_Result = X"0004"
       report "Status readback should be 4"
       severity error;
+    sbwr(X"0C01", X"0400" ); -- special reset
+    wait for 200 us;
+    sbwr(X"0C01", X"0000" ); -- unreset
+    wait for 100 us;
+    sbrd(X"0E00");
+    assert Read_Result = X"0000"
+      report "Status readback should be 0"
+      severity error;
+    wait for 2200 us;
     
     for loopcnt in 0 to 5 loop
       for row in 0 to 7 loop

@@ -58,7 +58,7 @@ entity dacs is
       subbus_fail_leds : OUT std_logic_vector(4 downto 0);
       subbus_flt_cpu_reset : OUT std_ulogic;
       subbus_reset : OUT std_ulogic;
-      DACS_switches : IN std_logic_vector(3 downto 0);
+      DACS_switches : IN std_logic_vector(7 downto 0);
       Collision : OUT std_ulogic;
 
       idx_Run : OUT std_ulogic_vector(IDX_N_CHANNELS-1 downto 0);
@@ -109,7 +109,7 @@ architecture Behavioral of dacs is
 
 		xps_gpio_subbus_data_i_pin : IN std_logic_vector(15 downto 0);
 		xps_gpio_subbus_status_pin : IN std_logic_vector(3 downto 0);
-		xps_gpio_subbus_switches_pin : IN std_logic_vector(3 downto 0);
+		xps_gpio_subbus_switches_pin : IN std_logic_vector(7 downto 0);
 		xps_gpio_subbus_leds_readback_pin : IN std_logic_vector(4 downto 0);
 		xps_gpio_subbus_addr_pin : OUT std_logic_vector(15 downto 0);
 		xps_gpio_subbus_ctrl_pin : OUT std_logic_vector(6 downto 0);
@@ -296,6 +296,7 @@ architecture Behavioral of dacs is
 	SIGNAL subbus_data_o : std_logic_vector(15 downto 0);      
 	SIGNAL subbus_ctrl : std_logic_vector(6 downto 0);
 	SIGNAL subbus_status : std_logic_vector(3 downto 0);
+  SIGNAL subbus_switches : std_logic_vector(7 downto 0);
 	SIGNAL ExpAddr : std_logic_vector(15 downto 0);
 	SIGNAL WData  : std_logic_vector(15 DOWNTO 0);
 	SIGNAL iRData : std_logic_vector((N_BOARDS-1)*16+15 downto 0);
