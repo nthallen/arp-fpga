@@ -17,6 +17,7 @@ ENTITY ana_rdata IS
       RD_DATA1 : IN     std_logic_vector (15 DOWNTO 0);
       StatEn   : IN     std_ulogic;
       Status   : IN     std_ulogic_vector (11 DOWNTO 0);
+      F8M      : IN     std_ulogic;
       RData    : OUT    std_logic_vector (15 DOWNTO 0)
    );
 
@@ -27,13 +28,15 @@ END ana_rdata ;
 --
 ARCHITECTURE beh OF ana_rdata IS
 BEGIN
-  DB : Process (DataEn, RD_DATA1, StatEn, Status ) IS
+  DB : Process (F8M) IS
   Begin
-    RData <= (others => '0');
-    if DataEn = '1' then
-      RData <= RD_DATA1;
-    elsif StatEn = '1' then
-      RData(11 DOWNTO 0) <= std_logic_vector(Status);
+    if F8M'Event AND F8M = '1' then
+      RData <= (others => '0');
+      if DataEn = '1' then
+        RData <= RD_DATA1;
+      elsif StatEn = '1' then
+        RData(11 DOWNTO 0) <= std_logic_vector(Status);
+      end if;
     end if;
   End Process;
 END ARCHITECTURE beh;

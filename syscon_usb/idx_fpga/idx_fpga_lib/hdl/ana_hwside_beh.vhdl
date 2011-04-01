@@ -289,12 +289,14 @@ BEGIN
     end if;
   end Process;
   
-  Reset : Process (RST, AI_ALT_RST) IS
+  Reset : Process (CLK) IS
   Begin
-    if RST = '1' OR AI_ALT_RST = '1' then
-      AI_RST <= '1';
-    else
-      AI_RST <= '0';
+    if CLK'Event AND CLK = '1' then
+      if RST = '1' OR AI_ALT_RST = '1' then
+        AI_RST <= '1';
+      else
+        AI_RST <= '0';
+      end if;
     end if;
   End Process;
 
