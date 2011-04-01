@@ -58,7 +58,7 @@ entity dacs is
       subbus_fail_leds : OUT std_logic_vector(4 downto 0);
       subbus_flt_cpu_reset : OUT std_ulogic;
       subbus_reset : OUT std_ulogic;
-      DACS_switches : IN std_logic_vector(3 downto 0);
+      DACS_switches : IN std_logic_vector(7 downto 0);
       Collision : OUT std_ulogic;
 
       idx_Run : OUT std_ulogic_vector(IDX_N_CHANNELS-1 downto 0);
@@ -338,7 +338,7 @@ begin
      xps_gpio_subbus_ctrl_pin => subbus_ctrl,
      xps_gpio_subbus_status_pin => subbus_status,
      xps_gpio_subbus_leds_pin => Fail_outputs,
-     xps_gpio_subbus_switches_pin => subbus_switches,
+     xps_gpio_subbus_switches_pin => DACS_switches,
      xps_gpio_subbus_leds_readback_pin => Fail_inputs
 	 );
 	
@@ -524,8 +524,6 @@ begin
   subbus_fail_leds(2) <= subbus_ctrl(5); -- Tick
   subbus_fail_leds(3) <= subbus_ctrl(3); -- CE
   subbus_fail_leds(4) <= subbus_status(3); -- TwoSecTO
-  subbus_switches(3 DOWNTO 0) <= DIO(63 DOWNTO 60);
-  subbus_switches(7 DOWNTO 4) <= DACS_switches;
   subbus_reset <= rst;
   FTDI_WR_pin <= not xps_epc_0_PRH_Wr_n_pin;
   fpga_0_RS232_TX_pin <= '0';

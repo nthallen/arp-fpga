@@ -15,6 +15,7 @@ LIBRARY idx_fpga_lib;
 
 ENTITY DACSbd IS
   GENERIC (
+    DACS_BUILD_NUMBER : std_logic_vector(15 DOWNTO 0) := X"0008";
     INSTRUMENT_ID : std_logic_vector(15 DOWNTO 0) := X"0001";
     CTR_UG_N_BDS : integer range 5 downto 0 := 3;
     IDX_N_CHANNELS : integer range 15 downto 1 := 1;
@@ -143,6 +144,7 @@ ARCHITECTURE beh OF DACSbd IS
    SIGNAL cmd_out                        : std_logic_vector(CMD_PROC_N_CMDS-1 DOWNTO 0);
    SIGNAL RST                            : std_ulogic;
    SIGNAL Collision                      : std_ulogic;
+   SIGNAL DACS_switches                  : std_logic_vector(7 DOWNTO 0);
    
    COMPONENT dacs
      GENERIC (
@@ -183,7 +185,7 @@ ARCHITECTURE beh OF DACSbd IS
        subbus_reset                   : OUT    std_ulogic;
        Collision                      : OUT    std_ulogic;
 
-       DACS_switches                  : IN     std_logic_vector(3 downto 0);
+       DACS_switches                  : IN     std_logic_vector(7 downto 0);
 
        idx_Run                        : OUT    std_ulogic_vector(IDX_N_CHANNELS-1 downto 0);
        idx_Step                       : OUT    std_ulogic_vector(IDX_N_CHANNELS-1 downto 0);
@@ -231,6 +233,7 @@ ARCHITECTURE beh OF DACSbd IS
 BEGIN
   dacs_i : dacs
     GENERIC MAP (
+      DACS_BUILD_NUMBER => DACS_BUILD_NUMBER,
       INSTRUMENT_ID => INSTRUMENT_ID,
       CTR_UG_N_BDS => CTR_UG_N_BDS,
       IDX_N_CHANNELS => IDX_N_CHANNELS,
@@ -261,7 +264,7 @@ BEGIN
        subbus_flt_cpu_reset           => subbus_flt_cpu_reset,
        subbus_reset                   => RST,
        Collision                      => Collision,
-       DACS_switches                  => GPIO_SW,
+       DACS_switches                  => DACS_switches,
        idx_Run                        => idx_Run,
        idx_Step                       => idx_Step,
        idx_Dir                        => idx_Dir,
@@ -360,7 +363,9 @@ BEGIN
   
   DIO_OE <= '1';
   DIO_OE_B <= '0';
-
+  DACS_switches(7 DOWNTO 4) <= GPIO_SW;
+  DACS_switches(3) <= '1';
+  DACS_switches(2 DOWNTO 0) <= not DIO(62 DOWNTO 60);
   FPGA_CMDENBL	<= subbus_cmdenbl;
   FPGA_CMDENBL_B	<= not subbus_cmdenbl;
   FPGA_CMDSTRB	<= subbus_cmdstrb;
