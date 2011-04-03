@@ -274,6 +274,7 @@ BEGIN
       Addr <= addr_in;
       -- pragma synthesis_off
       wait until F8M_int'Event AND F8M_int = '1';
+      wait for 1 ns;
       ExpRd <= '1';
       for i in 1 to 8 loop
         wait until F8M_int'Event AND F8M_int = '1';
@@ -293,6 +294,7 @@ BEGIN
       WData <= Data_in;
       -- pragma synthesis_off
       wait until F8M_int'Event AND F8M_int = '1';
+      wait for 1 ns;
       ExpWr <= '1';
       for i in 1 to 8 loop
         wait until F8M_int'Event AND F8M_int = '1';

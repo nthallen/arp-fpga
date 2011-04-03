@@ -42,7 +42,7 @@ ARCHITECTURE rtl OF bench_ana_data_rd IS
    -- Component declarations
    COMPONENT ana_data_rd
       PORT (
-         RAM_BUSY    : IN     std_ulogic;
+         RAM_BUSY    : OUT    std_ulogic;
          RAM_RD_DATA : IN     std_logic_vector(31 DOWNTO 0);
          RAM_RD_EN   : OUT    std_ulogic;
          RD_ADDR     : IN     std_logic_vector(8 DOWNTO 0);
@@ -106,7 +106,6 @@ BEGIN
       Done <= '0';
       RST <= '1';
       RDEN <= '0';
-      RAM_BUSY <= '0';
       RD_ADDR <= (others => '0');
       -- pragma synthesis_off
       wait until RD_CLK'Event AND RD_CLK = '1';
@@ -139,42 +138,6 @@ BEGIN
       RDEN <= '0';
       wait until RD_CLK'Event AND RD_CLK = '1';
 
-      -- Read from addr 1 with RAM_BUSY to get cached config
-      RAM_BUSY <= '1';
-      RD_ADDR <= "000000001";
-      RDEN <= '1';
-      for i in 1 to 8 loop
-        wait until RD_CLK'Event AND RD_CLK = '1';
-      end loop;
-      RDEN <= '0';
-      wait until RD_CLK'Event AND RD_CLK = '1';
-
-      -- Read from addr 8 with RAM_BUSY
-      RAM_BUSY <= '1';
-      RD_ADDR <= "000001000";
-      RDEN <= '1';
-      for i in 1 to 3 loop
-        wait until RD_CLK'Event AND RD_CLK = '1';
-      end loop;
-      RAM_BUSY <= '0';
-      for i in 4 to 8 loop
-        wait until RD_CLK'Event AND RD_CLK = '1';
-      end loop;
-      RDEN <= '0';
-      wait until RD_CLK'Event AND RD_CLK = '1';
-
-      -- Read from addr 9 with RAM_BUSY
-      RAM_BUSY <= '1';
-      RD_ADDR <= "000001001";
-      RDEN <= '1';
-      for i in 1 to 3 loop
-        wait until RD_CLK'Event AND RD_CLK = '1';
-      end loop;
-      RAM_BUSY <= '0';
-      for i in 4 to 8 loop
-        wait until RD_CLK'Event AND RD_CLK = '1';
-      end loop;
-      RDEN <= '0';
       wait until RD_CLK'Event AND RD_CLK = '1';
 
       Done <= '1';

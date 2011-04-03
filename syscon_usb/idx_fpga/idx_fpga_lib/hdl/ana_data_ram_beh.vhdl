@@ -139,6 +139,26 @@ BEGIN
        RDEN_int <= '0';
      end if;
    End Process;
+   
+   -- pragma synthesis_off
+   WatchRD : Process (RDEN)
+   Begin
+     if RAM_RD_EN'Event and RAM_RD_EN = '1' then
+       assert WREN = '0'
+         report "DataRAM WREN asserted at RDEN"
+         severity error;
+     end if;
+   End Process;
+   
+   WatchWR : Process (WREN)
+   Begin
+     if WREN'Event and WREN = '1' then
+       assert RAM_RD_EN = '0'
+         report "DataRAM RDEN asserted at WREN"
+         severity error;
+     end if;
+   End Process;
+   -- pragma synthesis_on
 
 END ARCHITECTURE beh;
 
