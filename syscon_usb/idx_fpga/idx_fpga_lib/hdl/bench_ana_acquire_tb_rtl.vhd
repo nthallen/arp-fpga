@@ -32,7 +32,7 @@ ARCHITECTURE rtl OF bench_ana_acquire IS
    SIGNAL CurMuxCfg :     std_logic_vector (3 DOWNTO 0);
    SIGNAL NewMuxCfg :     std_logic_vector (3 DOWNTO 0);
    SIGNAL RST       :     std_ulogic;
-   SIGNAL RdyIn     :     std_ulogic;
+   SIGNAL RdyIn     :     std_ulogic_vector(3 DOWNTO 0);
    SIGNAL SDI       :     std_ulogic_vector (1 DOWNTO 0);
    SIGNAL CS5       :     std_ulogic;
    SIGNAL Col_Addr  :     std_logic_vector (3 DOWNTO 0);
@@ -46,7 +46,9 @@ ARCHITECTURE rtl OF bench_ana_acquire IS
    SIGNAL Start     :     std_ulogic;
    SIGNAL WR_Addr   :     std_logic_vector (7 DOWNTO 0);
    SIGNAL WrEn      :     std_ulogic;
-   SIGNAL AIEn      :     std_ulogic;
+   SIGNAL Restart   :     std_ulogic;
+   SIGNAL Status    :     std_ulogic_vector (11 DOWNTO 0);
+   SIGNAL AICtrl    :     std_logic_vector (9 DOWNTO 0);
    SIGNAL Done      :     std_ulogic;
 
 
@@ -57,19 +59,21 @@ ARCHITECTURE rtl OF bench_ana_acquire IS
         CurMuxCfg : IN     std_logic_vector (3 DOWNTO 0);
         NewMuxCfg : IN     std_logic_vector (3 DOWNTO 0);
         RST       : IN     std_ulogic;
-        RdyIn     : IN     std_ulogic;
+        RdyIn     : IN     std_ulogic_vector (3 DOWNTO 0);
         SDI       : IN     std_ulogic_vector (1 DOWNTO 0);
-        AIEn      : IN     std_ulogic;
+        AICtrl    : IN     std_logic_vector (9 DOWNTO 0);
+        RAM_BUSY  : IN     std_ulogic;
         CS5       : OUT    std_ulogic;
         Col_Addr  : OUT    std_logic_vector (3 DOWNTO 0);
         Conv      : OUT    std_ulogic;
         NxtRow    : OUT    std_ulogic_vector (5 DOWNTO 0);
-        RAM_BUSY  : IN     std_ulogic;
         RD_Addr   : OUT    std_logic_vector (7 DOWNTO 0);
         RdEn      : OUT    std_ulogic;
         RdyOut    : OUT    std_ulogic;
         S5WE      : OUT    std_ulogic_vector (1 DOWNTO 0);
         Start     : OUT    std_ulogic;
+        Restart   : OUT    std_ulogic;
+        Status    : OUT    std_ulogic_vector (11 DOWNTO 0);
         WR_Addr   : OUT    std_logic_vector (7 DOWNTO 0);
         WrEn      : OUT    std_ulogic
      );
@@ -90,7 +94,7 @@ BEGIN
       RST => RST,
       RdyIn => RdyIn,
       SDI => SDI,
-      AIEn => AIEn,
+      AICtrl => AICtrl,
       CS5 => CS5,
       Col_Addr => Col_Addr,
       Conv => Conv,
@@ -101,6 +105,8 @@ BEGIN
       RdyOut => RdyOut,
       S5WE => S5WE,
       Start => Start,
+      Restart => Restart,
+      Status => Status,
       WR_Addr => WR_Addr,
       WrEn => WrEn
     );
@@ -122,16 +128,16 @@ BEGIN
 
   rdy : Process
   Begin
-    RdyIn <= '1';
+    RdyIn <= "1111";
     -- pragma synthesis_off
     wait for 100 ns;
     while Done = '0' loop
-      wait until CLK'Event AND CLK = '1' AND Start = '1';
-      RdyIn <= '0';
+      wait until CLK'Event AND CLK = '1' AND (Start = '1' OR Restart = '1');
+      RdyIn <= "0000";
       for i in 1 to 31 loop
         wait until CLK'Event AND CLK = '1';
       end loop;
-      RdyIn <= '1';
+      RdyIn <= "1111";
     end loop;
     wait;
     -- pragma synthesis_on
@@ -186,7 +192,7 @@ BEGIN
   test_proc : Process
     Begin
       Done <= '0';
-      AIEn <= '1';
+      AICtrl <= "0000000000";
       RAM_BUSY <= '0';
       RST <= '1';
       -- pragma synthesis_off
@@ -213,12 +219,12 @@ BEGIN
       wait for 281 ns; -- Test wait at acq_11 or acq_12
       RAM_BUSY <= '0';
 
-      wait until WrEn'Event AND WrEn = '1' AND CurMuxCfg(3) = '1' AND RD_Addr(3) = '0';
+      wait until WrEn'Event AND WrEn = '1' AND CurMuxCfg(3) = '1' AND WR_Addr(3) = '0';
       RAM_BUSY <= '1';
       wait for 281 ns; -- Test wait at acq_busy1
       RAM_BUSY <= '0';
 
-      wait until WrEn'Event AND WrEn = '1' AND CurMuxCfg(3) = '1' AND RD_Addr(3) = '1';
+      wait until WrEn'Event AND WrEn = '1' AND CurMuxCfg(3) = '1' AND WR_Addr(3) = '1';
       RAM_BUSY <= '1';
       wait for 281 ns; -- Test wait at acq_busy2
       RAM_BUSY <= '0';

@@ -33,17 +33,20 @@ ARCHITECTURE rtl OF bench_ana_hwside IS
    SIGNAL Row     : std_ulogic_vector(5 DOWNTO 0);
    SIGNAL CfgData : std_logic_vector(8 DOWNTO 0);
    SIGNAL AcqData : std_logic_vector(31 DOWNTO 0);
+   SIGNAL AICtrl  : std_logic_vector(10 DOWNTO 0);
    SIGNAL RD_Addr : std_logic_vector(7 DOWNTO 0);
    SIGNAL WR_Addr : std_logic_vector(7 DOWNTO 0);
    SIGNAL RdEn    : std_ulogic;
    SIGNAL WrEn    : std_ulogic;
-   SIGNAL RAM_BUSY : std_ulogic;
+   SIGNAL RAM_BUSYR : std_ulogic;
+   SIGNAL RAM_BUSYW : std_ulogic;
    SIGNAL RdyOut  : std_ulogic;
    SIGNAL Conv    : std_ulogic;
    SIGNAL CS5     : std_ulogic;
    SIGNAL SDI     : std_ulogic_vector(1 DOWNTO 0);
    SIGNAL SCK16   : std_ulogic_vector(1 DOWNTO 0);
    SIGNAL SDO     : std_ulogic_vector(1 DOWNTO 0);
+   SIGNAL Status  : std_ulogic_vector(11 DOWNTO 0);
    SIGNAL SCK5    : std_ulogic_vector(1 DOWNTO 0);
    SIGNAL Done    : std_ulogic;
 
@@ -55,6 +58,7 @@ ARCHITECTURE rtl OF bench_ana_hwside IS
       PORT (
          CLK     : IN     std_logic;
          RST     : IN     std_logic;
+         AICtrl  : IN std_logic_vector(10 DOWNTO 0);
          CfgData : IN std_logic_vector(8 DOWNTO 0);
          Row     : OUT std_ulogic_vector(5 DOWNTO 0);
          AcqData : OUT    std_logic_vector(31 DOWNTO 0);
@@ -63,7 +67,9 @@ ARCHITECTURE rtl OF bench_ana_hwside IS
          RdEn    : OUT std_ulogic;
          WrEn    : OUT std_ulogic;
          RdyOut  : OUT std_ulogic;
-         RAM_Busy : OUT std_ulogic;
+         Status  : OUT std_ulogic_vector(11 DOWNTO 0);
+         RAM_BusyR : IN std_ulogic;
+         RAM_BusyW : IN std_ulogic;
          Conv    : OUT    std_ulogic;
          CS5     : OUT    std_ulogic;
          SDI     : IN     std_ulogic_vector(1 DOWNTO 0);
@@ -116,6 +122,7 @@ BEGIN
     PORT MAP (
        CLK     => CLK,
        RST     => RST,
+       AICtrl  => AICtrl,
        Row     => Row,
        CfgData => CfgData,
        AcqData => AcqData,
@@ -123,7 +130,9 @@ BEGIN
        WR_Addr => WR_Addr,
        RdEn    => RdEn,
        WrEn    => WrEn,
-       RAM_BUSY => RAM_BUSY,
+       Status  => Status,
+       RAM_BUSYR => RAM_BUSYR,
+       RAM_BUSYW => RAM_BUSYW,
        RdyOut  => RdyOut,
        Conv    => Conv,
        CS5     => CS5,
@@ -184,6 +193,9 @@ BEGIN
     End Procedure;
   Begin
     Done <= '0';
+    AICtrl <= (others => '0');
+    RAM_BUSYR <= '0';
+    RAM_BUSYW <= '0';
     RST <= '1';
     -- pragma synthesis_off
     wait for 200 ns;

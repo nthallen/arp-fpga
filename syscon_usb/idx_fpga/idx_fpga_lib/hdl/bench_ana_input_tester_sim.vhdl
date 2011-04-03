@@ -220,6 +220,7 @@ BEGIN
     Variable row_no : integer;
     Variable cfgbits : std_logic_vector(15 DOWNTO 0);
   Begin
+    -- pragma synthesis_off
     wait for 100 ns;
     while Done = '0' loop
       wait until ChkSD5'Event AND ChkSD5 = '1';
@@ -261,6 +262,7 @@ BEGIN
         end loop;
       end loop;
     end loop;
+    -- pragma synthesis_on
   End Process;
 
   test_proc : Process
@@ -466,38 +468,48 @@ BEGIN
       end loop;
     end loop;
     ChkCnvCnt <= '0'; -- Now we're messing with mux direction.
+    wait until Conv'Event and Conv = '0';
     sbrd(X"0E00"); -- Check status address
-    assert Read_Result = X"0000"
-      report "Status readback non-zero"
+    assert Read_Result = X"0F30"
+      report "Status readback should have been 0F30"
+      severity error;
+    wait until Conv'Event and Conv = '1';
+    sbrd(X"0E00");
+    assert Read_Result = X"0F30"
+      report "Status readback should have been 0F30"
       severity error;
     sbwr(X"0C01", X"0080" ); -- Disable Engine
     wait for 1 ms;
     sbrd(X"0E00");
-    assert Read_Result = X"0005"
-      report "Status readback should be 5"
+    assert Read_Result(0) = '1'
+      report "Status readback(0) should be 1"
       severity error;
     sbwr(X"0C01", X"0040" ); -- Fix Row at 0
     wait for 1 ms;
     sbwr(X"0C01", X"0047" ); -- Fix Row at 7
     wait for 1 ms;
+    ChkSD5 <= '0';
+    wait for 200 us;
     sbwr(X"0C01", X"0000" ); -- Back to normal
-    wait for 2200 us;
+    wait for 5 us;
+    ChkSD5 <= '1';
+    wait for 2195 us;
     sbwr(X"0C01", X"0200" ); -- XtraSettle
     wait for 5000 us;
     sbwr(X"0C01", X"013F" ); -- Count Backwards
     wait for 2200 us;
     sbrd(X"0E00");
-    assert Read_Result = X"0004"
-      report "Status readback should be 4"
+    assert Read_Result(0) = '1'
+      report "Status readback(0) should still be 1"
       severity error;
+    ChkSD5 <= '0';
+    wait for 200 us;
     sbwr(X"0C01", X"0400" ); -- special reset
     wait for 200 us;
     sbwr(X"0C01", X"0000" ); -- unreset
+    wait for 5 us;
+    ChkSD5 <= '1';
     wait for 100 us;
-    sbrd(X"0E00");
-    assert Read_Result = X"0000"
-      report "Status readback should be 0"
-      severity error;
     wait for 2200 us;
     
     for loopcnt in 0 to 5 loop

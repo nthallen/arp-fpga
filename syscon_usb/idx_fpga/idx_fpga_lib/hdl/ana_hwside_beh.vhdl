@@ -84,6 +84,7 @@ ARCHITECTURE beh OF ana_hwside IS
          RdyOut   : OUT    std_ulogic;
          S5WE     : OUT    std_ulogic_vector(1 DOWNTO 0);
          Start    : OUT    std_ulogic;
+         Restart  : OUT    std_ulogic;
          Status   : OUT    std_ulogic_vector(11 DOWNTO 0);
          AICtrl   : IN     std_logic_vector(9 DOWNTO 0)
       );
@@ -91,13 +92,14 @@ ARCHITECTURE beh OF ana_hwside IS
 
    COMPONENT ana_s16
       PORT (
-         CLK   : IN     std_ulogic;
-         RST   : IN     std_ulogic;
-         SDI   : IN     std_ulogic;
-         Start : IN     std_ulogic;
-         DO    : OUT    std_ulogic_vector(15 DOWNTO 0);
-         RDY   : OUT    std_ulogic;
-         SCK   : OUT    std_ulogic
+         CLK     : IN   std_ulogic;
+         RST     : IN   std_ulogic;
+         SDI     : IN   std_ulogic;
+         Start   : IN   std_ulogic;
+         Restart : IN   std_ulogic;
+         DO      : OUT  std_ulogic_vector(15 DOWNTO 0);
+         RDY     : OUT  std_ulogic;
+         SCK     : OUT  std_ulogic
       );
    END COMPONENT;
 
@@ -160,24 +162,26 @@ BEGIN
 
   ana_s16_0 : ana_s16
     PORT MAP (
-       CLK   => CLK,
-       RST   => AI_RST,
-       SDI   => SDI(0),
-       Start => Start,
-       DO    => DO16_0,
-       RDY   => RDY(2),
-       SCK   => SCK16(0)
+       CLK     => CLK,
+       RST     => AI_RST,
+       SDI     => SDI(0),
+       Start   => Start,
+       Restart => Restart,
+       DO      => DO16_0,
+       RDY     => RDY(2),
+       SCK     => SCK16(0)
     );
 
   ana_s16_1 : ana_s16
      PORT MAP (
-        CLK   => CLK,
-        RST   => AI_RST,
-        SDI   => SDI(1),
-        Start => Start,
-        DO    => DO16_1,
-        RDY   => RDY(3),
-        SCK   => SCK16(1)
+        CLK     => CLK,
+        RST     => AI_RST,
+        SDI     => SDI(1),
+        Start   => Start,
+        Restart => Restart,
+        DO      => DO16_1,
+        RDY     => RDY(3),
+        SCK     => SCK16(1)
      );
 
    ana_acquire_i : ana_acquire
@@ -200,6 +204,7 @@ BEGIN
          RdyOut => RdyOut,
          S5WE   => S5WE,
          Start  => Start,
+         Restart => Restart,
          Status => Status,
          AICtrl   => AICtrl(9 DOWNTO 0)
       );
