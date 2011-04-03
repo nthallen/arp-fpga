@@ -40,6 +40,7 @@ ARCHITECTURE beh OF ptrh_i2c IS
    SIGNAL sda_pad_i    : std_logic;
    SIGNAL sda_pad_o    : std_logic;
    SIGNAL sda_padoen_o : std_logic;
+   SIGNAL wb_rst_i      : std_ulogic;
    COMPONENT i2c_master_top
       GENERIC (
          ARST_LVL : std_logic := '0'
@@ -73,7 +74,7 @@ BEGIN
       )
       PORT MAP (
          wb_clk_i     => F25M,
-         wb_rst_i     => rst,
+         wb_rst_i     => wb_rst_i,
          arst_i       => '1',
          wb_adr_i     => wb_adr_i,
          wb_dat_i     => wb_dat_i,
@@ -110,6 +111,13 @@ BEGIN
     end if;
   End Process;
   scl_pad_i <= scl;
+  
+  reset : Process (F25M) Is
+  Begin
+    if F25M'Event and F25M = '1' then
+      wb_rst_i <= rst;
+    end if;
+  End Process;
   
 END ARCHITECTURE beh;
 
