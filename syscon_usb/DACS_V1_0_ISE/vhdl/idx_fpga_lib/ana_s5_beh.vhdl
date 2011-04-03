@@ -21,15 +21,16 @@ ENTITY ana_s5 IS
     DEF_CFG : std_logic_vector(8 DOWNTO 0) := "000010100"
   );
   PORT (
-    SDO : OUT std_ulogic;
-    SCK : OUT std_ulogic; -- 5 MHz max
-    DI  : IN std_logic_vector(8 DOWNTO 0);
-    WE  : IN std_ulogic;
-    Start : IN std_ulogic;
-    CLK : IN std_ulogic; -- 30 MHz max
-    RST : IN std_ulogic;
-    DO  : OUT std_logic_vector(8 DOWNTO 0);
-    RDY : OUT std_ulogic
+    SDO     : OUT std_ulogic;
+    SCK     : OUT std_ulogic; -- 5 MHz max
+    DI      : IN std_logic_vector(8 DOWNTO 0);
+    WE      : IN std_ulogic;
+    Start   : IN std_ulogic;
+    Restart : IN std_ulogic;
+    CLK     : IN std_ulogic; -- 30 MHz max
+    RST     : IN std_ulogic;
+    DO      : OUT std_logic_vector(8 DOWNTO 0);
+    RDY     : OUT std_ulogic
   );
 END ENTITY ana_s5;
 
@@ -43,13 +44,14 @@ ARCHITECTURE beh OF ana_s5 IS
 
   COMPONENT ana_s5s
      PORT (
-        DI    : IN     std_logic_vector(8 DOWNTO 0);
-        Start : IN     std_ulogic;
-        clk   : IN     std_ulogic;
-        rst   : IN     std_ulogic;
-        RDY   : OUT    std_ulogic;
-        SCK   : OUT    std_ulogic;
-        SDO   : OUT    std_ulogic
+        DI      : IN     std_logic_vector(8 DOWNTO 0);
+        Start   : IN     std_ulogic;
+        Restart : IN   std_ulogic;
+        clk     : IN     std_ulogic;
+        rst     : IN     std_ulogic;
+        RDY     : OUT    std_ulogic;
+        SCK     : OUT    std_ulogic;
+        SDO     : OUT    std_ulogic
      );
   END COMPONENT;
   FOR ALL : ana_s5s USE ENTITY idx_fpga_lib.ana_s5s;
@@ -57,13 +59,14 @@ BEGIN
 
   ana_s5s_i : ana_s5s
     PORT MAP (
-       DI    => SRDI,
-       Start => Start,
-       clk   => CLK,
-       rst   => RST,
-       RDY   => RDY,
-       SCK   => SCK,
-       SDO   => SDO
+       DI      => SRDI,
+       Start   => Start,
+       Restart => Restart,
+       clk     => CLK,
+       rst     => RST,
+       RDY     => RDY,
+       SCK     => SCK,
+       SDO     => SDO
     );
 
   SRDI_p : Process (CLK) IS
@@ -87,7 +90,7 @@ BEGIN
           else
             N_CFG <= "01";
           end if;
-        elsif Start = '1' AND Started = '0' then
+        elsif ( Start = '1' OR Restart = '1' ) AND Started = '0' then
           if N_CFG = "10" then
             N_CFG <= "01";
             SRDI <= RDI(0);

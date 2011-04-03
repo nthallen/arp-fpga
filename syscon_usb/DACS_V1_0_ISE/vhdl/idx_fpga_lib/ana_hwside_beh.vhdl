@@ -43,9 +43,9 @@ END ENTITY ana_hwside;
 --
 ARCHITECTURE beh OF ana_hwside IS
    type cache_t is array (7 DOWNTO 0) of std_logic_vector(8 DOWNTO 0);
-   SIGNAL RdyIn  : std_ulogic;
    SIGNAL S5WE   : std_ulogic_vector(1 DOWNTO 0);
    SIGNAL Start  : std_ulogic;
+   SIGNAL Restart : std_ulogic;
    SIGNAL DO5_0  : std_logic_vector(8 DOWNTO 0);
    SIGNAL DO5_1  : std_logic_vector(8 DOWNTO 0);
    SIGNAL DO16_0 : std_ulogic_vector(15 DOWNTO 0);
@@ -68,7 +68,7 @@ ARCHITECTURE beh OF ana_hwside IS
       PORT (
          CLK      : IN     std_ulogic;
          RST      : IN     std_ulogic;
-         RdyIn    : IN     std_ulogic;
+         RdyIn    : IN     std_ulogic_vector(3 DOWNTO 0);
          SDI      : IN     std_ulogic_vector(1 DOWNTO 0);
          CurMuxCfg : IN  std_logic_vector(3 DOWNTO 0);
          NewMuxCfg : IN  std_logic_vector(3 DOWNTO 0);
@@ -84,6 +84,7 @@ ARCHITECTURE beh OF ana_hwside IS
          RdyOut   : OUT    std_ulogic;
          S5WE     : OUT    std_ulogic_vector(1 DOWNTO 0);
          Start    : OUT    std_ulogic;
+         Restart  : OUT    std_ulogic;
          Status   : OUT    std_ulogic_vector(11 DOWNTO 0);
          AICtrl   : IN     std_logic_vector(9 DOWNTO 0)
       );
@@ -91,13 +92,14 @@ ARCHITECTURE beh OF ana_hwside IS
 
    COMPONENT ana_s16
       PORT (
-         CLK   : IN     std_ulogic;
-         RST   : IN     std_ulogic;
-         SDI   : IN     std_ulogic;
-         Start : IN     std_ulogic;
-         DO    : OUT    std_ulogic_vector(15 DOWNTO 0);
-         RDY   : OUT    std_ulogic;
-         SCK   : OUT    std_ulogic
+         CLK     : IN   std_ulogic;
+         RST     : IN   std_ulogic;
+         SDI     : IN   std_ulogic;
+         Start   : IN   std_ulogic;
+         Restart : IN   std_ulogic;
+         DO      : OUT  std_ulogic_vector(15 DOWNTO 0);
+         RDY     : OUT  std_ulogic;
+         SCK     : OUT  std_ulogic
       );
    END COMPONENT;
 
@@ -106,15 +108,16 @@ ARCHITECTURE beh OF ana_hwside IS
          DEF_CFG : std_logic_vector(8 DOWNTO 0) := "000010100"
       );
       PORT (
-         SDO   : OUT    std_ulogic;
-         SCK   : OUT    std_ulogic;
-         DI    : IN     std_logic_vector(8 DOWNTO 0);
-         WE    : IN     std_ulogic;
-         Start : IN     std_ulogic;
-         CLK   : IN     std_ulogic;
-         RST   : IN     std_ulogic;
-         DO    : OUT    std_logic_vector(8 DOWNTO 0);
-         RDY   : OUT    std_ulogic
+         SDO     : OUT    std_ulogic;
+         SCK     : OUT    std_ulogic;
+         DI      : IN     std_logic_vector(8 DOWNTO 0);
+         WE      : IN     std_ulogic;
+         Start   : IN     std_ulogic;
+         Restart : IN     std_ulogic;
+         CLK     : IN     std_ulogic;
+         RST     : IN     std_ulogic;
+         DO      : OUT    std_logic_vector(8 DOWNTO 0);
+         RDY     : OUT    std_ulogic
       );
    END COMPONENT;
 
@@ -128,15 +131,16 @@ BEGIN
          DEF_CFG => DEF_CFG
       )
       PORT MAP (
-         SDO   => SDO(0),
-         SCK   => SCK5(0),
-         DI    => CfgData_int,
-         WE    => S5WE(0),
-         Start => Start,
-         CLK   => CLK,
-         RST   => AI_RST,
-         DO    => DO5_0,
-         RDY   => RDY(0)
+         SDO     => SDO(0),
+         SCK     => SCK5(0),
+         DI      => CfgData_int,
+         WE      => S5WE(0),
+         Start   => Start,
+         Restart => Restart,
+         CLK     => CLK,
+         RST     => AI_RST,
+         DO      => DO5_0,
+         RDY     => RDY(0)
       );
 
   ana_s5_1 : ana_s5
@@ -144,44 +148,47 @@ BEGIN
         DEF_CFG => DEF_CFG
      )
      PORT MAP (
-        SDO   => SDO(1),
-        SCK   => SCK5(1),
-        DI    => CfgData_int,
-        WE    => S5WE(1),
-        Start => Start,
-        CLK   => CLK,
-        RST   => AI_RST,
-        DO    => DO5_1,
-        RDY   => RDY(1)
+        SDO     => SDO(1),
+        SCK     => SCK5(1),
+        DI      => CfgData_int,
+        WE      => S5WE(1),
+        Start   => Start,
+        Restart => Restart,
+        CLK     => CLK,
+        RST     => AI_RST,
+        DO      => DO5_1,
+        RDY     => RDY(1)
      );
 
   ana_s16_0 : ana_s16
     PORT MAP (
-       CLK   => CLK,
-       RST   => AI_RST,
-       SDI   => SDI(0),
-       Start => Start,
-       DO    => DO16_0,
-       RDY   => RDY(2),
-       SCK   => SCK16(0)
+       CLK     => CLK,
+       RST     => AI_RST,
+       SDI     => SDI(0),
+       Start   => Start,
+       Restart => Restart,
+       DO      => DO16_0,
+       RDY     => RDY(2),
+       SCK     => SCK16(0)
     );
 
   ana_s16_1 : ana_s16
      PORT MAP (
-        CLK   => CLK,
-        RST   => AI_RST,
-        SDI   => SDI(1),
-        Start => Start,
-        DO    => DO16_1,
-        RDY   => RDY(3),
-        SCK   => SCK16(1)
+        CLK     => CLK,
+        RST     => AI_RST,
+        SDI     => SDI(1),
+        Start   => Start,
+        Restart => Restart,
+        DO      => DO16_1,
+        RDY     => RDY(3),
+        SCK     => SCK16(1)
      );
 
    ana_acquire_i : ana_acquire
       PORT MAP (
          CLK    => CLK,
          RST    => AI_RST,
-         RdyIn  => RdyIn,
+         RdyIn  => Rdy,
          SDI    => SDI,
          CurMuxCfg => CurMuxCfg,
          NewMuxCfg => CfgData_int(8 DOWNTO 5),
@@ -197,18 +204,10 @@ BEGIN
          RdyOut => RdyOut,
          S5WE   => S5WE,
          Start  => Start,
+         Restart => Restart,
          Status => Status,
          AICtrl   => AICtrl(9 DOWNTO 0)
       );
-
-  Ready : Process (Rdy) Is
-  Begin
-    if Rdy = "1111" then
-      RdyIn <= '1';
-    else
-      RdyIn <= '0';
-    end if;
-  End Process;
   
   WCache : Process (CLK) Is
     Variable CacheUaddr : unsigned(2 DOWNTO 0);
