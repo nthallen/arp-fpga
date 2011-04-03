@@ -33,6 +33,7 @@ END ENTITY ana_cfg_ram;
 ARCHITECTURE beh OF ana_cfg_ram IS
    SIGNAL RD_DATA_int : std_logic_vector(31 DOWNTO 0);
    SIGNAL WR_DATA_int : std_logic_vector(31 DOWNTO 0);
+   SIGNAL WREN0   : std_ulogic;
    SIGNAL WREN    : std_ulogic;
    COMPONENT ana_ram
       PORT (
@@ -67,26 +68,20 @@ BEGIN
   Begin
     if WR_CLK'Event AND WR_CLK = '1' then
       if RST = '1' then
+        WREN0 <= '0';
         WREN <= '0';
+        RAM_BUSY <= '0';
       elsif WE = '1' AND CfgEn = '1' then
         WR_Data_int(15 DOWNTO 0) <= WR_DATA;
-        WREN <= '1';
+        WREN0 <= '1';
+        RAM_BUSY <= '1';
       else
-        WREN <= '0';
+        WREN0 <= '0';
+        WREN <= WREN0;
+        RAM_BUSY <= WREN0;
       end if;
     end if;
   End Process;
-  
-  Busy : Process (RD_CLK) IS
-  Begin
-    if RD_CLK'Event AND RD_CLK = '1' then
-      if (WE = '1' AND CfgEn = '1') OR WREN = '1' then
-        RAM_BUSY <= '1';
-      else
-        RAM_BUSY <= '0';
-      end if;
-    end if;
-  end Process;
 
   WR_DATA_int(31 DOWNTO 16) <= (others => '0');
   RD_DATA <= RD_DATA_int(8 DOWNTO 0);

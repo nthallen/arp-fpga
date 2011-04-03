@@ -60,7 +60,6 @@ ARCHITECTURE beh OF ana_hwside IS
    SIGNAL RD_Addr_cache : std_logic_vector(3 DOWNTO 0);
    SIGNAL CfgData_int : std_logic_vector(8 DOWNTO 0);
    SIGNAL RdEn_int : std_ulogic;
-   SIGNAL RAM_Busy : std_ulogic;
    SIGNAL AI_ALT_RST : std_logic;
    SIGNAL AI_RST : std_ulogic;
 
@@ -80,7 +79,8 @@ ARCHITECTURE beh OF ana_hwside IS
          NxtRow   : OUT    std_ulogic_vector(5 DOWNTO 0);
          RdEn     : OUT    std_ulogic;
          WrEn     : OUT    std_ulogic;
-         RAM_Busy : IN  std_ulogic;
+         RAM_BusyR : IN  std_ulogic;
+         RAM_BusyW : IN  std_ulogic;
          RdyOut   : OUT    std_ulogic;
          S5WE     : OUT    std_ulogic_vector(1 DOWNTO 0);
          Start    : OUT    std_ulogic;
@@ -200,7 +200,8 @@ BEGIN
          Conv   => Conv,
          CS5    => CS5,
          NxtRow => Row,
-         RAM_Busy => RAM_Busy,
+         RAM_BusyR => RAM_BusyR,
+         RAM_BusyW => RAM_BusyW,
          RdyOut => RdyOut,
          S5WE   => S5WE,
          Start  => Start,
@@ -278,15 +279,6 @@ BEGIN
     end if;
     CfgData_int(4 DOWNTO 0) <= CfgData(4 DOWNTO 0);
   End Process;
-  
-  Busy : Process (RAM_BusyR, RAM_BusyW) Is
-  Begin
-    if RAM_BusyR = '1' or RAM_BusyW = '1' then
-      RAM_Busy <= '1';
-    else
-      RAM_Busy <= '0';
-    end if;
-  end Process;
   
   Reset : Process (CLK) IS
   Begin
