@@ -29,7 +29,6 @@ ENTITY ana_data_ram IS
 END ENTITY ana_data_ram;
 
 ARCHITECTURE beh OF ana_data_ram IS
-   SIGNAL RDEN_int : std_ulogic;
    SIGNAL RAM_RD_DATA : std_logic_vector(31 DOWNTO 0);
    SIGNAL RAM_RD_EN   : std_ulogic;
    SIGNAL RD_DATA_int : std_logic_vector(15 DOWNTO 0);
@@ -86,6 +85,7 @@ ARCHITECTURE beh OF ana_data_ram IS
       PORT (
          RAM_RD_DATA : IN     std_logic_vector(31 DOWNTO 0);
          RDEN        : IN     std_ulogic;
+         DataEn      : IN     std_ulogic;
          RD_ADDR     : IN     std_logic_vector(8 DOWNTO 0);
          RD_CLK      : IN     std_ulogic;
          RST         : IN     std_ulogic;
@@ -113,7 +113,8 @@ BEGIN
    rdctrl : ana_data_rd
       PORT MAP (
          RAM_RD_DATA => RAM_RD_DATA,
-         RDEN        => RDEN_int,
+         RDEN        => RDEN,
+         DataEn      => DATAEN,
          RD_ADDR     => RD_ADDR,
          RD_CLK      => RD_CLK,
          RST         => RST,
@@ -128,15 +129,6 @@ BEGIN
    Begin
      if WR_CLK'Event AND WR_CLK = '1' then
        RAM_BUSY <= RAM_BUSYR;
-     end if;
-   End Process;
-   
-   RE : Process (RDEN, DATAEN) IS
-   Begin
-     if RDEN = '1' AND DATAEN = '1' then
-       RDEN_int <= '1';
-     else
-       RDEN_int <= '0';
      end if;
    End Process;
    
