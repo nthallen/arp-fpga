@@ -73,19 +73,19 @@ value "C:\\HDS\\idx_fpga\\idx_fpga_lib\\hds\\ana_data_rd"
 )
 (vvPair
 variable "date"
-value "04/ 3/2011"
+value "04/ 4/2011"
 )
 (vvPair
 variable "day"
-value "Sun"
+value "Mon"
 )
 (vvPair
 variable "day_long"
-value "Sunday"
+value "Monday"
 )
 (vvPair
 variable "dd"
-value "03"
+value "04"
 )
 (vvPair
 variable "entity_name"
@@ -209,7 +209,7 @@ value "fsm"
 )
 (vvPair
 variable "time"
-value "13:45:53"
+value "18:34:24"
 )
 (vvPair
 variable "unit"
@@ -793,7 +793,7 @@ va (VaSet
 fg "0,0,32768"
 bg "0,0,32768"
 )
-xt "59747,69610,68447,70610"
+xt "59747,69610,68347,70610"
 st "
 by %user on %dd %month %year
 "
@@ -2277,6 +2277,7 @@ end &22
 ss 0
 es 0
 cond "RDEN = '1' AND
+DataEn = '1' AND
 RD_ADDR ( 0 ) = '0'"
 tb (TransitionBlock
 uid 268,0
@@ -2289,7 +2290,7 @@ fg "65535,65535,65535"
 bg "0,0,0"
 lineColor "0,32768,49152"
 )
-xt "55975,11318,64975,14318"
+xt "55975,11318,64975,15318"
 )
 autoResize 1
 lineShape (Line
@@ -2309,8 +2310,9 @@ uid 271,0
 va (VaSet
 font "arial,8,0"
 )
-xt "56475,11818,64475,13818"
+xt "56475,11818,64475,14818"
 st "RDEN = '1' AND
+DataEn = '1' AND
 RD_ADDR ( 0 ) = '0'"
 tm "Condition"
 )
@@ -2319,7 +2321,7 @@ uid 272,0
 va (VaSet
 font "arial,8,0"
 )
-xt "55725,14218,65225,15218"
+xt "55725,15218,65225,16218"
 tm "Actions"
 )
 )
@@ -2458,7 +2460,7 @@ arrow 1
 start &2
 end &23
 ss 0
-cond "RDEN = '1' AND 
+cond "RDEN = '1' AND DataEn = '1' AND
 RD_ADDR ( 0) = '1' AND
 RD_ADDR(8 DOWNTO 1) = RAM_ADDR_hold"
 tb (TransitionBlock
@@ -2493,7 +2495,7 @@ va (VaSet
 font "arial,8,0"
 )
 xt "46198,41904,63898,44904"
-st "RDEN = '1' AND 
+st "RDEN = '1' AND DataEn = '1' AND
 RD_ADDR ( 0) = '1' AND
 RD_ADDR(8 DOWNTO 1) = RAM_ADDR_hold"
 tm "Condition"
@@ -2553,7 +2555,7 @@ start &2
 end &24
 ss 0
 es 0
-cond "RDEN = '1' AND 
+cond "RDEN = '1' AND DataEn = '1' AND
 RD_ADDR ( 0 ) = '1' AND 
 RD_ADDR (8 DOWNTO 1) /= RAM_ADDR_hold"
 tb (TransitionBlock
@@ -2587,7 +2589,7 @@ va (VaSet
 font "arial,8,0"
 )
 xt "23768,29488,41868,32488"
-st "RDEN = '1' AND 
+st "RDEN = '1' AND DataEn = '1' AND
 RD_ADDR ( 0 ) = '1' AND 
 RD_ADDR (8 DOWNTO 1) /= RAM_ADDR_hold"
 tm "Condition"
@@ -3201,8 +3203,8 @@ tm "SmCompilerDirectivesTextMgr"
 ]
 associable 1
 )
-windowSize "64,0,1197,800"
-viewArea "-2088,-2668,109087,72617"
+windowSize "64,0,1198,800"
+viewArea "-2100,-2700,109363,73276"
 cachedDiagramExtent "-750,-1270,96547,70610"
 pageSetupInfo (PageSetupInfo
 ptrCmd ""
@@ -3545,7 +3547,7 @@ stateOrder [
 name "csm"
 )
 ]
-lastUid 761,0
+lastUid 792,0
 commonDM (CommonDM
 ldm (LogicalDM
 emptyRow *62 (LEmptyRow
@@ -3728,6 +3730,17 @@ uid 650,0
 scheme 1
 rstVal "'0'"
 )
+*91 (LeafLogPort
+port (LogicalPort
+decl (Decl
+n "DataEn"
+t "std_ulogic"
+o 11
+)
+)
+uid 791,0
+scheme 1
+)
 ]
 )
 pdm (PhysicalDM
@@ -3735,7 +3748,7 @@ displayShortBounds 1
 editShortBounds 1
 uid 190,0
 optionalChildren [
-*91 (Sheet
+*92 (Sheet
 sheetRow (SheetRow
 headerVa (MVa
 cellColor "49152,49152,49152"
@@ -3752,91 +3765,97 @@ cellColor "39936,56832,65280"
 fontColor "0,0,0"
 font "Tahoma,10,0"
 )
-emptyMRCItem *92 (MRCItem
+emptyMRCItem *93 (MRCItem
 litem &62
-pos 10
+pos 11
 dimension 20
 )
 uid 192,0
 optionalChildren [
-*93 (MRCItem
+*94 (MRCItem
 litem &63
 pos 0
 dimension 20
 uid 193,0
 )
-*94 (MRCItem
+*95 (MRCItem
 litem &64
 pos 1
 dimension 23
 uid 194,0
 )
-*95 (MRCItem
+*96 (MRCItem
 litem &65
 pos 2
 hidden 1
 dimension 20
 uid 195,0
 )
-*96 (MRCItem
+*97 (MRCItem
 litem &81
 pos 0
 dimension 20
 uid 155,0
 )
-*97 (MRCItem
+*98 (MRCItem
 litem &82
 pos 1
 dimension 20
 uid 157,0
 )
-*98 (MRCItem
+*99 (MRCItem
 litem &83
 pos 2
 dimension 20
 uid 159,0
 )
-*99 (MRCItem
+*100 (MRCItem
 litem &84
 pos 3
 dimension 20
 uid 161,0
 )
-*100 (MRCItem
+*101 (MRCItem
 litem &85
 pos 4
 dimension 20
 uid 163,0
 )
-*101 (MRCItem
+*102 (MRCItem
 litem &86
-pos 5
+pos 8
 dimension 20
 uid 167,0
 )
-*102 (MRCItem
+*103 (MRCItem
 litem &87
-pos 6
+pos 9
 dimension 20
 uid 169,0
 )
-*103 (MRCItem
+*104 (MRCItem
 litem &88
-pos 8
+pos 6
 dimension 20
 uid 263,0
 )
-*104 (MRCItem
+*105 (MRCItem
 litem &89
-pos 9
+pos 7
 dimension 20
 uid 265,0
 )
-*105 (MRCItem
+*106 (MRCItem
 litem &90
-pos 7
+pos 10
 dimension 20
 uid 651,0
+)
+*107 (MRCItem
+litem &91
+pos 5
+dimension 20
+uid 792,0
 )
 ]
 )
@@ -3849,85 +3868,85 @@ textAngle 90
 )
 uid 196,0
 optionalChildren [
-*106 (MRCItem
+*108 (MRCItem
 litem &66
 pos 0
 dimension 20
 uid 197,0
 )
-*107 (MRCItem
+*109 (MRCItem
 litem &68
 pos 1
 dimension 50
 uid 198,0
 )
-*108 (MRCItem
+*110 (MRCItem
 litem &69
 pos 2
 dimension 70
 uid 199,0
 )
-*109 (MRCItem
+*111 (MRCItem
 litem &70
 pos 3
 dimension 50
 uid 200,0
 )
-*110 (MRCItem
+*112 (MRCItem
 litem &71
 pos 4
 dimension 80
 uid 201,0
 )
-*111 (MRCItem
+*113 (MRCItem
 litem &72
 pos 5
 dimension 80
 uid 202,0
 )
-*112 (MRCItem
+*114 (MRCItem
 litem &73
 pos 6
 dimension 40
 uid 203,0
 )
-*113 (MRCItem
+*115 (MRCItem
 litem &74
 pos 7
 dimension 100
 uid 204,0
 )
-*114 (MRCItem
+*116 (MRCItem
 litem &75
 pos 8
 dimension 60
 uid 205,0
 )
-*115 (MRCItem
+*117 (MRCItem
 litem &76
 pos 9
 dimension 130
 uid 206,0
 )
-*116 (MRCItem
+*118 (MRCItem
 litem &77
 pos 10
 dimension 56
 uid 207,0
 )
-*117 (MRCItem
+*119 (MRCItem
 litem &78
 pos 11
 dimension 50
 uid 208,0
 )
-*118 (MRCItem
+*120 (MRCItem
 litem &79
 pos 12
 dimension 50
 uid 209,0
 )
-*119 (MRCItem
+*121 (MRCItem
 litem &80
 pos 13
 dimension 80
@@ -3949,38 +3968,38 @@ uid 170,0
 cdmCsm &1
 genericsCommonDM (CommonDM
 ldm (LogicalDM
-emptyRow *120 (LEmptyRow
+emptyRow *122 (LEmptyRow
 )
 uid 363,0
 optionalChildren [
-*121 (RefLabelRowHdr
+*123 (RefLabelRowHdr
 )
-*122 (TitleRowHdr
+*124 (TitleRowHdr
 )
-*123 (FilterRowHdr
+*125 (FilterRowHdr
 )
-*124 (RefLabelColHdr
+*126 (RefLabelColHdr
 tm "RefLabelColHdrMgr"
 )
-*125 (RowExpandColHdr
+*127 (RowExpandColHdr
 tm "RowExpandColHdrMgr"
 )
-*126 (GroupColHdr
+*128 (GroupColHdr
 tm "GroupColHdrMgr"
 )
-*127 (NameColHdr
+*129 (NameColHdr
 tm "GenericNameColHdrMgr"
 )
-*128 (TypeColHdr
+*130 (TypeColHdr
 tm "GenericTypeColHdrMgr"
 )
-*129 (InitColHdr
+*131 (InitColHdr
 tm "GenericValueColHdrMgr"
 )
-*130 (PragmaColHdr
+*132 (PragmaColHdr
 tm "GenericPragmaColHdrMgr"
 )
-*131 (EolColHdr
+*133 (EolColHdr
 tm "GenericEolColHdrMgr"
 )
 ]
@@ -3990,7 +4009,7 @@ displayShortBounds 1
 editShortBounds 1
 uid 375,0
 optionalChildren [
-*132 (Sheet
+*134 (Sheet
 sheetRow (SheetRow
 headerVa (MVa
 cellColor "49152,49152,49152"
@@ -4007,27 +4026,27 @@ cellColor "39936,56832,65280"
 fontColor "0,0,0"
 font "Tahoma,10,0"
 )
-emptyMRCItem *133 (MRCItem
-litem &120
+emptyMRCItem *135 (MRCItem
+litem &122
 pos 0
 dimension 20
 )
 uid 377,0
 optionalChildren [
-*134 (MRCItem
-litem &121
+*136 (MRCItem
+litem &123
 pos 0
 dimension 20
 uid 378,0
 )
-*135 (MRCItem
-litem &122
+*137 (MRCItem
+litem &124
 pos 1
 dimension 23
 uid 379,0
 )
-*136 (MRCItem
-litem &123
+*138 (MRCItem
+litem &125
 pos 2
 hidden 1
 dimension 20
@@ -4044,44 +4063,44 @@ textAngle 90
 )
 uid 381,0
 optionalChildren [
-*137 (MRCItem
-litem &124
+*139 (MRCItem
+litem &126
 pos 0
 dimension 20
 uid 382,0
 )
-*138 (MRCItem
-litem &126
+*140 (MRCItem
+litem &128
 pos 1
 dimension 50
 uid 383,0
 )
-*139 (MRCItem
-litem &127
+*141 (MRCItem
+litem &129
 pos 2
 dimension 100
 uid 384,0
 )
-*140 (MRCItem
-litem &128
+*142 (MRCItem
+litem &130
 pos 3
 dimension 100
 uid 385,0
 )
-*141 (MRCItem
-litem &129
+*143 (MRCItem
+litem &131
 pos 4
 dimension 50
 uid 386,0
 )
-*142 (MRCItem
-litem &130
+*144 (MRCItem
+litem &132
 pos 5
 dimension 50
 uid 387,0
 )
-*143 (MRCItem
-litem &131
+*145 (MRCItem
+litem &133
 pos 6
 dimension 80
 uid 388,0
