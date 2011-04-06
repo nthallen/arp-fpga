@@ -19,7 +19,7 @@ ENTITY ana_hwside IS
   PORT (
     CLK     : IN std_logic;
     RST     : IN std_ulogic;
-    AICtrl  : IN std_logic_vector(10 DOWNTO 0);
+    AICtrl  : IN std_logic_vector(12 DOWNTO 0);
     Row     : OUT std_ulogic_vector(5 DOWNTO 0);
     CfgData : IN std_logic_vector(8 DOWNTO 0);
     AcqData : OUT std_logic_vector(31 DOWNTO 0);
@@ -86,7 +86,7 @@ ARCHITECTURE beh OF ana_hwside IS
          Start    : OUT    std_ulogic;
          Restart  : OUT    std_ulogic;
          Status   : OUT    std_ulogic_vector(11 DOWNTO 0);
-         AICtrl   : IN     std_logic_vector(9 DOWNTO 0)
+         AICtrl   : IN     std_logic_vector(12 DOWNTO 0)
       );
    END COMPONENT;
 
@@ -207,7 +207,7 @@ BEGIN
          Start  => Start,
          Restart => Restart,
          Status => Status,
-         AICtrl   => AICtrl(9 DOWNTO 0)
+         AICtrl   => AICtrl
       );
   
   WCache : Process (CLK) Is

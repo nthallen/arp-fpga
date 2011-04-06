@@ -408,6 +408,7 @@ BEGIN
     sbwr( X"0C1E", X"0100" );
     sbwr( X"0C5E", X"0120" );
     sbwr( X"0C9E", X"0140" );
+    -- sbwr( X"0C01", X"0800" ); -- double convert on row 0 only
     wait for 800 us;
     ChkSD5 <= '1';
     wait for 2200 us;

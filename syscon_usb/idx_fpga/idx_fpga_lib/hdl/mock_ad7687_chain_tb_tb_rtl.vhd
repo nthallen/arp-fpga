@@ -84,7 +84,12 @@ BEGIN
         wait for 200 ns;
         Conv <= '1';
         wait until SDO = '1';
-        wait for 33 ns;
+        wait for 40 ns;
+        Conv <= '0';
+        wait for 200 ns;
+        Conv <= '1';
+        wait until SDO = '1';
+        wait for 40 ns;
         for c in 0 to 7 loop
           for b in 0 to 15 loop
             SCK16 <= '0';
