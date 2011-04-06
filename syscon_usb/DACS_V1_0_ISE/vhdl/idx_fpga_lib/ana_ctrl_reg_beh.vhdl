@@ -16,9 +16,9 @@ ENTITY ana_ctrl_reg IS
       CtrlEn : IN     std_ulogic;
       F8M    : IN     std_ulogic;
       rst    : IN     std_ulogic;
-      WData  : IN     std_logic_vector (10 DOWNTO 0);
+      WData  : IN     std_logic_vector (12 DOWNTO 0);
       WrEn   : IN     std_ulogic;
-      AICtrl : OUT    std_logic_vector (10 DOWNTO 0);
+      AICtrl : OUT    std_logic_vector (12 DOWNTO 0);
       F30M   : IN     std_ulogic
    );
 
@@ -28,7 +28,7 @@ END ana_ctrl_reg ;
 
 --
 ARCHITECTURE beh OF ana_ctrl_reg IS
-  SIGNAL AICtrl_In : std_logic_vector(10 DOWNTO 0);
+  SIGNAL AICtrl_In : std_logic_vector(12 DOWNTO 0);
 BEGIN
   W : Process (F8M) IS
   Begin
