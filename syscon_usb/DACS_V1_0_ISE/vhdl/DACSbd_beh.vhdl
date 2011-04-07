@@ -11,11 +11,10 @@ LIBRARY ieee;
 USE ieee.std_logic_1164.all;
 USE ieee.std_logic_arith.all;
 LIBRARY idx_fpga_lib;
--- USE idx_fpga_lib.All;
 
 ENTITY DACSbd IS
   GENERIC (
-    DACS_BUILD_NUMBER : std_logic_vector(15 DOWNTO 0) := X"000B";
+    DACS_BUILD_NUMBER : std_logic_vector(15 DOWNTO 0) := X"000C";
     INSTRUMENT_ID : std_logic_vector(15 DOWNTO 0) := X"0001";
     CTR_UG_N_BDS : integer range 5 downto 0 := 3;
     IDX_N_CHANNELS : integer range 15 downto 1 := 1;
