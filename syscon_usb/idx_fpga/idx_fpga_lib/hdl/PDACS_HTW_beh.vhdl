@@ -13,16 +13,16 @@ USE ieee.std_logic_arith.all;
 LIBRARY idx_fpga_lib;
 -- USE idx_fpga_lib.All;
 
-ENTITY DACSbd IS
+ENTITY PDACS_HTW IS
   GENERIC (
-    DACS_BUILD_NUMBER : std_logic_vector(15 DOWNTO 0) := X"000C";
+    DACS_BUILD_NUMBER : std_logic_vector(15 DOWNTO 0) := X"000B";
     INSTRUMENT_ID : std_logic_vector(15 DOWNTO 0) := X"0001";
-    CTR_UG_N_BDS : integer range 5 downto 0 := 3;
-    IDX_N_CHANNELS : integer range 15 downto 1 := 1;
+    CTR_UG_N_BDS : integer range 5 downto 0 := 0;
+    IDX_N_CHANNELS : integer range 15 downto 1 := 2;
     DIGIO_N_CONNECTORS : integer range 4 DOWNTO 1 := 4;
     DIGIO_FORCE_DIR : std_ulogic_vector := "111111111111000111110111";
     DIGIO_FORCE_DIR_VAL : std_ulogic_vector := "000000001111000111100110";
-    CMD_PROC_N_CMDS : integer := 32
+    CMD_PROC_N_CMDS : integer := 37
   );
   PORT (
     AI_AD_CNV : OUT std_ulogic_vector ( 1 DOWNTO 0 );
@@ -119,10 +119,10 @@ ENTITY DACSbd IS
     USB_1_CTS : IN std_ulogic;
     USB_1_RTS : IN std_ulogic
   );
-END ENTITY DACSbd;
+END ENTITY PDACS_HTW;
 
 --
-ARCHITECTURE beh OF DACSbd IS
+ARCHITECTURE beh OF PDACS_HTW IS
    SIGNAL subbus_cmdenbl                 : std_ulogic;
    SIGNAL subbus_cmdstrb                 : std_ulogic;
    SIGNAL subbus_fail_leds               : std_logic_vector(4 downto 0);
