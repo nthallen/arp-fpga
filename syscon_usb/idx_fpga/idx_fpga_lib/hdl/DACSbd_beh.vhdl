@@ -14,9 +14,10 @@ LIBRARY idx_fpga_lib;
 
 ENTITY DACSbd IS
   GENERIC (
-    DACS_BUILD_NUMBER : std_logic_vector(15 DOWNTO 0) := X"000C";
+    DACS_BUILD_NUMBER : std_logic_vector(15 DOWNTO 0) := X"000D";
     INSTRUMENT_ID : std_logic_vector(15 DOWNTO 0) := X"0001";
     CTR_UG_N_BDS : integer range 5 downto 0 := 3;
+    PTRH_N_BDS : integer range 5 downto 1 := 2;
     IDX_N_CHANNELS : integer range 15 downto 1 := 1;
     DIGIO_N_CONNECTORS : integer range 4 DOWNTO 1 := 4;
     DIGIO_FORCE_DIR : std_ulogic_vector := "111111111111000111110111";
@@ -150,6 +151,7 @@ ARCHITECTURE beh OF DACSbd IS
        DACS_BUILD_NUMBER : std_logic_vector(15 DOWNTO 0) := X"0007";
        INSTRUMENT_ID : std_logic_vector(15 DOWNTO 0) := X"0001";
        N_INTERRUPTS : integer range 15 downto 1 := 1;
+       PTRH_N_BDS : integer range 5 downto 1 := 2;
        CTR_UG_N_BDS : integer range 5 downto 0 := 2;
        IDX_N_CHANNELS : integer range 15 downto 1 := 3;
        IDX_BASE_ADDR : std_logic_vector(15 downto 0) := X"0A00";
@@ -172,10 +174,8 @@ ARCHITECTURE beh OF DACSbd IS
        fpga_0_RS232_RX_pin            : IN     std_logic;
        fpga_0_RS232_TX_pin            : OUT    std_logic;
 
-       IIC_Sda_pin                    : INOUT  std_logic;
-       IIC_Scl_pin                    : INOUT  std_logic;
-       SPV_SDA_pin                    : INOUT  std_logic;
-       SPV_SCK_pin                    : INOUT  std_logic;
+       PTRH_SDA_pin                   : INOUT std_logic_vector(PTRH_N_BDS-1 DOWNTO 0);
+       PTRH_SCK_pin                   : INOUT std_logic_vector(PTRH_N_BDS-1 DOWNTO 0);
 
        subbus_cmdenbl                 : OUT    std_ulogic;
        subbus_cmdstrb                 : OUT    std_ulogic;
@@ -253,10 +253,10 @@ BEGIN
 
        fpga_0_RS232_RX_pin            => USB_1_RX,
        fpga_0_RS232_TX_pin            => USB_1_TX,
-       IIC_Sda_pin                    => IIC_SDA,
-       IIC_Scl_pin                    => IIC_SCL,
-       SPV_SDA_pin                    => BIO(4),
-       SPV_SCK_pin                    => BIO(5),
+       PTRH_SDA_pin(0)                => IIC_SDA,
+       PTRH_SDA_pin(1)                => BIO(4),
+       PTRH_SCK_pin(0)                => IIC_SCL,
+       PTRH_SCK_pin(1)                => BIO(5),
        subbus_cmdenbl                 => subbus_cmdenbl,
        subbus_cmdstrb                 => subbus_cmdstrb,
        subbus_fail_leds               => subbus_fail_leds,
