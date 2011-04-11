@@ -33,7 +33,7 @@ ENTITY Processor IS
 		xps_gpio_subbus_status_pin : IN std_logic_vector(3 downto 0);
 		xps_gpio_subbus_leds_pin : OUT std_logic_vector(4 downto 0);
     xps_gpio_subbus_leds_readback_pin : IN std_logic_vector(4 downto 0);    
-		xps_gpio_subbus_switches_pin : IN std_logic_vector(3 downto 0)
+		xps_gpio_subbus_switches_pin : IN std_logic_vector(7 downto 0)
 		);
 END Processor;
 
