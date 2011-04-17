@@ -120,9 +120,6 @@ ARCHITECTURE beh OF ana_hwside IS
          RDY     : OUT    std_ulogic
       );
    END COMPONENT;
-
-   attribute fsm_encoding: string;
-   attribute fsm_encoding of ana_acquire : component is "one-hot";
    
    FOR ALL : ana_acquire USE ENTITY idx_fpga_lib.ana_acquire;
    FOR ALL : ana_s16 USE ENTITY idx_fpga_lib.ana_s16;
