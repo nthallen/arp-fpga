@@ -19,7 +19,6 @@ ENTITY ptrh_dpram IS
       rData : OUT    std_logic_vector (15 DOWNTO 0);
       wData : IN     std_logic_vector (15 DOWNTO 0);
       WrEn  : IN     std_ulogic;
-      F25M  : IN     std_ulogic;
       Full  : OUT    std_ulogic
    );
 
@@ -46,9 +45,9 @@ BEGIN
     end if;
   End Process;
   
-  R0_proc : Process (F25M) IS
+  R0_proc : Process (F8M) IS
   Begin
-    if F25M'Event AND F25M = '1' then
+    if F8M'Event AND F8M = '1' then
       if WrEn = '1' AND Full_int = '0' then
         R0 <= wData;
         Full_int <= '1';

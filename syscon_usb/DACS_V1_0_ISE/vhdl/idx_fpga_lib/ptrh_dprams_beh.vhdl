@@ -14,7 +14,6 @@ LIBRARY idx_fpga_lib;
 
 ENTITY ptrh_dprams IS
    PORT (
-      F25M    : IN     std_ulogic;
       F8M     : IN     std_ulogic;
       RdEn    : IN     std_ulogic;
       RegEn   : IN     std_logic_vector(12 DOWNTO 0);
@@ -40,7 +39,6 @@ ARCHITECTURE beh OF ptrh_dprams IS
          rData : OUT    std_logic_vector(15 DOWNTO 0);
          wData : IN     std_logic_vector(15 DOWNTO 0);
          WrEn  : IN     std_ulogic;
-         F25M  : IN     std_ulogic;
          Full  : OUT    std_ulogic
       );
    END COMPONENT;
@@ -63,7 +61,6 @@ BEGIN
            wData(7 DOWNTO 0) => wData(23 DOWNTO 16),
            wData(15 DOWNTO 8) => X"00",
            WrEn  => WrEn(i),
-           F25M  => F25M,
            Full  => Full(i)
         );
     end generate;
@@ -76,7 +73,6 @@ BEGIN
            rData => iRData(i),
            wData => wData(15 DOWNTO 0),
            WrEn  => WrEn(i),
-           F25M  => F25M,
            Full  => Full(i)
         );
     end generate;
