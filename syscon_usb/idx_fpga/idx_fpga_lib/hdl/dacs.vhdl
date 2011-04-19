@@ -24,7 +24,7 @@ library idx_fpga_lib;
 
 entity dacs is
     GENERIC (
-      DACS_BUILD_NUMBER : std_logic_vector(15 DOWNTO 0) := X"000D";
+      DACS_BUILD_NUMBER : std_logic_vector(15 DOWNTO 0) := X"000E";
       INSTRUMENT_ID : std_logic_vector(15 DOWNTO 0) := X"0001";
       N_INTERRUPTS : integer range 15 downto 1 := 1;
       PTRH_N_BDS : integer range 5 downto 1 := 2;
@@ -268,7 +268,6 @@ architecture Behavioral of dacs is
         Addr   : IN     std_logic_vector(15 DOWNTO 0);
         ExpRd  : IN     std_ulogic;
         ExpWr  : IN     std_ulogic;
-        F25M   : IN     std_ulogic;
         F8M    : IN     std_ulogic;
         rst    : IN     std_ulogic;
         ExpAck : OUT    std_ulogic;
@@ -469,7 +468,6 @@ begin
          Addr   => ExpAddr,
          ExpRd  => ExpRd,
          ExpWr  => ExpWr,
-         F25M   => clk_30_0000MHz,
          F8M    => clk_8_0000MHz,
          rst    => rst,
          ExpAck => ExpAck(PTRH0+i),

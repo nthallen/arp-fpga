@@ -15,7 +15,7 @@ LIBRARY idx_fpga_lib;
 
 ENTITY PDACS_HTW IS
   GENERIC (
-    DACS_BUILD_NUMBER : std_logic_vector(15 DOWNTO 0) := X"000D";
+    DACS_BUILD_NUMBER : std_logic_vector(15 DOWNTO 0) := X"000E";
     INSTRUMENT_ID : std_logic_vector(15 DOWNTO 0) := X"0002";
     PTRH_N_BDS : integer range 5 downto 1 := 3;
     CTR_UG_N_BDS : integer range 5 downto 0 := 0;
