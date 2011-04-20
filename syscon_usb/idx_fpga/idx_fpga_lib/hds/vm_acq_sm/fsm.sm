@@ -73,19 +73,19 @@ value "C:\\HDS\\idx_fpga\\idx_fpga_lib\\hds\\vm_acq_sm"
 )
 (vvPair
 variable "date"
-value "04/19/2011"
+value "04/20/2011"
 )
 (vvPair
 variable "day"
-value "Tue"
+value "Wed"
 )
 (vvPair
 variable "day_long"
-value "Tuesday"
+value "Wednesday"
 )
 (vvPair
 variable "dd"
-value "19"
+value "20"
 )
 (vvPair
 variable "entity_name"
@@ -209,7 +209,7 @@ value "fsm"
 )
 (vvPair
 variable "time"
-value "19:09:23"
+value "10:26:00"
 )
 (vvPair
 variable "unit"
@@ -524,10 +524,10 @@ vasetType 3
 )
 xt "4150,19700,4749,20300"
 pts [
-"4749,20300"
-"4449,20300"
+"4749,19700"
 "4449,19700"
-"4150,19700"
+"4449,20300"
+"4150,20300"
 ]
 )
 (Line
@@ -557,7 +557,6 @@ sl 0
 ro 270
 va (VaSet
 vasetType 1
-isHidden 1
 fg "65535,65535,0"
 )
 xt "4299,19850,4599,20150"
@@ -586,7 +585,7 @@ isHidden 1
 font "arial,8,0"
 )
 xt "3350,18000,6350,19000"
-st "rst = '0'"
+st "rst = '1'"
 tm "SmControlConditionMgr"
 )
 )
@@ -647,6 +646,8 @@ st "< Automatic >"
 tm "Actions"
 )
 )
+level 1
+mode 0
 )
 *5 (Link
 uid 83,0
@@ -7747,7 +7748,7 @@ start &4
 end &5
 ss 0
 es 0
-cond "rst = '0'"
+cond "rst = '1'"
 tb (TransitionBlock
 uid 102,0
 ps "CenterOffsetStrategy"
@@ -7779,7 +7780,7 @@ va (VaSet
 font "arial,8,0"
 )
 xt "9500,19000,12500,20000"
-st "rst = '0'"
+st "rst = '1'"
 tm "Condition"
 )
 actions (MLText
@@ -12828,8 +12829,8 @@ tm "SmCompilerDirectivesTextMgr"
 ]
 associable 1
 )
-windowSize "0,0,1281,778"
-viewArea "-2284,-3299,272501,159603"
+windowSize "0,22,1281,800"
+viewArea "-2128,-3191,285812,159911"
 cachedDiagramExtent "0,-1000,137271,157899"
 pageSetupInfo (PageSetupInfo
 ptrCmd "Adobe PDF,winspool,"
@@ -13208,7 +13209,7 @@ stateOrder [
 name "csm"
 )
 ]
-lastUid 1591,0
+lastUid 1649,0
 commonDM (CommonDM
 ldm (LogicalDM
 emptyRow *155 (LEmptyRow
@@ -13318,8 +13319,8 @@ o 5
 )
 )
 uid 160,0
-cat 8
-expr "rst = '0'"
+cat 12
+expr "rst = '1'"
 )
 *179 (LeafLogPort
 port (LogicalPort
@@ -13727,7 +13728,7 @@ tm "GenericEolColHdrMgr"
 generic (GiElement
 name "I2C_ADDR1"
 type "std_logic_vector(6 DOWNTO 0)"
-value "\"1100111\""
+value "\"1101000\""
 )
 uid 250,0
 )
@@ -13735,7 +13736,7 @@ uid 250,0
 generic (GiElement
 name "I2C_ADDR2"
 type "std_logic_vector(6 DOWNTO 0)"
-value "\"1101000\""
+value "\"1101001\""
 )
 uid 252,0
 )
