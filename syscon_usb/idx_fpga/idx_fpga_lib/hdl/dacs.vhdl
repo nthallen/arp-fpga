@@ -51,6 +51,8 @@ entity dacs is
       fpga_0_RS232_TX_pin : OUT std_logic;
       PTRH_SDA_pin : INOUT std_logic_vector(PTRH_N_BDS-1 DOWNTO 0);
       PTRH_SCK_pin : INOUT std_logic_vector(PTRH_N_BDS-1 DOWNTO 0);
+      VM_SDA_pin : INOUT std_logic;
+      VM_SCL_pin : INOUT std_logic;
       
       subbus_cmdenbl : OUT std_ulogic;
       subbus_cmdstrb : OUT std_ulogic;
@@ -276,16 +278,32 @@ architecture Behavioral of dacs is
         sda    : INOUT  std_logic
      );
   END COMPONENT;
+  COMPONENT vm
+     GENERIC (
+        BASE_ADDR : unsigned(15 DOWNTO 0) := X"0360"
+     );
+     PORT (
+        Addr   : IN     std_logic_vector(15 DOWNTO 0);
+        ExpRd  : IN     std_ulogic;
+        F8M    : IN     std_ulogic;
+        rst    : IN     std_ulogic;
+        ExpAck : OUT    std_ulogic;
+        rData  : OUT    std_logic_vector(15 DOWNTO 0);
+        SCL    : INOUT  std_logic;
+        SDA    : INOUT  std_logic
+     );
+  END COMPONENT;
   
   FOR ALL : ctr_ungated USE ENTITY idx_fpga_lib.ctr_ungated;
   FOR ALL : ao USE ENTITY idx_fpga_lib.ao;
   FOR ALL : ptrh USE ENTITY idx_fpga_lib.ptrh;
+  FOR ALL : vm USE ENTITY idx_fpga_lib.vm;
 
 	attribute box_type : string;
 	attribute box_type of Processor : component is "user_black_box";
 	
 	CONSTANT N_BOARDS : integer := 4+PTRH_N_BDS+CTR_UG_N_BDS;
-	CONSTANT PTRH0 : integer := 4;
+	CONSTANT PTRH0 : integer := 5;
 	CONSTANT CTR_UG0 : integer := PTRH0+PTRH_N_BDS; 
 	SIGNAL clk_8_0000MHz : std_logic;
 	SIGNAL clk_30_0000MHz : std_logic;
@@ -457,6 +475,21 @@ begin
         WData     => WData,
         ExpAck    => ExpAck(3),
         RData     => iRData(16*3+15 DOWNTO 16*3)
+     );
+  --  hds hds_inst
+  Inst_vm : vm
+     GENERIC MAP (
+        BASE_ADDR => X"03A0"
+     )
+     PORT MAP (
+        Addr   => ExpAddr,
+        ExpRd  => ExpRd,
+        F8M    => clk_8_0000MHz,
+        rst    => rst,
+        ExpAck => ExpAck(4),
+        rData  => iRData(16*4+15 DOWNTO 16*4),
+        SCL    => VM_SCL_pin,
+        SDA    => VM_SDA_pin
      );
 
   ptrhs : for i in 0 TO PTRH_N_BDS-1 generate

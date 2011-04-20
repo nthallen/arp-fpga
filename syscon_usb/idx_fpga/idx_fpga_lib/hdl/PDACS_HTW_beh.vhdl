@@ -178,6 +178,8 @@ ARCHITECTURE beh OF PDACS_HTW IS
 
        PTRH_SDA_pin                   : INOUT std_logic_vector(PTRH_N_BDS-1 DOWNTO 0);
        PTRH_SCK_pin                   : INOUT std_logic_vector(PTRH_N_BDS-1 DOWNTO 0);
+       VM_SDA_pin                     : INOUT std_logic;
+       VM_SCL_pin                     : INOUT std_logic;
 
        subbus_cmdenbl                 : OUT    std_ulogic;
        subbus_cmdstrb                 : OUT    std_ulogic;
@@ -262,6 +264,8 @@ BEGIN
        PTRH_SCK_pin(0)                => IIC_SCL,
        PTRH_SCK_pin(1)                => BIO(1),
        PTRH_SCK_pin(2)                => BIO(3),
+       VM_SCL_pin                     => BIO(8),
+       VM_SDA_pin                     => BIO(9),
 
        subbus_cmdenbl                 => subbus_cmdenbl,
        subbus_cmdstrb                 => subbus_cmdstrb,
@@ -331,7 +335,8 @@ BEGIN
   DIO(114) <= ana_in_row(4);
   DIO(116) <= ana_in_row(5);
 
-  BIO(15 DOWNTO 4) <= (others => 'Z');
+  BIO(15 DOWNTO 10) <= (others => 'Z');
+  BIO(7 DOWNTO 4) <= (others => 'Z');
 
   DIO(9 DOWNTO 0) <= cmd_out(33 DOWNTO 24);
   DIO(10) <= not cmd_out(34);
@@ -350,6 +355,8 @@ BEGIN
   idx_KillB(1) <= DIO(21);
   idx_LimI(1) <= DIO(22);
   idx_LimO(1) <= DIO(23);
+  idx_ZR <= "00";
+  ctr_PMT <= (others => '0');
   DIO(40) <= idx_Dir(1);
   DIO(41) <= idx_Run(1);
   DIO(42) <= idx_Step(1);
