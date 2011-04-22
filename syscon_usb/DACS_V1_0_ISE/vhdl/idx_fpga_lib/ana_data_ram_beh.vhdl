@@ -21,9 +21,7 @@ ENTITY ana_data_ram IS
     WR_DATA : IN std_logic_vector(31 DOWNTO 0);
     RD_ADDR : IN std_logic_vector(8 DOWNTO 0);
     WR_ADDR : IN std_logic_vector(7 DOWNTO 0);
-    RD_CLK  : IN std_ulogic;
-    WR_CLK  : IN std_ulogic;
-    RAM_BUSY : OUT std_ulogic;
+    CLK     : IN std_ulogic;
     RST     : IN std_ulogic
     );
 END ENTITY ana_data_ram;
@@ -75,8 +73,7 @@ ARCHITECTURE beh OF ana_data_ram IS
          WR_DATA : IN     std_logic_vector(31 DOWNTO 0);
          WREN    : IN     std_ulogic;
          RDEN    : IN     std_ulogic;
-         RD_CLK  : IN     std_ulogic;
-         WR_CLK  : IN     std_ulogic;
+         CLK     : IN     std_ulogic;
          RST     : IN     std_ulogic
       );
    END COMPONENT;
@@ -90,7 +87,6 @@ ARCHITECTURE beh OF ana_data_ram IS
          RD_CLK      : IN     std_ulogic;
          RST         : IN     std_ulogic;
          RAM_RD_EN   : OUT    std_ulogic;
-         RAM_BUSY    : OUT    std_ulogic;
          RD_DATA     : OUT    std_logic_vector(15 DOWNTO 0)
       );
    END COMPONENT;
@@ -105,8 +101,7 @@ BEGIN
          WR_DATA => WR_DATA,
          WREN    => WREN,
          RDEN    => RAM_RD_EN,
-         RD_CLK  => RD_CLK,
-         WR_CLK  => WR_CLK,
+         CLK     => CLK,
          RST     => RST
       );
    --  hds hds_inst
@@ -116,41 +111,13 @@ BEGIN
          RDEN        => RDEN,
          DataEn      => DATAEN,
          RD_ADDR     => RD_ADDR,
-         RD_CLK      => RD_CLK,
+         RD_CLK      => CLK,
          RST         => RST,
          RAM_RD_EN   => RAM_RD_EN,
-         RAM_BUSY    => RAM_BUSYR,
          RD_DATA     => RD_DATA_int
       );
   
    RD_DATA <= RD_DATA_int;
-   
-   RB : Process (WR_CLK) IS
-   Begin
-     if WR_CLK'Event AND WR_CLK = '1' then
-       RAM_BUSY <= RAM_BUSYR;
-     end if;
-   End Process;
-   
-   -- pragma synthesis_off
-   WatchRD : Process (RDEN)
-   Begin
-     if RAM_RD_EN'Event and RAM_RD_EN = '1' then
-       assert WREN = '0'
-         report "DataRAM WREN asserted at RDEN"
-         severity error;
-     end if;
-   End Process;
-   
-   WatchWR : Process (WREN)
-   Begin
-     if WREN'Event and WREN = '1' then
-       assert RAM_RD_EN = '0'
-         report "DataRAM RDEN asserted at WREN"
-         severity error;
-     end if;
-   End Process;
-   -- pragma synthesis_on
 
 END ARCHITECTURE beh;
 

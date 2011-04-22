@@ -24,7 +24,7 @@ library idx_fpga_lib;
 
 entity dacs is
     GENERIC (
-      DACS_BUILD_NUMBER : std_logic_vector(15 DOWNTO 0) := X"000D";
+      DACS_BUILD_NUMBER : std_logic_vector(15 DOWNTO 0) := X"000F";
       INSTRUMENT_ID : std_logic_vector(15 DOWNTO 0) := X"0001";
       N_INTERRUPTS : integer range 15 downto 1 := 1;
       PTRH_N_BDS : integer range 5 downto 1 := 2;
@@ -51,6 +51,8 @@ entity dacs is
       fpga_0_RS232_TX_pin : OUT std_logic;
       PTRH_SDA_pin : INOUT std_logic_vector(PTRH_N_BDS-1 DOWNTO 0);
       PTRH_SCK_pin : INOUT std_logic_vector(PTRH_N_BDS-1 DOWNTO 0);
+      VM_SDA_pin : INOUT std_logic;
+      VM_SCL_pin : INOUT std_logic;
       
       subbus_cmdenbl : OUT std_ulogic;
       subbus_cmdstrb : OUT std_ulogic;
@@ -96,7 +98,6 @@ architecture Behavioral of dacs is
 		fpga_0_clk_1_sys_clk_pin : IN std_logic;
 		fpga_0_rst_1_sys_rst_pin : IN std_logic;
 		clk_8_0000MHz_pin : OUT std_logic;
-		clk_30_0000MHz_pin : OUT std_logic;
     clk_66_6667MHz_pin : OUT std_logic;
 
 		xps_epc_0_PRH_Rdy_pin : IN std_logic;
@@ -204,14 +205,12 @@ architecture Behavioral of dacs is
       Addr   : IN     std_logic_vector(15 DOWNTO 0);
       ExpRd  : IN     std_ulogic;
       ExpWr  : IN     std_ulogic;
-      F30M   : IN     std_ulogic;
       F8M    : IN     std_ulogic;
       SDI    : IN     std_ulogic_vector(1 DOWNTO 0);
       RST    : IN     std_ulogic;
       CS5    : OUT    std_ulogic;
       Conv   : OUT    std_ulogic;
       ExpAck : OUT    std_ulogic;
-      RdyOut : OUT    std_ulogic;
       Row    : OUT    std_ulogic_vector(5 DOWNTO 0);
       SCK16  : OUT    std_ulogic_vector(1 DOWNTO 0);
       SCK5   : OUT    std_ulogic_vector(1 DOWNTO 0);
@@ -268,7 +267,6 @@ architecture Behavioral of dacs is
         Addr   : IN     std_logic_vector(15 DOWNTO 0);
         ExpRd  : IN     std_ulogic;
         ExpWr  : IN     std_ulogic;
-        F25M   : IN     std_ulogic;
         F8M    : IN     std_ulogic;
         rst    : IN     std_ulogic;
         ExpAck : OUT    std_ulogic;
@@ -277,19 +275,34 @@ architecture Behavioral of dacs is
         sda    : INOUT  std_logic
      );
   END COMPONENT;
+  COMPONENT vm
+     GENERIC (
+        BASE_ADDR : unsigned(15 DOWNTO 0) := X"0360"
+     );
+     PORT (
+        Addr   : IN     std_logic_vector(15 DOWNTO 0);
+        ExpRd  : IN     std_ulogic;
+        F8M    : IN     std_ulogic;
+        rst    : IN     std_ulogic;
+        ExpAck : OUT    std_ulogic;
+        rData  : OUT    std_logic_vector(15 DOWNTO 0);
+        SCL    : INOUT  std_logic;
+        SDA    : INOUT  std_logic
+     );
+  END COMPONENT;
   
   FOR ALL : ctr_ungated USE ENTITY idx_fpga_lib.ctr_ungated;
   FOR ALL : ao USE ENTITY idx_fpga_lib.ao;
   FOR ALL : ptrh USE ENTITY idx_fpga_lib.ptrh;
+  FOR ALL : vm USE ENTITY idx_fpga_lib.vm;
 
 	attribute box_type : string;
 	attribute box_type of Processor : component is "user_black_box";
 	
 	CONSTANT N_BOARDS : integer := 4+PTRH_N_BDS+CTR_UG_N_BDS;
-	CONSTANT PTRH0 : integer := 4;
+	CONSTANT PTRH0 : integer := 5;
 	CONSTANT CTR_UG0 : integer := PTRH0+PTRH_N_BDS; 
 	SIGNAL clk_8_0000MHz : std_logic;
-	SIGNAL clk_30_0000MHz : std_logic;
 	SIGNAL clk_66_6667MHz : std_logic;
   SIGNAL xps_epc_0_PRH_Wr_n_pin : std_logic;
 	SIGNAL subbus_addr : std_logic_vector(15 downto 0);
@@ -311,7 +324,6 @@ architecture Behavioral of dacs is
   SIGNAL INTA : std_ulogic;
   SIGNAL Fail_outputs : std_logic_vector(4 DOWNTO 0);
   SIGNAL Fail_inputs : std_logic_vector(4 DOWNTO 0);
-  SIGNAL ana_in_RdyOut : std_ulogic; -- Not used?
   SIGNAL not_FTDI_TXE_pin : std_ulogic; --  not FTDI_TXE_pin
   SIGNAL not_FTDI_RXF_pin : std_ulogic; --  not FTDI_RXF_pin
 
@@ -323,7 +335,6 @@ begin
      fpga_0_clk_1_sys_clk_pin => fpga_0_clk_1_sys_clk_pin,
      fpga_0_rst_1_sys_rst_pin => fpga_0_rst_1_sys_rst_pin,
      clk_8_0000MHz_pin => clk_8_0000MHz,
-     clk_30_0000MHz_pin => clk_30_0000MHz,
      clk_66_6667MHz_pin => clk_66_6667MHz,
 
      xps_epc_0_PRH_Rdy_pin =>  not_FTDI_TXE_pin,
@@ -427,12 +438,10 @@ begin
        ExpRd  => ExpRd,
        ExpWr  => ExpWr,
        F8M    => clk_8_0000MHz,
-       F30M   => clk_30_0000MHz,
        RST    => rst,
        SDI    => ana_in_SDI,
        CS5    => ana_in_CS5,
        Conv   => ana_in_Conv,
-       RdyOut => ana_in_RdyOut,
        Row    => ana_in_Row,
        SCK16  => ana_in_SCK16,
        SCK5   => ana_in_SCK5,
@@ -459,6 +468,21 @@ begin
         ExpAck    => ExpAck(3),
         RData     => iRData(16*3+15 DOWNTO 16*3)
      );
+  --  hds hds_inst
+  Inst_vm : vm
+     GENERIC MAP (
+        BASE_ADDR => X"03A0"
+     )
+     PORT MAP (
+        Addr   => ExpAddr,
+        ExpRd  => ExpRd,
+        F8M    => clk_8_0000MHz,
+        rst    => rst,
+        ExpAck => ExpAck(4),
+        rData  => iRData(16*4+15 DOWNTO 16*4),
+        SCL    => VM_SCL_pin,
+        SDA    => VM_SDA_pin
+     );
 
   ptrhs : for i in 0 TO PTRH_N_BDS-1 generate
     ptrh_i : ptrh
@@ -469,7 +493,6 @@ begin
          Addr   => ExpAddr,
          ExpRd  => ExpRd,
          ExpWr  => ExpWr,
-         F25M   => clk_30_0000MHz,
          F8M    => clk_8_0000MHz,
          rst    => rst,
          ExpAck => ExpAck(PTRH0+i),

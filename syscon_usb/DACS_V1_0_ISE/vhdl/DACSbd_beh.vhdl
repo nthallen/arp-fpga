@@ -14,7 +14,7 @@ LIBRARY idx_fpga_lib;
 
 ENTITY DACSbd IS
   GENERIC (
-    DACS_BUILD_NUMBER : std_logic_vector(15 DOWNTO 0) := X"000D";
+    DACS_BUILD_NUMBER : std_logic_vector(15 DOWNTO 0) := X"000F";
     INSTRUMENT_ID : std_logic_vector(15 DOWNTO 0) := X"0001";
     CTR_UG_N_BDS : integer range 5 downto 0 := 3;
     PTRH_N_BDS : integer range 5 downto 1 := 2;
