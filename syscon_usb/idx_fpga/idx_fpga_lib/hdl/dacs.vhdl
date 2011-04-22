@@ -98,7 +98,6 @@ architecture Behavioral of dacs is
 		fpga_0_clk_1_sys_clk_pin : IN std_logic;
 		fpga_0_rst_1_sys_rst_pin : IN std_logic;
 		clk_8_0000MHz_pin : OUT std_logic;
-		clk_30_0000MHz_pin : OUT std_logic;
     clk_66_6667MHz_pin : OUT std_logic;
 
 		xps_epc_0_PRH_Rdy_pin : IN std_logic;
@@ -206,7 +205,6 @@ architecture Behavioral of dacs is
       Addr   : IN     std_logic_vector(15 DOWNTO 0);
       ExpRd  : IN     std_ulogic;
       ExpWr  : IN     std_ulogic;
-      F30M   : IN     std_ulogic;
       F8M    : IN     std_ulogic;
       SDI    : IN     std_ulogic_vector(1 DOWNTO 0);
       RST    : IN     std_ulogic;
@@ -305,7 +303,6 @@ architecture Behavioral of dacs is
 	CONSTANT PTRH0 : integer := 5;
 	CONSTANT CTR_UG0 : integer := PTRH0+PTRH_N_BDS; 
 	SIGNAL clk_8_0000MHz : std_logic;
-	SIGNAL clk_30_0000MHz : std_logic;
 	SIGNAL clk_66_6667MHz : std_logic;
   SIGNAL xps_epc_0_PRH_Wr_n_pin : std_logic;
 	SIGNAL subbus_addr : std_logic_vector(15 downto 0);
@@ -338,7 +335,6 @@ begin
      fpga_0_clk_1_sys_clk_pin => fpga_0_clk_1_sys_clk_pin,
      fpga_0_rst_1_sys_rst_pin => fpga_0_rst_1_sys_rst_pin,
      clk_8_0000MHz_pin => clk_8_0000MHz,
-     clk_30_0000MHz_pin => clk_30_0000MHz,
      clk_66_6667MHz_pin => clk_66_6667MHz,
 
      xps_epc_0_PRH_Rdy_pin =>  not_FTDI_TXE_pin,
@@ -442,7 +438,6 @@ begin
        ExpRd  => ExpRd,
        ExpWr  => ExpWr,
        F8M    => clk_8_0000MHz,
-       F30M   => clk_30_0000MHz,
        RST    => rst,
        SDI    => ana_in_SDI,
        CS5    => ana_in_CS5,
