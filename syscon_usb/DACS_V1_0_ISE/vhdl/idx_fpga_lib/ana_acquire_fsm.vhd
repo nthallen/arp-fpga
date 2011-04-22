@@ -34,7 +34,8 @@ ENTITY ana_acquire IS
    );
 
 -- Declarations
-
+  attribute fsm_encoding: string;
+  attribute fsm_encoding of ana_acquire : entity is "one-hot";
 END ana_acquire ;
 
 --
