@@ -299,8 +299,8 @@ architecture Behavioral of dacs is
 	attribute box_type : string;
 	attribute box_type of Processor : component is "user_black_box";
 	
-	CONSTANT N_BOARDS : integer := 4+PTRH_N_BDS+CTR_UG_N_BDS;
 	CONSTANT PTRH0 : integer := 5;
+	CONSTANT N_BOARDS : integer := PTRH0+PTRH_N_BDS+CTR_UG_N_BDS;
 	CONSTANT CTR_UG0 : integer := PTRH0+PTRH_N_BDS; 
 	SIGNAL clk_8_0000MHz : std_logic;
 	SIGNAL clk_66_6667MHz : std_logic;
