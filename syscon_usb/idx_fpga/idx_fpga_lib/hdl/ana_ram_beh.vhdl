@@ -55,8 +55,7 @@ ENTITY ana_ram IS
     WR_DATA : IN std_logic_vector(31 DOWNTO 0);
     WREN : IN std_ulogic;
     RDEN : IN std_ulogic;
-    RD_CLK : IN std_ulogic;
-    WR_CLK : IN std_ulogic;
+    CLK : IN std_ulogic;
     RST : IN std_ulogic
   );
 END ENTITY ana_ram;
@@ -414,13 +413,13 @@ BEGIN
      DO => RD_DATA_int, -- Output read data port
      DI => WR_DATA,     -- Input write data port
      RDADDR => RAM_RD_ADDR, -- Input read address
-     RDCLK => RD_CLK,      -- Input read clock
+     RDCLK => CLK,         -- Input read clock
      RDEN => RDEN,         -- Input read port enable
      REGCE => '0',         -- Input read output register enable
      RST => RST,           -- Input reset 
      WE => WE,             -- Input write enable
      WRADDR => RAM_WR_ADDR, -- Input write address
-     WRCLK => WR_CLK,       -- Input write clock
+     WRCLK => CLK,          -- Input write clock
      WREN => WREN           -- Input write port enable
   );
   

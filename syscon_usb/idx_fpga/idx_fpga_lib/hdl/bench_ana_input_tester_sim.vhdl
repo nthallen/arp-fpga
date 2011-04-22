@@ -18,7 +18,6 @@ ENTITY bench_ana_input_tester IS
       CS5    : IN     std_ulogic;
       Conv   : IN     std_ulogic;
       ExpAck : IN     std_ulogic;
-      RdyOut : IN     std_ulogic;
       Row    : IN     std_ulogic_vector (5 DOWNTO 0);
       SCK16  : IN     std_ulogic_vector (1 DOWNTO 0);
       SCK5   : IN     std_ulogic_vector (1 DOWNTO 0);
@@ -27,7 +26,6 @@ ENTITY bench_ana_input_tester IS
       ExpRd  : OUT    std_ulogic;
       ExpWr  : OUT    std_ulogic;
       F8M    : OUT    std_ulogic;
-      F30M   : OUT    std_ulogic;
       RST    : OUT    std_ulogic;
       SDI    : OUT    std_ulogic_vector (1 DOWNTO 0);
       WData  : OUT    std_logic_vector (15 DOWNTO 0);
@@ -183,22 +181,6 @@ BEGIN
       wait for 62 ns;
       F8M_int <= '1';
       wait for 63 ns;
-    end loop;
-    wait;
-    -- pragma synthesis_on
-  End Process;
-
-  -- clock30 is actually 25MHz due to XPS limitations
-  clock30 : Process
-  Begin
-    F30M <= '0';
-    -- pragma synthesis_off
-    wait for 40 ns;
-    while Done = '0' loop
-      F30M <= '0';
-      wait for 20 ns;
-      F30M <= '1';
-      wait for 20 ns;
     end loop;
     wait;
     -- pragma synthesis_on
@@ -413,7 +395,7 @@ BEGIN
     sbwr( X"0C01", X"1800" ); -- double convert always
     wait for 800 us;
     ChkSD5 <= '1';
-    wait for 2200 us;
+    wait for 6600 us;
     
     for loopcnt in 0 to 5 loop
       for row in 0 to 7 loop

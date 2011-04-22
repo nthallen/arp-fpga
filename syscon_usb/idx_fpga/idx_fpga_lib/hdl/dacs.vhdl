@@ -213,7 +213,6 @@ architecture Behavioral of dacs is
       CS5    : OUT    std_ulogic;
       Conv   : OUT    std_ulogic;
       ExpAck : OUT    std_ulogic;
-      RdyOut : OUT    std_ulogic;
       Row    : OUT    std_ulogic_vector(5 DOWNTO 0);
       SCK16  : OUT    std_ulogic_vector(1 DOWNTO 0);
       SCK5   : OUT    std_ulogic_vector(1 DOWNTO 0);
@@ -328,7 +327,6 @@ architecture Behavioral of dacs is
   SIGNAL INTA : std_ulogic;
   SIGNAL Fail_outputs : std_logic_vector(4 DOWNTO 0);
   SIGNAL Fail_inputs : std_logic_vector(4 DOWNTO 0);
-  SIGNAL ana_in_RdyOut : std_ulogic; -- Not used?
   SIGNAL not_FTDI_TXE_pin : std_ulogic; --  not FTDI_TXE_pin
   SIGNAL not_FTDI_RXF_pin : std_ulogic; --  not FTDI_RXF_pin
 
@@ -449,7 +447,6 @@ begin
        SDI    => ana_in_SDI,
        CS5    => ana_in_CS5,
        Conv   => ana_in_Conv,
-       RdyOut => ana_in_RdyOut,
        Row    => ana_in_Row,
        SCK16  => ana_in_SCK16,
        SCK5   => ana_in_SCK5,

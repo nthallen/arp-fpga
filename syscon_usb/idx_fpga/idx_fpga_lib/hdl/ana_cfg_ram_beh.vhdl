@@ -22,9 +22,7 @@ ENTITY ana_cfg_ram IS
     WE       : IN std_ulogic;
     CfgEn    : IN std_ulogic;
     RDEN     : IN std_ulogic;
-    RD_CLK   : IN std_ulogic;
-    WR_CLK   : IN std_ulogic;
-    RAM_BUSY : OUT std_ulogic;
+    CLK      : IN std_ulogic;
     RST      : IN std_ulogic
   );
 END ENTITY ana_cfg_ram;
@@ -33,7 +31,6 @@ END ENTITY ana_cfg_ram;
 ARCHITECTURE beh OF ana_cfg_ram IS
    SIGNAL RD_DATA_int : std_logic_vector(31 DOWNTO 0);
    SIGNAL WR_DATA_int : std_logic_vector(31 DOWNTO 0);
-   SIGNAL WREN0   : std_ulogic;
    SIGNAL WREN    : std_ulogic;
    COMPONENT ana_ram
       PORT (
@@ -43,8 +40,7 @@ ARCHITECTURE beh OF ana_cfg_ram IS
          WR_DATA : IN     std_logic_vector(31 DOWNTO 0);
          WREN    : IN     std_ulogic;
          RDEN    : IN     std_ulogic;
-         RD_CLK  : IN     std_ulogic;
-         WR_CLK  : IN     std_ulogic;
+         CLK     : IN     std_ulogic;
          RST     : IN     std_ulogic
       );
    END COMPONENT;
@@ -59,26 +55,20 @@ BEGIN
          WR_DATA => WR_DATA_int,
          WREN    => WREN,
          RDEN    => RDEN,
-         RD_CLK  => RD_CLK,
-         WR_CLK  => WR_CLK,
+         CLK     => CLK,
          RST     => RST
       );
 
-  Wr_En : Process (WR_CLK)
+  Wr_En : Process (CLK)
   Begin
-    if WR_CLK'Event AND WR_CLK = '1' then
+    if CLK'Event AND CLK = '1' then
       if RST = '1' then
-        WREN0 <= '0';
         WREN <= '0';
-        RAM_BUSY <= '0';
       elsif WE = '1' AND CfgEn = '1' then
         WR_Data_int(15 DOWNTO 0) <= WR_DATA;
-        WREN0 <= '1';
-        RAM_BUSY <= '1';
+        WREN <= '1';
       else
-        WREN0 <= '0';
-        WREN <= WREN0;
-        RAM_BUSY <= WREN0;
+        WREN <= '0';
       end if;
     end if;
   End Process;
@@ -86,25 +76,4 @@ BEGIN
   WR_DATA_int(31 DOWNTO 16) <= (others => '0');
   RD_DATA <= RD_DATA_int(8 DOWNTO 0);
   
-  -- pragma synthesis_off
-  WatchRD : Process (RDEN)
-  Begin
-    if RDEN'Event and RDEN = '1' then
-      assert WREN = '0'
-        report "CfgRAM WREN asserted at RDEN"
-        severity error;
-    end if;
-  End Process;
-  
-  WatchWR : Process (WREN)
-  Begin
-    if WREN'Event and WREN = '1' then
-      assert RDEN = '0'
-        report "CfgRAM RDEN asserted at WREN"
-        severity error;
-    end if;
-  End Process;
-  -- pragma synthesis_on
-  
 END ARCHITECTURE beh;
-

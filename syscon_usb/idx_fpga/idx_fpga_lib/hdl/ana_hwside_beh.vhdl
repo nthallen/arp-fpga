@@ -26,11 +26,8 @@ ENTITY ana_hwside IS
     RD_Addr : OUT std_logic_vector(7 DOWNTO 0);
     WR_Addr : OUT std_logic_vector(7 DOWNTO 0);
     Status  : OUT std_ulogic_vector(11 DOWNTO 0);
-    RAM_BusyR : IN std_ulogic;
-    RAM_BusyW : IN std_ulogic;
     RdEn    : OUT std_ulogic;
     WrEn    : OUT std_ulogic;
-    RdyOut  : OUT std_ulogic;
     Conv    : OUT std_ulogic; -- Conv and SDI to AD7687s
     CS5     : OUT std_ulogic; -- CS for LMP7312s
     SDI     : IN std_ulogic_vector(1 DOWNTO 0); -- data from AD7687s SDO
@@ -79,9 +76,6 @@ ARCHITECTURE beh OF ana_hwside IS
          NxtRow   : OUT    std_ulogic_vector(5 DOWNTO 0);
          RdEn     : OUT    std_ulogic;
          WrEn     : OUT    std_ulogic;
-         RAM_BusyR : IN  std_ulogic;
-         RAM_BusyW : IN  std_ulogic;
-         RdyOut   : OUT    std_ulogic;
          S5WE     : OUT    std_ulogic_vector(1 DOWNTO 0);
          Start    : OUT    std_ulogic;
          Restart  : OUT    std_ulogic;
@@ -120,9 +114,6 @@ ARCHITECTURE beh OF ana_hwside IS
          RDY     : OUT    std_ulogic
       );
    END COMPONENT;
-
-   attribute fsm_encoding: string;
-   attribute fsm_encoding of ana_acquire : component is "one-hot";
    
    FOR ALL : ana_acquire USE ENTITY idx_fpga_lib.ana_acquire;
    FOR ALL : ana_s16 USE ENTITY idx_fpga_lib.ana_s16;
@@ -203,9 +194,6 @@ BEGIN
          Conv   => Conv,
          CS5    => CS5,
          NxtRow => Row,
-         RAM_BusyR => RAM_BusyR,
-         RAM_BusyW => RAM_BusyW,
-         RdyOut => RdyOut,
          S5WE   => S5WE,
          Start  => Start,
          Restart => Restart,
