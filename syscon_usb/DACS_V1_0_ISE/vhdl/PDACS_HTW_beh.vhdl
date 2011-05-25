@@ -338,11 +338,13 @@ BEGIN
   BIO(15 DOWNTO 10) <= (others => 'Z');
   BIO(7 DOWNTO 4) <= (others => 'Z');
 
-  DIO(9 DOWNTO 0) <= cmd_out(33 DOWNTO 24);
-  DIO(10) <= not cmd_out(34);
-  DIO(14) <= cmd_out(35);
-  DIO(15) <= cmd_out(36);
-  DIO(43) <= cmd_out(37);
+  -- flow controller solenoid commands are true in low
+  -- as is QCLI Reset
+  DIO(10 DOWNTO 0) <= not cmd_out(34 DOWNTO 24);
+  -- Furon valve commands are true in low
+  DIO(14) <= not cmd_out(35);
+  DIO(15) <= not cmd_out(36);
+  DIO(43) <= not cmd_out(37);
 
   DIO(11) <= idx_Dir(0);
   DIO(12) <= idx_Run(0);
