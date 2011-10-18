@@ -18,7 +18,6 @@
  PORT fpga_0_clk_1_sys_clk_pin = dcm_clk_s, DIR = I, SIGIS = CLK, CLK_FREQ = 100000000
  PORT fpga_0_rst_1_sys_rst_pin = sys_rst_s, DIR = I, SIGIS = RST, RST_POLARITY = 0
  PORT clk_8_0000MHz_pin = clk_8_0000MHz, DIR = O, SIGIS = CLK, CLK_FREQ = 8000000
- PORT clk_30_0000MHz_pin = clk_30_0000MHz, DIR = O, SIGIS = CLK, CLK_FREQ = 25000000
  PORT xps_epc_0_PRH_Rdy_pin = xps_epc_0_PRH_Rdy, DIR = I
  PORT xps_epc_0_PRH_Wr_n_pin = xps_epc_0_PRH_Wr_n, DIR = O
  PORT xps_epc_0_PRH_Data_pin = xps_epc_0_PRH_Data, DIR = IO, VEC = [7:0]
@@ -105,13 +104,12 @@ BEGIN clock_generator
  PARAMETER C_EXT_RESET_HIGH = 0
  PARAMETER HW_VER = 4.00.a
  PARAMETER C_CLKOUT1_FREQ = 8000000
- PARAMETER C_CLKOUT2_FREQ = 25000000
+ PARAMETER C_CLKOUT2_FREQ = 0
  PORT CLKIN = dcm_clk_s
  PORT CLKOUT0 = clk_66_6667MHz
  PORT RST = sys_rst_s
  PORT LOCKED = Dcm_all_locked
  PORT CLKOUT1 = clk_8_0000MHz
- PORT CLKOUT2 = clk_30_0000MHz
 END
 
 BEGIN mdm
