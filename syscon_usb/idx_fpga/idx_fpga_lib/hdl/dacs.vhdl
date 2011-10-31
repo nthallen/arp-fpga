@@ -24,7 +24,7 @@ library idx_fpga_lib;
 
 entity dacs is
     GENERIC (
-      DACS_BUILD_NUMBER : std_logic_vector(15 DOWNTO 0) := X"000E";
+      DACS_BUILD_NUMBER : std_logic_vector(15 DOWNTO 0) := X"000F";
       INSTRUMENT_ID : std_logic_vector(15 DOWNTO 0) := X"0001";
       N_INTERRUPTS : integer range 15 downto 1 := 1;
       PTRH_N_BDS : integer range 5 downto 1 := 2;
@@ -299,8 +299,8 @@ architecture Behavioral of dacs is
 	attribute box_type : string;
 	attribute box_type of Processor : component is "user_black_box";
 	
-	CONSTANT N_BOARDS : integer := 4+PTRH_N_BDS+CTR_UG_N_BDS;
 	CONSTANT PTRH0 : integer := 5;
+	CONSTANT N_BOARDS : integer := PTRH0+PTRH_N_BDS+CTR_UG_N_BDS;
 	CONSTANT CTR_UG0 : integer := PTRH0+PTRH_N_BDS; 
 	SIGNAL clk_8_0000MHz : std_logic;
 	SIGNAL clk_66_6667MHz : std_logic;
