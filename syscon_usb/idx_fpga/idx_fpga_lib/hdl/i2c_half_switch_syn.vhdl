@@ -41,7 +41,7 @@ BEGIN
       pad_i <= '0';
     else
       for i in N_ISBITS-1 DOWNTO 0 loop
-        if pad(i) = '0' then
+        if En(i) = '1' AND pad(i) = '0' then
           pad_i <= '0';
         end if;
       end loop;
