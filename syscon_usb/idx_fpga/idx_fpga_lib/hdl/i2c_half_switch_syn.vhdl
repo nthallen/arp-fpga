@@ -12,8 +12,8 @@ USE ieee.std_logic_1164.all;
 USE ieee.std_logic_arith.all;
 USE ieee.numeric_std.all;
 LIBRARY idx_fpga_lib;
-USE idx_fpga_lib.ptrhm.all;
-USE idx_fpga_lib.All;
+-- USE idx_fpga_lib.ptrhm.all;
+-- USE idx_fpga_lib.All;
 
 ENTITY i2c_half_switch IS
   GENERIC (
@@ -34,7 +34,7 @@ END i2c_half_switch ;
 --
 ARCHITECTURE syn OF i2c_half_switch IS
 BEGIN
-  ipad : Process (pad_o, padoen_o, En, pad) Is
+  ipad : Process (pad_o, padoen_o, pad) Is
   Begin
     pad_i <= '1';
     if padoen_o = '0' AND pad_o = '0' then
