@@ -1,0 +1,5196 @@
+DocumentHdrVersion "1.1"
+Header (DocumentHdr
+version 2
+dmPackageRefs [
+]
+instances [
+(Instance
+name "Inst_DigIO"
+duLibraryName "idx_fpga_lib"
+duName "DigIO"
+elements [
+(GiElement
+name "DIGIO_BASE_ADDRESS"
+type "std_logic_vector (15 DOWNTO 0)"
+value "DIGIO_BASE_ADDRESS"
+)
+(GiElement
+name "DIGIO_N_CONNECTORS"
+type "integer range 4 DOWNTO 1"
+value "DIGIO_N_CONNECTORS"
+)
+(GiElement
+name "DIGIO_FORCE_DIR"
+type "std_ulogic_vector"
+value "DIGIO_FORCE_DIR"
+)
+(GiElement
+name "DIGIO_FORCE_DIR_VAL"
+type "std_ulogic_vector"
+value "DIGIO_FORCE_DIR_VAL"
+)
+]
+mwi 0
+uid 206,0
+)
+(Instance
+name "Inst_Processor"
+duLibraryName "idx_fpga_lib"
+duName "Processor"
+elements [
+]
+mwi 0
+uid 214,0
+)
+(Instance
+name "Inst_ana_in"
+duLibraryName "idx_fpga_lib"
+duName "ana_input"
+elements [
+]
+mwi 0
+uid 218,0
+)
+(Instance
+name "Inst_ao"
+duLibraryName "idx_fpga_lib"
+duName "ao"
+elements [
+]
+mwi 0
+uid 226,0
+)
+(Instance
+name "Inst_idx"
+duLibraryName "idx_fpga_lib"
+duName "gxidx"
+elements [
+(GiElement
+name "N_CHANNELS"
+type "integer range 15 downto 1"
+value "IDX_N_CHANNELS"
+)
+(GiElement
+name "BASE_ADDR"
+type "std_logic_vector (15 DOWNTO 0)"
+value "IDX_BASE_ADDR"
+)
+]
+mwi 0
+uid 234,0
+)
+(Instance
+name "Inst_syscon"
+duLibraryName "idx_fpga_lib"
+duName "syscon"
+elements [
+(GiElement
+name "DACS_BUILD_NUMBER"
+type "std_logic_vector(15 DOWNTO 0)"
+value "DACS_BUILD_NUMBER"
+)
+(GiElement
+name "INSTRUMENT_ID"
+type "std_logic_vector(15 DOWNTO 0)"
+value "INSTRUMENT_ID"
+)
+(GiElement
+name "N_INTERRUPTS"
+type "integer range 15 downto 0"
+value "N_INTERRUPTS"
+)
+(GiElement
+name "N_BOARDS"
+type "integer range 15 downto 0"
+value "N_BOARDS"
+)
+]
+mwi 0
+uid 244,0
+)
+(Instance
+name "Inst_vm"
+duLibraryName "idx_fpga_lib"
+duName "vm"
+elements [
+(GiElement
+name "BASE_ADDR"
+type "unsigned(15 DOWNTO 0)"
+value "X\"03A0\""
+)
+]
+mwi 0
+uid 252,0
+)
+]
+embeddedInstances [
+(EmbeddedInstance
+name "eb1"
+number "38"
+)
+]
+frameInstances [
+(FrameInstance
+name "ptrhs"
+insts [
+(Instance
+name "ptrh_i"
+duLibraryName "idx_fpga_lib"
+duName "ptrh"
+elements [
+(GiElement
+name "BASE_ADDR"
+type "unsigned(15 DOWNTO 0)"
+value "conv_unsigned(3*256+i*32,16)"
+)
+]
+mwi 0
+uid 181,0
+)
+]
+)
+(FrameInstance
+name "ctrs"
+insts [
+(Instance
+name "ctr_ug"
+duLibraryName "idx_fpga_lib"
+duName "ctr_ungated"
+elements [
+(GiElement
+name "BASE_ADDRESS"
+type "std_logic_vector (15 DOWNTO 0)"
+value "CONV_STD_LOGIC_VECTOR(6*256+i*32,16)"
+)
+(GiElement
+name "N_COUNTERS"
+type "integer range 4 DOWNTO 4"
+value "4"
+)
+(GiElement
+name "N_BITS"
+type "integer range 32 DOWNTO 16"
+value "20"
+)
+]
+mwi 0
+uid 196,0
+)
+]
+)
+]
+properties [
+(HdrProperty
+class "HDS"
+name "DocView"
+value "dacs.vhdl"
+)
+(HdrProperty
+class "HDS"
+name "DocViewState"
+value "1303510415"
+)
+(HdrProperty
+class "HDS"
+name "DocView"
+value "Temp Path"
+)
+(HdrProperty
+class "HDS"
+name "DocViewState"
+value ""
+)
+]
+)
+version "30.1"
+newIbd 1
+appVersion "2010.3 (Build 21)"
+noEmbeddedEditors 1
+model (IbdDiag
+LanguageMgr "VhdlLangMgr"
+uid 1,0
+optionalChildren [
+*1 (Property
+uid 40,0
+pclass "HDS"
+pname "DocView"
+pvalue "dacs.vhdl"
+ptn "String"
+)
+*2 (Property
+uid 41,0
+pclass "HDS"
+pname "DocViewState"
+pvalue "1303510415"
+ptn "String"
+)
+*3 (Property
+uid 266,0
+pclass "HDS"
+pname "DocView"
+pvalue "Temp Path"
+ptn "String"
+)
+*4 (Property
+uid 267,0
+pclass "HDS"
+pname "DocViewState"
+ptn "String"
+)
+]
+bg "65535,65535,65535"
+grid (Grid
+origin "0,0"
+isVisible 1
+isActive 1
+xSpacing 1000
+xySpacing 1000
+xShown 1
+yShown 1
+color "65535,0,0"
+)
+packageList *5 (PackageList
+uid 2,0
+stg "VerticalLayoutStrategy"
+textVec [
+*6 (Text
+uid 3,0
+va (VaSet
+font "arial,8,1"
+)
+xt "0,0,5400,1000"
+st "Package List"
+blo "0,800"
+)
+*7 (MLText
+uid 4,0
+va (VaSet
+font "arial,8,0"
+)
+xt "0,1000,10900,4000"
+tm "PackageList"
+)
+]
+)
+compDirBlock (MlTextGroup
+uid 5,0
+stg "VerticalLayoutStrategy"
+textVec [
+*8 (Text
+uid 6,0
+va (VaSet
+font "arial,8,1"
+)
+xt "20000,0,28100,1000"
+st "Compiler Directives"
+blo "20000,800"
+)
+*9 (Text
+uid 7,0
+va (VaSet
+font "arial,8,1"
+)
+xt "20000,1000,29600,2000"
+st "Pre-module directives:"
+blo "20000,1800"
+)
+*10 (MLText
+uid 8,0
+va (VaSet
+font "arial,8,0"
+)
+xt "20000,2000,27500,4000"
+st "`resetall
+`timescale 1ns/10ps"
+tm "BdCompilerDirectivesTextMgr"
+)
+*11 (Text
+uid 9,0
+va (VaSet
+font "arial,8,1"
+)
+xt "20000,4000,30100,5000"
+st "Post-module directives:"
+blo "20000,4800"
+)
+*12 (MLText
+uid 10,0
+va (VaSet
+font "arial,8,0"
+)
+xt "20000,0,20000,0"
+tm "BdCompilerDirectivesTextMgr"
+)
+*13 (Text
+uid 11,0
+va (VaSet
+font "arial,8,1"
+)
+xt "20000,5000,29900,6000"
+st "End-module directives:"
+blo "20000,5800"
+)
+*14 (MLText
+uid 12,0
+va (VaSet
+font "arial,8,0"
+)
+xt "20000,6000,20000,6000"
+tm "BdCompilerDirectivesTextMgr"
+)
+]
+associable 1
+)
+windowSize "0,0,1015,690"
+viewArea "0,0,0,0"
+cachedDiagramExtent "0,0,0,0"
+pageBreakOrigin "0,0"
+logical (IbdLogical
+uid 13,0
+colContainer (IbdColContainer
+uid 14,0
+optionalChildren [
+*15 (IbdInterface
+ordering 1
+uid 15,0
+name "dacs"
+on 8
+fa [
+(IbdNFA
+io "I"
+c *16 (IbdNet
+d (Decl
+n "fpga_0_rst_1_sys_rst_pin"
+t "std_logic"
+o 25
+)
+uid 91,0
+on 52
+nodes [
+&15
+*17 (IbdHdsComponent
+archFileType "UNKNOWN"
+p [
+*18 (IbdCptPort
+p (LogicalPort
+decl (Decl
+n "fpga_0_clk_1_sys_clk_pin"
+t "std_logic"
+preAdd 0
+posAdd 0
+o 1
+)
+)
+)
+*19 (IbdCptPort
+p (LogicalPort
+decl (Decl
+n "fpga_0_rst_1_sys_rst_pin"
+t "std_logic"
+preAdd 0
+posAdd 0
+o 2
+)
+)
+)
+*20 (IbdCptPort
+p (LogicalPort
+m 1
+decl (Decl
+n "clk_8_0000MHz_pin"
+t "std_logic"
+prec "--    fpga_0_RS232_RX_pin : IN std_logic;
+--    fpga_0_RS232_TX_pin : OUT std_logic;
+--		fpga_0_Generic_IIC_Bus_Sda_pin : INOUT std_logic;
+--		fpga_0_Generic_IIC_Bus_Scl_pin : INOUT std_logic;"
+preAdd 0
+posAdd 0
+o 3
+)
+)
+)
+*21 (IbdCptPort
+p (LogicalPort
+m 1
+decl (Decl
+n "clk_30_0000MHz_pin"
+t "std_logic"
+preAdd 0
+posAdd 0
+o 4
+)
+)
+)
+*22 (IbdCptPort
+p (LogicalPort
+m 1
+decl (Decl
+n "clk_66_6667MHz_pin"
+t "std_logic"
+preAdd 0
+posAdd 0
+o 5
+)
+)
+)
+*23 (IbdCptPort
+p (LogicalPort
+m 2
+decl (Decl
+n "xps_epc_0_PRH_Data_pin"
+t "std_logic_vector"
+b "(7 downto 0)"
+preAdd 0
+posAdd 0
+o 6
+)
+)
+)
+*24 (IbdCptPort
+p (LogicalPort
+decl (Decl
+n "xps_epc_0_PRH_RDY_pin"
+t "std_logic"
+preAdd 0
+posAdd 0
+o 7
+)
+)
+)
+*25 (IbdCptPort
+p (LogicalPort
+m 1
+decl (Decl
+n "xps_epc_0_PRH_WR_n_pin"
+t "std_logic"
+preAdd 0
+posAdd 0
+o 8
+)
+)
+)
+*26 (IbdCptPort
+p (LogicalPort
+m 1
+decl (Decl
+n "xps_epc_0_PRH_Rd_n_pin"
+t "std_logic"
+preAdd 0
+posAdd 0
+o 9
+)
+)
+)
+*27 (IbdCptPort
+p (LogicalPort
+m 1
+decl (Decl
+n "FTDI_SI_pin"
+t "std_logic"
+preAdd 0
+posAdd 0
+o 10
+)
+)
+)
+*28 (IbdCptPort
+p (LogicalPort
+decl (Decl
+n "FTDI_RX_RDY_pin"
+t "std_logic"
+preAdd 0
+posAdd 0
+o 11
+)
+)
+)
+*29 (IbdCptPort
+p (LogicalPort
+m 1
+decl (Decl
+n "xps_gpio_subbus_addr_pin"
+t "std_logic_vector"
+b "(15 downto 0)"
+preAdd 0
+posAdd 0
+o 12
+)
+)
+)
+*30 (IbdCptPort
+p (LogicalPort
+m 1
+decl (Decl
+n "xps_gpio_subbus_ctrl_pin"
+t "std_logic_vector"
+b "(6 downto 0)"
+preAdd 0
+posAdd 0
+o 13
+)
+)
+)
+*31 (IbdCptPort
+p (LogicalPort
+decl (Decl
+n "xps_gpio_subbus_data_i_pin"
+t "std_logic_vector"
+b "(15 downto 0)"
+preAdd 0
+posAdd 0
+o 14
+)
+)
+)
+*32 (IbdCptPort
+p (LogicalPort
+m 1
+decl (Decl
+n "xps_gpio_subbus_data_o_pin"
+t "std_logic_vector"
+b "(15 downto 0)"
+preAdd 0
+posAdd 0
+o 15
+)
+)
+)
+*33 (IbdCptPort
+p (LogicalPort
+decl (Decl
+n "xps_gpio_subbus_status_pin"
+t "std_logic_vector"
+b "(3 downto 0)"
+preAdd 0
+posAdd 0
+o 16
+)
+)
+)
+*34 (IbdCptPort
+p (LogicalPort
+m 1
+decl (Decl
+n "xps_gpio_subbus_leds_pin"
+t "std_logic_vector"
+b "(4 downto 0)"
+preAdd 0
+posAdd 0
+o 17
+)
+)
+)
+*35 (IbdCptPort
+p (LogicalPort
+decl (Decl
+n "xps_gpio_subbus_leds_readback_pin"
+t "std_logic_vector"
+b "(4 downto 0)"
+preAdd 0
+posAdd 0
+o 18
+)
+)
+)
+*36 (IbdCptPort
+p (LogicalPort
+decl (Decl
+n "xps_gpio_subbus_switches_pin"
+t "std_logic_vector"
+b "(7 downto 0)"
+preAdd 0
+posAdd 0
+o 19
+)
+)
+)
+]
+inst "Inst_Processor"
+lib "idx_fpga_lib"
+ele [
+]
+includeGenericsInHDL 0
+uid 214,0
+name "Processor"
+on 22
+fa [
+(IbdCFA
+l "clk_66_6667MHz_pin"
+p &22
+c *37 (IbdNet
+d (Decl
+n "clk_66_6667MHz"
+t "std_logic"
+o 2
+)
+uid 45,0
+on 12
+nodes [
+&17
+*38 (IbdHdsComponent
+archFileType "UNKNOWN"
+p [
+*39 (IbdCptPort
+p (LogicalPort
+decl (Decl
+n "ExpRd"
+t "std_ulogic"
+o 2
+)
+)
+)
+*40 (IbdCptPort
+p (LogicalPort
+decl (Decl
+n "ExpWr"
+t "std_ulogic"
+o 3
+)
+)
+)
+*41 (IbdCptPort
+p (LogicalPort
+decl (Decl
+n "F8M"
+t "std_ulogic"
+o 5
+)
+)
+)
+*42 (IbdCptPort
+p (LogicalPort
+decl (Decl
+n "rst"
+t "std_ulogic"
+o 7
+)
+)
+)
+*43 (IbdCptPort
+p (LogicalPort
+m 1
+decl (Decl
+n "ExpAck"
+t "std_ulogic"
+o 13
+)
+)
+)
+*44 (IbdCptPort
+p (LogicalPort
+decl (Decl
+n "Addr"
+t "std_logic_vector"
+b "(15 DOWNTO 0)"
+o 1
+)
+)
+)
+*45 (IbdCptPort
+p (LogicalPort
+m 1
+decl (Decl
+n "DA_CS_B"
+t "std_logic_vector"
+b "(1 DOWNTO 0)"
+o 9
+)
+)
+)
+*46 (IbdCptPort
+p (LogicalPort
+m 1
+decl (Decl
+n "DA_SDI"
+t "std_logic"
+o 12
+)
+)
+)
+*47 (IbdCptPort
+p (LogicalPort
+m 1
+decl (Decl
+n "DA_SCK"
+t "std_logic"
+o 11
+)
+)
+)
+*48 (IbdCptPort
+p (LogicalPort
+m 1
+decl (Decl
+n "DA_CLR_B"
+t "std_logic"
+o 8
+)
+)
+)
+*49 (IbdCptPort
+p (LogicalPort
+m 1
+decl (Decl
+n "DA_LDAC_B"
+t "std_logic"
+o 10
+)
+)
+)
+*50 (IbdCptPort
+p (LogicalPort
+decl (Decl
+n "F66M"
+t "std_logic"
+o 4
+)
+)
+)
+*51 (IbdCptPort
+p (LogicalPort
+decl (Decl
+n "WData"
+t "std_logic_vector"
+b "(15 DOWNTO 0)"
+o 6
+)
+)
+)
+*52 (IbdCptPort
+p (LogicalPort
+m 1
+decl (Decl
+n "RData"
+t "std_logic_vector"
+b "(15 DOWNTO 0)"
+o 14
+)
+)
+)
+]
+inst "Inst_ao"
+lib "idx_fpga_lib"
+ele [
+]
+includeGenericsInHDL 0
+uid 226,0
+name "ao"
+on 28
+fa [
+(IbdCFA
+l "F66M"
+p &50
+c &37
+)
+(IbdCFA
+l "F8M"
+p &41
+c *53 (IbdNet
+d (Decl
+n "clk_8_0000MHz"
+t "std_logic"
+o 1
+)
+uid 43,0
+on 11
+nodes [
+*54 (IbdHdsComponent
+archFileType "UNKNOWN"
+p [
+*55 (IbdCptPort
+p (LogicalPort
+decl (Decl
+n "Addr"
+t "std_logic_vector"
+b "(15 DOWNTO 0)"
+o 1
+)
+)
+)
+*56 (IbdCptPort
+p (LogicalPort
+decl (Decl
+n "rst"
+t "std_ulogic"
+o 5
+)
+)
+)
+*57 (IbdCptPort
+p (LogicalPort
+decl (Decl
+n "F8M"
+t "std_ulogic"
+o 4
+)
+)
+)
+*58 (IbdCptPort
+p (LogicalPort
+decl (Decl
+n "ExpWr"
+t "std_ulogic"
+o 3
+)
+)
+)
+*59 (IbdCptPort
+p (LogicalPort
+decl (Decl
+n "ExpRd"
+t "std_ulogic"
+o 2
+)
+)
+)
+*60 (IbdCptPort
+p (LogicalPort
+m 1
+decl (Decl
+n "ExpAck"
+t "std_ulogic"
+o 6
+)
+)
+)
+*61 (IbdCptPort
+p (LogicalPort
+m 2
+decl (Decl
+n "scl"
+t "std_logic"
+o 8
+)
+)
+)
+*62 (IbdCptPort
+p (LogicalPort
+m 2
+decl (Decl
+n "sda"
+t "std_logic"
+o 9
+)
+)
+)
+*63 (IbdCptPort
+p (LogicalPort
+m 1
+decl (Decl
+n "rData"
+t "std_logic_vector"
+b "(15 DOWNTO 0)"
+o 7
+)
+)
+)
+]
+inst "ptrh_i"
+lib "idx_fpga_lib"
+ele [
+(GiElement
+name "BASE_ADDR"
+type "unsigned(15 DOWNTO 0)"
+value "conv_unsigned(3*256+i*32,16)"
+)
+]
+uid 181,0
+name "ptrh"
+on 12
+fa [
+(IbdCFA
+l "F8M"
+p &57
+c &53
+)
+(IbdCFA
+l "Addr"
+p &55
+c *64 (IbdNet
+d (Decl
+n "ExpAddr"
+t "std_logic_vector"
+b "(15 downto 0)"
+o 10
+)
+uid 61,0
+on 20
+nodes [
+&54
+*65 (IbdHdsComponent
+archFileType "UNKNOWN"
+p [
+*66 (IbdCptPort
+p (LogicalPort
+decl (Decl
+n "Addr"
+t "std_logic_vector"
+b "(15 downto 0)"
+preAdd 0
+posAdd 0
+o 1
+)
+)
+)
+*67 (IbdCptPort
+p (LogicalPort
+decl (Decl
+n "WData"
+t "std_logic_vector"
+b "(15 downto 0)"
+preAdd 0
+posAdd 0
+o 2
+)
+)
+)
+*68 (IbdCptPort
+p (LogicalPort
+m 1
+decl (Decl
+n "RData"
+t "std_logic_vector"
+b "(15 downto 0)"
+preAdd 0
+posAdd 0
+o 3
+)
+)
+)
+*69 (IbdCptPort
+p (LogicalPort
+decl (Decl
+n "ExpRd"
+t "std_ulogic"
+preAdd 0
+posAdd 0
+o 4
+)
+)
+)
+*70 (IbdCptPort
+p (LogicalPort
+decl (Decl
+n "ExpWr"
+t "std_ulogic"
+preAdd 0
+posAdd 0
+o 5
+)
+)
+)
+*71 (IbdCptPort
+p (LogicalPort
+m 1
+decl (Decl
+n "ExpAck"
+t "std_ulogic"
+preAdd 0
+posAdd 0
+o 6
+)
+)
+)
+*72 (IbdCptPort
+p (LogicalPort
+decl (Decl
+n "F8M"
+t "std_ulogic"
+preAdd 0
+posAdd 0
+o 7
+)
+)
+)
+*73 (IbdCptPort
+p (LogicalPort
+decl (Decl
+n "rst"
+t "std_ulogic"
+preAdd 0
+posAdd 0
+o 8
+)
+)
+)
+*74 (IbdCptPort
+p (LogicalPort
+decl (Decl
+n "PMT"
+t "std_logic_vector"
+b "(N_COUNTERS-1 downto 0)"
+preAdd 0
+posAdd 0
+o 9
+)
+)
+)
+]
+inst "ctr_ug"
+lib "idx_fpga_lib"
+ele [
+(GiElement
+name "BASE_ADDRESS"
+type "std_logic_vector (15 DOWNTO 0)"
+value "CONV_STD_LOGIC_VECTOR(6*256+i*32,16)"
+)
+(GiElement
+name "N_COUNTERS"
+type "integer range 4 DOWNTO 4"
+value "4"
+)
+(GiElement
+name "N_BITS"
+type "integer range 32 DOWNTO 16"
+value "20"
+)
+]
+uid 196,0
+name "ctr_ungated"
+on 16
+fa [
+(IbdCFA
+l "F8M"
+p &72
+c &53
+)
+(IbdCFA
+l "Addr"
+p &66
+c &64
+)
+(IbdCFA
+l "WData"
+p &67
+c *75 (IbdNet
+d (Decl
+n "WData"
+t "std_logic_vector"
+b "(15 DOWNTO 0)"
+o 11
+)
+uid 63,0
+on 21
+nodes [
+&65
+*76 (IbdHdsComponent
+archFileType "UNKNOWN"
+p [
+*77 (IbdCptPort
+p (LogicalPort
+decl (Decl
+n "Addr"
+t "std_logic_vector"
+b "(15 downto 0)"
+preAdd 0
+posAdd 0
+o 1
+)
+)
+)
+*78 (IbdCptPort
+p (LogicalPort
+decl (Decl
+n "WData"
+t "std_logic_vector"
+b "(15 downto 0)"
+preAdd 0
+posAdd 0
+o 2
+)
+)
+)
+*79 (IbdCptPort
+p (LogicalPort
+m 1
+decl (Decl
+n "RData"
+t "std_logic_vector"
+b "(15 downto 0)"
+preAdd 0
+posAdd 0
+o 3
+)
+)
+)
+*80 (IbdCptPort
+p (LogicalPort
+decl (Decl
+n "ExpRd"
+t "std_ulogic"
+preAdd 0
+posAdd 0
+o 4
+)
+)
+)
+*81 (IbdCptPort
+p (LogicalPort
+decl (Decl
+n "ExpWr"
+t "std_ulogic"
+preAdd 0
+posAdd 0
+o 5
+)
+)
+)
+*82 (IbdCptPort
+p (LogicalPort
+m 1
+decl (Decl
+n "ExpAck"
+t "std_ulogic"
+preAdd 0
+posAdd 0
+o 6
+)
+)
+)
+*83 (IbdCptPort
+p (LogicalPort
+decl (Decl
+n "F8M"
+t "std_ulogic"
+preAdd 0
+posAdd 0
+o 7
+)
+)
+)
+*84 (IbdCptPort
+p (LogicalPort
+decl (Decl
+n "rst"
+t "std_ulogic"
+preAdd 0
+posAdd 0
+o 8
+)
+)
+)
+*85 (IbdCptPort
+p (LogicalPort
+m 2
+decl (Decl
+n "IO"
+t "std_logic_vector"
+b "(DIGIO_N_CONNECTORS*6*8-1 downto 0)"
+preAdd 0
+posAdd 0
+o 9
+)
+)
+)
+*86 (IbdCptPort
+p (LogicalPort
+m 1
+decl (Decl
+n "Dir"
+t "std_logic_vector"
+b "(DIGIO_N_CONNECTORS*6-1 downto 0)"
+preAdd 0
+posAdd 0
+o 10
+)
+)
+)
+]
+inst "Inst_DigIO"
+lib "idx_fpga_lib"
+ele [
+(GiElement
+name "DIGIO_BASE_ADDRESS"
+type "std_logic_vector (15 DOWNTO 0)"
+value "DIGIO_BASE_ADDRESS"
+)
+(GiElement
+name "DIGIO_N_CONNECTORS"
+type "integer range 4 DOWNTO 1"
+value "DIGIO_N_CONNECTORS"
+)
+(GiElement
+name "DIGIO_FORCE_DIR"
+type "std_ulogic_vector"
+value "DIGIO_FORCE_DIR"
+)
+(GiElement
+name "DIGIO_FORCE_DIR_VAL"
+type "std_ulogic_vector"
+value "DIGIO_FORCE_DIR_VAL"
+)
+]
+uid 206,0
+name "DigIO"
+on 19
+fa [
+(IbdCFA
+l "F8M"
+p &83
+c &53
+)
+(IbdCFA
+l "Addr"
+p &77
+c &64
+)
+(IbdCFA
+l "WData"
+p &78
+c &75
+)
+(IbdCFA
+l "ExpRd"
+p &80
+c *87 (IbdNet
+d (Decl
+n "ExpRd"
+t "std_logic"
+o 13
+)
+uid 67,0
+on 30
+nodes [
+&54
+&65
+&76
+*88 (IbdHdsComponent
+archFileType "UNKNOWN"
+p [
+*89 (IbdCptPort
+p (LogicalPort
+decl (Decl
+n "ExpRd"
+t "std_ulogic"
+o 2
+)
+)
+)
+*90 (IbdCptPort
+p (LogicalPort
+decl (Decl
+n "ExpWr"
+t "std_ulogic"
+o 3
+)
+)
+)
+*91 (IbdCptPort
+p (LogicalPort
+decl (Decl
+n "rst"
+t "std_ulogic"
+o 7
+)
+)
+)
+*92 (IbdCptPort
+p (LogicalPort
+decl (Decl
+n "Addr"
+t "std_logic_vector"
+b "(15 DOWNTO 0)"
+o 1
+)
+)
+)
+*93 (IbdCptPort
+p (LogicalPort
+decl (Decl
+n "SDI"
+t "std_ulogic_vector"
+b "(1 DOWNTO 0)"
+o 5
+)
+)
+)
+*94 (IbdCptPort
+p (LogicalPort
+m 1
+decl (Decl
+n "Row"
+t "std_ulogic_vector"
+b "(5 DOWNTO 0)"
+o 12
+)
+)
+)
+*95 (IbdCptPort
+p (LogicalPort
+m 1
+decl (Decl
+n "Conv"
+t "std_ulogic"
+o 9
+)
+)
+)
+*96 (IbdCptPort
+p (LogicalPort
+m 1
+decl (Decl
+n "CS5"
+t "std_ulogic"
+o 8
+)
+)
+)
+*97 (IbdCptPort
+p (LogicalPort
+m 1
+decl (Decl
+n "SCK16"
+t "std_ulogic_vector"
+b "(1 DOWNTO 0)"
+o 13
+)
+)
+)
+*98 (IbdCptPort
+p (LogicalPort
+m 1
+decl (Decl
+n "SDO"
+t "std_ulogic_vector"
+b "(1 DOWNTO 0)"
+o 15
+)
+)
+)
+*99 (IbdCptPort
+p (LogicalPort
+m 1
+decl (Decl
+n "SCK5"
+t "std_ulogic_vector"
+b "(1 DOWNTO 0)"
+o 14
+)
+)
+)
+*100 (IbdCptPort
+p (LogicalPort
+decl (Decl
+n "F8M"
+t "std_ulogic"
+o 4
+)
+)
+)
+*101 (IbdCptPort
+p (LogicalPort
+m 1
+decl (Decl
+n "ExpAck"
+t "std_ulogic"
+o 10
+)
+)
+)
+*102 (IbdCptPort
+p (LogicalPort
+decl (Decl
+n "WData"
+t "std_logic_vector"
+b "(15 DOWNTO 0)"
+o 6
+)
+)
+)
+*103 (IbdCptPort
+p (LogicalPort
+m 1
+decl (Decl
+n "RData"
+t "std_logic_vector"
+b "(15 DOWNTO 0)"
+o 11
+)
+)
+)
+]
+inst "Inst_ana_in"
+lib "idx_fpga_lib"
+ele [
+]
+includeGenericsInHDL 0
+uid 218,0
+name "ana_input"
+on 25
+fa [
+(IbdCFA
+l "F8M"
+p &100
+c &53
+)
+(IbdCFA
+l "Addr"
+p &92
+c &64
+)
+(IbdCFA
+l "WData"
+p &102
+c &75
+)
+(IbdCFA
+l "ExpRd"
+p &89
+c &87
+)
+(IbdCFA
+l "ExpWr"
+p &90
+c *104 (IbdNet
+d (Decl
+n "ExpWr"
+t "std_logic"
+o 14
+)
+uid 69,0
+on 31
+nodes [
+&54
+&65
+&76
+&88
+&38
+*105 (IbdHdsComponent
+archFileType "UNKNOWN"
+p [
+*106 (IbdCptPort
+p (LogicalPort
+decl (Decl
+n "rst"
+t "std_ulogic"
+preAdd 0
+posAdd 0
+o 1
+)
+)
+)
+*107 (IbdCptPort
+p (LogicalPort
+decl (Decl
+n "Addr"
+t "std_logic_vector"
+b "(15 downto 0)"
+preAdd 0
+posAdd 0
+o 2
+)
+)
+)
+*108 (IbdCptPort
+p (LogicalPort
+decl (Decl
+n "CMDENBL"
+t "std_ulogic"
+preAdd 0
+posAdd 0
+o 3
+)
+)
+)
+*109 (IbdCptPort
+p (LogicalPort
+decl (Decl
+n "ExpRd"
+t "std_ulogic"
+preAdd 0
+posAdd 0
+o 4
+)
+)
+)
+*110 (IbdCptPort
+p (LogicalPort
+decl (Decl
+n "ExpWr"
+t "std_ulogic"
+preAdd 0
+posAdd 0
+o 5
+)
+)
+)
+*111 (IbdCptPort
+p (LogicalPort
+decl (Decl
+n "INTA"
+t "std_ulogic"
+preAdd 0
+posAdd 0
+o 6
+)
+)
+)
+*112 (IbdCptPort
+p (LogicalPort
+decl (Decl
+n "F8M"
+t "std_ulogic"
+preAdd 0
+posAdd 0
+o 7
+)
+)
+)
+*113 (IbdCptPort
+p (LogicalPort
+decl (Decl
+n "KillA"
+t "std_ulogic_vector"
+b "(N_CHANNELS-1 downto 0)"
+preAdd 0
+posAdd 0
+o 8
+)
+)
+)
+*114 (IbdCptPort
+p (LogicalPort
+decl (Decl
+n "KillB"
+t "std_ulogic_vector"
+b "(N_CHANNELS-1 downto 0)"
+preAdd 0
+posAdd 0
+o 9
+)
+)
+)
+*115 (IbdCptPort
+p (LogicalPort
+decl (Decl
+n "LimI"
+t "std_ulogic_vector"
+b "(N_CHANNELS-1 downto 0)"
+preAdd 0
+posAdd 0
+o 10
+)
+)
+)
+*116 (IbdCptPort
+p (LogicalPort
+decl (Decl
+n "LimO"
+t "std_ulogic_vector"
+b "(N_CHANNELS-1 downto 0)"
+preAdd 0
+posAdd 0
+o 11
+)
+)
+)
+*117 (IbdCptPort
+p (LogicalPort
+decl (Decl
+n "ZR"
+t "std_ulogic_vector"
+b "(N_CHANNELS-1 downto 0)"
+preAdd 0
+posAdd 0
+o 12
+)
+)
+)
+*118 (IbdCptPort
+p (LogicalPort
+m 1
+decl (Decl
+n "ExpAck"
+t "std_ulogic"
+preAdd 0
+posAdd 0
+o 13
+)
+)
+)
+*119 (IbdCptPort
+p (LogicalPort
+m 1
+decl (Decl
+n "BdIntr"
+t "std_ulogic"
+preAdd 0
+posAdd 0
+o 14
+)
+)
+)
+*120 (IbdCptPort
+p (LogicalPort
+m 1
+decl (Decl
+n "Dir"
+t "std_ulogic_vector"
+b "(N_CHANNELS-1 downto 0)"
+preAdd 0
+posAdd 0
+o 15
+)
+)
+)
+*121 (IbdCptPort
+p (LogicalPort
+m 1
+decl (Decl
+n "Run"
+t "std_ulogic_vector"
+b "(N_CHANNELS-1 downto 0)"
+preAdd 0
+posAdd 0
+o 16
+)
+)
+)
+*122 (IbdCptPort
+p (LogicalPort
+m 1
+decl (Decl
+n "Step"
+t "std_ulogic_vector"
+b "(N_CHANNELS-1 downto 0)"
+preAdd 0
+posAdd 0
+o 17
+)
+)
+)
+*123 (IbdCptPort
+p (LogicalPort
+decl (Decl
+n "WData"
+t "std_logic_vector"
+b "(15 downto 0)"
+preAdd 0
+posAdd 0
+o 18
+)
+)
+)
+*124 (IbdCptPort
+p (LogicalPort
+m 1
+decl (Decl
+n "RData"
+t "std_logic_vector"
+b "(15 downto 0)"
+preAdd 0
+posAdd 0
+o 19
+)
+)
+)
+]
+inst "Inst_idx"
+lib "idx_fpga_lib"
+ele [
+(GiElement
+name "N_CHANNELS"
+type "integer range 15 downto 1"
+value "IDX_N_CHANNELS"
+)
+(GiElement
+name "BASE_ADDR"
+type "std_logic_vector (15 DOWNTO 0)"
+value "IDX_BASE_ADDR"
+)
+]
+uid 234,0
+name "gxidx"
+on 31
+fa [
+(IbdCFA
+l "F8M"
+p &112
+c &53
+)
+(IbdCFA
+l "Addr"
+p &107
+c &64
+)
+(IbdCFA
+l "WData"
+p &123
+c &75
+)
+(IbdCFA
+l "ExpRd"
+p &109
+c &87
+)
+(IbdCFA
+l "ExpWr"
+p &110
+c &104
+)
+(IbdCFA
+l "CMDENBL"
+p &108
+c *125 (IbdNet
+d (Decl
+n "CmdEnbl"
+t "std_ulogic"
+o 16
+)
+uid 73,0
+on 40
+nodes [
+&105
+*126 (IbdHdsComponent
+archFileType "UNKNOWN"
+p [
+*127 (IbdCptPort
+p (LogicalPort
+lang 10
+decl (Decl
+n "F8M"
+t "std_logic"
+preAdd 0
+posAdd 0
+o 1
+)
+)
+)
+*128 (IbdCptPort
+p (LogicalPort
+lang 10
+decl (Decl
+n "Ctrl"
+t "std_logic_vector"
+b "(6 downto 0)"
+eolc "-- Arm_in, Tick, Rst, CE,CS,Wr,Rd"
+preAdd 0
+posAdd 0
+o 2
+)
+)
+)
+*129 (IbdCptPort
+p (LogicalPort
+lang 10
+decl (Decl
+n "Addr"
+t "std_logic_vector"
+b "(15 downto 0)"
+preAdd 0
+posAdd 0
+o 3
+)
+)
+)
+*130 (IbdCptPort
+p (LogicalPort
+lang 10
+m 1
+decl (Decl
+n "Data_i"
+t "std_logic_vector"
+b "(15 downto 0)"
+preAdd 0
+posAdd 0
+o 4
+)
+)
+)
+*131 (IbdCptPort
+p (LogicalPort
+lang 10
+decl (Decl
+n "Data_o"
+t "std_logic_vector"
+b "(15 downto 0)"
+preAdd 0
+posAdd 0
+o 5
+)
+)
+)
+*132 (IbdCptPort
+p (LogicalPort
+lang 10
+m 1
+decl (Decl
+n "Status"
+t "std_logic_vector"
+b "(3 downto 0)"
+eolc "-- 2SecTO, ExpIntr,Ack,Done"
+preAdd 0
+posAdd 0
+o 6
+)
+)
+)
+*133 (IbdCptPort
+p (LogicalPort
+lang 10
+m 1
+decl (Decl
+n "ExpRd"
+t "std_logic"
+preAdd 0
+posAdd 0
+o 7
+)
+)
+)
+*134 (IbdCptPort
+p (LogicalPort
+lang 10
+m 1
+decl (Decl
+n "ExpWr"
+t "std_logic"
+preAdd 0
+posAdd 0
+o 8
+)
+)
+)
+*135 (IbdCptPort
+p (LogicalPort
+lang 10
+m 1
+decl (Decl
+n "WData"
+t "std_logic_vector"
+b "(15 downto 0)"
+preAdd 0
+posAdd 0
+o 9
+)
+)
+)
+*136 (IbdCptPort
+p (LogicalPort
+lang 10
+decl (Decl
+n "RData"
+t "std_logic_vector"
+b "(16*N_BOARDS-1 downto 0)"
+preAdd 0
+posAdd 0
+o 10
+)
+)
+)
+*137 (IbdCptPort
+p (LogicalPort
+lang 10
+m 1
+decl (Decl
+n "ExpAddr"
+t "std_logic_vector"
+b "(15 downto 0)"
+preAdd 0
+posAdd 0
+o 11
+)
+)
+)
+*138 (IbdCptPort
+p (LogicalPort
+lang 10
+decl (Decl
+n "ExpAck"
+t "std_logic_vector"
+b "(N_BOARDS-1 downto 0)"
+preAdd 0
+posAdd 0
+o 12
+)
+)
+)
+*139 (IbdCptPort
+p (LogicalPort
+lang 10
+decl (Decl
+n "BdIntr"
+t "std_ulogic_vector"
+b "(N_INTERRUPTS-1 downto 0)"
+preAdd 0
+posAdd 0
+o 13
+)
+)
+)
+*140 (IbdCptPort
+p (LogicalPort
+lang 10
+m 1
+decl (Decl
+n "Collision"
+t "std_ulogic"
+preAdd 0
+posAdd 0
+o 14
+)
+)
+)
+*141 (IbdCptPort
+p (LogicalPort
+lang 10
+m 1
+decl (Decl
+n "INTA"
+t "std_ulogic"
+preAdd 0
+posAdd 0
+o 15
+)
+)
+)
+*142 (IbdCptPort
+p (LogicalPort
+lang 10
+m 1
+decl (Decl
+n "CmdEnbl"
+t "std_ulogic"
+preAdd 0
+posAdd 0
+o 16
+)
+)
+)
+*143 (IbdCptPort
+p (LogicalPort
+lang 10
+m 1
+decl (Decl
+n "CmdStrb"
+t "std_ulogic"
+preAdd 0
+posAdd 0
+o 17
+)
+)
+)
+*144 (IbdCptPort
+p (LogicalPort
+lang 10
+m 1
+decl (Decl
+n "ExpReset"
+t "std_ulogic"
+preAdd 0
+posAdd 0
+o 18
+)
+)
+)
+*145 (IbdCptPort
+p (LogicalPort
+lang 10
+decl (Decl
+n "Fail_In"
+t "std_ulogic"
+preAdd 0
+posAdd 0
+o 19
+)
+)
+)
+*146 (IbdCptPort
+p (LogicalPort
+lang 10
+m 1
+decl (Decl
+n "Fail_Out"
+t "std_ulogic"
+preAdd 0
+posAdd 0
+o 20
+)
+)
+)
+*147 (IbdCptPort
+p (LogicalPort
+lang 10
+m 1
+decl (Decl
+n "Flt_CPU_Reset"
+t "std_ulogic"
+eolc "-- 1sec reset pulse"
+preAdd 0
+posAdd 0
+o 21
+)
+)
+)
+]
+inst "Inst_syscon"
+lib "idx_fpga_lib"
+ele [
+(GiElement
+name "DACS_BUILD_NUMBER"
+type "std_logic_vector(15 DOWNTO 0)"
+value "DACS_BUILD_NUMBER"
+)
+(GiElement
+name "INSTRUMENT_ID"
+type "std_logic_vector(15 DOWNTO 0)"
+value "INSTRUMENT_ID"
+)
+(GiElement
+name "N_INTERRUPTS"
+type "integer range 15 downto 0"
+value "N_INTERRUPTS"
+)
+(GiElement
+name "N_BOARDS"
+type "integer range 15 downto 0"
+value "N_BOARDS"
+)
+]
+uid 244,0
+name "syscon"
+on 34
+fa [
+(IbdCFA
+l "Addr"
+p &129
+c *148 (IbdNet
+d (Decl
+n "subbus_addr"
+t "std_logic_vector"
+b "(15 downto 0)"
+o 4
+)
+uid 49,0
+on 14
+nodes [
+&17
+&126
+]
+)
+)
+(IbdCFA
+l "Data_i"
+p &130
+c *149 (IbdNet
+d (Decl
+n "subbus_data_i"
+t "std_logic_vector"
+b "(15 downto 0)"
+o 5
+)
+uid 51,0
+on 15
+nodes [
+&17
+&126
+]
+)
+)
+(IbdCFA
+l "Data_o"
+p &131
+c *150 (IbdNet
+d (Decl
+n "subbus_data_o"
+t "std_logic_vector"
+b "(15 downto 0)"
+o 6
+)
+uid 53,0
+on 16
+nodes [
+&17
+&126
+]
+)
+)
+(IbdCFA
+l "Ctrl"
+p &128
+c *151 (IbdNet
+d (Decl
+n "subbus_ctrl"
+t "std_logic_vector"
+b "(6 downto 0)"
+o 7
+)
+uid 55,0
+on 17
+nodes [
+&17
+&126
+]
+)
+)
+(IbdCFA
+l "Status"
+p &132
+c *152 (IbdNet
+d (Decl
+n "subbus_status"
+t "std_logic_vector"
+b "(3 downto 0)"
+o 8
+)
+uid 57,0
+on 18
+nodes [
+&17
+&126
+]
+)
+)
+(IbdCFA
+l "F8M"
+p &127
+c &53
+)
+(IbdCFA
+l "ExpAddr"
+p &137
+c &64
+)
+(IbdCFA
+l "WData"
+p &135
+c &75
+)
+(IbdCFA
+l "RData"
+p &136
+c *153 (IbdNet
+d (Decl
+n "iRData"
+t "std_logic_vector"
+b "((N_BOARDS-1)*16+15 downto 0)"
+o 12
+)
+uid 65,0
+optionalChildren [
+*154 (IbdWire
+slice "(16*(PTRH0+i)+15 downto 16*(PTRH0+i))"
+uid 191,0
+on 23
+nodes [
+&54
+]
+net &153
+)
+*155 (IbdWire
+slice "(16*(CTR_UG0+i)+15 downto 16*(CTR_UG0+i))"
+uid 200,0
+on 24
+nodes [
+&65
+]
+net &153
+)
+*156 (IbdWire
+slice "(16*1+15 downto 16*1)"
+uid 210,0
+on 25
+nodes [
+&76
+]
+net &153
+)
+*157 (IbdWire
+slice "(16*2+15 downto 16*2)"
+uid 224,0
+on 26
+nodes [
+&88
+]
+net &153
+)
+*158 (IbdWire
+slice "(16*3+15 downto 16*3)"
+uid 232,0
+on 27
+nodes [
+&38
+]
+net &153
+)
+*159 (IbdWire
+slice "(15 downto 0)"
+uid 242,0
+on 28
+nodes [
+&105
+]
+net &153
+)
+*160 (IbdWire
+slice "(16*4+15 downto 16*4)"
+uid 256,0
+on 29
+nodes [
+*161 (IbdHdsComponent
+archFileType "UNKNOWN"
+p [
+*162 (IbdCptPort
+p (LogicalPort
+decl (Decl
+n "ExpRd"
+t "std_ulogic"
+o 2
+)
+)
+)
+*163 (IbdCptPort
+p (LogicalPort
+decl (Decl
+n "Addr"
+t "std_logic_vector"
+b "(15 DOWNTO 0)"
+o 1
+)
+)
+)
+*164 (IbdCptPort
+p (LogicalPort
+decl (Decl
+n "rst"
+t "std_ulogic"
+o 4
+)
+)
+)
+*165 (IbdCptPort
+p (LogicalPort
+decl (Decl
+n "F8M"
+t "std_ulogic"
+o 3
+)
+)
+)
+*166 (IbdCptPort
+p (LogicalPort
+m 1
+decl (Decl
+n "rData"
+t "std_logic_vector"
+b "(15 DOWNTO 0)"
+o 6
+)
+)
+)
+*167 (IbdCptPort
+p (LogicalPort
+m 1
+decl (Decl
+n "ExpAck"
+t "std_ulogic"
+o 5
+)
+)
+)
+*168 (IbdCptPort
+p (LogicalPort
+m 2
+decl (Decl
+n "SCL"
+t "std_logic"
+o 7
+)
+)
+)
+*169 (IbdCptPort
+p (LogicalPort
+m 2
+decl (Decl
+n "SDA"
+t "std_logic"
+o 8
+)
+)
+)
+]
+inst "Inst_vm"
+lib "idx_fpga_lib"
+ele [
+(GiElement
+name "BASE_ADDR"
+type "unsigned(15 DOWNTO 0)"
+value "X\"03A0\""
+)
+]
+bc "  hds hds_inst
+"
+uid 252,0
+name "vm"
+on 37
+fa [
+(IbdCFA
+l "F8M"
+p &165
+c &53
+)
+(IbdCFA
+l "Addr"
+p &163
+c &64
+)
+(IbdCFA
+l "ExpRd"
+p &162
+c &87
+)
+(IbdCFA
+l "rst"
+p &164
+c *170 (IbdNet
+d (Decl
+n "rst"
+t "std_ulogic"
+o 18
+)
+uid 77,0
+on 42
+nodes [
+&54
+&65
+&76
+&88
+&38
+&105
+&126
+&161
+]
+)
+)
+(IbdCFA
+l "SDA"
+p &169
+c *171 (IbdNet
+d (Decl
+n "VM_SDA_pin"
+t "std_logic"
+o 37
+)
+uid 115,0
+on 66
+nodes [
+&15
+&161
+]
+)
+)
+(IbdCFA
+l "SCL"
+p &168
+c *172 (IbdNet
+d (Decl
+n "VM_SCL_pin"
+t "std_logic"
+o 38
+)
+uid 117,0
+on 67
+nodes [
+&15
+&161
+]
+)
+)
+(IbdCFA
+l "rData"
+p &166
+c &160
+)
+(IbdCFA
+l "ExpAck"
+p &167
+c *173 (IbdWire
+slice "(4)"
+uid 258,0
+on 39
+nodes [
+&161
+]
+net *174 (IbdNet
+d (Decl
+n "ExpAck"
+t "std_logic_vector"
+b "(N_BOARDS-1 DOWNTO 0)"
+o 15
+)
+uid 71,0
+optionalChildren [
+*175 (IbdWire
+slice "(PTRH0+i)"
+uid 185,0
+on 33
+nodes [
+&54
+]
+net &174
+)
+*176 (IbdWire
+slice "(CTR_UG0+i)"
+uid 202,0
+on 34
+nodes [
+&65
+]
+net &174
+)
+*177 (IbdWire
+slice "(1)"
+uid 212,0
+on 35
+nodes [
+&76
+]
+net &174
+)
+*178 (IbdWire
+slice "(2)"
+uid 222,0
+on 36
+nodes [
+&88
+]
+net &174
+)
+*179 (IbdWire
+slice "(3)"
+uid 230,0
+on 37
+nodes [
+&38
+]
+net &174
+)
+*180 (IbdWire
+slice "(0)"
+uid 238,0
+on 38
+nodes [
+&105
+]
+net &174
+)
+&173
+]
+on 32
+nodes [
+&126
+&54
+&65
+&76
+&88
+&38
+&105
+&161
+]
+)
+)
+)
+]
+dec [
+(IbdCFA
+f "*"
+p &0
+io "O"
+dt 1
+c &153
+)
+(IbdCFA
+f "*"
+p &0
+io "O"
+dt 1
+c &174
+)
+]
+ucp [
+]
+)
+]
+net &153
+)
+]
+on 22
+nodes [
+&126
+&54
+&65
+&76
+&88
+&38
+&105
+&161
+]
+)
+)
+(IbdCFA
+l "ExpRd"
+p &133
+c &87
+)
+(IbdCFA
+l "ExpWr"
+p &134
+c &104
+)
+(IbdCFA
+l "ExpAck"
+p &138
+c &174
+)
+(IbdCFA
+l "CmdEnbl"
+p &142
+c &125
+)
+(IbdCFA
+l "CmdStrb"
+p &143
+c *181 (IbdNet
+d (Decl
+n "CmdStrb"
+t "std_ulogic"
+o 17
+)
+uid 75,0
+on 41
+nodes [
+&126
+]
+)
+)
+(IbdCFA
+l "ExpReset"
+p &144
+c &170
+)
+(IbdCFA
+l "BdIntr"
+p &139
+c *182 (IbdNet
+d (Decl
+n "BdIntr"
+t "std_ulogic_vector"
+b "(N_INTERRUPTS-1 downto 0)"
+o 19
+)
+uid 79,0
+optionalChildren [
+*183 (IbdWire
+slice "(0)"
+uid 240,0
+on 44
+nodes [
+&105
+]
+net &182
+)
+]
+on 43
+nodes [
+&126
+&105
+]
+)
+)
+(IbdCFA
+l "INTA"
+p &141
+c *184 (IbdNet
+d (Decl
+n "INTA"
+t "std_ulogic"
+o 20
+)
+uid 81,0
+on 45
+nodes [
+&105
+&126
+]
+)
+)
+(IbdCFA
+l "Flt_CPU_Reset"
+p &147
+c *185 (IbdNet
+d (Decl
+n "subbus_flt_cpu_reset"
+t "std_ulogic"
+o 42
+)
+uid 125,0
+on 71
+nodes [
+&15
+&126
+]
+)
+)
+(IbdCFA
+l "Collision"
+p &140
+c *186 (IbdNet
+d (Decl
+n "Collision"
+t "std_ulogic"
+o 45
+)
+uid 131,0
+on 74
+nodes [
+&15
+&126
+]
+)
+)
+(IbdCFA
+l "Fail_In"
+p &145
+c *187 (IbdWire
+slice "(0)"
+uid 248,0
+on 47
+nodes [
+&126
+]
+net *188 (IbdNet
+d (Decl
+n "Fail_outputs"
+t "std_logic_vector"
+b "(4 DOWNTO 0)"
+o 21
+)
+uid 83,0
+optionalChildren [
+&187
+]
+on 46
+nodes [
+&17
+&126
+]
+)
+)
+)
+(IbdCFA
+l "Fail_Out"
+p &146
+c *189 (IbdWire
+slice "(0)"
+uid 250,0
+on 49
+nodes [
+&126
+]
+net *190 (IbdNet
+d (Decl
+n "Fail_inputs"
+t "std_logic_vector"
+b "(4 DOWNTO 0)"
+o 22
+)
+uid 85,0
+optionalChildren [
+&189
+]
+on 48
+nodes [
+&17
+&126
+]
+)
+)
+)
+]
+dec [
+(IbdCFA
+f "*"
+p &0
+io "I"
+dt 1
+c &188
+)
+(IbdCFA
+f "*"
+p &0
+io "O"
+dt 1
+c &190
+)
+]
+ucp [
+]
+)
+]
+)
+)
+(IbdCFA
+l "rst"
+p &106
+c &170
+)
+(IbdCFA
+l "INTA"
+p &111
+c &184
+)
+(IbdCFA
+l "Run"
+p &121
+c *191 (IbdNet
+d (Decl
+n "idx_Run"
+t "std_ulogic_vector"
+b "(IDX_N_CHANNELS-1 downto 0)"
+o 46
+)
+uid 133,0
+on 75
+nodes [
+&15
+&105
+]
+)
+)
+(IbdCFA
+l "Step"
+p &122
+c *192 (IbdNet
+d (Decl
+n "idx_Step"
+t "std_ulogic_vector"
+b "(IDX_N_CHANNELS-1 downto 0)"
+o 47
+)
+uid 135,0
+on 76
+nodes [
+&15
+&105
+]
+)
+)
+(IbdCFA
+l "Dir"
+p &120
+c *193 (IbdNet
+d (Decl
+n "idx_Dir"
+t "std_ulogic_vector"
+b "(IDX_N_CHANNELS-1 downto 0)"
+o 48
+)
+uid 137,0
+on 77
+nodes [
+&15
+&105
+]
+)
+)
+(IbdCFA
+l "KillA"
+p &113
+c *194 (IbdNet
+d (Decl
+n "idx_KillA"
+t "std_ulogic_vector"
+b "(IDX_N_CHANNELS-1 downto 0)"
+o 49
+)
+uid 139,0
+on 78
+nodes [
+&15
+&105
+]
+)
+)
+(IbdCFA
+l "KillB"
+p &114
+c *195 (IbdNet
+d (Decl
+n "idx_KillB"
+t "std_ulogic_vector"
+b "(IDX_N_CHANNELS-1 downto 0)"
+o 50
+)
+uid 141,0
+on 79
+nodes [
+&15
+&105
+]
+)
+)
+(IbdCFA
+l "LimI"
+p &115
+c *196 (IbdNet
+d (Decl
+n "idx_LimI"
+t "std_ulogic_vector"
+b "(IDX_N_CHANNELS-1 downto 0)"
+o 51
+)
+uid 143,0
+on 80
+nodes [
+&15
+&105
+]
+)
+)
+(IbdCFA
+l "LimO"
+p &116
+c *197 (IbdNet
+d (Decl
+n "idx_LimO"
+t "std_ulogic_vector"
+b "(IDX_N_CHANNELS-1 downto 0)"
+o 52
+)
+uid 145,0
+on 81
+nodes [
+&15
+&105
+]
+)
+)
+(IbdCFA
+l "ZR"
+p &117
+c *198 (IbdNet
+d (Decl
+n "idx_ZR"
+t "std_ulogic_vector"
+b "(IDX_N_CHANNELS-1 downto 0)"
+o 53
+)
+uid 147,0
+on 82
+nodes [
+&15
+&105
+]
+)
+)
+(IbdCFA
+l "ExpAck"
+p &118
+c &180
+)
+(IbdCFA
+l "BdIntr"
+p &119
+c &183
+)
+(IbdCFA
+l "RData"
+p &124
+c &159
+)
+]
+dec [
+(IbdCFA
+f "*"
+p &0
+io "O"
+dt 1
+c &174
+)
+(IbdCFA
+f "*"
+p &0
+io "O"
+dt 1
+c &182
+)
+(IbdCFA
+f "*"
+p &0
+io "O"
+dt 1
+c &153
+)
+]
+ucp [
+]
+)
+&126
+]
+)
+)
+(IbdCFA
+l "rst"
+p &91
+c &170
+)
+(IbdCFA
+l "SDI"
+p &93
+c *199 (IbdNet
+d (Decl
+n "ana_in_SDI"
+t "std_ulogic_vector"
+b "(1 downto 0)"
+eolc "-- From A/D Converter"
+o 56
+)
+uid 153,0
+on 85
+nodes [
+&15
+&88
+]
+)
+)
+(IbdCFA
+l "CS5"
+p &96
+c *200 (IbdNet
+d (Decl
+n "ana_in_CS5"
+t "std_ulogic"
+eolc "-- To LMP7312"
+o 57
+)
+uid 155,0
+on 86
+nodes [
+&15
+&88
+]
+)
+)
+(IbdCFA
+l "Conv"
+p &95
+c *201 (IbdNet
+d (Decl
+n "ana_in_Conv"
+t "std_ulogic"
+eolc "-- To A/D Converter"
+o 58
+)
+uid 157,0
+on 87
+nodes [
+&15
+&88
+]
+)
+)
+(IbdCFA
+l "Row"
+p &94
+c *202 (IbdNet
+d (Decl
+n "ana_in_Row"
+t "std_ulogic_vector"
+b "(5 downto 0)"
+o 59
+)
+uid 159,0
+on 88
+nodes [
+&15
+&88
+]
+)
+)
+(IbdCFA
+l "SCK16"
+p &97
+c *203 (IbdNet
+d (Decl
+n "ana_in_SCK16"
+t "std_ulogic_vector"
+b "(1 downto 0)"
+o 60
+)
+uid 161,0
+on 89
+nodes [
+&15
+&88
+]
+)
+)
+(IbdCFA
+l "SCK5"
+p &99
+c *204 (IbdNet
+d (Decl
+n "ana_in_SCK5"
+t "std_ulogic_vector"
+b "(1 downto 0)"
+o 61
+)
+uid 163,0
+on 90
+nodes [
+&15
+&88
+]
+)
+)
+(IbdCFA
+l "SDO"
+p &98
+c *205 (IbdNet
+d (Decl
+n "ana_in_SDO"
+t "std_ulogic_vector"
+b "(1 downto 0)"
+o 62
+)
+uid 165,0
+on 91
+nodes [
+&15
+&88
+]
+)
+)
+(IbdCFA
+l "ExpAck"
+p &101
+c &178
+)
+(IbdCFA
+l "RData"
+p &103
+c &157
+)
+]
+dec [
+(IbdCFA
+f "*"
+p &0
+io "O"
+dt 1
+c &174
+)
+(IbdCFA
+f "*"
+p &0
+io "O"
+dt 1
+c &153
+)
+]
+ucp [
+]
+)
+&38
+&105
+&126
+&161
+]
+)
+)
+(IbdCFA
+l "ExpWr"
+p &81
+c &104
+)
+(IbdCFA
+l "rst"
+p &84
+c &170
+)
+(IbdCFA
+l "IO"
+p &85
+c *206 (IbdNet
+d (Decl
+n "dig_IO"
+t "std_logic_vector"
+b "(DIGIO_N_CONNECTORS*6*8-1 downto 0)"
+o 54
+)
+uid 149,0
+on 83
+nodes [
+&15
+&76
+]
+)
+)
+(IbdCFA
+l "Dir"
+p &86
+c *207 (IbdNet
+d (Decl
+n "dig_Dir"
+t "std_logic_vector"
+b "(DIGIO_N_CONNECTORS*6-1 downto 0)"
+o 55
+)
+uid 151,0
+on 84
+nodes [
+&15
+&76
+]
+)
+)
+(IbdCFA
+l "RData"
+p &79
+c &156
+)
+(IbdCFA
+l "ExpAck"
+p &82
+c &177
+)
+]
+dec [
+(IbdCFA
+f "*"
+p &0
+io "O"
+dt 1
+c &153
+)
+(IbdCFA
+f "*"
+p &0
+io "O"
+dt 1
+c &174
+)
+]
+ucp [
+]
+)
+&88
+&38
+&105
+&126
+]
+)
+)
+(IbdCFA
+l "ExpRd"
+p &69
+c &87
+)
+(IbdCFA
+l "ExpWr"
+p &70
+c &104
+)
+(IbdCFA
+l "rst"
+p &73
+c &170
+)
+(IbdCFA
+l "RData"
+p &68
+c &155
+)
+(IbdCFA
+l "ExpAck"
+p &71
+c &176
+)
+(IbdCFA
+l "PMT"
+p &74
+c *208 (IbdWire
+slice "(i*4+3 downto i*4)"
+uid 204,0
+on 93
+nodes [
+&65
+]
+net *209 (IbdNet
+d (Decl
+n "ctr_PMT"
+t "std_logic_vector"
+b "(4*CTR_UG_N_BDS-1 downto 0)"
+o 63
+)
+uid 167,0
+optionalChildren [
+&208
+]
+on 92
+nodes [
+&15
+&65
+]
+)
+)
+)
+]
+dec [
+(IbdCFA
+f "*"
+p &0
+io "O"
+dt 1
+c &153
+)
+(IbdCFA
+f "*"
+p &0
+io "O"
+dt 1
+c &174
+)
+(IbdCFA
+f "*"
+p &0
+io "I"
+dt 1
+c &209
+)
+]
+ucp [
+]
+)
+&76
+&88
+&38
+&105
+&126
+&161
+]
+)
+)
+(IbdCFA
+l "ExpRd"
+p &59
+c &87
+)
+(IbdCFA
+l "ExpWr"
+p &58
+c &104
+)
+(IbdCFA
+l "rst"
+p &56
+c &170
+)
+(IbdCFA
+l "ExpAck"
+p &60
+c &175
+)
+(IbdCFA
+l "scl"
+p &61
+c *210 (IbdWire
+slice "(i)"
+uid 187,0
+on 65
+nodes [
+&54
+]
+net *211 (IbdNet
+d (Decl
+n "PTRH_SCK_pin"
+t "std_logic_vector"
+b "(PTRH_N_BDS-1 downto 0)"
+o 36
+)
+uid 113,0
+optionalChildren [
+&210
+]
+on 64
+nodes [
+&15
+&54
+]
+)
+)
+)
+(IbdCFA
+l "sda"
+p &62
+c *212 (IbdWire
+slice "(i)"
+uid 189,0
+on 63
+nodes [
+&54
+]
+net *213 (IbdNet
+d (Decl
+n "PTRH_SDA_pin"
+t "std_logic_vector"
+b "(PTRH_N_BDS-1 downto 0)"
+o 35
+)
+uid 111,0
+optionalChildren [
+&212
+]
+on 62
+nodes [
+&15
+&54
+]
+)
+)
+)
+(IbdCFA
+l "rData"
+p &63
+c &154
+)
+]
+dec [
+(IbdCFA
+f "*"
+p &0
+io "O"
+dt 1
+c &174
+)
+(IbdCFA
+f "*"
+p &0
+io "B"
+dt 1
+c &211
+)
+(IbdCFA
+f "*"
+p &0
+io "B"
+dt 1
+c &213
+)
+(IbdCFA
+f "*"
+p &0
+io "O"
+dt 1
+c &153
+)
+]
+ucp [
+]
+)
+&65
+&76
+&17
+&88
+&38
+&105
+&126
+&161
+]
+)
+)
+(IbdCFA
+l "Addr"
+p &44
+c &64
+)
+(IbdCFA
+l "WData"
+p &51
+c &75
+)
+(IbdCFA
+l "ExpRd"
+p &39
+c &87
+)
+(IbdCFA
+l "ExpWr"
+p &40
+c &104
+)
+(IbdCFA
+l "rst"
+p &42
+c &170
+)
+(IbdCFA
+l "DA_CLR_B"
+p &48
+c *214 (IbdNet
+d (Decl
+n "DA_CLR_B"
+t "std_logic"
+o 64
+)
+uid 169,0
+on 94
+nodes [
+&15
+&38
+]
+)
+)
+(IbdCFA
+l "DA_CS_B"
+p &45
+c *215 (IbdNet
+d (Decl
+n "DA_CS_B"
+t "std_logic_vector"
+b "(1 downto 0)"
+o 65
+)
+uid 171,0
+on 95
+nodes [
+&15
+&38
+]
+)
+)
+(IbdCFA
+l "DA_LDAC_B"
+p &49
+c *216 (IbdNet
+d (Decl
+n "DA_LDAC_B"
+t "std_logic"
+o 66
+)
+uid 173,0
+on 96
+nodes [
+&15
+&38
+]
+)
+)
+(IbdCFA
+l "DA_SCK"
+p &47
+c *217 (IbdNet
+d (Decl
+n "DA_SCK"
+t "std_logic"
+o 67
+)
+uid 175,0
+on 97
+nodes [
+&15
+&38
+]
+)
+)
+(IbdCFA
+l "DA_SDI"
+p &46
+c *218 (IbdNet
+d (Decl
+n "DA_SDI"
+t "std_logic"
+o 68
+)
+uid 177,0
+on 98
+nodes [
+&15
+&38
+]
+)
+)
+(IbdCFA
+l "ExpAck"
+p &43
+c &179
+)
+(IbdCFA
+l "RData"
+p &52
+c &158
+)
+]
+dec [
+(IbdCFA
+f "*"
+p &0
+io "O"
+dt 1
+c &174
+)
+(IbdCFA
+f "*"
+p &0
+io "O"
+dt 1
+c &153
+)
+]
+ucp [
+]
+)
+]
+)
+)
+(IbdCFA
+l "xps_epc_0_PRH_WR_n_pin"
+p &25
+c *219 (IbdNet
+d (Decl
+n "xps_epc_0_PRH_Wr_n_pin"
+t "std_logic"
+o 3
+)
+uid 47,0
+on 13
+nodes [
+&17
+]
+)
+)
+(IbdCFA
+l "xps_gpio_subbus_addr_pin"
+p &29
+c &148
+)
+(IbdCFA
+l "xps_gpio_subbus_data_i_pin"
+p &31
+c &149
+)
+(IbdCFA
+l "xps_gpio_subbus_data_o_pin"
+p &32
+c &150
+)
+(IbdCFA
+l "xps_gpio_subbus_ctrl_pin"
+p &30
+c &151
+)
+(IbdCFA
+l "xps_gpio_subbus_status_pin"
+p &33
+c &152
+)
+(IbdCFA
+l "clk_8_0000MHz_pin"
+p &20
+c &53
+)
+(IbdCFA
+l "xps_gpio_subbus_leds_pin"
+p &34
+c &188
+)
+(IbdCFA
+l "xps_gpio_subbus_leds_readback_pin"
+p &35
+c &190
+)
+(IbdCFA
+l "xps_epc_0_PRH_RDY_pin"
+p &24
+c *220 (IbdNet
+d (Decl
+n "not_FTDI_TXE_pin"
+t "std_ulogic"
+eolc "--  not FTDI_TXE_pin"
+o 23
+)
+uid 87,0
+on 50
+nodes [
+&17
+]
+)
+)
+(IbdCFA
+l "FTDI_RX_RDY_pin"
+p &28
+c *221 (IbdNet
+d (Decl
+n "not_FTDI_RXF_pin"
+t "std_ulogic"
+eolc "--  not FTDI_RXF_pin"
+o 24
+)
+uid 89,0
+on 51
+nodes [
+&17
+]
+)
+)
+(IbdCFA
+l "fpga_0_rst_1_sys_rst_pin"
+p &19
+c &16
+)
+(IbdCFA
+l "fpga_0_clk_1_sys_clk_pin"
+p &18
+c *222 (IbdNet
+d (Decl
+n "fpga_0_clk_1_sys_clk_pin"
+t "std_logic"
+o 26
+)
+uid 93,0
+on 53
+nodes [
+&15
+&17
+]
+)
+)
+(IbdCFA
+l "xps_epc_0_PRH_Data_pin"
+p &23
+c *223 (IbdNet
+d (Decl
+n "xps_epc_0_PRH_Data_pin"
+t "std_logic_vector"
+b "(7 downto 0)"
+o 27
+)
+uid 95,0
+on 54
+nodes [
+&15
+&17
+]
+)
+)
+(IbdCFA
+l "xps_epc_0_PRH_Rd_n_pin"
+p &26
+c *224 (IbdNet
+d (Decl
+n "FTDI_RD_pin"
+t "std_logic"
+o 28
+)
+uid 97,0
+on 55
+nodes [
+&15
+&17
+]
+)
+)
+(IbdCFA
+l "FTDI_SI_pin"
+p &27
+c *225 (IbdNet
+d (Decl
+n "FTDI_SI_pin"
+t "std_logic"
+o 32
+)
+uid 105,0
+on 59
+nodes [
+&15
+&17
+]
+)
+)
+(IbdCFA
+l "xps_gpio_subbus_switches_pin"
+p &36
+c *226 (IbdNet
+d (Decl
+n "DACS_switches"
+t "std_logic_vector"
+b "(7 downto 0)"
+o 44
+)
+uid 129,0
+on 73
+nodes [
+&15
+&17
+]
+)
+)
+]
+dec [
+]
+ucp [
+(IbdPortFA
+f "O: clk_30_0000MHz_pin"
+p &21
+c *227 (IbdUcPortConnector
+uid 263,0
+on 10
+nodes [
+&17
+]
+)
+)
+]
+)
+]
+)
+)
+(IbdNFA
+io "I"
+c &222
+)
+(IbdNFA
+io "B"
+c &223
+)
+(IbdNFA
+io "O"
+c &224
+)
+(IbdNFA
+io "O"
+c *228 (IbdNet
+d (Decl
+n "FTDI_WR_pin"
+t "std_logic"
+o 29
+)
+uid 99,0
+on 56
+nodes [
+&15
+]
+)
+)
+(IbdNFA
+io "I"
+c *229 (IbdNet
+d (Decl
+n "FTDI_RXF_pin"
+t "std_logic"
+o 30
+)
+uid 101,0
+on 57
+nodes [
+&15
+]
+)
+)
+(IbdNFA
+io "I"
+c *230 (IbdNet
+d (Decl
+n "FTDI_TXE_pin"
+t "std_logic"
+o 31
+)
+uid 103,0
+on 58
+nodes [
+&15
+]
+)
+)
+(IbdNFA
+io "O"
+c &225
+)
+(IbdNFA
+io "I"
+c *231 (IbdNet
+d (Decl
+n "fpga_0_RS232_RX_pin"
+t "std_logic"
+o 33
+)
+uid 107,0
+on 60
+nodes [
+&15
+]
+)
+)
+(IbdNFA
+io "O"
+c *232 (IbdNet
+d (Decl
+n "fpga_0_RS232_TX_pin"
+t "std_logic"
+o 34
+)
+uid 109,0
+on 61
+nodes [
+&15
+]
+)
+)
+(IbdNFA
+io "B"
+c &213
+)
+(IbdNFA
+io "B"
+c &211
+)
+(IbdNFA
+io "B"
+c &171
+)
+(IbdNFA
+io "B"
+c &172
+)
+(IbdNFA
+io "O"
+c *233 (IbdNet
+d (Decl
+n "subbus_cmdenbl"
+t "std_ulogic"
+o 39
+)
+uid 119,0
+on 68
+nodes [
+&15
+]
+)
+)
+(IbdNFA
+io "O"
+c *234 (IbdNet
+d (Decl
+n "subbus_cmdstrb"
+t "std_ulogic"
+o 40
+)
+uid 121,0
+on 69
+nodes [
+&15
+]
+)
+)
+(IbdNFA
+io "O"
+c *235 (IbdNet
+d (Decl
+n "subbus_fail_leds"
+t "std_logic_vector"
+b "(4 downto 0)"
+o 41
+)
+uid 123,0
+on 70
+nodes [
+&15
+]
+)
+)
+(IbdNFA
+io "O"
+c &185
+)
+(IbdNFA
+io "O"
+c *236 (IbdNet
+d (Decl
+n "subbus_reset"
+t "std_ulogic"
+o 43
+)
+uid 127,0
+on 72
+nodes [
+&15
+]
+)
+)
+(IbdNFA
+io "I"
+c &226
+)
+(IbdNFA
+io "O"
+c &186
+)
+(IbdNFA
+io "O"
+c &191
+)
+(IbdNFA
+io "O"
+c &192
+)
+(IbdNFA
+io "O"
+c &193
+)
+(IbdNFA
+io "I"
+c &194
+)
+(IbdNFA
+io "I"
+c &195
+)
+(IbdNFA
+io "I"
+c &196
+)
+(IbdNFA
+io "I"
+c &197
+)
+(IbdNFA
+io "I"
+c &198
+)
+(IbdNFA
+io "B"
+c &206
+)
+(IbdNFA
+io "O"
+c &207
+)
+(IbdNFA
+io "I"
+c &199
+)
+(IbdNFA
+io "O"
+c &200
+)
+(IbdNFA
+io "O"
+c &201
+)
+(IbdNFA
+io "O"
+c &202
+)
+(IbdNFA
+io "O"
+c &203
+)
+(IbdNFA
+io "O"
+c &204
+)
+(IbdNFA
+io "O"
+c &205
+)
+(IbdNFA
+io "I"
+c &209
+)
+(IbdNFA
+io "O"
+c &214
+)
+(IbdNFA
+io "O"
+c &215
+)
+(IbdNFA
+io "O"
+c &216
+)
+(IbdNFA
+io "O"
+c &217
+)
+(IbdNFA
+io "O"
+c &218
+)
+]
+dec [
+]
+)
+*237 (IbdFrame
+uid 179,0
+optionalChildren [
+&54
+]
+name "ptrhs: for i in 0 TO PTRH_N_BDS-1 GENERATE"
+on 9
+)
+*238 (IbdFrame
+uid 194,0
+optionalChildren [
+&65
+]
+name "ctrs: for i in 0 TO CTR_UG_N_BDS-1 GENERATE"
+on 13
+)
+&76
+&17
+&88
+&38
+&105
+&126
+&161
+*239 (IbdEB
+uid 260,0
+optionalChildren [
+*240 (IbdEmbeddedText
+theText "subbus_cmdenbl <= CmdEnbl;
+subbus_cmdstrb <= CmdStrb;
+Fail_inputs(4 DOWNTO 1) <= Fail_outputs(4 DOWNTO 1);
+-- subbus_fail_leds <= Fail_inputs;
+  subbus_fail_leds(0) <= Fail_inputs(0);
+subbus_fail_leds(1) <= subbus_ctrl(6); -- Arm
+subbus_fail_leds(2) <= subbus_ctrl(5); -- Tick
+subbus_fail_leds(3) <= subbus_ctrl(3); -- CE
+subbus_fail_leds(4) <= subbus_status(3); -- TwoSecTO
+subbus_reset <= rst;
+FTDI_WR_pin <= not xps_epc_0_PRH_Wr_n_pin;
+fpga_0_RS232_TX_pin <= '0';
+not_FTDI_TXE_pin <= not FTDI_TXE_pin;
+not_FTDI_RXF_pin <= not FTDI_RXF_pin;
+"
+uid 261,0
+)
+]
+name "eb1"
+on 38
+fa [
+]
+dec [
+]
+)
+]
+)
+rowContainer (IbdRowContainer
+uid 16,0
+optionalChildren [
+&53
+&37
+&219
+&148
+&149
+&150
+&151
+&152
+*241 (IbdNet
+d (Decl
+n "subbus_switches"
+t "std_logic_vector"
+b "(7 downto 0)"
+o 9
+)
+uid 59,0
+on 19
+)
+&64
+&75
+&153
+&87
+&104
+&174
+&125
+&181
+&170
+&182
+&184
+&188
+&190
+&220
+&221
+&16
+&222
+&223
+&224
+&228
+&229
+&230
+&225
+&231
+&232
+&213
+&211
+&171
+&172
+&233
+&234
+&235
+&185
+&236
+&226
+&186
+&191
+&192
+&193
+&194
+&195
+&196
+&197
+&198
+&206
+&207
+&199
+&200
+&201
+&202
+&203
+&204
+&205
+&209
+&214
+&215
+&216
+&217
+&218
+&227
+]
+)
+)
+physical (MPhysicalIbd
+activeIct &0
+mainIct (MIct
+name "All"
+mcolContainer (MIctColContainer
+optionalChildren [
+*242 (MRefCol
+p 0
+uid 20,0
+d 20
+)
+*243 (MNameCol
+p 2
+uid 21,0
+d 125
+)
+*244 (MTypeCol
+p 4
+uid 22,0
+d 85
+)
+*245 (MBoundsCol
+p 5
+uid 23,0
+d 206
+)
+*246 (MFilterCol
+p 6
+hidden 1
+uid 24,0
+d 120
+)
+*247 (MFixedCol
+p 7
+hidden 1
+uid 25,0
+d 20
+)
+*248 (MInterfaceCol
+p 8
+uid 26,0
+d 35
+ibdInterface &15
+)
+*249 (MValueCol
+p 39
+uid 27,0
+)
+*250 (MEolCol
+p 40
+uid 28,0
+d 111
+)
+*251 (MSliceCol
+p 3
+uid 42,0
+)
+*252 (MFrameCol
+frame &237
+p 9
+uid 180,0
+optionalChildren [
+*253 (MHdsCompInstCol
+p 10
+uid 182,0
+optionalChildren [
+*254 (MCompPortCol
+p 11
+hidden 1
+uid 183,0
+d 45
+)
+*255 (MCompActualCol
+p 12
+hidden 1
+uid 184,0
+d 35
+)
+]
+d 35
+comp &54
+)
+]
+d 15
+groupColRow *256 (MGroupColRow
+p 1
+uid 193,0
+depth 1
+)
+e 1
+)
+*257 (MFrameCol
+frame &238
+p 13
+uid 195,0
+optionalChildren [
+*258 (MHdsCompInstCol
+p 14
+uid 197,0
+optionalChildren [
+*259 (MCompPortCol
+p 15
+hidden 1
+uid 198,0
+d 45
+)
+*260 (MCompActualCol
+p 16
+hidden 1
+uid 199,0
+d 35
+)
+]
+d 35
+comp &65
+)
+]
+d 15
+groupColRow &256
+e 1
+)
+*261 (MHdsCompInstCol
+p 17
+uid 207,0
+optionalChildren [
+*262 (MCompPortCol
+p 18
+hidden 1
+uid 208,0
+d 45
+)
+*263 (MCompActualCol
+p 19
+hidden 1
+uid 209,0
+d 35
+)
+]
+d 35
+comp &76
+)
+*264 (MHdsCompInstCol
+p 20
+uid 215,0
+optionalChildren [
+*265 (MCompPortCol
+p 21
+hidden 1
+uid 216,0
+d 171
+)
+*266 (MCompActualCol
+p 22
+hidden 1
+uid 217,0
+d 35
+)
+]
+d 35
+comp &17
+)
+*267 (MHdsCompInstCol
+p 23
+uid 219,0
+optionalChildren [
+*268 (MCompPortCol
+p 24
+hidden 1
+uid 220,0
+d 45
+)
+*269 (MCompActualCol
+p 25
+hidden 1
+uid 221,0
+d 35
+)
+]
+d 35
+comp &88
+)
+*270 (MHdsCompInstCol
+p 26
+uid 227,0
+optionalChildren [
+*271 (MCompPortCol
+p 27
+hidden 1
+uid 228,0
+d 62
+)
+*272 (MCompActualCol
+p 28
+hidden 1
+uid 229,0
+d 35
+)
+]
+d 35
+comp &38
+)
+*273 (MHdsCompInstCol
+p 29
+uid 235,0
+optionalChildren [
+*274 (MCompPortCol
+p 30
+hidden 1
+uid 236,0
+d 52
+)
+*275 (MCompActualCol
+p 31
+hidden 1
+uid 237,0
+d 35
+)
+]
+d 35
+comp &105
+)
+*276 (MHdsCompInstCol
+p 32
+uid 245,0
+optionalChildren [
+*277 (MCompPortCol
+p 33
+hidden 1
+uid 246,0
+d 70
+)
+*278 (MCompActualCol
+p 34
+hidden 1
+uid 247,0
+d 35
+)
+]
+d 35
+comp &126
+)
+*279 (MHdsCompInstCol
+p 35
+uid 253,0
+optionalChildren [
+*280 (MCompPortCol
+p 36
+hidden 1
+uid 254,0
+d 45
+)
+*281 (MCompActualCol
+p 37
+hidden 1
+uid 255,0
+d 35
+)
+]
+d 35
+comp &161
+)
+*282 (MEBCol
+p 38
+uid 262,0
+d 35
+eb &239
+)
+*283 (MExpandCol
+p 1
+uid 265,0
+d 15
+depth 1
+)
+]
+)
+mrowContainer (MIctRowContainer
+optionalChildren [
+*284 (MRefRow
+p 0
+uid 30,0
+)
+*285 (MNameRow
+p 2
+uid 31,0
+d 60
+)
+*286 (MLibRow
+p 3
+uid 32,0
+)
+*287 (MInstanceRefRow
+p 4
+uid 33,0
+)
+*288 (MPortMapLabelRow
+p 5
+uid 34,0
+)
+*289 (MFilterRow
+p 6
+hidden 1
+uid 35,0
+d 20
+)
+*290 (MFixedRow
+p 7
+hidden 1
+uid 36,0
+)
+*291 (MReqRow
+p 8
+hidden 1
+uid 37,0
+)
+*292 (MUcPortGroupRow
+p 9
+uid 38,0
+optionalChildren [
+*293 (MUcPortRow
+p 10
+uid 264,0
+ucport &227
+)
+]
+expandCol &283
+)
+*294 (MEmptyRow
+p 99
+uid 39,0
+)
+*295 (MNetRow
+p 11
+uid 44,0
+net &53
+)
+*296 (MNetRow
+p 12
+uid 46,0
+net &37
+)
+*297 (MNetRow
+p 13
+uid 48,0
+net &219
+)
+*298 (MNetRow
+p 14
+uid 50,0
+net &148
+)
+*299 (MNetRow
+p 15
+uid 52,0
+net &149
+)
+*300 (MNetRow
+p 16
+uid 54,0
+net &150
+)
+*301 (MNetRow
+p 17
+uid 56,0
+net &151
+)
+*302 (MNetRow
+p 18
+uid 58,0
+net &152
+)
+*303 (MNetRow
+p 19
+uid 60,0
+net &241
+)
+*304 (MNetRow
+p 20
+uid 62,0
+net &64
+)
+*305 (MNetRow
+p 21
+uid 64,0
+net &75
+)
+*306 (MNetRow
+p 22
+uid 66,0
+optionalChildren [
+*307 (MWireRow
+p 23
+uid 192,0
+wire &154
+)
+*308 (MWireRow
+p 24
+uid 201,0
+wire &155
+)
+*309 (MWireRow
+p 25
+uid 211,0
+wire &156
+)
+*310 (MWireRow
+p 26
+uid 225,0
+wire &157
+)
+*311 (MWireRow
+p 27
+uid 233,0
+wire &158
+)
+*312 (MWireRow
+p 28
+uid 243,0
+wire &159
+)
+*313 (MWireRow
+p 29
+uid 257,0
+wire &160
+)
+]
+expandCol &283
+net &153
+)
+*314 (MNetRow
+p 30
+uid 68,0
+net &87
+)
+*315 (MNetRow
+p 31
+uid 70,0
+net &104
+)
+*316 (MNetRow
+p 32
+uid 72,0
+optionalChildren [
+*317 (MWireRow
+p 33
+uid 186,0
+wire &175
+)
+*318 (MWireRow
+p 34
+uid 203,0
+wire &176
+)
+*319 (MWireRow
+p 35
+uid 213,0
+wire &177
+)
+*320 (MWireRow
+p 36
+uid 223,0
+wire &178
+)
+*321 (MWireRow
+p 37
+uid 231,0
+wire &179
+)
+*322 (MWireRow
+p 38
+uid 239,0
+wire &180
+)
+*323 (MWireRow
+p 39
+uid 259,0
+wire &173
+)
+]
+expandCol &283
+net &174
+)
+*324 (MNetRow
+p 40
+uid 74,0
+net &125
+)
+*325 (MNetRow
+p 41
+uid 76,0
+net &181
+)
+*326 (MNetRow
+p 42
+uid 78,0
+net &170
+)
+*327 (MNetRow
+p 43
+uid 80,0
+optionalChildren [
+*328 (MWireRow
+p 44
+uid 241,0
+wire &183
+)
+]
+expandCol &283
+net &182
+)
+*329 (MNetRow
+p 45
+uid 82,0
+net &184
+)
+*330 (MNetRow
+p 46
+uid 84,0
+optionalChildren [
+*331 (MWireRow
+p 47
+uid 249,0
+wire &187
+)
+]
+expandCol &283
+net &188
+)
+*332 (MNetRow
+p 48
+uid 86,0
+optionalChildren [
+*333 (MWireRow
+p 49
+uid 251,0
+wire &189
+)
+]
+expandCol &283
+net &190
+)
+*334 (MNetRow
+p 50
+uid 88,0
+net &220
+)
+*335 (MNetRow
+p 51
+uid 90,0
+net &221
+)
+*336 (MNetRow
+p 52
+uid 92,0
+net &16
+)
+*337 (MNetRow
+p 53
+uid 94,0
+net &222
+)
+*338 (MNetRow
+p 54
+uid 96,0
+net &223
+)
+*339 (MNetRow
+p 55
+uid 98,0
+net &224
+)
+*340 (MNetRow
+p 56
+uid 100,0
+net &228
+)
+*341 (MNetRow
+p 57
+uid 102,0
+net &229
+)
+*342 (MNetRow
+p 58
+uid 104,0
+net &230
+)
+*343 (MNetRow
+p 59
+uid 106,0
+net &225
+)
+*344 (MNetRow
+p 60
+uid 108,0
+net &231
+)
+*345 (MNetRow
+p 61
+uid 110,0
+net &232
+)
+*346 (MNetRow
+p 62
+uid 112,0
+optionalChildren [
+*347 (MWireRow
+p 63
+uid 190,0
+wire &212
+)
+]
+expandCol &283
+net &213
+)
+*348 (MNetRow
+p 64
+uid 114,0
+optionalChildren [
+*349 (MWireRow
+p 65
+uid 188,0
+wire &210
+)
+]
+expandCol &283
+net &211
+)
+*350 (MNetRow
+p 66
+uid 116,0
+net &171
+)
+*351 (MNetRow
+p 67
+uid 118,0
+net &172
+)
+*352 (MNetRow
+p 68
+uid 120,0
+net &233
+)
+*353 (MNetRow
+p 69
+uid 122,0
+net &234
+)
+*354 (MNetRow
+p 70
+uid 124,0
+net &235
+)
+*355 (MNetRow
+p 71
+uid 126,0
+net &185
+)
+*356 (MNetRow
+p 72
+uid 128,0
+net &236
+)
+*357 (MNetRow
+p 73
+uid 130,0
+net &226
+)
+*358 (MNetRow
+p 74
+uid 132,0
+net &186
+)
+*359 (MNetRow
+p 75
+uid 134,0
+net &191
+)
+*360 (MNetRow
+p 76
+uid 136,0
+net &192
+)
+*361 (MNetRow
+p 77
+uid 138,0
+net &193
+)
+*362 (MNetRow
+p 78
+uid 140,0
+net &194
+)
+*363 (MNetRow
+p 79
+uid 142,0
+net &195
+)
+*364 (MNetRow
+p 80
+uid 144,0
+net &196
+)
+*365 (MNetRow
+p 81
+uid 146,0
+net &197
+)
+*366 (MNetRow
+p 82
+uid 148,0
+net &198
+)
+*367 (MNetRow
+p 83
+uid 150,0
+net &206
+)
+*368 (MNetRow
+p 84
+uid 152,0
+net &207
+)
+*369 (MNetRow
+p 85
+uid 154,0
+net &199
+)
+*370 (MNetRow
+p 86
+uid 156,0
+net &200
+)
+*371 (MNetRow
+p 87
+uid 158,0
+net &201
+)
+*372 (MNetRow
+p 88
+uid 160,0
+net &202
+)
+*373 (MNetRow
+p 89
+uid 162,0
+net &203
+)
+*374 (MNetRow
+p 90
+uid 164,0
+net &204
+)
+*375 (MNetRow
+p 91
+uid 166,0
+net &205
+)
+*376 (MNetRow
+p 92
+uid 168,0
+optionalChildren [
+*377 (MWireRow
+p 93
+uid 205,0
+wire &208
+)
+]
+expandCol &283
+net &209
+)
+*378 (MNetRow
+p 94
+uid 170,0
+net &214
+)
+*379 (MNetRow
+p 95
+uid 172,0
+net &215
+)
+*380 (MNetRow
+p 96
+uid 174,0
+net &216
+)
+*381 (MNetRow
+p 97
+uid 176,0
+net &217
+)
+*382 (MNetRow
+p 98
+uid 178,0
+net &218
+)
+&256
+]
+)
+vaOverrides [
+]
+)
+blkMVa (MVa
+cellColor "39936,56832,65280"
+fontColor "0,0,0"
+font "Tahoma,10,1"
+)
+hdsCompMva (MVa
+cellColor "45055,65535,30000"
+fontColor "0,0,0"
+font "Tahoma,10,1"
+)
+mwCompMva (MVa
+cellColor "0,65535,65535"
+fontColor "0,0,0"
+font "Tahoma,10,1"
+)
+ipCompMva (MVa
+cellColor "45055,65535,30000"
+fontColor "0,0,0"
+font "Tahoma,10,1"
+)
+embeddedBlkMva (MVa
+cellColor "65535,65535,37120"
+fontColor "0,0,0"
+font "Tahoma,10,1"
+)
+expressionRowMva (MVa
+alignment 0
+cellColor "65280,65280,46080"
+fontColor "0,0,0"
+font "Tahoma,10,1"
+)
+netSliceMva (MVa
+alignment 0
+cellColor "39936,56832,65280"
+fontColor "0,0,0"
+font "Tahoma,10,1"
+)
+bundleMva (MVa
+alignment 0
+cellColor "65280,65280,46080"
+fontColor "0,0,0"
+font "Tahoma,10,1"
+)
+propColMva (MVa
+cellColor "0,49152,49152"
+fontColor "0,0,0"
+font "Tahoma,10,1"
+)
+groupColMva (MVa
+alignment 0
+cellColor "62965,57054,46003"
+fontColor "0,0,0"
+font "Tahoma,10,1"
+)
+interfaceColMva (MVa
+cellColor "59904,39936,65280"
+fontColor "0,0,0"
+font "Tahoma,10,1"
+)
+frameColMva (MVa
+alignment 0
+cellColor "0,0,65535"
+fontColor "65535,65535,65535"
+font "Tahoma,10,1"
+)
+propRowMva (MVa
+alignment 0
+cellColor "0,49152,49152"
+fontColor "0,0,0"
+font "Tahoma,10,1"
+)
+groupRowMva (MVa
+alignment 0
+cellColor "62965,57054,46003"
+fontColor "0,0,0"
+font "Tahoma,10,1"
+)
+netRowMva (MVa
+cellColor "65535,65535,65535"
+fontColor "0,0,0"
+font "Tahoma,10,0"
+)
+uid 17,0
+)
+preUserText "--FOR ALL : DigIO USE ENTITY idx_fpga_lib.DigIO;
+--FOR ALL : ana_input USE ENTITY idx_fpga_lib.ana_input;
+--FOR ALL : ctr_ungated USE ENTITY idx_fpga_lib.ctr_ungated;
+--FOR ALL : ao USE ENTITY idx_fpga_lib.ao;
+--FOR ALL : ptrh USE ENTITY idx_fpga_lib.ptrh;
+--FOR ALL : vm USE ENTITY idx_fpga_lib.vm;
+attribute box_type : string;
+ATTRIBUTE box_type OF Processor : component IS \"user_black_box\";
+CONSTANT PTRH0 : integer := 5;
+CONSTANT N_BOARDS : integer := PTRH0+PTRH_N_BDS+CTR_UG_N_BDS;
+CONSTANT CTR_UG0 : integer := PTRH0+PTRH_N_BDS;
+"
+lastUid 267,0
+genericsCommonDM (CommonDM
+ldm (LogicalDM
+emptyRow *383 (LEmptyRow
+)
+optionalChildren [
+*384 (RefLabelRowHdr
+)
+*385 (TitleRowHdr
+)
+*386 (FilterRowHdr
+)
+*387 (RefLabelColHdr
+tm "RefLabelColHdrMgr"
+)
+*388 (RowExpandColHdr
+tm "RowExpandColHdrMgr"
+)
+*389 (GroupColHdr
+tm "GroupColHdrMgr"
+)
+*390 (NameColHdr
+tm "GenericNameColHdrMgr"
+)
+*391 (TypeColHdr
+tm "GenericTypeColHdrMgr"
+)
+*392 (InitColHdr
+tm "GenericValueColHdrMgr"
+)
+*393 (PragmaColHdr
+tm "GenericPragmaColHdrMgr"
+)
+*394 (EolColHdr
+tm "GenericEolColHdrMgr"
+)
+]
+)
+pdm (PhysicalDM
+displayShortBounds 1
+editShortBounds 1
+optionalChildren [
+*395 (Sheet
+sheetRow (SheetRow
+headerVa (MVa
+cellColor "49152,49152,49152"
+fontColor "0,0,0"
+font "Tahoma,10,0"
+)
+cellVa (MVa
+cellColor "65535,65535,65535"
+fontColor "0,0,0"
+font "Tahoma,10,0"
+)
+groupVa (MVa
+cellColor "39936,56832,65280"
+fontColor "0,0,0"
+font "Tahoma,10,0"
+)
+emptyMRCItem *396 (MRCItem
+litem &383
+pos 3
+dimension 20
+)
+optionalChildren [
+*397 (MRCItem
+litem &384
+pos 0
+dimension 20
+)
+*398 (MRCItem
+litem &385
+pos 1
+dimension 23
+)
+*399 (MRCItem
+litem &386
+pos 2
+hidden 1
+dimension 20
+)
+]
+)
+sheetCol (SheetCol
+propVa (MVa
+cellColor "0,49152,49152"
+fontColor "0,0,0"
+font "Tahoma,10,0"
+textAngle 90
+)
+optionalChildren [
+*400 (MRCItem
+litem &387
+pos 0
+dimension 20
+)
+*401 (MRCItem
+litem &389
+pos 1
+dimension 50
+)
+*402 (MRCItem
+litem &390
+pos 2
+dimension 100
+)
+*403 (MRCItem
+litem &391
+pos 3
+dimension 100
+)
+*404 (MRCItem
+litem &392
+pos 4
+dimension 50
+)
+*405 (MRCItem
+litem &393
+pos 5
+dimension 50
+)
+*406 (MRCItem
+litem &394
+pos 6
+dimension 80
+)
+]
+)
+fixedCol 3
+fixedRow 2
+name "Ports"
+vaOverrides [
+]
+)
+]
+)
+type 1
+)
+)
