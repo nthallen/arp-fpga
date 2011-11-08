@@ -56,8 +56,13 @@
 </v>
 </v>
 <v t="ntallen.20100525090916.1257" a="E"><vh>Development Plan</vh>
-<v t="ntallen.20100525090916.1259"><vh>Document Serial Protocol</vh></v>
+<v t="ntallen.20100525090916.1259"><vh>Document Serial Protocol</vh>
+<v t="ntallen.20110123092829.1413"><vh>Error Codes</vh></v>
+</v>
 <v t="ntallen.20100803111918.1303"><vh>IPC</vh></v>
+<v t="ntallen.20101102122701.1377"><vh>Syscon Features</vh>
+<v t="ntallen.20101102122701.1378"><vh>Tick</vh></v>
+</v>
 <v t="ntallen.20100525090916.1258"><vh>Done: Update Syscon</vh>
 <v t="ntallen.20100525090916.1263"><vh>Read Operation</vh></v>
 <v t="ntallen.20100525090916.1264"><vh>Write Operation</vh></v>
@@ -75,20 +80,22 @@
 <v t="ntallen.20100525090916.1260"><vh>Done: Implement Subbus Library</vh></v>
 <v t="ntallen.20101102122701.1375"><vh>Implement Subbus/Syscon Library</vh></v>
 <v t="ntallen.20100525090916.1261"><vh>Indexer: Simulated</vh></v>
-<v t="ntallen.20100525090916.1262" a="E"><vh>A/D VHDL: Simulated</vh>
+<v t="ntallen.20100525090916.1262"><vh>A/D VHDL: Simulated</vh>
+<v t="ntallen.20110331101033.1427"><vh>Rework 110331</vh></v>
 <v t="ntallen.20101013150328.1339"><vh>Convert Clock</vh></v>
 <v t="ntallen.20101013150328.1340"><vh>A/D =&gt; RAM</vh></v>
 <v t="ntallen.20101013150328.1341"><vh>RAM =&gt; Front End</vh></v>
 <v t="ntallen.20101013150328.1342"><vh>Subbus RW</vh></v>
 <v t="ntallen.20101013150328.1343"><vh>RAM Configuration</vh>
-<v t="ntallen.20101014082117.1355"><vh>Simply Dual-ported RAM</vh></v>
+<v t="ntallen.20101014082117.1355"><vh>Simple Dual-ported RAM</vh></v>
 <v t="ntallen.20101014082117.1357"><vh>ana_ram</vh></v>
 </v>
 <v t="ntallen.20101013150328.1344"><vh>Basic Operation</vh></v>
 <v t="ntallen.20101013150328.1345"><vh>Enhanced Operations</vh>
 <v t="ntallen.20101013150328.1346"><vh>Configuration Readback</vh></v>
 </v>
-<v t="ntallen.20101019142341.1359" a="E"><vh>Design Hierarchy</vh>
+<v t="ntallen.20101019142341.1359"><vh>Design Hierarchy</vh>
+<v t="ntallen.20110122074609.1411"><vh>ana_addr</vh></v>
 <v t="ntallen.20101022104642.1372"><vh>ana_subbus</vh></v>
 <v t="ntallen.20110118143100.1403"><vh>ana_data_ram</vh>
 <v t="ntallen.20110118143100.1404"><vh>ana_data_rd</vh></v>
@@ -97,8 +104,8 @@
 <v t="ntallen.20110118143100.1405"><vh>ana_cfg_ram</vh>
 <v t="ntallen.20101019142341.1363"></v>
 </v>
-<v t="ntallen.20101022104642.1371" a="E"><vh>ana_hwside</vh>
-<v t="ntallen.20101019142341.1364" a="E"><vh>ana_acquire</vh>
+<v t="ntallen.20101022104642.1371"><vh>ana_hwside</vh>
+<v t="ntallen.20101019142341.1364"><vh>ana_acquire</vh>
 <v t="ntallen.20110118143100.1406"><vh>sub-muxing</vh></v>
 </v>
 <v t="ntallen.20101019142341.1362"><vh>ana_s16</vh></v>
@@ -112,9 +119,18 @@
 <v t="ntallen.20100920151402.1336"><vh>Basic Specs</vh></v>
 </v>
 <v t="ntallen.20101102122701.1376"><vh>D/A VHDL</vh></v>
-<v t="ntallen.20101102122701.1377"><vh>Syscon Features</vh>
-<v t="ntallen.20101102122701.1378"><vh>Tick</vh></v>
+<v t="ntallen.20110203162516.1415" a="E"><vh>PTRH</vh>
+<v t="ntallen.20110418174231.1430"><vh>I2C</vh></v>
+<v t="ntallen.20110203162516.1416"><vh>SHT21</vh></v>
+<v t="ntallen.20110203162516.1417"><vh>MS5607</vh></v>
+<v t="ntallen.20110206160145.1421"><vh>Overall Sequence</vh></v>
+<v t="ntallen.20110207112658.1424"><vh>Status Word</vh></v>
+<v t="ntallen.20110419111719.1433"><vh>PTRH DPRAMS</vh></v>
+<v t="ntallen.20111025151610.1437"><vh>I2C_SM</vh></v>
 </v>
+<v t="ntallen.20111024112337.1435"><vh>PTRH MUX</vh></v>
+<v t="ntallen.20110227134141.1425"><vh>Counters</vh></v>
+<v t="ntallen.20110418174231.1429"><vh>LTC4151</vh></v>
 </v>
 <v t="ntallen.20100823102718.1327"><vh>Documentation</vh>
 <v t="ntallen.20100525090916.1259"></v>
@@ -199,9 +215,13 @@ Devices /dev/serusb1 and /dev/serusb2 show up.
 The read logic is faulty, since it resets EXPRD before reading in the data (which is not latched in hardware)</t>
 <t tx="ntallen.20100525090916.1259">&lt;hex16&gt; : [0-9A-F]{4}
 &lt;addr&gt; : &lt;hex16&gt;
+&lt;addr_list&gt; : &lt;addr_list_elt&gt;
+            : &lt;addr_list&gt; ',' &lt;addr_list_elt&gt;
+&lt;addr_list_elt&gt; : &lt;addr&gt; [ ':' &lt;addr&gt; ':' &lt;addr&gt; ]
 &lt;data&gt; : &lt;hex16&gt;
 &lt;cmdline&gt; : &lt;cmd&gt; '\n'
 &lt;bit&gt; : '0' | '1'
+&lt;multi_resp&gt; : ( [ 'M' | 'm' ] &lt;data&gt; )+
 &lt;cmd&gt; :
     R &lt;addr&gt;    // Read: response codes: RrE
     W &lt;addr&gt; : &lt;data&gt;  // Write: response codes: WwE
@@ -212,6 +232,7 @@ The read logic is faulty, since it resets EXPRD before reading in the data (whic
     I &lt;digit&gt; : &lt;addr&gt; // Define and enable Interrupt: response: i &lt;digit&gt;
     I &lt;digit&gt;  // Undefine and disable Interrupt: response: i &lt;digit&gt;
     ''         // NOP: response code: 0
+    M &lt;addr_list&gt;
     D          // Read switches: response: D&lt;data&gt; | E&lt;digit&gt; (no switches)
     F &lt;data&gt;   // Set failure: response: F | E
     F          // Read failure: response F &lt;data&gt; | E
@@ -231,6 +252,7 @@ Responses:
     D &lt;data&gt; '\n'  // Switch data
     E &lt;digit&gt; '\n' // Error--not obviously associated with a specific request
     F &lt;data&gt; '\n'  // Failure status
+    &lt;multi_resp&gt; '\n'
 
 B - Board Logical Reset: issue hardware reset to syscon, disable all interrupts.
     Does *not* reset the two-minute timer. (that's what "tick" does.) The reason for
@@ -590,7 +612,11 @@ Note: whoever does generate the CS output must ensure the setup time requirement
  t3 = CS/ to SCK/ min 50 ns setup
  t7 = SCK to CS min 50 ns hold
 
-ana_s5s stores the configuration data when it is read from the ana_cfg_ram.</t>
+ana_s5s stores the configuration data when it is read from the ana_cfg_ram.
+I provide a 2-element FIFO here for two reasons:
+    1: To make up the 2-column difference between read and write in ana_hwside
+    2: To store up to two cfg values, since we need to store two at the end
+       of each row.</t>
 <t tx="ntallen.20101019142341.1361">State machine for clocking out configuration bits and generating the configuration clock.</t>
 <t tx="ntallen.20101019142341.1362">State machine for clocking in data from A/D. Like ana_s5s, operates on the word level.</t>
 <t tx="ntallen.20101019142341.1363">Encapsulation of BRAM block for use in simple dual ported RAM mode.
@@ -606,6 +632,16 @@ into either ana_data_ram or ana_cfg_ram.
 
 1/18/11: Switching BRAM_SIZE back to 36Kb (was 18Kb) just to make sure
 I'm abiding by Xilinx's restrictions.
+
+1/27/11: Odd: I think despite the comments in the BRAM_SDP_MACRO instantiation
+template, the 36Kb option apparently failed. I'm going to try 9Kb, which
+seems to make sense unless they need 2X as much storage for DP.
+All this effort is pointed at getting initialization sorted out.
+
+With BRAM_SIZE at 9Kb, we only need INIT_00-1F
+
+Setting a non-zero INIT_ value does not seem to work during simulation. Probably I'm not using
+the correct libraries.
 </t>
 <t tx="ntallen.20101019142341.1364">State machine generating control signals to drive ana_s5, ana_s16.
       CLK    : IN     std_logic; 30 MHz max. S5.SCK is CLK/6. S16.SCK is CLK/2
@@ -799,5 +835,231 @@ is assembled as: X"D" &amp; maddr &amp; bank &amp; Row(5 downto 3)
 
 #### Since the RAMaddr is generated by ana_acquire, it needs to have at least the
 mux configuration bits that are cached by ana_hwside.</t>
+<t tx="ntallen.20110122074609.1411">In order to make the hwside a little simpler, I permute the write address for
+configuration data so it comes out one row and two columns before the data
+converted data is recorded.</t>
+<t tx="ntallen.20110123092829.1413">E1: Unrecognized Command
+E2: Receive Timeout
+E3: Command Syntax Error
+E4: Invalid Interrupt Request
+E8: Serial request too long
+E10: Internal contradiction
+E11: No ACK on INTA
+</t>
+<t tx="ntallen.20110203162516.1415">This device will present a read-only interface to the subbus. On the back side
+we will have an engine driving an I2C interface to poll the SHT21 (RH/T) and the
+MS5607 (P/T)
+
+0  0300	R	Status
+1  0302	R	SHT21 Temperature
+2  0304	R	SHT21 Relative Humidity
+3  0306	R	MS5607 Coefficient 1
+4  0308	R	MS5607 Coefficient 2
+5  030A	R	MS5607 Coefficient 3
+6  030C	R	MS5607 Coefficient 4
+7  030E	R	MS5607 Coefficient 5
+8  0310	R	MS5607 Coefficient 6
+9  0312	R	MS5607 D1(15:0)
+10 0314	R	MS5607 D1(23:16)
+11 0316	R	MS5607 D2(15:0)
+12 0318	R	MS5607 D2(23:16)
+
+Why am I using the 25MHz clock on the back side? I2C is not fast, and timing issues might be much
+easier without dealing with cross-clock stuff.</t>
+<t tx="ntallen.20110203162516.1416">I2C Address is 1000000
+
+We could issue a soft reset (11111110) on startup for good measure
+Soft reset takes less that 15 ms
+
+Present as two 16-bit words:
+
+Trigger T measurement hold master (11100011)
+  Read three bytes (MSB, LSB, Checksum)
+  Store two
+Trigger RH measurement hold master (11100101)
+  Read three bytes (MSB, LSB, Checksum)
+  Store two
+</t>
+<t tx="ntallen.20110203162516.1417">Device has 6 16-bit configuration words in ROM. We want to read these
+once on startup, then just read the P and T values.
+
+The Reset sequence (0x1E) shall be sent once after power-on to make sure that the
+I2C Address is 0xEE
+
+calibration PROM gets loaded into the internal register.
+
+After requesting a conversion, there is no direct indication when the
+conversion is complete. The data sheet says you have to wait for the
+conversion to complete or you will corrupt the value, so presumably
+we will just have to wait long enough by counting clocks.
+
+Initialization:
+    Wr Soft Reset (0x1E)
+    Wait 2.8ms for reload
+    Read configuration words and store
+    Wr Prom Read 0 (0xA0)
+    Rd Two bytes, store
+    Wr Prom Read 1 (0xA2)
+    Rd Two bytes, store
+    ...
+    Wr Prom Read 6 (0xAC)
+    Rd Two bytes, store
+
+Sampling:
+    Wr Convert D1 (P) (OSR=4096) 0x48
+    Wait 9.04 ms
+    Wr ADC Read 0x00
+    Rd Three bytes, store
+    Wr Convert D2 (T) (OSR=4096) 0x58
+    Wait 9.04 ms
+    Wr ADC Read 0x00
+    Rd Three bytes, store</t>
+<t tx="ntallen.20110206160145.1421">Initialization:
+    SHT21 Reset:
+        Wr 1000000 0xFE Stop -- require 15 ms
+    MS5607 Initialization:
+        Wr Soft Reset (1110111 0x1E)
+        Wait 2.8ms for reload
+        Read configuration words and store
+        Wr Prom Read 1 (0xA2)
+        Rd Two bytes, store
+        Wr Prom Read 2 (0xA4)
+        Rd Two bytes, store
+        ...
+        Wr Prom Read 6 (0xAC)
+        Rd Two bytes, store
+        
+        Each Write/Rd two byte sequence takes less than 500 us
+        This entire read sequence takes 45*6*10us = 2.7ms
+        Together with the reset delay we get 2.7 ms + 2.8 ms = 5.5 ms
+        So we need to wait another 10 ms for the SHT21 to finish
+
+Acquisition:
+    SHT21:
+        Trigger T measurement hold master (11100011)
+        Read three bytes (MSB, LSB, Checksum) Store two
+            Default T resolution is 14 bits
+            Maximum conversion time for 14 bits is 85 ms
+        Trigger RH measurement hold master (11100101)
+        Read three bytes (MSB, LSB, Checksum) Store two
+            Default RH resolution is 12 bits
+            Maximum conversion time for 12 bits is 29 ms
+        
+    MS5607:
+        Wr Convert D1 (P) (OSR=4096) 0x48
+        Wait 9.04 ms
+        Wr ADC Read 0x00
+        Rd Three bytes, store
+        
+        Wr Convert D2 (T) (OSR=4096) 0x58
+        Wait 9.04 ms
+        Wr ADC Read 0x00
+        Rd Three bytes, store</t>
+<t tx="ntallen.20110207112658.1424">00: SHT21 Reset Acknowledge
+01: MS5607 Reset Acknowledge
+02: MS5607 Config 1
+03: MS5607 Config 2
+04: MS5607 Config 3
+05: MS5607 Config 4
+06: MS5607 Config 5
+07: MS5607 Config 6
+08: SHT21 T
+09: SHT21 RH
+10: MS5607 D1
+11: MS5607 D2
+
+
+</t>
+<t tx="ntallen.20110227134141.1425">Some are working great, others not.
+Three counters:
+    Ctr0: 4th input is reading lots of counts. Probably not terminated
+    Ctr1: OK?
+    Ctr2: Nothing reads right, not even status</t>
+<t tx="ntallen.20110331101033.1427">March 31, 2011
+AI circuit is freezing in flight. Instrumentation indicates ana_acquire is getting
+stuck in acq_... (bit 4) indicating that there is a problem with the handshaking
+between ana_acquire and the ana_s16 and/or ana_s5s state machines. I think this
+may be tied into the possible timing variations introduced by the RAM arbitration
+scheme which was left somewhat less than robust.
+
+We need to sort out the arbitration with RAM and the handshaking between the different
+state machines. The current design makes certain assumptions that apparently are false.
+Specifically, ana_acquire assumes that if it gets a Rdy_In signal, it can set start
+for one clock and it will 
+
+April 2011
+
+After the careful redesign, the engine no longer freezes up, but it does exhibit a
+tendency to get into a mode where seemingly random data values are reported. This
+has been shown to be due to the fact that the first word or two of data is not
+being properly shifted out of the A/Ds, resulting in data from other columns
+being reported with a bit shift.
+
+Currently testing an implementation where I use the existing design but specify that
+the FSM be implemented using one-hot encoding instead of the default (which was gray).
+
+This seems to have improved performance on the bench with the HTW DACS. We will see
+how it works in flight today on HWV.</t>
+<t tx="ntallen.20110418174231.1429">Want to read Current and Voltage
+Use "Read Page" to get 4 bytes from each of two chips on the bus.
+
+CE Need to check these two addresses against Marco's pullups.
+D0
+
+Write register #(0) to address CE, then read 2 bytes
+Write register #(2) to address CE, then read 2 bytes
+Write register #(0) to address D0, then read 2 bytes
+Write register #(2) to address D0, then read 2 bytes
+
+Use PTRH DPRAM to store values relative to BASE_ADDRESS
+0 Status
+2 I1  CE:0,1
+4 V1  CE:2,3
+6 I2  D0:0,1
+8 V2  D0:2,3
+
+Status word
+
+0: I1 valid
+1: V1 valid
+2: I2 valid
+3: V2 valid
+4: Timeout</t>
+<t tx="ntallen.20110418174231.1430">I2C initialization requires programming the clock prescale register.
+In the first implementation, I am writing out "002D" for a prescale value of 45.
+According to the formula, that should give me an SCL frequency of around 109 KHz,
+In simulation, it gives me something close to 99 KHz.
+What does it measure?
+
+If I switch to 8MHz, the prescale value should be "000E" (based on simulation ratios)
+</t>
+<t tx="ntallen.20110419111719.1433">This block serves as cache memory. Data is read from the PTRH devices
+and written to the DPRAM, then read on the subbus side.
+In the original design, it also served as a clock synchronization
+barrier. I am investigating how it might need to be changed if
+the clocks do not require synchronization.
+
+Each DPRAM serves as a mini FIFO, and it's really independent of
+clock rates. They can be independent or synchronous, and it
+should still work and serve a useful function.</t>
+<t tx="ntallen.20111024112337.1435">For Carbon, we are looking at muxing multiple PTRH modules using a
+TI PCA9548A 8-channel I2C Switch. This has many implications:
+    Since each PTRH currently reports 13 words of data, if we
+    end up with 15 of them, that's a lot of address space.
+    Half that data only needs to be read on startup.
+In the interest of optimization, I want to rearrange the PTRH
+    data so the acquisition data is contiguous
+    
+I'm looking at 32 addrs/PTRH and 8 PTRH boards total.
+That's a round 100H. Could go up to 16 PTRH boards within
+that same footprint if I adopted a paged architecture.
+</t>
+<t tx="ntallen.20111025151610.1437">Provides routines at a slightly higher level than the wishbone I2C.
+It supports writes of addr and data and reads of 2 and 3 bytes from
+a specified address.
+
+I propose adding some of the looping constructs such as (De)SelectAll
+and PTRH.Select. It would have to know about the PTRH definitions and
+ESID definitions.</t>
 </tnodes>
 </leo_file>
