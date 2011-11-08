@@ -34,7 +34,7 @@ END i2c_half_switch ;
 --
 ARCHITECTURE syn OF i2c_half_switch IS
 BEGIN
-  ipad : Process (pad_o, padoen_o, pad) Is
+  ipad : Process (pad_o, padoen_o, pad, En) Is
   Begin
     pad_i <= '1';
     if padoen_o = '0' AND pad_o = '0' then

@@ -18,7 +18,7 @@ ENTITY ptrh_addr IS
    PORT( 
       Addr  : IN     std_logic_vector (15 DOWNTO 0);
       BdEn  : OUT    std_ulogic;
-      RegEn : OUT    std_logic_vector (12 DOWNTO 0)
+      RegEn : OUT    std_ulogic_vector (12 DOWNTO 0)
    );
 
 -- Declarations
@@ -27,7 +27,7 @@ END ptrh_addr ;
 
 --
 ARCHITECTURE beh OF ptrh_addr IS
-  SIGNAL RegEn_int : std_logic_vector(12 DOWNTO 0);
+  SIGNAL RegEn_int : std_ulogic_vector(12 DOWNTO 0);
 BEGIN
   decode : Process (Addr, RegEn_int ) Is
   Begin

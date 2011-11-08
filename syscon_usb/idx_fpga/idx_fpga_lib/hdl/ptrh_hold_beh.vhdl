@@ -13,11 +13,12 @@ USE ieee.std_logic_arith.all;
 
 ENTITY ptrh_hold IS
    PORT( 
-      En0  : IN     std_logic;
-      En1  : IN     std_logic;
+      En0  : IN     std_ulogic;
+      En1  : IN     std_ulogic;
       F8M  : IN     std_ulogic;
       RdEn : IN     std_ulogic;
-      hold : OUT    std_logic  := '0'
+      hold : OUT    std_logic;
+      rst  : IN     std_ulogic
    );
 
 -- Declarations
@@ -30,7 +31,9 @@ BEGIN
   hold_p : Process (F8M) IS
   Begin
     if F8M'Event AND F8M = '1' then
-      if RdEn = '1' AND En0 = '1' then
+      if rst = '1' then
+        hold <= '0';
+      elsif RdEn = '1' AND En0 = '1' then
         hold <= '1';
       elsif RdEn = '1' AND En1 = '1' then
         hold <= '0';

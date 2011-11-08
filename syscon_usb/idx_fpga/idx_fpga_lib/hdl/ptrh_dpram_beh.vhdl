@@ -10,6 +10,7 @@
 LIBRARY ieee;
 USE ieee.std_logic_1164.all;
 USE ieee.std_logic_arith.all;
+LIBRARY idx_fpga_lib;
 
 ENTITY ptrh_dpram IS
    PORT( 

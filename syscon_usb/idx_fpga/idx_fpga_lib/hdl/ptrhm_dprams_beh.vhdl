@@ -12,7 +12,7 @@
 LIBRARY ieee;
 USE ieee.std_logic_1164.all;
 USE ieee.std_logic_arith.all;
---LIBRARY idx_fpga_lib;
+LIBRARY idx_fpga_lib;
 --USE idx_fpga_lib.All;
 
 ENTITY ptrhm_dprams IS
@@ -21,8 +21,9 @@ ENTITY ptrhm_dprams IS
   );
   PORT (
     F8M     : IN     std_ulogic;
+    rst     : IN     std_ulogic;
     RdEn    : IN     std_ulogic;
-    RegEn   : IN     std_logic_vector(12 DOWNTO 0);
+    RegEn   : IN     std_ulogic_vector(12 DOWNTO 0);
     PTRHEn  : IN     std_ulogic_vector(N_PTRH-1 DOWNTO 0);
     WrEn    : IN     std_ulogic_vector(12 DOWNTO 0);
     WrPTRHEn: IN     std_ulogic_vector(N_PTRH-1 DOWNTO 0);
@@ -35,26 +36,27 @@ END ptrhm_dprams;
 ARCHITECTURE beh OF ptrhm_dprams IS
    type iRData_t is array (N_PTRH-1 DOWNTO 0) of std_logic_vector(15 DOWNTO 0);
    SIGNAL iRData : iRData_t;
-   type PTRHRegEn_t is array (N_PTRH-1 DOWNTO 0) of std_logic_vector(12 DOWNTO 0);
+   type PTRHRegEn_t is array (N_PTRH-1 DOWNTO 0) of std_ulogic_vector(12 DOWNTO 0);
    SIGNAL PTRHRegEn : PTRHRegEn_t;
-   SIGNAL WrRegEn : PTRHRegEn_t;
-   SIGNAL hold_D1   : std_logic_vector(N_PTRH-1 DOWNTO 0);
-   SIGNAL hold_D2   : std_ulogic;
-   SIGNAL Full      : std_ulogic_vector(12 DOWNTO 0);
+   SIGNAL WrRegEn   : PTRHRegEn_t;
+   SIGNAL hold_D1   : std_ulogic_vector(N_PTRH-1 DOWNTO 0);
+   SIGNAL hold_D2   : std_ulogic_vector(N_PTRH-1 DOWNTO 0);
+   SIGNAL Full_int  : PTRHRegEn_t;
    COMPONENT ptrh_hold
       PORT (
-         En0  : IN     std_logic;
-         En1  : IN     std_logic;
+         En0  : IN     std_ulogic;
+         En1  : IN     std_ulogic;
          F8M  : IN     std_ulogic;
          RdEn : IN     std_ulogic;
-         hold : OUT    std_logic  := '0'
+         hold : OUT    std_logic;
+         rst  : IN     std_ulogic
       );
    END COMPONENT;
    COMPONENT ptrh_dprams
       PORT (
          F8M     : IN     std_ulogic;
          RdEn    : IN     std_ulogic;
-         RegEn   : IN     std_logic_vector(12 DOWNTO 0);
+         RegEn   : IN     std_ulogic_vector(12 DOWNTO 0);
          WrEn    : IN     std_ulogic_vector(12 DOWNTO 0);
          hold_D1 : IN     std_ulogic;
          hold_D2 : IN     std_ulogic;
@@ -73,7 +75,8 @@ BEGIN
         En1  => PTRHRegEn(i)(10),
         F8M  => F8M,
         RdEn => RdEn,
-        hold => hold_D1(i)
+        hold => hold_D1(i),
+        rst  => rst
       );
     D2 : ptrh_hold
       PORT MAP (
@@ -81,7 +84,8 @@ BEGIN
         En1  => PTRHRegEn(i)(12),
         F8M  => F8M,
         RdEn => RdEn,
-        hold => hold_D2(i)
+        hold => hold_D2(i),
+        rst  => rst
       );
     dprams : ptrh_dprams
       PORT MAP (
@@ -92,7 +96,7 @@ BEGIN
         hold_D1 => hold_D1(i),
         hold_D2 => hold_D2(i),
         wData   => wData,
-        Full    => Full,
+        Full    => Full_int(i),
         rData   => irData(i)
       );
   end generate;
