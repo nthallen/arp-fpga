@@ -148,7 +148,7 @@ port (LogicalPort
 m 1
 decl (Decl
 n "i2c_wdata"
-t "std_ulogic_vector"
+t "std_logic_vector"
 b "(7 DOWNTO 0)"
 o 13
 suid 39,0
@@ -173,7 +173,8 @@ uid 472,0
 port (LogicalPort
 decl (Decl
 n "PTRHn"
-t "PTRHn_t"
+t "std_logic_vector"
+b "(2 DOWNTO 0)"
 o 1
 suid 41,0
 )
@@ -255,7 +256,7 @@ uid 486,0
 port (LogicalPort
 decl (Decl
 n "sw_wdata"
-t "std_ulogic_vector"
+t "std_logic_vector"
 b "(7 DOWNTO 0)"
 o 9
 suid 48,0
@@ -521,7 +522,7 @@ tm "GenericEolColHdrMgr"
 generic (GiElement
 name "N_ISBITS"
 type "integer"
-value "N_ISBITS"
+value "4"
 )
 uid 560,0
 )
@@ -529,7 +530,7 @@ uid 560,0
 generic (GiElement
 name "ESID"
 type "ESID_array"
-value "ESID"
+value "( 3, 2, 1, 0, 0, 0, 0, 0 )"
 )
 uid 562,0
 )
@@ -537,7 +538,7 @@ uid 562,0
 generic (GiElement
 name "ISwitchBit"
 type "ISB_array"
-value "ISwitchBit"
+value "( 3, 2, 1, 0 )"
 )
 uid 564,0
 )
@@ -545,7 +546,7 @@ uid 564,0
 generic (GiElement
 name "ESwitchAddr"
 type "ESA_array"
-value "ESwitchAddr"
+value "( \"0000000\", \"0000000\", \"0000000\", \"1110000\" )"
 )
 uid 566,0
 )
@@ -553,7 +554,7 @@ uid 566,0
 generic (GiElement
 name "ESwitchBit"
 type "ESB_array"
-value "ESwitchBit"
+value "( 0, 0, 0, 4, 3, 2, 1, 0 )"
 )
 uid 568,0
 )
@@ -748,19 +749,19 @@ value "C:\\HDS\\idx_fpga\\idx_fpga_lib\\hds\\ptrhm_sw_sm"
 )
 (vvPair
 variable "date"
-value "11/ 7/2011"
+value "11/10/2011"
 )
 (vvPair
 variable "day"
-value "Mon"
+value "Thu"
 )
 (vvPair
 variable "day_long"
-value "Monday"
+value "Thursday"
 )
 (vvPair
 variable "dd"
-value "07"
+value "10"
 )
 (vvPair
 variable "entity_name"
@@ -884,7 +885,7 @@ value "symbol"
 )
 (vvPair
 variable "time"
-value "15:57:45"
+value "10:35:16"
 )
 (vvPair
 variable "unit"
@@ -1224,14 +1225,14 @@ uid 412,0
 va (VaSet
 font "Courier New,8,0"
 )
-xt "44000,11600,71500,12400"
-st "i2c_wdata : OUT    std_ulogic_vector (7 DOWNTO 0) ;"
+xt "44000,11600,71000,12400"
+st "i2c_wdata : OUT    std_logic_vector (7 DOWNTO 0) ;"
 )
 thePort (LogicalPort
 m 1
 decl (Decl
 n "i2c_wdata"
-t "std_ulogic_vector"
+t "std_logic_vector"
 b "(7 DOWNTO 0)"
 o 13
 suid 39,0
@@ -1317,13 +1318,14 @@ uid 422,0
 va (VaSet
 font "Courier New,8,0"
 )
-xt "44000,2000,60000,2800"
-st "PTRHn     : IN     PTRHn_t  ;"
+xt "44000,2000,71000,2800"
+st "PTRHn     : IN     std_logic_vector (2 DOWNTO 0) ;"
 )
 thePort (LogicalPort
 decl (Decl
 n "PTRHn"
-t "PTRHn_t"
+t "std_logic_vector"
+b "(2 DOWNTO 0)"
 o 1
 suid 41,0
 )
@@ -1630,13 +1632,13 @@ uid 457,0
 va (VaSet
 font "Courier New,8,0"
 )
-xt "44000,8400,71500,9200"
-st "sw_wdata  : IN     std_ulogic_vector (7 DOWNTO 0) ;"
+xt "44000,8400,71000,9200"
+st "sw_wdata  : IN     std_logic_vector (7 DOWNTO 0) ;"
 )
 thePort (LogicalPort
 decl (Decl
 n "sw_wdata"
-t "std_ulogic_vector"
+t "std_logic_vector"
 b "(7 DOWNTO 0)"
 o 9
 suid 48,0
@@ -1688,14 +1690,14 @@ uid 15,0
 va (VaSet
 font "Courier New,8,0"
 )
-xt "-6000,7500,13500,13100"
+xt "-6000,7500,31500,13100"
 st "Generic Declarations
 
-N_ISBITS    integer    N_ISBITS     
-ESID        ESID_array ESID         
-ISwitchBit  ISB_array  ISwitchBit   
-ESwitchAddr ESA_array  ESwitchAddr  
-ESwitchBit  ESB_array  ESwitchBit   "
+N_ISBITS    integer    4                                               
+ESID        ESID_array ( 3, 2, 1, 0, 0, 0, 0, 0 )                      
+ISwitchBit  ISB_array  ( 3, 2, 1, 0 )                                  
+ESwitchAddr ESA_array  ( \"0000000\", \"0000000\", \"0000000\", \"1110000\" )  
+ESwitchBit  ESB_array  ( 0, 0, 0, 4, 3, 2, 1, 0 )                      "
 )
 header "Generic Declarations"
 showHdrWhenContentsEmpty 1
@@ -1704,27 +1706,27 @@ elements [
 (GiElement
 name "N_ISBITS"
 type "integer"
-value "N_ISBITS"
+value "4"
 )
 (GiElement
 name "ESID"
 type "ESID_array"
-value "ESID"
+value "( 3, 2, 1, 0, 0, 0, 0, 0 )"
 )
 (GiElement
 name "ISwitchBit"
 type "ISB_array"
-value "ISwitchBit"
+value "( 3, 2, 1, 0 )"
 )
 (GiElement
 name "ESwitchAddr"
 type "ESA_array"
-value "ESwitchAddr"
+value "( \"0000000\", \"0000000\", \"0000000\", \"1110000\" )"
 )
 (GiElement
 name "ESwitchBit"
 type "ESB_array"
-value "ESwitchBit"
+value "( 0, 0, 0, 4, 3, 2, 1, 0 )"
 )
 ]
 )
@@ -2377,6 +2379,6 @@ xt "42000,0,42000,0"
 tm "SyDeclarativeTextMgr"
 )
 )
-lastUid 637,0
+lastUid 2362,0
 activeModelName "Symbol:CDM"
 )
