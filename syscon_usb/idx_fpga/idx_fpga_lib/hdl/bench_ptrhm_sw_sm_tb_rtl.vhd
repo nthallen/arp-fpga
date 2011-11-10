@@ -21,7 +21,8 @@ ENTITY bench_ptrhm_sw_sm IS
       ESID        : ESID_array := ( 3, 2, 1, 0, 0, 0, 0, 0 );
       ISwitchBit  : ISB_array  := ( 3, 2, 1, 0 );
       ESwitchAddr : ESA_array  := ( "0000000", "0000000", "0000000", "1110000" );
-      ESwitchBit  : ESB_array  := ( 0, 0, 0, 4, 3, 2, 1, 0 )
+      ESwitchBit  : ESB_array  := ( 0, 0, 0, 4, 3, 2, 1, 0 );
+      N_PTRH      : integer    := 8
    );
 END bench_ptrhm_sw_sm;
 
@@ -49,7 +50,6 @@ ARCHITECTURE rtl OF bench_ptrhm_sw_sm IS
    SIGNAL i2c_rdata : std_ulogic_vector(23 DOWNTO 0);
    SIGNAL i2c_wdata : std_logic_vector(7 DOWNTO 0);
    SIGNAL ISwitch   : std_ulogic_vector(N_ISBITS-1 DOWNTO 0);
-   SIGNAL PTRHn     : std_logic_vector (2 DOWNTO 0);
    SIGNAL rst       : std_logic;
    SIGNAL sw_addr   : std_ulogic_vector(6 DOWNTO 0);
    SIGNAL sw_cmd    : ptrhm_i2c_op;
@@ -67,10 +67,10 @@ ARCHITECTURE rtl OF bench_ptrhm_sw_sm IS
       ESID        : ESID_array := ( 3, 2, 1, 0, 0, 0, 0, 0 );
       ISwitchBit  : ISB_array  := ( 3, 2, 1, 0 );
       ESwitchAddr : ESA_array  := ( "0000000", "0000000", "0000000", "1110000" );
-      ESwitchBit  : ESB_array  := ( 0, 0, 0, 4, 3, 2, 1, 0 )
+      ESwitchBit  : ESB_array  := ( 0, 0, 0, 4, 3, 2, 1, 0 );
+      N_PTRH      : integer    := 8
     );
     PORT( 
-      PTRHn     : IN     std_logic_vector (2 DOWNTO 0);
       clk       : IN     std_logic;
       done      : IN     std_ulogic;
       err       : IN     std_ulogic;
@@ -113,7 +113,6 @@ BEGIN
        i2c_rdata => i2c_rdata,
        i2c_wdata => i2c_wdata,
        ISwitch   => ISwitch,
-       PTRHn     => PTRHn,
        rst       => rst,
        sw_addr   => sw_addr,
        sw_cmd    => sw_cmd,
@@ -141,7 +140,6 @@ BEGIN
   testproc : Process Is
   Begin
     ClkDone <= '0';
-    PTRHn <= "000";
     done <= '0';
     err <= '0';
     i2c_rdata <= (others => '0');
@@ -197,9 +195,9 @@ BEGIN
       severity error;
 
     -- test SelectOne
-    for i in 7 downto 0 loop
+    for i in N_PTRH-1 downto 0 loop
       sw_cmd <= SelectOne;
-      PTRHn <= conv_std_logic_vector(i,3);
+      sw_wdata <= conv_std_logic_vector(i,8);
       wait until sw_done = '1' OR cmd = Write;
       -- assert which bit is set
       if cmd = Write then
@@ -216,6 +214,25 @@ BEGIN
         severity error;
     end loop;
     
+    -- test PTRHn >= N_PTRH
+    sw_cmd <= SelectOne;
+    sw_wdata <= conv_std_logic_vector(N_PTRH,8);
+    wait until sw_done = '1' OR sw_err = '1' OR cmd = Write;
+    if cmd = Write then
+      report "SelectOne(N_PTRH) should have delivered error"
+        severity error;
+      wait until clk'event AND clk = '1';
+      done <= '1';
+      wait until cmd = NOP;
+      done <= '0';
+      wait until sw_done = '1';
+    end if;
+    assert sw_err = '1'
+      report "SelectOne(N_PTRH) should have delivered error"
+      severity error;
+    sw_cmd <= NOP;
+    wait until sw_done = '0' AND sw_err = '0';
+  
     -- test Write
     sw_cmd <= Write;
     sw_addr <= "1010101";
