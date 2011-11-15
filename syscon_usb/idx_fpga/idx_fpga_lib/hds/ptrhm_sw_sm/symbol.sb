@@ -135,7 +135,7 @@ uid 466,0
 port (LogicalPort
 decl (Decl
 n "i2c_rdata"
-t "std_ulogic_vector"
+t "std_logic_vector"
 b "(23 DOWNTO 0)"
 o 4
 suid 38,0
@@ -232,7 +232,7 @@ port (LogicalPort
 m 1
 decl (Decl
 n "sw_rdata"
-t "std_ulogic_vector"
+t "std_logic_vector"
 b "(23 DOWNTO 0)"
 o 15
 suid 47,0
@@ -745,19 +745,19 @@ value "C:\\HDS\\idx_fpga\\idx_fpga_lib\\hds\\ptrhm_sw_sm"
 )
 (vvPair
 variable "date"
-value "11/10/2011"
+value "11/15/2011"
 )
 (vvPair
 variable "day"
-value "Thu"
+value "Tue"
 )
 (vvPair
 variable "day_long"
-value "Thursday"
+value "Tuesday"
 )
 (vvPair
 variable "dd"
-value "10"
+value "15"
 )
 (vvPair
 variable "entity_name"
@@ -881,7 +881,7 @@ value "symbol"
 )
 (vvPair
 variable "time"
-value "14:34:27"
+value "13:07:00"
 )
 (vvPair
 variable "unit"
@@ -948,7 +948,8 @@ va (VaSet
 font "Courier New,8,0"
 )
 xt "44000,2000,61000,2800"
-st "clk       : IN     std_logic  ;"
+st "clk       : IN     std_logic  ;
+"
 )
 thePort (LogicalPort
 decl (Decl
@@ -993,7 +994,8 @@ va (VaSet
 font "Courier New,8,0"
 )
 xt "44000,9200,62500,10000"
-st "cmd       : OUT    ptrhm_i2c_op  ;"
+st "cmd       : OUT    ptrhm_i2c_op  ;
+"
 )
 thePort (LogicalPort
 m 1
@@ -1039,7 +1041,8 @@ va (VaSet
 font "Courier New,8,0"
 )
 xt "44000,2800,61500,3600"
-st "done      : IN     std_ulogic  ;"
+st "done      : IN     std_ulogic  ;
+"
 )
 thePort (LogicalPort
 decl (Decl
@@ -1084,7 +1087,8 @@ va (VaSet
 font "Courier New,8,0"
 )
 xt "44000,3600,61500,4400"
-st "err       : IN     std_ulogic  ;"
+st "err       : IN     std_ulogic  ;
+"
 )
 thePort (LogicalPort
 decl (Decl
@@ -1129,7 +1133,8 @@ va (VaSet
 font "Courier New,8,0"
 )
 xt "44000,10000,71500,10800"
-st "i2c_addr  : OUT    std_ulogic_vector (6 DOWNTO 0) ;"
+st "i2c_addr  : OUT    std_ulogic_vector (6 DOWNTO 0) ;
+"
 )
 thePort (LogicalPort
 m 1
@@ -1175,13 +1180,14 @@ uid 407,0
 va (VaSet
 font "Courier New,8,0"
 )
-xt "44000,4400,72000,5200"
-st "i2c_rdata : IN     std_ulogic_vector (23 DOWNTO 0) ;"
+xt "44000,4400,71500,5200"
+st "i2c_rdata : IN     std_logic_vector (23 DOWNTO 0) ;
+"
 )
 thePort (LogicalPort
 decl (Decl
 n "i2c_rdata"
-t "std_ulogic_vector"
+t "std_logic_vector"
 b "(23 DOWNTO 0)"
 o 4
 suid 38,0
@@ -1222,7 +1228,8 @@ va (VaSet
 font "Courier New,8,0"
 )
 xt "44000,10800,71000,11600"
-st "i2c_wdata : OUT    std_logic_vector (7 DOWNTO 0) ;"
+st "i2c_wdata : OUT    std_logic_vector (7 DOWNTO 0) ;
+"
 )
 thePort (LogicalPort
 m 1
@@ -1269,7 +1276,8 @@ va (VaSet
 font "Courier New,8,0"
 )
 xt "44000,8400,76000,9200"
-st "ISwitch   : OUT    std_ulogic_vector (N_ISBITS-1 DOWNTO 0) ;"
+st "ISwitch   : OUT    std_ulogic_vector (N_ISBITS-1 DOWNTO 0) ;
+"
 )
 thePort (LogicalPort
 m 1
@@ -1315,7 +1323,8 @@ va (VaSet
 font "Courier New,8,0"
 )
 xt "44000,5200,61000,6000"
-st "rst       : IN     std_logic  ;"
+st "rst       : IN     std_logic  ;
+"
 )
 thePort (LogicalPort
 decl (Decl
@@ -1359,7 +1368,8 @@ va (VaSet
 font "Courier New,8,0"
 )
 xt "44000,6000,71500,6800"
-st "sw_addr   : IN     std_ulogic_vector (6 DOWNTO 0) ;"
+st "sw_addr   : IN     std_ulogic_vector (6 DOWNTO 0) ;
+"
 )
 thePort (LogicalPort
 decl (Decl
@@ -1404,7 +1414,8 @@ va (VaSet
 font "Courier New,8,0"
 )
 xt "44000,6800,62500,7600"
-st "sw_cmd    : IN     ptrhm_i2c_op  ;"
+st "sw_cmd    : IN     ptrhm_i2c_op  ;
+"
 )
 thePort (LogicalPort
 decl (Decl
@@ -1448,7 +1459,8 @@ va (VaSet
 font "Courier New,8,0"
 )
 xt "44000,11600,61500,12400"
-st "sw_done   : OUT    std_ulogic  ;"
+st "sw_done   : OUT    std_ulogic  ;
+"
 )
 thePort (LogicalPort
 m 1
@@ -1493,7 +1505,8 @@ va (VaSet
 font "Courier New,8,0"
 )
 xt "44000,12400,61500,13200"
-st "sw_err    : OUT    std_ulogic  ;"
+st "sw_err    : OUT    std_ulogic  ;
+"
 )
 thePort (LogicalPort
 m 1
@@ -1537,14 +1550,15 @@ uid 452,0
 va (VaSet
 font "Courier New,8,0"
 )
-xt "44000,13200,71000,14000"
-st "sw_rdata  : OUT    std_ulogic_vector (23 DOWNTO 0)"
+xt "44000,13200,70500,14000"
+st "sw_rdata  : OUT    std_logic_vector (23 DOWNTO 0)
+"
 )
 thePort (LogicalPort
 m 1
 decl (Decl
 n "sw_rdata"
-t "std_ulogic_vector"
+t "std_logic_vector"
 b "(23 DOWNTO 0)"
 o 15
 suid 47,0
@@ -1584,7 +1598,8 @@ va (VaSet
 font "Courier New,8,0"
 )
 xt "44000,7600,71000,8400"
-st "sw_wdata  : IN     std_logic_vector (7 DOWNTO 0) ;"
+st "sw_wdata  : IN     std_logic_vector (7 DOWNTO 0) ;
+"
 )
 thePort (LogicalPort
 decl (Decl
@@ -1649,8 +1664,7 @@ ESID        ESID_array ( 3, 2, 1, 0, 0, 0, 0, 0 )
 ISwitchBit  ISB_array  ( 3, 2, 1, 0 )                                  
 ESwitchAddr ESA_array  ( \"0000000\", \"0000000\", \"0000000\", \"1110000\" )  
 ESwitchBit  ESB_array  ( 0, 0, 0, 4, 3, 2, 1, 0 )                      
-N_PTRH      integer    8                                               
-"
+N_PTRH      integer    8                                               "
 )
 header "Generic Declarations"
 showHdrWhenContentsEmpty 1
@@ -2337,6 +2351,6 @@ xt "42000,0,42000,0"
 tm "SyDeclarativeTextMgr"
 )
 )
-lastUid 2550,0
+lastUid 2665,0
 activeModelName "Symbol:CDM"
 )

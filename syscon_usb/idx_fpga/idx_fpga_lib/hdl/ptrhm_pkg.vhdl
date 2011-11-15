@@ -16,5 +16,5 @@ PACKAGE ptrhm IS
   type ESID_array is array(integer range 7 downto 0) of integer;
   type ESB_array is array(integer range 7 downto 0) of integer range 7 downto 0;
   type ptrhm_i2c_op is (Init, NOP, SelectAll, DeselectAll, SelectOne,
-                         Write, WriteRead2, WriteRead3);
+                         Write, WriteRead2, WriteRead3, Read2);
 END ptrhm;
