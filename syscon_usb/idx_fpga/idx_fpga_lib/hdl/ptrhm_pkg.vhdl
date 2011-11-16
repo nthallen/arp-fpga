@@ -9,7 +9,6 @@
 --
 LIBRARY ieee;
 USE ieee.std_logic_1164.all;
-USE ieee.std_logic_arith.all;
 PACKAGE ptrhm IS
   type ISB_array is array (integer range 3 downto 0) of integer;
   type ESA_array is array (integer range 3 downto 0) of std_ulogic_vector(6 downto 0);
