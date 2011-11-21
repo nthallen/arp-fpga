@@ -25,7 +25,7 @@ ENTITY ptrhm_dprams IS
     RdEn    : IN     std_ulogic;
     RegEn   : IN     std_ulogic_vector(12 DOWNTO 0);
     PTRHEn  : IN     std_ulogic_vector(N_PTRH-1 DOWNTO 0);
-    WrEn    : IN     std_ulogic_vector(12 DOWNTO 0);
+    WrEn    : IN     std_logic_vector(12 DOWNTO 0);
     WrPTRHEn: IN     std_ulogic_vector(N_PTRH-1 DOWNTO 0);
     wData   : IN     std_logic_vector(23 DOWNTO 0);
     rData   : OUT    std_logic_vector(15 DOWNTO 0)
@@ -116,7 +116,7 @@ BEGIN
   Begin
     for i in N_PTRH-1 DOWNTO 0 loop
       if WrPTRHEn(i) = '1' then
-        WrRegEn(i) <= WrEn;
+        WrRegEn(i) <= To_StdULogicVector(WrEn);
       else
         WrRegEn(i) <= (others => '0');
       end if;

@@ -6,6 +6,19 @@ dmPackageRefs [
 library "ieee"
 unitName "std_logic_1164"
 )
+(DmPackageRef
+library "ieee"
+unitName "STD_LOGIC_ARITH"
+)
+(DmPackageRef
+library "ieee"
+unitName "STD_LOGIC_UNSIGNED"
+)
+(DmPackageRef
+library "idx_fpga_lib"
+unitName "all"
+itemName ""
+)
 ]
 machine (Machine
 name "csm"
@@ -20,6 +33,7 @@ stateSignalName "current_state"
 )
 libraryRefs [
 "ieee"
+"idx_fpga_lib"
 ]
 )
 version "25.1"
@@ -69,19 +83,19 @@ value "C:\\HDS\\idx_fpga\\idx_fpga_lib\\hds\\test_state"
 )
 (vvPair
 variable "date"
-value "11/15/2011"
+value "11/16/2011"
 )
 (vvPair
 variable "day"
-value "Tue"
+value "Wed"
 )
 (vvPair
 variable "day_long"
-value "Tuesday"
+value "Wednesday"
 )
 (vvPair
 variable "dd"
-value "15"
+value "16"
 )
 (vvPair
 variable "entity_name"
@@ -205,7 +219,7 @@ value "fsm"
 )
 (vvPair
 variable "time"
-value "13:23:09"
+value "10:15:20"
 )
 (vvPair
 variable "unit"
@@ -233,6 +247,7 @@ value "11"
 )
 ]
 )
+uid 259,0
 optionalChildren [
 *1 (ConcurrentSM
 uid 1,0
@@ -414,7 +429,7 @@ optionalChildren [
 uid 64,0
 sl 0
 ro 270
-xt "3250,10500,5500,11500"
+xt "6229,16937,8479,17937"
 )
 (OrthoPolyLine
 uid 65,0
@@ -423,19 +438,19 @@ ro 270
 va (VaSet
 vasetType 3
 )
-xt "4150,10700,4749,11300"
+xt "7129,17137,7728,17737"
 pts [
-"4150,11300"
-"4449,11300"
-"4449,10700"
-"4749,10700"
+"7129,17737"
+"7428,17737"
+"7428,17137"
+"7728,17137"
 ]
 )
 (Arc2D
 pts [
-"3759,11153"
-"3504,10847"
-"3759,10847"
+"6738,17590"
+"6483,17284"
+"6738,17284"
 ]
 uid 66,0
 sl 0
@@ -444,7 +459,7 @@ va (VaSet
 vasetType 1
 transparent 1
 )
-xt "3431,10800,3759,11199"
+xt "6410,17237,6738,17636"
 )
 ]
 )
@@ -456,10 +471,10 @@ uid 68,0
 va (VaSet
 font "arial,8,0"
 )
-xt "1450,10500,2750,11500"
+xt "4429,16937,5729,17937"
 st "clk"
 ju 2
-blo "2750,11300"
+blo "5729,17737"
 tm "SmControlSignalNameMgr"
 )
 )
@@ -473,7 +488,7 @@ vasetType 1
 fg "65535,65535,65535"
 lineColor "0,32768,49152"
 )
-xt "5500,10400,15300,11600"
+xt "8479,16837,18279,18037"
 )
 autoResize 1
 cond (MLText
@@ -481,7 +496,7 @@ uid 71,0
 va (VaSet
 font "arial,8,0"
 )
-xt "5600,10500,15200,11500"
+xt "8579,16937,18179,17937"
 st "clk'EVENT AND clk = '1'"
 tm "SmControlConditionMgr"
 )
@@ -500,7 +515,7 @@ optionalChildren [
 uid 74,0
 sl 0
 ro 270
-xt "3250,19500,5500,20500"
+xt "6229,25937,8479,26937"
 )
 (OrthoPolyLine
 uid 75,0
@@ -509,32 +524,32 @@ ro 270
 va (VaSet
 vasetType 3
 )
-xt "4150,19700,4749,20300"
+xt "7129,26137,7728,26737"
 pts [
-"4749,20300"
-"4449,20300"
-"4449,19700"
-"4150,19700"
+"7728,26737"
+"7428,26737"
+"7428,26137"
+"7129,26137"
 ]
 )
 (Line
 uid 76,0
 sl 0
 ro 270
-xt "3499,19825,3599,19875"
+xt "6478,26262,6578,26312"
 pts [
-"3499,19875"
-"3599,19825"
+"6478,26312"
+"6578,26262"
 ]
 )
 (Line
 uid 77,0
 sl 0
 ro 270
-xt "3499,19825,3499,20175"
+xt "6478,26262,6478,26612"
 pts [
-"3499,20175"
-"3499,19825"
+"6478,26612"
+"6478,26262"
 ]
 )
 (Circle
@@ -547,7 +562,7 @@ vasetType 1
 isHidden 1
 fg "65535,65535,0"
 )
-xt "4299,19850,4599,20150"
+xt "7278,26287,7578,26587"
 radius 150
 )
 ]
@@ -563,7 +578,7 @@ isHidden 1
 fg "65535,65535,65535"
 lineColor "0,32768,49152"
 )
-xt "3250,17900,6450,19100"
+xt "6229,24337,9429,25537"
 )
 autoResize 1
 cond (MLText
@@ -572,7 +587,7 @@ va (VaSet
 isHidden 1
 font "arial,8,0"
 )
-xt "3350,18000,6350,19000"
+xt "6329,24437,9329,25437"
 st "rst = '0'"
 tm "SmControlConditionMgr"
 )
@@ -588,7 +603,7 @@ isHidden 1
 fg "65535,65535,65535"
 bg "0,0,0"
 )
-xt "5500,19219,7062,20781"
+xt "8479,25656,10041,27218"
 radius 781
 )
 pr (Text
@@ -597,10 +612,10 @@ va (VaSet
 isHidden 1
 font "arial,8,0"
 )
-xt "5881,19500,6681,20500"
+xt "8860,25937,9660,26937"
 st "1"
 ju 0
-blo "6281,20300"
+blo "9260,26737"
 tm "TransitionPriority"
 )
 padding "100,100"
@@ -613,10 +628,10 @@ uid 80,0
 va (VaSet
 font "arial,8,0"
 )
-xt "1950,19500,3250,20500"
+xt "4929,25937,6229,26937"
 st "rst"
 ju 2
-blo "3250,20300"
+blo "6229,26737"
 tm "SmControlSignalNameMgr"
 )
 )
@@ -629,7 +644,7 @@ va (VaSet
 isHidden 1
 font "arial,8,0"
 )
-xt "11125,24125,16625,25125"
+xt "14104,30562,19604,31562"
 st "< Automatic >"
 tm "Actions"
 )
@@ -649,16 +664,16 @@ optionalChildren [
 uid 91,0
 sl 0
 ro 270
-xt "17000,19500,19250,20500"
+xt "19979,25937,22229,26937"
 )
 (Line
 uid 92,0
 sl 0
 ro 270
-xt "16500,20000,17000,20000"
+xt "19479,26437,19979,26437"
 pts [
-"16500,20000"
-"17000,20000"
+"19479,26437"
+"19979,26437"
 ]
 )
 ]
@@ -671,9 +686,9 @@ uid 94,0
 va (VaSet
 font "arial,8,1"
 )
-xt "19750,19500,20950,20500"
+xt "22729,25937,23929,26937"
 st "s0"
-blo "19750,20300"
+blo "22729,26737"
 tm "LinkName"
 )
 )
@@ -690,7 +705,7 @@ optionalChildren [
 (Circle
 uid 97,0
 sl 0
-xt "3250,14100,5050,15900"
+xt "6229,20537,8029,22337"
 radius 900
 )
 (Line
@@ -701,10 +716,10 @@ vasetType 3
 lineColor "65535,65535,0"
 lineWidth 1
 )
-xt "3724,14574,4576,15426"
+xt "6703,21011,7555,21863"
 pts [
-"3724,15426"
-"4576,14574"
+"6703,21863"
+"7555,21011"
 ]
 )
 (Line
@@ -715,10 +730,10 @@ vasetType 3
 lineColor "65535,65535,0"
 lineWidth 1
 )
-xt "3724,14574,4576,15426"
+xt "6703,21011,7555,21863"
 pts [
-"4576,15426"
-"3724,14574"
+"7555,21863"
+"6703,21011"
 ]
 )
 ]
@@ -738,16 +753,16 @@ optionalChildren [
 uid 102,0
 sl 0
 ro 270
-xt "17000,14500,19250,15500"
+xt "19979,20937,22229,21937"
 )
 (Line
 uid 103,0
 sl 0
 ro 270
-xt "16500,15000,17000,15000"
+xt "19479,21437,19979,21437"
 pts [
-"16500,15000"
-"17000,15000"
+"19479,21437"
+"19979,21437"
 ]
 )
 ]
@@ -760,9 +775,9 @@ uid 105,0
 va (VaSet
 font "arial,8,1"
 )
-xt "19750,14500,20950,15500"
+xt "22729,20937,23929,21937"
 st "s0"
-blo "19750,15300"
+blo "22729,21737"
 tm "LinkName"
 )
 )
@@ -1420,10 +1435,10 @@ uid 107,0
 va (VaSet
 vasetType 3
 )
-xt "5500,20000,16500,20000"
+xt "8479,26437,19479,26437"
 pts [
-"5500,20000"
-"16500,20000"
+"8479,26437"
+"19479,26437"
 ]
 )
 start &4
@@ -1442,7 +1457,7 @@ fg "65535,65535,65535"
 bg "0,0,0"
 lineColor "0,32768,49152"
 )
-xt "9000,19000,13000,21000"
+xt "11979,25437,15979,27437"
 )
 autoResize 1
 lineShape (Line
@@ -1450,10 +1465,10 @@ uid 110,0
 va (VaSet
 vasetType 3
 )
-xt "9500,20400,12500,20400"
+xt "12479,26837,15479,26837"
 pts [
-"9500,20400"
-"12500,20400"
+"12479,26837"
+"15479,26837"
 ]
 )
 condition (MLText
@@ -1461,7 +1476,7 @@ uid 111,0
 va (VaSet
 font "arial,8,0"
 )
-xt "9500,19000,12500,20000"
+xt "12479,25437,15479,26437"
 st "rst = '0'"
 tm "Condition"
 )
@@ -1471,7 +1486,7 @@ va (VaSet
 isHidden 1
 font "arial,8,0"
 )
-xt "8250,20800,13750,21800"
+xt "11229,27237,16729,28237"
 st "< Automatic >"
 tm "Actions"
 )
@@ -1487,7 +1502,7 @@ isHidden 1
 fg "65535,65535,65535"
 bg "0,0,0"
 )
-xt "5819,19219,7381,20781"
+xt "8798,25656,10360,27218"
 radius 781
 )
 pr (Text
@@ -1496,10 +1511,10 @@ va (VaSet
 isHidden 1
 font "arial,8,0"
 )
-xt "6200,19500,7000,20500"
+xt "9179,25937,9979,26937"
 st "1"
 ju 0
-blo "6600,20300"
+blo "9579,26737"
 tm "TransitionPriority"
 )
 padding "100,100"
@@ -1512,10 +1527,10 @@ uid 117,0
 va (VaSet
 vasetType 3
 )
-xt "5050,15000,16500,15000"
+xt "8029,21437,19479,21437"
 pts [
-"5050,15000"
-"16500,15000"
+"8029,21437"
+"19479,21437"
 ]
 )
 start &6
@@ -1534,7 +1549,7 @@ fg "65535,65535,65535"
 bg "0,0,0"
 lineColor "0,32768,49152"
 )
-xt "8575,14495,12975,15505"
+xt "11554,20932,15954,21942"
 )
 autoResize 1
 lineShape (Line
@@ -1543,10 +1558,10 @@ va (VaSet
 vasetType 3
 isHidden 1
 )
-xt "10775,15900,10775,15900"
+xt "13754,22337,13754,22337"
 pts [
-"10775,15900"
-"10775,15900"
+"13754,22337"
+"13754,22337"
 ]
 )
 condition (MLText
@@ -1554,7 +1569,7 @@ uid 121,0
 va (VaSet
 font "arial,8,0"
 )
-xt "9075,14500,12475,15500"
+xt "12054,20937,15454,21937"
 tm "Condition"
 )
 actions (MLText
@@ -1562,7 +1577,7 @@ uid 122,0
 va (VaSet
 font "arial,8,0"
 )
-xt "10775,15900,10775,15900"
+xt "13754,22337,13754,22337"
 tm "Actions"
 )
 )
@@ -1577,7 +1592,7 @@ isHidden 1
 fg "65535,65535,65535"
 bg "0,0,0"
 )
-xt "5414,14219,6976,15781"
+xt "8393,20656,9955,22218"
 radius 781
 )
 pr (Text
@@ -1586,10 +1601,10 @@ va (VaSet
 isHidden 1
 font "arial,8,0"
 )
-xt "5795,14500,6595,15500"
+xt "8774,20937,9574,21937"
 st "1"
 ju 0
-blo "6195,15300"
+blo "9174,21737"
 tm "TransitionPriority"
 )
 padding "100,100"
@@ -1809,9 +1824,13 @@ uid 35,0
 va (VaSet
 font "arial,8,0"
 )
-xt "0,4000,10900,6000"
+xt "0,4000,14800,10000"
 st "LIBRARY ieee;
-USE ieee.std_logic_1164.all;"
+USE ieee.std_logic_1164.all;
+USE ieee.STD_LOGIC_ARITH.all;
+USE ieee.STD_LOGIC_UNSIGNED.all;
+LIBRARY idx_fpga_lib;
+USE idx_fpga_lib.all;"
 tm "SmPackageListTextMgr"
 )
 ]
@@ -1892,8 +1911,8 @@ tm "SmCompilerDirectivesTextMgr"
 ]
 associable 1
 )
-windowSize "0,0,1016,690"
-viewArea "-500,-500,71140,48190"
+windowSize "128,102,1146,792"
+viewArea "-932,-1957,75739,50022"
 cachedDiagramExtent "0,-1000,68000,49000"
 hasePageBreakOrigin 1
 pageBreakOrigin "0,-2000"
@@ -2285,7 +2304,7 @@ stateOrder [
 name "csm"
 )
 ]
-lastUid 258,0
+lastUid 333,0
 commonDM (CommonDM
 ldm (LogicalDM
 emptyRow *53 (LEmptyRow
@@ -2561,6 +2580,7 @@ genericsCommonDM (CommonDM
 ldm (LogicalDM
 emptyRow *97 (LEmptyRow
 )
+uid 279,0
 optionalChildren [
 *98 (RefLabelRowHdr
 )
@@ -2597,6 +2617,7 @@ tm "GenericEolColHdrMgr"
 pdm (PhysicalDM
 displayShortBounds 1
 editShortBounds 1
+uid 291,0
 optionalChildren [
 *109 (Sheet
 sheetRow (SheetRow
@@ -2620,22 +2641,26 @@ litem &97
 pos 0
 dimension 20
 )
+uid 293,0
 optionalChildren [
 *111 (MRCItem
 litem &98
 pos 0
 dimension 20
+uid 294,0
 )
 *112 (MRCItem
 litem &99
 pos 1
 dimension 23
+uid 295,0
 )
 *113 (MRCItem
 litem &100
 pos 2
 hidden 1
 dimension 20
+uid 296,0
 )
 ]
 )
@@ -2646,52 +2671,62 @@ fontColor "0,0,0"
 font "Tahoma,10,0"
 textAngle 90
 )
+uid 297,0
 optionalChildren [
 *114 (MRCItem
 litem &101
 pos 0
 dimension 20
+uid 298,0
 )
 *115 (MRCItem
 litem &103
 pos 1
 dimension 50
+uid 299,0
 )
 *116 (MRCItem
 litem &104
 pos 2
 dimension 100
+uid 300,0
 )
 *117 (MRCItem
 litem &105
 pos 3
 dimension 100
+uid 301,0
 )
 *118 (MRCItem
 litem &106
 pos 4
 dimension 50
+uid 302,0
 )
 *119 (MRCItem
 litem &107
 pos 5
 dimension 50
+uid 303,0
 )
 *120 (MRCItem
 litem &108
 pos 6
 dimension 80
+uid 304,0
 )
 ]
 )
 fixedCol 3
 fixedRow 2
 name "Ports"
+uid 292,0
 vaOverrides [
 ]
 )
 ]
 )
+uid 278,0
 type 1
 )
 signalSuffix "_int"
@@ -3281,7 +3316,7 @@ va (VaSet
 vasetType 1
 transparent 1
 )
-xt "-371,972,-116,1278"
+xt "-441,926,-116,1323"
 )
 ]
 )
@@ -3358,7 +3393,7 @@ va (VaSet
 vasetType 1
 transparent 1
 )
-xt "-415,1064,-76,1263"
+xt "-425,943,-76,1304"
 )
 (Line
 sl 0
