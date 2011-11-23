@@ -47,7 +47,7 @@ ARCHITECTURE rtl OF bench_ptrhm_sw_sm IS
    SIGNAL done      : std_ulogic;
    SIGNAL err       : std_ulogic;
    SIGNAL i2c_addr  : std_ulogic_vector(6 DOWNTO 0);
-   SIGNAL i2c_rdata : std_ulogic_vector(23 DOWNTO 0);
+   SIGNAL i2c_rdata : std_logic_vector(23 DOWNTO 0);
    SIGNAL i2c_wdata : std_logic_vector(7 DOWNTO 0);
    SIGNAL ISwitch   : std_ulogic_vector(N_ISBITS-1 DOWNTO 0);
    SIGNAL rst       : std_logic;
@@ -55,7 +55,7 @@ ARCHITECTURE rtl OF bench_ptrhm_sw_sm IS
    SIGNAL sw_cmd    : ptrhm_i2c_op;
    SIGNAL sw_done   : std_ulogic;
    SIGNAL sw_err    : std_ulogic;
-   SIGNAL sw_rdata  : std_ulogic_vector(23 DOWNTO 0);
+   SIGNAL sw_rdata  : std_logic_vector(23 DOWNTO 0);
    SIGNAL sw_wdata  : std_logic_vector(7 DOWNTO 0);
    SIGNAL ClkDone   : std_ulogic;
 
@@ -74,7 +74,7 @@ ARCHITECTURE rtl OF bench_ptrhm_sw_sm IS
       clk       : IN     std_logic;
       done      : IN     std_ulogic;
       err       : IN     std_ulogic;
-      i2c_rdata : IN     std_ulogic_vector (23 DOWNTO 0);
+      i2c_rdata : IN     std_logic_vector (23 DOWNTO 0);
       rst       : IN     std_logic;
       sw_addr   : IN     std_ulogic_vector (6 DOWNTO 0);
       sw_cmd    : IN     ptrhm_i2c_op;
@@ -85,7 +85,7 @@ ARCHITECTURE rtl OF bench_ptrhm_sw_sm IS
       i2c_wdata : OUT    std_logic_vector (7 DOWNTO 0);
       sw_done   : OUT    std_ulogic;
       sw_err    : OUT    std_ulogic;
-      sw_rdata  : OUT    std_ulogic_vector (23 DOWNTO 0)
+      sw_rdata  : OUT    std_logic_vector (23 DOWNTO 0)
     );
   END COMPONENT;
 

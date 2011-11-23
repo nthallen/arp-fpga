@@ -102,19 +102,19 @@ value "C:\\HDS\\idx_fpga\\idx_fpga_lib\\hds\\ptrhm_sw_sm"
 )
 (vvPair
 variable "date"
-value "11/15/2011"
+value "11/23/2011"
 )
 (vvPair
 variable "day"
-value "Tue"
+value "Wed"
 )
 (vvPair
 variable "day_long"
-value "Tuesday"
+value "Wednesday"
 )
 (vvPair
 variable "dd"
-value "15"
+value "23"
 )
 (vvPair
 variable "entity_name"
@@ -238,7 +238,7 @@ value "fsm"
 )
 (vvPair
 variable "time"
-value "13:07:00"
+value "14:57:51"
 )
 (vvPair
 variable "unit"
@@ -2732,7 +2732,7 @@ fg "0,65535,65535"
 lineColor "0,32768,49152"
 lineWidth 2
 )
-xt "35548,-39559,41548,-33559"
+xt "52490,-39559,58490,-33559"
 radius 3000
 )
 name (Text
@@ -2740,10 +2740,10 @@ uid 840,0
 va (VaSet
 font "arial,10,1"
 )
-xt "37348,-37159,39748,-35959"
+xt "54290,-37159,56690,-35959"
 st "sa3"
 ju 0
-blo "38548,-36159"
+blo "55490,-36159"
 tm "ONodeName"
 )
 wait (TextAssociate
@@ -2756,9 +2756,9 @@ isHidden 1
 fg "0,0,32768"
 font "arial,10,1"
 )
-xt "38648,-36259,42248,-35059"
+xt "55590,-36259,59190,-35059"
 st "wait 2"
-blo "38648,-35259"
+blo "55590,-35259"
 tm "SmWaitText"
 )
 )
@@ -2768,8 +2768,8 @@ va (VaSet
 isHidden 1
 font "arial,8,1"
 )
-xt "38548,-35559,38548,-35559"
-blo "38548,-35559"
+xt "55490,-35559,55490,-35559"
+blo "55490,-35559"
 tm "SmEncodingMgr"
 )
 actionBlk (SmStateActionsBlock
@@ -2785,7 +2785,7 @@ bg "0,0,0"
 lineColor "39936,56832,65280"
 lineWidth -1
 )
-xt "42448,-33459,42648,-33259"
+xt "59390,-33459,59590,-33259"
 )
 autoResize 1
 tline (Line
@@ -2796,10 +2796,10 @@ isHidden 1
 lineColor "39936,56832,65280"
 lineWidth -1
 )
-xt "38548,-36559,38548,-36559"
+xt "55490,-36559,55490,-36559"
 pts [
-"38548,-36559"
-"38548,-36559"
+"55490,-36559"
+"55490,-36559"
 ]
 )
 bline (Line
@@ -2810,10 +2810,10 @@ isHidden 1
 lineColor "39936,56832,65280"
 lineWidth -1
 )
-xt "38548,-36559,38548,-36559"
+xt "55490,-36559,55490,-36559"
 pts [
-"38548,-36559"
-"38548,-36559"
+"55490,-36559"
+"55490,-36559"
 ]
 )
 ttri (Triangle
@@ -2827,7 +2827,7 @@ bg "0,0,0"
 lineColor "39936,56832,65280"
 lineWidth -1
 )
-xt "38098,-36734,38448,-36384"
+xt "55040,-36734,55390,-36384"
 )
 btri (Triangle
 uid 851,0
@@ -2840,14 +2840,14 @@ bg "0,0,0"
 lineColor "39936,56832,65280"
 lineWidth -1
 )
-xt "38098,-36734,38448,-36384"
+xt "55040,-36734,55390,-36384"
 )
 entryActions (MLText
 uid 852,0
 va (VaSet
 font "arial,8,0"
 )
-xt "38548,-36559,38548,-36559"
+xt "55490,-36559,55490,-36559"
 tm "Actions"
 )
 inActions (MLText
@@ -2855,7 +2855,7 @@ uid 853,0
 va (VaSet
 font "arial,8,0"
 )
-xt "38548,-36559,38548,-36559"
+xt "55490,-36559,55490,-36559"
 tm "Actions"
 )
 exitActions (MLText
@@ -2863,7 +2863,7 @@ uid 854,0
 va (VaSet
 font "arial,8,0"
 )
-xt "38548,-36559,38548,-36559"
+xt "55490,-36559,55490,-36559"
 tm "Actions"
 )
 )
@@ -2876,7 +2876,7 @@ va (VaSet
 isHidden 1
 font "arial,8,1"
 )
-xt "36948,-35559,41948,-34559"
+xt "53890,-35559,58890,-34559"
 st "CASE: expr"
 tm "SmCaseExpr"
 )
@@ -3350,7 +3350,7 @@ font "arial,8,0"
 xt "53983,-33047,80483,-24047"
 st "ESwMask := (others => '0');
   -- for esi in conv_unsigned(ESID'high,4) downto conv_unsigned(0,4) loop
-for esi in 7 downto 0 loop
+for esi in ESID'high downto 0 loop
   if ESID(esi) = esidn then
     ESwMask(ESwitchBit(esi)) := '1';
   end if;
@@ -4459,16 +4459,16 @@ optionalChildren [
 uid 1224,0
 sl 0
 ro 270
-xt "65802,-37027,68052,-36027"
+xt "81282,-37027,83532,-36027"
 )
 (Line
 uid 1225,0
 sl 0
 ro 270
-xt "65302,-36527,65802,-36527"
+xt "80782,-36527,81282,-36527"
 pts [
-"65302,-36527"
-"65802,-36527"
+"80782,-36527"
+"81282,-36527"
 ]
 )
 ]
@@ -4481,9 +4481,9 @@ uid 1227,0
 va (VaSet
 font "arial,8,1"
 )
-xt "68552,-37027,70152,-36027"
+xt "84032,-37027,85632,-36027"
 st "sa4"
-blo "68552,-36227"
+blo "84032,-36227"
 tm "LinkName"
 )
 )
@@ -4677,10 +4677,10 @@ uid 856,0
 va (VaSet
 vasetType 3
 )
-xt "23077,-36543,35548,-36474"
+xt "23077,-36551,52490,-36466"
 pts [
-"23077,-36474"
-"35548,-36543"
+"23077,-36466"
+"52490,-36551"
 ]
 arrow 1
 )
@@ -4689,7 +4689,7 @@ end &42
 ss 0
 es 0
 cond "esidn <=
-ESwitchAddr'high"
+conv_std_logic_vector(ESwitchAddr'high,4)"
 tb (TransitionBlock
 uid 857,0
 ps "CenterOffsetStrategy"
@@ -4701,7 +4701,7 @@ fg "65535,65535,65535"
 bg "0,0,0"
 lineColor "0,32768,49152"
 )
-xt "25752,-37417,33552,-34417"
+xt "28031,-37933,45231,-34933"
 )
 autoResize 1
 lineShape (Line
@@ -4710,10 +4710,10 @@ va (VaSet
 vasetType 3
 isHidden 1
 )
-xt "27952,-35517,27952,-35517"
+xt "30231,-36033,30231,-36033"
 pts [
-"27952,-35517"
-"27952,-35517"
+"30231,-36033"
+"30231,-36033"
 ]
 )
 condition (MLText
@@ -4721,9 +4721,9 @@ uid 860,0
 va (VaSet
 font "arial,8,0"
 )
-xt "26252,-36917,33052,-34917"
+xt "28531,-37433,44731,-35433"
 st "esidn <=
-ESwitchAddr'high"
+conv_std_logic_vector(ESwitchAddr'high,4)"
 tm "Condition"
 )
 actions (MLText
@@ -4731,7 +4731,7 @@ uid 861,0
 va (VaSet
 font "arial,8,0"
 )
-xt "29652,-34517,29652,-34517"
+xt "36631,-35033,36631,-35033"
 tm "Actions"
 )
 )
@@ -4745,7 +4745,7 @@ vasetType 1
 fg "65535,65535,65535"
 bg "0,0,0"
 )
-xt "23543,-37262,25105,-35700"
+xt "25237,-37256,26799,-35694"
 radius 781
 )
 pr (Text
@@ -4753,10 +4753,10 @@ uid 864,0
 va (VaSet
 font "arial,8,0"
 )
-xt "23924,-36981,24724,-35981"
+xt "25618,-36975,26418,-35975"
 st "1"
 ju 0
-blo "24324,-36181"
+blo "26018,-36175"
 tm "TransitionPriority"
 )
 padding "100,100"
@@ -4948,10 +4948,10 @@ uid 926,0
 va (VaSet
 vasetType 3
 )
-xt "41548,-36556,65302,-36527"
+xt "58490,-36556,80782,-36527"
 pts [
-"41548,-36556"
-"65302,-36527"
+"58490,-36556"
+"80782,-36527"
 ]
 )
 start &42
@@ -4970,7 +4970,7 @@ fg "65535,65535,65535"
 bg "0,0,0"
 lineColor "0,32768,49152"
 )
-xt "45577,-38289,60277,-35289"
+xt "61788,-38289,76488,-35289"
 )
 autoResize 1
 lineShape (Line
@@ -4979,10 +4979,10 @@ va (VaSet
 vasetType 3
 isHidden 1
 )
-xt "47777,-36389,47777,-36389"
+xt "63988,-36389,63988,-36389"
 pts [
-"47777,-36389"
-"47777,-36389"
+"63988,-36389"
+"63988,-36389"
 ]
 )
 condition (MLText
@@ -4990,7 +4990,7 @@ uid 930,0
 va (VaSet
 font "arial,8,0"
 )
-xt "46077,-37789,59777,-35789"
+xt "62288,-37789,75988,-35789"
 st "ESwitchAddr(conv_integer(esidn)) /=
  \"0000000\""
 tm "Condition"
@@ -5000,7 +5000,7 @@ uid 931,0
 va (VaSet
 font "arial,8,0"
 )
-xt "52927,-35389,52927,-35389"
+xt "69138,-35389,69138,-35389"
 tm "Actions"
 )
 )
@@ -5014,7 +5014,7 @@ vasetType 1
 fg "65535,65535,65535"
 bg "0,0,0"
 )
-xt "43142,-37334,44704,-35772"
+xt "59938,-37334,61500,-35772"
 radius 781
 )
 pr (Text
@@ -5022,10 +5022,10 @@ uid 934,0
 va (VaSet
 font "arial,8,0"
 )
-xt "43523,-37053,44323,-36053"
+xt "60319,-37053,61119,-36053"
 st "1"
 ju 0
-blo "43923,-36253"
+blo "60719,-36253"
 tm "TransitionPriority"
 )
 padding "100,100"
@@ -5038,10 +5038,10 @@ uid 936,0
 va (VaSet
 vasetType 3
 )
-xt "31669,-42293,36244,-38479"
+xt "32243,-43370,52612,-37402"
 pts [
-"36244,-38479"
-"31669,-42293"
+"52612,-37402"
+"32243,-43370"
 ]
 arrow 1
 )
@@ -5061,7 +5061,7 @@ fg "65535,65535,65535"
 bg "0,0,0"
 lineColor "0,32768,49152"
 )
-xt "33456,-40391,37856,-39381"
+xt "41927,-40391,46327,-39381"
 )
 autoResize 1
 lineShape (Line
@@ -5070,10 +5070,10 @@ va (VaSet
 vasetType 3
 isHidden 1
 )
-xt "35656,-38986,35656,-38986"
+xt "44127,-38986,44127,-38986"
 pts [
-"35656,-38986"
-"35656,-38986"
+"44127,-38986"
+"44127,-38986"
 ]
 )
 condition (MLText
@@ -5081,7 +5081,7 @@ uid 940,0
 va (VaSet
 font "arial,8,0"
 )
-xt "33956,-40386,37356,-39386"
+xt "42427,-40386,45827,-39386"
 tm "Condition"
 )
 actions (MLText
@@ -5089,7 +5089,7 @@ uid 941,0
 va (VaSet
 font "arial,8,0"
 )
-xt "35656,-38986,35656,-38986"
+xt "44127,-38986,44127,-38986"
 tm "Actions"
 )
 )
@@ -5103,7 +5103,7 @@ vasetType 1
 fg "65535,65535,65535"
 bg "0,0,0"
 )
-xt "35005,-39642,36567,-38080"
+xt "49794,-38780,51356,-37218"
 radius 781
 )
 pr (Text
@@ -5111,10 +5111,10 @@ uid 944,0
 va (VaSet
 font "arial,8,0"
 )
-xt "35386,-39361,36186,-38361"
+xt "50175,-38499,50975,-37499"
 st "2"
 ju 0
-blo "35786,-38561"
+blo "50575,-37699"
 tm "TransitionPriority"
 )
 padding "100,100"
@@ -6044,7 +6044,7 @@ color "26368,26368,26368"
 )
 packageList &0
 windowSize "0,22,1281,1024"
-viewArea "-400,-48500,90846,24858"
+viewArea "-400,-48500,90846,27094"
 cachedDiagramExtent "899,-47213,89819,17830"
 pageSetupInfo (PageSetupInfo
 ptrCmd "Adobe PDF,winspool,"
@@ -12730,7 +12730,7 @@ tm "SmCompilerDirectivesTextMgr"
 associable 1
 )
 windowSize "0,22,1281,1024"
-viewArea "-900,-7800,92468,67264"
+viewArea "-900,-7800,92468,69552"
 cachedDiagramExtent "0,-1036,94258,65699"
 pageSetupInfo (PageSetupInfo
 ptrCmd "Adobe PDF,winspool,"
@@ -13182,7 +13182,7 @@ stateOrder [
 name "csm"
 )
 ]
-lastUid 2083,0
+lastUid 2112,0
 commonDM (CommonDM
 ldm (LogicalDM
 emptyRow *185 (LEmptyRow
@@ -14869,6 +14869,6 @@ pts [
 ]
 )
 )
-activeModelName "StateMachine"
+activeModelName "csm/sw_sel_all"
 LanguageMgr "VhdlLangMgr"
 )

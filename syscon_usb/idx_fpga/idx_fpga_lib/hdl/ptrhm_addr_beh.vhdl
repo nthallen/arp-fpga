@@ -17,9 +17,9 @@ USE ieee.numeric_std.all;
 
 ENTITY ptrhm_addr IS
   GENERIC (
-    BASE_ADDR : std_logic_vector(15 DOWNTO 0) := X"0300";
+    BASE_ADDR : std_logic_vector(15 DOWNTO 0) := X"0200";
     -- Extending N_PTRH beyond 8 requires changes below
-    N_PTRH : integer range 8 downto 2 := 2
+    N_PTRH : integer range 16 downto 2 := 2
   );
   PORT( 
     Addr   : IN     std_logic_vector (15 DOWNTO 0);
@@ -44,9 +44,9 @@ Begin
     PTRHEn <= (others => '0');
     RegSelected := '0';
     PTRHSelected := '0';
-    if Addr(15 DOWNTO 8) = BASE_ADDR(15 DOWNTO 8) then
+    if Addr(15 DOWNTO 9) = BASE_ADDR(15 DOWNTO 9) then
       for i in 0 TO N_PTRH-1 loop
-        if Addr(7 DOWNTO 5) = CONV_STD_LOGIC_VECTOR(i,3) then
+        if Addr(8 DOWNTO 5) = CONV_STD_LOGIC_VECTOR(i,4) then
           PTRHEn(i) <= '1';
           PTRHSelected := '1';
         end if;

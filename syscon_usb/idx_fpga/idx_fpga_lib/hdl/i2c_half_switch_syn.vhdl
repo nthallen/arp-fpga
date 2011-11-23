@@ -9,11 +9,6 @@
 --
 LIBRARY ieee;
 USE ieee.std_logic_1164.all;
-USE ieee.std_logic_arith.all;
-USE ieee.numeric_std.all;
-LIBRARY idx_fpga_lib;
--- USE idx_fpga_lib.ptrhm.all;
--- USE idx_fpga_lib.All;
 
 ENTITY i2c_half_switch IS
   GENERIC (
