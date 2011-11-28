@@ -57,18 +57,38 @@ BEGIN
   End Process;
 
   testproc : Process Is
+      procedure sbrd_check( addr_in : std_logic_vector (15 DOWNTO 0);
+          expected : std_logic_vector(15 DOWNTO 0) ) is
+      begin
+        -- pragma synthesis_off
+        wait until F8M'Event AND F8M = '1';
+        Addr <= addr_in;
+        ExpRd <= '1';
+        wait for 1 us;
+        assert ExpAck = '1' report "No Acknowledge on read" severity error;
+        assert RData = expected
+         report "Input " & to_hstring(addr_in) & " Incorrect: "
+                & to_hstring(RData) & " expected " & to_hstring(expected)
+         severity error;
+        ExpRd <= '0';
+        wait for 40 ns;
+        -- pragma synthesis_on
+      end procedure sbrd_check;
   Begin
     ClkDone <= '0';
     rst <= '1';
     Addr <= (others => '0');
     ExpRd <= '0';
     ExpWr <= '0';
+    scl <= (others => 'H');
+    sda <= (others => 'H');
     -- pragma synthesis_off
     wait until F8M'event AND F8M = '1';
     wait until F8M'event AND F8M = '1';
     rst <= '0';
     
     wait for 1000 ms;
+    sbrd_check(X"0206", X"000F");
     
     ClkDone <= '1';
     wait;

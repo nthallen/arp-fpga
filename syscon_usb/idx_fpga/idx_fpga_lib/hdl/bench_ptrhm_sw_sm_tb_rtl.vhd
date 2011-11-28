@@ -18,10 +18,10 @@ USE ieee.numeric_std.all;
 ENTITY bench_ptrhm_sw_sm IS
    GENERIC (
       N_ISBITS    : integer    := 4;
-      ESID        : ESID_array := ( 3, 2, 1, 0, 0, 0, 0, 0 );
-      ISwitchBit  : ISB_array  := ( 3, 2, 1, 0 );
+      ESID        : ESID_array := ( 0, 1, 2, 3, 3, 3, 3, 3 );
+      ISwitchBit  : ISB_array  := ( 0, 1, 2, 3 );
       ESwitchAddr : ESA_array  := ( "0000000", "0000000", "0000000", "1110000" );
-      ESwitchBit  : ESB_array  := ( 0, 0, 0, 4, 3, 2, 1, 0 );
+      ESwitchBit  : ESB_array  := ( 0, 0, 0, 0, 1, 2, 3, 4 );
       N_PTRH      : integer    := 8
    );
 END bench_ptrhm_sw_sm;
