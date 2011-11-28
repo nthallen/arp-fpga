@@ -87,7 +87,7 @@ BEGIN
     wait until F8M'event AND F8M = '1';
     rst <= '0';
     
-    wait for 1000 ms;
+    wait for 150 ms;
     sbrd_check(X"0206", X"000F");
     
     ClkDone <= '1';
