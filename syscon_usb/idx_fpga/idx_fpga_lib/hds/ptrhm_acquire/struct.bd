@@ -360,7 +360,7 @@ value "struct"
 )
 (vvPair
 variable "time"
-value "14:04:03"
+value "14:37:22"
 )
 (vvPair
 variable "unit"
@@ -6011,7 +6011,7 @@ va (VaSet
 fg "0,0,32768"
 font "arial,8,0"
 )
-xt "65200,2200,93700,20200"
+xt "65200,2200,92000,20200"
 st "
 N_ISBITS: The number of I2C buses leaving the FPGA
 N_PTRH: The number of PTRH subsystems attached
@@ -6019,15 +6019,15 @@ N_ESWITCH: The number of external switch devices plus the
     number of I2C buses that have PTRHs attached directly.
     This will typically be equal to N_ISBITS, but not
     if there are multiple switches connected to one bus.
-ESID: An array of N_PTRH elements in the range N_ESWITCH-1 downto 0
+ESID: An array of N_PTRH elements in the range 0 to N_ESWITCH-1
     Identifies which external switch or bus a particular
     PTRH is attached to
-ISwitchBit: An array of N_ESWITCH elements in the range N_ISBITS-1 downto 0
+ISwitchBit: An array of N_ESWITCH elements in the range 0 to N_ISBITS-1
     Identifies which I2C bus the PTRH or external switch is connected to
 ESwitchAddr: An array of N_ESWITCH 7-bit I2C addresses
     If this ESID identifies an external switch, this address will be
     non-zero. If it is zero, it identifies a directly-connected PTRH.
-ESwitchBit: An array of N_PTRH elements in the range 7 downto 0
+ESwitchBit: An array of N_PTRH elements in the range 0 to 7
     Identifies which bit on the external switch this PTRH is
     connected to. The setting is ignored if no external switch
     is involved.
@@ -8358,7 +8358,7 @@ tm "BdCompilerDirectivesTextMgr"
 associable 1
 )
 windowSize "0,22,1281,1024"
-viewArea "-1600,-1600,116289,90067"
+viewArea "-1600,-1600,116289,93178"
 cachedDiagramExtent "-12000,0,114000,85000"
 pageSetupInfo (PageSetupInfo
 ptrCmd "\\\\proteus\\Ansel,winspool,"
@@ -8383,7 +8383,7 @@ exportStdPackageRefs 1
 )
 hasePageBreakOrigin 1
 pageBreakOrigin "0,0"
-lastUid 2709,0
+lastUid 2738,0
 defaultCommentText (CommentText
 shape (Rectangle
 layer 0
