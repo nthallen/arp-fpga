@@ -10,8 +10,14 @@
 LIBRARY ieee;
 USE ieee.std_logic_1164.all;
 USE ieee.std_logic_arith.all;
+USE ieee.std_logic_unsigned.all;
 
 ENTITY ao_addr IS
+   GENERIC (
+     BASE_ADDR  : std_logic_vector(15 downto 0) := X"0400";
+     AO_INCR    : std_logic_vector(11 downto 0) := X"020";
+     N_AO_CHIPS : natural range 15 downto 2 := 2
+   );
    PORT( 
       Addr : IN     std_logic_vector (15 DOWNTO 0);
       BdEn : OUT    std_ulogic
@@ -26,7 +32,8 @@ ARCHITECTURE beh OF ao_addr IS
 BEGIN
   BdEn_out : Process (Addr) Is
   begin
-    if Addr >= X"0400" AND Addr < X"0420" then
+    if  Addr >= BASE_ADDR AND
+        Addr < BASE_ADDR + conv_std_logic_vector(N_AO_CHIPS,4) * AO_INCR then
       BdEn <= '1';
     else
       BdEn <= '0';
