@@ -28,6 +28,8 @@ ENTITY bench_ptrhm_acquire_tester IS
       ExpWr  : OUT    std_ulogic;
       F8M    : OUT    std_ulogic;
       rst    : OUT    std_logic;
+      m_scl  : INOUT  std_logic_vector (8 DOWNTO 0);
+      m_sda  : INOUT  std_logic_vector (8 DOWNTO 0);
       scl    : INOUT  std_logic_vector (N_ISBITS-1 DOWNTO 0);
       sda    : INOUT  std_logic_vector (N_ISBITS-1 DOWNTO 0)
    );
@@ -82,13 +84,30 @@ BEGIN
     ExpWr <= '0';
     scl <= (others => 'H');
     sda <= (others => 'H');
+    m_sda <= (others => 'H');
+    m_scl <= (others => 'H');
     -- pragma synthesis_off
     wait until F8M'event AND F8M = '1';
     wait until F8M'event AND F8M = '1';
     rst <= '0';
     
     wait for 150 ms;
-    sbrd_check(X"0206", X"000F");
+    sbrd_check(X"020C", X"0FFF");
+    sbrd_check(X"0200", X"5556");
+    sbrd_check(X"0202", X"5758");
+    sbrd_check(X"0204", X"595A");
+    sbrd_check(X"0206", X"5B5C");
+    sbrd_check(X"0208", X"5D5E");
+    sbrd_check(X"020A", X"5F60");
+    sbrd_check(X"020E", X"5556");
+    sbrd_check(X"0210", X"5758");
+    sbrd_check(X"0212", X"6263");
+    sbrd_check(X"0214", X"0061");
+    sbrd_check(X"0216", X"6566");
+    sbrd_check(X"0218", X"0064");
+
+    sbrd_check(X"022C", X"0303"); -- only SHT21
+    sbrd_check(X"024C", X"0303"); -- only SHT21
     
     ClkDone <= '1';
     wait;

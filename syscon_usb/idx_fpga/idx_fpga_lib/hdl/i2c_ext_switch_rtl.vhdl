@@ -137,8 +137,6 @@ BEGIN
 
   ien(N_SWBITS) <= '1';
   ien(N_SWBITS-1 DOWNTO 0) <= std_logic_vector(wdata);
-  m_sda(N_SWBITS) <= 'H';
-  m_scl(N_SWBITS) <= 'H';    
       
 END ARCHITECTURE rtl;
 
