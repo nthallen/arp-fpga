@@ -503,7 +503,7 @@ tm "GenericEolColHdrMgr"
 *69 (LogGeneric
 generic (GiElement
 name "N_ISBITS"
-type "integer"
+type "integer range 8 downto 1"
 value "4"
 )
 uid 560,0
@@ -543,7 +543,7 @@ uid 568,0
 *74 (LogGeneric
 generic (GiElement
 name "N_PTRH"
-type "integer"
+type "integer range 16 downto 1"
 value "8"
 )
 uid 2527,0
@@ -600,37 +600,37 @@ uid 197,0
 )
 *80 (MRCItem
 litem &69
-pos 0
+pos 1
 dimension 20
 uid 559,0
 )
 *81 (MRCItem
 litem &70
-pos 1
+pos 2
 dimension 20
 uid 561,0
 )
 *82 (MRCItem
 litem &71
-pos 2
+pos 5
 dimension 20
 uid 563,0
 )
 *83 (MRCItem
 litem &72
-pos 3
+pos 4
 dimension 20
 uid 565,0
 )
 *84 (MRCItem
 litem &73
-pos 4
+pos 3
 dimension 20
 uid 567,0
 )
 *85 (MRCItem
 litem &74
-pos 5
+pos 0
 dimension 20
 uid 2526,0
 )
@@ -745,19 +745,19 @@ value "C:\\HDS\\idx_fpga\\idx_fpga_lib\\hds\\ptrhm_sw_sm"
 )
 (vvPair
 variable "date"
-value "11/29/2011"
+value "12/ 1/2011"
 )
 (vvPair
 variable "day"
-value "Tue"
+value "Thu"
 )
 (vvPair
 variable "day_long"
-value "Tuesday"
+value "Thursday"
 )
 (vvPair
 variable "dd"
-value "29"
+value "01"
 )
 (vvPair
 variable "entity_name"
@@ -805,7 +805,7 @@ value "$HDS_PROJECT_DIR/idx_fpga_lib/work"
 )
 (vvPair
 variable "mm"
-value "11"
+value "12"
 )
 (vvPair
 variable "module_name"
@@ -813,11 +813,11 @@ value "ptrhm_sw_sm"
 )
 (vvPair
 variable "month"
-value "Nov"
+value "Dec"
 )
 (vvPair
 variable "month_long"
-value "November"
+value "December"
 )
 (vvPair
 variable "p"
@@ -881,7 +881,7 @@ value "symbol"
 )
 (vvPair
 variable "time"
-value "13:29:42"
+value "11:21:58"
 )
 (vvPair
 variable "unit"
@@ -1641,23 +1641,29 @@ uid 15,0
 va (VaSet
 font "Courier New,8,0"
 )
-xt "-6000,7500,31500,13900"
+xt "-6000,7500,39000,13900"
 st "Generic Declarations
 
-N_ISBITS    integer    4                                               
-ESID        ESID_array ( 3, 2, 1, 0, 0, 0, 0, 0 )                      
-ISwitchBit  ISB_array  ( 3, 2, 1, 0 )                                  
-ESwitchAddr ESA_array  ( \"0000000\", \"0000000\", \"0000000\", \"1110000\" )  
-ESwitchBit  ESB_array  ( 0, 0, 0, 4, 3, 2, 1, 0 )                      
-N_PTRH      integer    8                                               "
+N_PTRH      integer range 16 downto 1 8                                               
+N_ISBITS    integer range 8 downto 1  4                                               
+ESID        ESID_array                ( 3, 2, 1, 0, 0, 0, 0, 0 )                      
+ESwitchBit  ESB_array                 ( 0, 0, 0, 4, 3, 2, 1, 0 )                      
+ESwitchAddr ESA_array                 ( \"0000000\", \"0000000\", \"0000000\", \"1110000\" )  
+ISwitchBit  ISB_array                 ( 3, 2, 1, 0 )                                  
+"
 )
 header "Generic Declarations"
 showHdrWhenContentsEmpty 1
 )
 elements [
 (GiElement
+name "N_PTRH"
+type "integer range 16 downto 1"
+value "8"
+)
+(GiElement
 name "N_ISBITS"
-type "integer"
+type "integer range 8 downto 1"
 value "4"
 )
 (GiElement
@@ -1666,9 +1672,9 @@ type "ESID_array"
 value "( 3, 2, 1, 0, 0, 0, 0, 0 )"
 )
 (GiElement
-name "ISwitchBit"
-type "ISB_array"
-value "( 3, 2, 1, 0 )"
+name "ESwitchBit"
+type "ESB_array"
+value "( 0, 0, 0, 4, 3, 2, 1, 0 )"
 )
 (GiElement
 name "ESwitchAddr"
@@ -1676,14 +1682,9 @@ type "ESA_array"
 value "( \"0000000\", \"0000000\", \"0000000\", \"1110000\" )"
 )
 (GiElement
-name "ESwitchBit"
-type "ESB_array"
-value "( 0, 0, 0, 4, 3, 2, 1, 0 )"
-)
-(GiElement
-name "N_PTRH"
-type "integer"
-value "8"
+name "ISwitchBit"
+type "ISB_array"
+value "( 3, 2, 1, 0 )"
 )
 ]
 )
@@ -1718,7 +1719,7 @@ va (VaSet
 fg "0,0,32768"
 bg "0,0,32768"
 )
-xt "31200,50000,39900,51000"
+xt "31200,50000,40000,51000"
 st "
 by %user on %dd %month %year
 "
@@ -2336,6 +2337,6 @@ xt "42000,0,42000,0"
 tm "SyDeclarativeTextMgr"
 )
 )
-lastUid 2757,0
+lastUid 2803,0
 activeModelName "Symbol:CDM"
 )

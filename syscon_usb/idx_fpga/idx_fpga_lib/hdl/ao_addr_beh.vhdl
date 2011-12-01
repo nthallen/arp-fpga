@@ -13,10 +13,10 @@ USE ieee.std_logic_arith.all;
 USE ieee.std_logic_unsigned.all;
 
 ENTITY ao_addr IS
-   GENERIC (
-     BASE_ADDR  : std_logic_vector(15 downto 0) := X"0400";
-     AO_INCR    : std_logic_vector(11 downto 0) := X"020";
-     N_AO_CHIPS : natural range 15 downto 2 := 2
+   GENERIC( 
+      BASE_ADDR  : std_logic_vector(15 downto 0) := X"0400";
+      AO_INCR    : std_logic_vector(11 downto 0) := X"020";
+      N_AO_CHIPS : natural range 15 downto 2     := 2
    );
    PORT( 
       Addr : IN     std_logic_vector (15 DOWNTO 0);

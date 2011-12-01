@@ -47,7 +47,7 @@ BEGIN
           ao_cache(i) <= (others => '0');
         end loop;
       elsif WrEn = '1' then
-        cacheaddr := conv_integer(Addr(7 downto 0));
+        cacheaddr := conv_integer(Addr(7 downto 1));
         if cacheaddr < N_AO_CHIPS*8 then
           ao_cache(cacheaddr) <= WData;
         end if;
