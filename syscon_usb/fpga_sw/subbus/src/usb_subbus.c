@@ -37,6 +37,7 @@
 #define SUBBUS_FAIL_DEVICE_ID       XPAR_XPS_GPIO_SB_LEDS_DEVICE_ID
 #define SUBBUS_SWITCHES_DEVICE_ID   XPAR_XPS_GPIO_SB_SWITCHES_DEVICE_ID
 #define FTDI_SI_DEVICE_ID           XPAR_XPS_GPIO_FTDI_SI_DEVICE_ID
+#define send_usb_char(x)            XIo_Out8(FTDI_ADDRESS, x)
 
 #define SBCTRL_RD                   0x1
 #define SBCTRL_WR                   0x2
@@ -200,12 +201,12 @@ static void hex_out(unsigned short data) {
   if (data & 0xFFF0) {
     if (data & 0xFF00) {
       if (data & 0xF000)
-        XIo_Out8(FTDI_ADDRESS, hex[(data>>12)&0xF]);
-      XIo_Out8(FTDI_ADDRESS, hex[(data>>8)&0xF]);
+        send_usb_char(hex[(data>>12)&0xF]);
+      send_usb_char(hex[(data>>8)&0xF]);
     }
-    XIo_Out8(FTDI_ADDRESS, hex[(data>>4)&0xF]);
+    send_usb_char(hex[(data>>4)&0xF]);
   }
-  XIo_Out8(FTDI_ADDRESS, hex[data&0xF]);
+  send_usb_char(hex[data&0xF]);
 }
 
 static int pulse_rdwr(Xuint8 subb_ctrl) {
@@ -239,6 +240,86 @@ static int subbus_write( unsigned short addr, unsigned short data) {
   return expack;
 }
 
+/**
+ * Syntax: M<count>#<addr_range>[,<addr_range>...]
+ *   <addr_range>
+ *     : <addr>
+ *     : <addr>:<incr>:<addr>
+ *     : <count>@<addr>
+ * Output string: [Mm]<data>...[E\d+]
+ * The output string reports acknowledge for each input address. If there is
+ * no acknowledge, a zero value (i.e. 'm0') will be reported. If there is an
+ * acknowledge, the hex value read will be returned preceeded by 'M'
+ * (e.g. M32B5). If at any point in parsing the command string a syntax error
+ * is encountered, and error code is returned to terminate the output.
+ * (e.g. M32B5m0M32B6E3)
+ */
+static void read_multi(char *cmd) {
+  unsigned short addr, start, incr, end, count, rep;
+  unsigned short result;
+  ++cmd;
+  if (*cmd == '\n' || *cmd == '\0') {
+    SendError(3);
+    return;
+  }
+  if ( read_hex( &cmd, &count ) || count > 50 || *cmd != '#' ) {
+    SendError(3);
+    return;
+  }
+  ++cmd; // skip over the '#'
+  for (;;) {
+    if ( read_hex( &cmd, &addr ) ) {
+      SendError(3);
+      return;
+    }
+    if (*cmd == ':' ) {
+      if ( read_hex( &++cmd, &incr) ||
+           *cmd != ':' ||
+           read_hex( &++cmd, &end) ||
+           incr >= 0x8000 ) {
+        SendError(3);
+        return;
+      }
+      rep = count;
+    } else if ( *cmd == '@' ) {
+      rep = addr;
+      incr = 0;
+      if ( rep > count || read_hex( &++cmd, &addr ) ) {
+        SendError(3);
+        return;
+      }
+      end = addr;
+    } else {
+      incr = 0;
+      rep = 1;
+      end = addr;
+    }
+    for ( start = addr; addr >= start && addr <= end && rep > 0; addr += incr, --rep, --count ) {
+      if ( count == 0 ) {
+        SendError(3);
+        return;
+      }
+      if ( subbus_read( addr, &result ) {
+        send_usb_char('M');
+        hex_out(result);
+      } else {
+        send_usb_char('m');
+        send_usb_char('0');
+      }
+    }
+    if (*cmd == '\n') {
+      SendUSB("");
+      return;
+    } else if (*cmd++ != ',') {
+      SendError(3);
+      return;
+    }
+  }
+}
+
+static int read_hex( char **sp, unsigned short *rvp) {
+}
+
 static void parse_command(char *cmd) {
   int nargs = 0;
   char cmd_code;
@@ -252,6 +333,7 @@ static void parse_command(char *cmd) {
     case 'D':
     case 'T':
     case 'A':
+    case 'M': read_multi(cmd); return;
     case 'V': nargs = 0; break;
     case 'R':
     case 'C':
@@ -383,8 +465,9 @@ static void parse_command(char *cmd) {
 * @note     None
 *
 *******************************************************************************/
+#define RECV_BUF_SIZE 256
 int main(void) {
-  char cmd[15];							// Current Command
+  char cmd[RECV_BUF_SIZE];							// Current Command
   int cmd_byte_num = 0;
   int cmd_rcv_timer = 0;
   
@@ -399,7 +482,7 @@ int main(void) {
       if ( c == '\n' ) {
         parse_command(cmd);
         cmd_byte_num = 0;
-      } else if (cmd_byte_num >= 15) {
+      } else if (cmd_byte_num >= RECV_BUF_SIZE) {
         SendError("8"); // Error code 8: Too many bytes before NL
         while ( XGpio_DiscreteRead(&Data_Rdy,1) == 1 && XIo_In8(FTDI_ADDRESS) != '\n' ) ;
         cmd_byte_num = 0;
@@ -432,7 +515,7 @@ int main(void) {
 *
 *******************************************************************************/
 static void SendError(char *code) {
-  XIo_Out8(FTDI_ADDRESS, 'E');
+  send_usb_char('E');
   SendUSB(code);
 }
 
@@ -447,20 +530,20 @@ static void SendError(char *code) {
  */
 static void SendUSB(char *msg) {
   while (*msg)
-    XIo_Out8(FTDI_ADDRESS, *msg++);
-  XIo_Out8(FTDI_ADDRESS, '\n');			// End with NL
+    send_usb_char(*msg++);
+  send_usb_char('\n');			// End with NL
   // Strobe the FTDI "Send Immediate" line:
   XGpio_DiscreteWrite(&FTDI_SI,1,0);
   XGpio_DiscreteWrite(&FTDI_SI,1,1);
 }
 
 static  void SendUSB1(char code, unsigned short val) {
-  XIo_Out8(FTDI_ADDRESS, code);
+  send_usb_char(code);
   hex_out(val);
   SendUSB("");
 }
 
 static void SendUSB0(char code) {
-  XIo_Out8(FTDI_ADDRESS, code);
+  send_usb_char(code);
   SendUSB("");
 }
