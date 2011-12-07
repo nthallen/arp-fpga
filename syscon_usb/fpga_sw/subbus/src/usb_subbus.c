@@ -25,7 +25,7 @@
 /* BOARD_REV includes the SUBBUS_SUBFUNCTION code (5 for DACS) and the
  * SUBBUS_FEATURES bitmap (in hex). Values are defined in subbus.h
  */
-#define BOARD_REV                   "V5:178:Syscon Rev.C.0.03"
+#define BOARD_REV                   "V5:178:Syscon Rev.C.0.04"
 #define	CPU_FREQ					XPAR_CPU_CORE_CLOCK_FREQ_HZ
 #define FTDI_ADDRESS 				XPAR_XPS_EPC_0_PRH0_BASEADDR
 #define DATA_RDY_DEVICE_ID    		XPAR_XPS_GPIO_DATA_RDY_DEVICE_ID    	
@@ -259,33 +259,35 @@ static void read_multi(char *cmd) {
   unsigned short result;
   ++cmd;
   if (*cmd == '\n' || *cmd == '\0') {
-    SendError(3);
+    SendError("3");
     return;
   }
   if ( read_hex( &cmd, &count ) || count > 50 || *cmd != '#' ) {
-    SendError(3);
+    SendError("3");
     return;
   }
   ++cmd; // skip over the '#'
   for (;;) {
     if ( read_hex( &cmd, &addr ) ) {
-      SendError(3);
+      SendError("3");
       return;
     }
     if (*cmd == ':' ) {
-      if ( read_hex( &++cmd, &incr) ||
-           *cmd != ':' ||
-           read_hex( &++cmd, &end) ||
+      ++cmd;
+      if ( read_hex( &cmd, &incr) ||
+           *cmd++ != ':' ||
+           read_hex( &cmd, &end) ||
            incr >= 0x8000 ) {
-        SendError(3);
+        SendError("3");
         return;
       }
       rep = count;
     } else if ( *cmd == '@' ) {
       rep = addr;
       incr = 0;
-      if ( rep > count || read_hex( &++cmd, &addr ) ) {
-        SendError(3);
+      ++cmd;
+      if ( rep > count || read_hex( &cmd, &addr ) ) {
+        SendError("3");
         return;
       }
       end = addr;
@@ -296,10 +298,10 @@ static void read_multi(char *cmd) {
     }
     for ( start = addr; addr >= start && addr <= end && rep > 0; addr += incr, --rep, --count ) {
       if ( count == 0 ) {
-        SendError(3);
+        SendError("3");
         return;
       }
-      if ( subbus_read( addr, &result ) {
+      if ( subbus_read( addr, &result ) ) {
         send_usb_char('M');
         hex_out(result);
       } else {
@@ -311,13 +313,10 @@ static void read_multi(char *cmd) {
       SendUSB("");
       return;
     } else if (*cmd++ != ',') {
-      SendError(3);
+      SendError("3");
       return;
     }
   }
-}
-
-static int read_hex( char **sp, unsigned short *rvp) {
 }
 
 static void parse_command(char *cmd) {
