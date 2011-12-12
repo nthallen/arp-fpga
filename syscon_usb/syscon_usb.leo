@@ -56,7 +56,7 @@
 </v>
 </v>
 <v t="ntallen.20100525090916.1257" a="E"><vh>Development Plan</vh>
-<v t="ntallen.20100525090916.1259"><vh>Document Serial Protocol</vh>
+<v t="ntallen.20100525090916.1259" a="E"><vh>Document Serial Protocol</vh>
 <v t="ntallen.20110123092829.1413"><vh>Error Codes</vh></v>
 </v>
 <v t="ntallen.20100803111918.1303"><vh>IPC</vh></v>
@@ -119,7 +119,7 @@
 <v t="ntallen.20100920151402.1336"><vh>Basic Specs</vh></v>
 </v>
 <v t="ntallen.20101102122701.1376"><vh>D/A VHDL</vh></v>
-<v t="ntallen.20110203162516.1415" a="E"><vh>PTRH</vh>
+<v t="ntallen.20110203162516.1415"><vh>PTRH</vh>
 <v t="ntallen.20110418174231.1430"><vh>I2C</vh></v>
 <v t="ntallen.20110203162516.1416"><vh>SHT21</vh></v>
 <v t="ntallen.20110203162516.1417"><vh>MS5607</vh></v>
@@ -128,12 +128,20 @@
 <v t="ntallen.20110419111719.1433"><vh>PTRH DPRAMS</vh></v>
 <v t="ntallen.20111025151610.1437"><vh>I2C_SM</vh></v>
 </v>
-<v t="ntallen.20111024112337.1435"><vh>PTRH MUX</vh></v>
+<v t="ntallen.20111024112337.1435"><vh>PTRH MUX</vh>
+<v t="ntallen.20111114100408.1439"><vh>Register Map</vh></v>
+<v t="ntallen.20111123115724.1441"><vh>Generics</vh></v>
+</v>
 <v t="ntallen.20110227134141.1425"><vh>Counters</vh></v>
 <v t="ntallen.20110418174231.1429"><vh>LTC4151</vh></v>
+<v t="ntallen.20111212160628.1443" a="E"><vh>QCLI Serial Interface</vh>
+<v t="ntallen.20111212160628.1444"><vh>Subbus Interface</vh></v>
+<v t="ntallen.20111212160628.1445"><vh>QCLI Interface</vh></v>
+<v t="ntallen.20111212160628.1447"><vh>Engine Operation</vh></v>
 </v>
-<v t="ntallen.20100823102718.1327"><vh>Documentation</vh>
-<v t="ntallen.20100525090916.1259"></v>
+</v>
+<v t="ntallen.20100823102718.1327" a="E"><vh>Documentation</vh>
+<v t="ntallen.20100525090916.1259" a="E"></v>
 <v t="ntallen.20100824101804.1329"><vh>Document API</vh></v>
 </v>
 <v t="ntallen.20110115103957.1399"><vh>Revisions</vh>
@@ -221,7 +229,7 @@ The read logic is faulty, since it resets EXPRD before reading in the data (whic
 &lt;data&gt; : &lt;hex16&gt;
 &lt;cmdline&gt; : &lt;cmd&gt; '\n'
 &lt;bit&gt; : '0' | '1'
-&lt;multi_resp&gt; : ( [ 'M' | 'm' ] &lt;data&gt; )+
+&lt;multi_resp&gt; : ( ( 'M' | 'm' ) &lt;data&gt; )+ ['E' &lt;digit&gt;]
 &lt;cmd&gt; :
     R &lt;addr&gt;    // Read: response codes: RrE
     W &lt;addr&gt; : &lt;data&gt;  // Write: response codes: WwE
@@ -838,14 +846,22 @@ mux configuration bits that are cached by ana_hwside.</t>
 <t tx="ntallen.20110122074609.1411">In order to make the hwside a little simpler, I permute the write address for
 configuration data so it comes out one row and two columns before the data
 converted data is recorded.</t>
-<t tx="ntallen.20110123092829.1413">E1: Unrecognized Command
-E2: Receive Timeout
-E3: Command Syntax Error
-E4: Invalid Interrupt Request
-E8: Serial request too long
-E10: Internal contradiction
-E11: No ACK on INTA
-</t>
+<t tx="ntallen.20110123092829.1413">Produced by the hardware (DACS):
+    E1: Unrecognized Command
+    E2: Receive Timeout
+    E3: Command Syntax Error
+    E4: Invalid Interrupt Request
+    E8: Serial request too long
+    E10: Internal contradiction
+    E11: No ACK on INTA
+    
+Produced by subbusd:
+    E100: USB Timeout
+    E101: Wrong number of readings returned
+    E102: DACS reply syntax error
+
+Produced by libsubbus:
+    E200: Null request</t>
 <t tx="ntallen.20110203162516.1415">This device will present a read-only interface to the subbus. On the back side
 we will have an engine driving an I2C interface to poll the SHT21 (RH/T) and the
 MS5607 (P/T)
@@ -968,6 +984,7 @@ Acquisition:
 10: MS5607 D1
 11: MS5607 D2
 
+12: Select Error
 
 </t>
 <t tx="ntallen.20110227134141.1425">Some are working great, others not.
@@ -1061,5 +1078,81 @@ a specified address.
 I propose adding some of the looping constructs such as (De)SelectAll
 and PTRH.Select. It would have to know about the PTRH definitions and
 ESID definitions.</t>
+<t tx="ntallen.20111114100408.1439">I am remapping the registers in order to optimize multi-word reads in the future:
+    
+0000	R	MS5607 Coefficient 1
+0002	R	MS5607 Coefficient 2
+0004	R	MS5607 Coefficient 3
+0006	R	MS5607 Coefficient 4
+0008	R	MS5607 Coefficient 5
+000A	R	MS5607 Coefficient 6
+000C	R	Status
+000E	R	SHT21 Temperature
+0010	R	SHT21 Relative Humidity
+0012	R	MS5607 P D1(15:0)
+0014	R	MS5607 P D1(23:16)
+0016	R	MS5607 T D2(15:0)
+0018	R	MS5607 T D2(23:16)
+</t>
+<t tx="ntallen.20111123115724.1441">The topology of the PTRH network is defined via Generics.
+There is considerable flexibility in how PTRH boards can be connected.
+Two PTRH boards cannot be directly connected to the same I2C bus,
+but multiple PTRH boards can be connected through an external switch,
+which produces multiple I2C buses on the other side.
+Since the switches we are using have a programmable address, it is
+possible to have multiple switches on the same I2C bus.
+Each I2C bus can either have a single PTRH or one or more switches.
+You cannot have both a PTRH and a switch on the same bus because
+the PTRH's address would conflict with PTRHs on the switch.
+
+In order to tell the firmware how to query all of these devices
+
+N_ISBITS: The number of I2C buses leaving the FPGA
+N_PTRH: The number of PTRH subsystems attached
+N_ESWITCH: The number of external switch devices plus the
+    number of I2C buses that have PTRHs attached directly.
+    This will typically be equal to N_ISBITS, but not
+    if there are multiple switches connected to one bus.
+ESID: An array of N_PTRH elements in the range N_ESWITCH-1 downto 0
+    Identifies which external switch or bus a particular
+    PTRH is attached to
+ISwitchBit: An array of N_ESWITCH elements in the range N_ISBITS-1 downto 0
+    Identifies which I2C bus the PTRH or external switch is connected to
+ESwitchAddr: An array of N_ESWITCH 7-bit I2C addresses
+    If this ESID identifies an external switch, this address will be
+    non-zero. If it is zero, it identifies a directly-connected PTRH.
+ESwitchBit: An array of N_PTRH elements in the range 7 downto 0
+    Identifies which bit on the external switch this PTRH is
+    connected to. The setting is ignored if no external switch
+    is involved.
+</t>
+<t tx="ntallen.20111212160628.1443">The idea is to reproduce the AnaI/O hi-res AD/DA interface to communicate with QCLIs. We have a suspicion that some of the current misbehavior of the QCLI may stem from a problem with the RS-232 interface. If true, using the quasi-spi interface might alleviate the problem.
+
+We need to address multiple QCLIs. It is probably smart to keep the circuits independent, provided we have enough lines. As detailed elsewhere, it is possible to share clock and data lines, but that would require a more serialized architecture.
+
+If we are careful and mimic the anaio interface, we could use the existing qcli utils to communicate with the QCLIs. Alternately, we could provide an enhanced interface that might make programming and/or verification more efficient.</t>
+<t tx="ntallen.20111212160628.1444">Read /qclutil/qclisb.c to understand subbus interface.
+</t>
+<t tx="ntallen.20111212160628.1445">This interface was designed before the QCLI was conceived. It was intended to talk to a specific A/D or a specific D/A. The QCLI interface was designed to be compatible with those two capabilities. The result is an interface definition unlike any other.
+
+There are 4 signals on the QCLI:
+    QSCLK: INOUT: bi-directional data clock
+    SDATA: INOUT: bi-directional data link
+    QSYNC: IN: chip select and direction control
+    QBUSY: OUT: status readback
+
+QBUSY was originally a bi-directional LDAC/ and BUSY/ indicator, but the LDAC/ functionality was unnecessary on the QCLI, so we will consider this to be an output from the QCLI.
+
+QSCLK is driven by the QCLI when we are reading from the QCLI and is driven by the DACS when we are writing to the QCLI. On read, the QCLI runs the clock at 62.5 KHz. On write, we probably have some latitude, with 62.5 KHz being a starting point. The important limitation is that we must provide enough time between words for the QSYNC to be properly observed and the command recorded. QSCLK is pulled down on the QCLI, so it will be low unless it is driven high.
+
+SDATA is driven by the DACS when writing to the QCLI and driven by the QCLI when reading.
+
+QSYNC serves as both chip select and direction control. If held high, the QCLI is deselected and the communication circuit remains idle.
+
+For a read request, QSYNC is pulsed low while holding QSCLK low. When the QCLI observes QSYNC going high with no intervening QSCLK pulses, it drives QBUSY low, takes control of QSCLK and SDATA and shifts out 16 bits. SDATA should transition when QSCLK is low, so SDATA can be clocked in on either the rising or falling edge of QSCLK. [[I do not know what the bit order is]]
+
+For a write, QSYNC is driven low, and then SDATA and QSCLK are driven to clock out 16 bits [[presumably in the same bit order used for read]]. After 16 bits are shifted, QSYNC is raised to mark the end of the data transfer. QSYNC must remain high for at least one microsecond before writing another value. There may be other constraints governing the writing speed.
+</t>
+<t tx="ntallen.20111212160628.1447">Details need to be filled in, but the ANAIO circuit continuously polled the QCLI for status information so a simple subbus read would give the current status. I still need to figure out how output and requests to read other data was handled. The speed of the polling is up for grabs. ANAIO did something like 400 Hz, but I think that is much faster than we require.</t>
 </tnodes>
 </leo_file>
