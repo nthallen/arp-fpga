@@ -19,8 +19,8 @@ ENTITY qclic_ram IS
       raddr     : IN     std_logic_vector (6 DOWNTO 0);
       ram_wdata : IN     std_logic_vector (15 DOWNTO 0);
       ram_rdata : OUT    std_logic_vector (15 DOWNTO 0);
-      F8M       : IN     std_ulogic;
-      rst       : IN     std_ulogic
+      F8M       : IN     std_logic;
+      rst       : IN     std_logic
    );
 
 -- Declarations
