@@ -38,7 +38,7 @@ BEGIN
       if rst = '1' then
         ram_rdata <= (others => '0');
       elsif rRd = '1' then
-        ram_rdata <= qram(raddr);
+        ram_rdata <= qram(conv_integer(raddr));
       end if;
     end if;
   End Process;
@@ -47,7 +47,7 @@ BEGIN
   BEGIN
     if F8M'event AND F8M = '1' then
       if rWr = '1' then
-        qram(raddr) <= ram_wdata;
+        qram(conv_integer(raddr)) <= ram_wdata;
       end if;
     end if;
   END Process;

@@ -34,7 +34,7 @@ BEGIN
     if Addr(0) = '0' AND Addr >= BASE_ADDR AND
        Addr <= BASE_ADDR + 14 then
       BdEn <= '1';
-      cmd <= Addr(4 DOWNTO 1);
+      cmd <= Addr(3 DOWNTO 1);
     else
       BdEn <= '0';
       cmd <= (others => '1'); -- Invalid command

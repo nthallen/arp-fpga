@@ -28,7 +28,7 @@ ARCHITECTURE beh OF qclic_bio IS
 BEGIN
   i <= io;
   
-  output : Process (o) Is
+  output_p : Process (o) Is
   Begin
     if o = '1' then
       io <= '1';
