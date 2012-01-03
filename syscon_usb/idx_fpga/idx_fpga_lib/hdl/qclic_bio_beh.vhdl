@@ -26,7 +26,7 @@ END qclic_bio ;
 --
 ARCHITECTURE beh OF qclic_bio IS
 BEGIN
-  i <= io;
+  i <= To_01(io);
   
   output_p : Process (o) Is
   Begin
