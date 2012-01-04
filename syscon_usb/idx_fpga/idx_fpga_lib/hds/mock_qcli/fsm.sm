@@ -79,19 +79,19 @@ value "C:\\HDS\\idx_fpga\\idx_fpga_lib\\hds\\mock_qcli"
 )
 (vvPair
 variable "date"
-value "01/ 3/2012"
+value "01/ 4/2012"
 )
 (vvPair
 variable "day"
-value "Tue"
+value "Wed"
 )
 (vvPair
 variable "day_long"
-value "Tuesday"
+value "Wednesday"
 )
 (vvPair
 variable "dd"
-value "03"
+value "04"
 )
 (vvPair
 variable "entity_name"
@@ -215,7 +215,7 @@ value "fsm"
 )
 (vvPair
 variable "time"
-value "16:05:56"
+value "12:58:02"
 )
 (vvPair
 variable "unit"
@@ -243,6 +243,7 @@ value "12"
 )
 ]
 )
+uid 518,0
 optionalChildren [
 *1 (ConcurrentSM
 uid 1,0
@@ -1323,12 +1324,10 @@ shape (Rectangle
 uid 251,0
 va (VaSet
 vasetType 1
-transparent 1
 fg "65535,65535,65535"
 bg "0,0,0"
 lineColor "39936,56832,65280"
-lineWidth -1
-fillStyle 1
+lineWidth 2
 )
 xt "22534,35104,31334,42304"
 )
@@ -1339,12 +1338,12 @@ va (VaSet
 vasetType 3
 isHidden 1
 lineColor "39936,56832,65280"
-lineWidth -1
+lineWidth 2
 )
-xt "22634,35004,31234,35004"
+xt "22634,38854,31234,38854"
 pts [
-"22634,35004"
-"31234,35004"
+"22634,38854"
+"31234,38854"
 ]
 )
 bline (Line
@@ -1353,12 +1352,12 @@ va (VaSet
 vasetType 3
 isHidden 1
 lineColor "39936,56832,65280"
-lineWidth -1
+lineWidth 2
 )
-xt "22634,38854,31234,38854"
+xt "22634,40704,31234,40704"
 pts [
-"22634,38854"
-"31234,38854"
+"22634,40704"
+"31234,40704"
 ]
 )
 ttri (Triangle
@@ -1366,13 +1365,12 @@ uid 254,0
 ro 90
 va (VaSet
 vasetType 1
-isHidden 1
 fg "0,32768,49152"
 bg "0,0,0"
 lineColor "39936,56832,65280"
 lineWidth -1
 )
-xt "22184,34629,22534,34979"
+xt "22184,38529,22534,38879"
 )
 btri (Triangle
 uid 255,0
@@ -1392,7 +1390,14 @@ uid 256,0
 va (VaSet
 font "arial,8,0"
 )
-xt "22634,34804,22634,34804"
+xt "22634,35204,31234,42204"
+st "Sreg(15 downto 1) <=
+   Sreg(14 downto 0);
+if QSData = '1' then
+   Sreg(0) <= '1';
+else
+   Sreg(0) <= '0';
+end if;"
 tm "Actions"
 )
 inActions (MLText
@@ -1400,14 +1405,7 @@ uid 257,0
 va (VaSet
 font "arial,8,0"
 )
-xt "22634,35204,31234,42204"
-st "Sreg(14 downto 0) <=
-   Sreg(15 downto 1);
-if QSData = '1' then
-   Sreg(15) <= '1';
-else
-   Sreg(15) <= '0';
-end if;"
+xt "22634,38904,31234,45904"
 tm "Actions"
 )
 exitActions (MLText
@@ -1763,6 +1761,7 @@ impLoop 0
 *23 (State
 uid 349,0
 shape (CircleInOctagon
+uid 548,0
 va (VaSet
 vasetType 1
 fg "0,65535,65535"
@@ -1923,6 +1922,7 @@ isWait 1
 *24 (State
 uid 376,0
 shape (CircleInOctagon
+uid 549,0
 va (VaSet
 vasetType 1
 fg "0,65535,65535"
@@ -2939,19 +2939,18 @@ fg "65535,65535,65535"
 bg "0,0,0"
 lineColor "0,32768,49152"
 )
-xt "36464,22628,42164,24628"
+xt "34264,22828,44364,26228"
 )
 autoResize 1
 lineShape (Line
 uid 306,0
 va (VaSet
 vasetType 3
-isHidden 1
 )
-xt "38664,24528,38664,24528"
+xt "34764,24528,43864,24528"
 pts [
-"38664,24528"
-"38664,24528"
+"34764,24528"
+"43864,24528"
 ]
 )
 condition (MLText
@@ -2968,7 +2967,8 @@ uid 308,0
 va (VaSet
 font "arial,8,0"
 )
-xt "39314,24528,39314,24528"
+xt "34764,24928,43864,25928"
+st "QCLI_out_cld <= Sreg;"
 tm "Actions"
 )
 )
@@ -3842,8 +3842,8 @@ tm "SmCompilerDirectivesTextMgr"
 ]
 associable 1
 )
-windowSize "64,51,1232,945"
-viewArea "-18360,-10523,91402,72493"
+windowSize "64,51,1234,945"
+viewArea "-18400,-10500,92065,72872"
 cachedDiagramExtent "0,-1000,84740,61690"
 pageSetupInfo (PageSetupInfo
 ptrCmd "Adobe PDF,winspool,"
@@ -4155,14 +4155,15 @@ uid 32,0
 va (VaSet
 font "Courier New,8,0"
 )
-xt "35600,0,62600,5600"
-st "SIGNAL   MODE    DEFAULT  RESET            SCHEME 
-QSClk    INOUT   'Z'                       COMB   
-QSData   INOUT   'Z'                       COMB   
-BitCnt   LOCAL            (others => '0')  CLKD   
-Sreg     LOCAL            (others => '0')  CLKD   
-WordCnt  LOCAL            (others => '0')  CLKD   
-OBit     LOCAL            '0'              CLKD   
+xt "35600,0,63100,6400"
+st "SIGNAL    MODE    DEFAULT  RESET            SCHEME 
+QSClk     INOUT   'Z'                       COMB   
+QSData    INOUT   'Z'                       COMB   
+BitCnt    LOCAL            (others => '0')  CLKD   
+Sreg      LOCAL            (others => '0')  CLKD   
+WordCnt   LOCAL            (others => '0')  CLKD   
+OBit      LOCAL            '0'              CLKD   
+QCLI_out  OUT              (others => '0')  CLKD   
 "
 tm "SmSignalsGenStatusTextMgr"
 )
@@ -4268,7 +4269,7 @@ stateOrder [
 name "csm"
 )
 ]
-lastUid 517,0
+lastUid 580,0
 commonDM (CommonDM
 ldm (LogicalDM
 emptyRow *70 (LEmptyRow
@@ -4366,7 +4367,7 @@ m 2
 decl (Decl
 n "QSClk"
 t "std_logic"
-o 4
+o 5
 )
 )
 uid 164,0
@@ -4379,7 +4380,7 @@ m 2
 decl (Decl
 n "QSData"
 t "std_logic"
-o 5
+o 6
 )
 )
 uid 166,0
@@ -4393,7 +4394,7 @@ decl (Decl
 n "BitCnt"
 t "std_logic_vector"
 b "(4 DOWNTO 0)"
-o 6
+o 7
 )
 )
 uid 209,0
@@ -4407,7 +4408,7 @@ decl (Decl
 n "Sreg"
 t "std_logic_vector"
 b "(15 DOWNTO 0)"
-o 7
+o 9
 )
 )
 uid 211,0
@@ -4421,7 +4422,7 @@ decl (Decl
 n "WordCnt"
 t "std_logic_vector"
 b "(7 DOWNTO 0)"
-o 8
+o 10
 )
 )
 uid 213,0
@@ -4434,12 +4435,26 @@ m 4
 decl (Decl
 n "OBit"
 t "std_logic"
-o 9
+o 8
 )
 )
 uid 393,0
 scheme 1
 rstVal "'0'"
+)
+*98 (LeafLogPort
+port (LogicalPort
+m 1
+decl (Decl
+n "QCLI_out"
+t "std_logic_vector"
+b "(15 DOWNTO 0)"
+o 4
+)
+)
+uid 551,0
+scheme 1
+rstVal "(others => '0')"
 )
 ]
 )
@@ -4448,7 +4463,7 @@ displayShortBounds 1
 editShortBounds 1
 uid 188,0
 optionalChildren [
-*98 (Sheet
+*99 (Sheet
 sheetRow (SheetRow
 headerVa (MVa
 cellColor "49152,49152,49152"
@@ -4465,85 +4480,91 @@ cellColor "39936,56832,65280"
 fontColor "0,0,0"
 font "Tahoma,10,0"
 )
-emptyMRCItem *99 (MRCItem
+emptyMRCItem *100 (MRCItem
 litem &70
-pos 9
+pos 10
 dimension 20
 )
 uid 190,0
 optionalChildren [
-*100 (MRCItem
+*101 (MRCItem
 litem &71
 pos 0
 dimension 20
 uid 191,0
 )
-*101 (MRCItem
+*102 (MRCItem
 litem &72
 pos 1
 dimension 23
 uid 192,0
 )
-*102 (MRCItem
+*103 (MRCItem
 litem &73
 pos 2
 hidden 1
 dimension 20
 uid 193,0
 )
-*103 (MRCItem
+*104 (MRCItem
 litem &89
 pos 0
 dimension 20
 uid 159,0
 )
-*104 (MRCItem
+*105 (MRCItem
 litem &90
-pos 1
+pos 4
 dimension 20
 uid 161,0
 )
-*105 (MRCItem
+*106 (MRCItem
 litem &91
-pos 2
+pos 5
 dimension 20
 uid 163,0
 )
-*106 (MRCItem
+*107 (MRCItem
 litem &92
-pos 3
+pos 2
 dimension 20
 uid 165,0
 )
-*107 (MRCItem
+*108 (MRCItem
 litem &93
-pos 4
+pos 3
 dimension 20
 uid 167,0
 )
-*108 (MRCItem
+*109 (MRCItem
 litem &94
-pos 5
+pos 6
 dimension 20
 uid 210,0
 )
-*109 (MRCItem
+*110 (MRCItem
 litem &95
-pos 6
+pos 7
 dimension 20
 uid 212,0
 )
-*110 (MRCItem
+*111 (MRCItem
 litem &96
-pos 7
+pos 8
 dimension 20
 uid 214,0
 )
-*111 (MRCItem
+*112 (MRCItem
 litem &97
-pos 8
+pos 9
 dimension 20
 uid 394,0
+)
+*113 (MRCItem
+litem &98
+pos 1
+dimension 20
+uid 550,0
 )
 ]
 )
@@ -4556,85 +4577,85 @@ textAngle 90
 )
 uid 194,0
 optionalChildren [
-*112 (MRCItem
+*114 (MRCItem
 litem &74
 pos 0
 dimension 20
 uid 195,0
 )
-*113 (MRCItem
+*115 (MRCItem
 litem &76
 pos 1
 dimension 50
 uid 196,0
 )
-*114 (MRCItem
+*116 (MRCItem
 litem &77
 pos 2
 dimension 70
 uid 197,0
 )
-*115 (MRCItem
+*117 (MRCItem
 litem &78
 pos 3
 dimension 50
 uid 198,0
 )
-*116 (MRCItem
+*118 (MRCItem
 litem &79
 pos 4
 dimension 80
 uid 199,0
 )
-*117 (MRCItem
+*119 (MRCItem
 litem &80
 pos 5
 dimension 80
 uid 200,0
 )
-*118 (MRCItem
+*120 (MRCItem
 litem &81
 pos 6
 dimension 40
 uid 201,0
 )
-*119 (MRCItem
+*121 (MRCItem
 litem &82
 pos 7
 dimension 100
 uid 202,0
 )
-*120 (MRCItem
+*122 (MRCItem
 litem &83
 pos 8
 dimension 60
 uid 203,0
 )
-*121 (MRCItem
+*123 (MRCItem
 litem &84
 pos 9
 dimension 130
 uid 204,0
 )
-*122 (MRCItem
+*124 (MRCItem
 litem &85
 pos 10
 dimension 56
 uid 205,0
 )
-*123 (MRCItem
+*125 (MRCItem
 litem &86
 pos 11
 dimension 50
 uid 206,0
 )
-*124 (MRCItem
+*126 (MRCItem
 litem &87
 pos 12
 dimension 50
 uid 207,0
 )
-*125 (MRCItem
+*127 (MRCItem
 litem &88
 pos 13
 dimension 80
@@ -4656,38 +4677,38 @@ uid 168,0
 cdmCsm &1
 genericsCommonDM (CommonDM
 ldm (LogicalDM
-emptyRow *126 (LEmptyRow
+emptyRow *128 (LEmptyRow
 )
 uid 465,0
 optionalChildren [
-*127 (RefLabelRowHdr
+*129 (RefLabelRowHdr
 )
-*128 (TitleRowHdr
+*130 (TitleRowHdr
 )
-*129 (FilterRowHdr
+*131 (FilterRowHdr
 )
-*130 (RefLabelColHdr
+*132 (RefLabelColHdr
 tm "RefLabelColHdrMgr"
 )
-*131 (RowExpandColHdr
+*133 (RowExpandColHdr
 tm "RowExpandColHdrMgr"
 )
-*132 (GroupColHdr
+*134 (GroupColHdr
 tm "GroupColHdrMgr"
 )
-*133 (NameColHdr
+*135 (NameColHdr
 tm "GenericNameColHdrMgr"
 )
-*134 (TypeColHdr
+*136 (TypeColHdr
 tm "GenericTypeColHdrMgr"
 )
-*135 (InitColHdr
+*137 (InitColHdr
 tm "GenericValueColHdrMgr"
 )
-*136 (PragmaColHdr
+*138 (PragmaColHdr
 tm "GenericPragmaColHdrMgr"
 )
-*137 (EolColHdr
+*139 (EolColHdr
 tm "GenericEolColHdrMgr"
 )
 ]
@@ -4697,7 +4718,7 @@ displayShortBounds 1
 editShortBounds 1
 uid 477,0
 optionalChildren [
-*138 (Sheet
+*140 (Sheet
 sheetRow (SheetRow
 headerVa (MVa
 cellColor "49152,49152,49152"
@@ -4714,27 +4735,27 @@ cellColor "39936,56832,65280"
 fontColor "0,0,0"
 font "Tahoma,10,0"
 )
-emptyMRCItem *139 (MRCItem
-litem &126
+emptyMRCItem *141 (MRCItem
+litem &128
 pos 0
 dimension 20
 )
 uid 479,0
 optionalChildren [
-*140 (MRCItem
-litem &127
+*142 (MRCItem
+litem &129
 pos 0
 dimension 20
 uid 480,0
 )
-*141 (MRCItem
-litem &128
+*143 (MRCItem
+litem &130
 pos 1
 dimension 23
 uid 481,0
 )
-*142 (MRCItem
-litem &129
+*144 (MRCItem
+litem &131
 pos 2
 hidden 1
 dimension 20
@@ -4751,44 +4772,44 @@ textAngle 90
 )
 uid 483,0
 optionalChildren [
-*143 (MRCItem
-litem &130
+*145 (MRCItem
+litem &132
 pos 0
 dimension 20
 uid 484,0
 )
-*144 (MRCItem
-litem &132
+*146 (MRCItem
+litem &134
 pos 1
 dimension 50
 uid 485,0
 )
-*145 (MRCItem
-litem &133
+*147 (MRCItem
+litem &135
 pos 2
 dimension 100
 uid 486,0
 )
-*146 (MRCItem
-litem &134
+*148 (MRCItem
+litem &136
 pos 3
 dimension 100
 uid 487,0
 )
-*147 (MRCItem
-litem &135
+*149 (MRCItem
+litem &137
 pos 4
 dimension 50
 uid 488,0
 )
-*148 (MRCItem
-litem &136
+*150 (MRCItem
+litem &138
 pos 5
 dimension 50
 uid 489,0
 )
-*149 (MRCItem
-litem &137
+*151 (MRCItem
+litem &139
 pos 6
 dimension 80
 uid 490,0
@@ -5394,7 +5415,7 @@ va (VaSet
 vasetType 1
 transparent 1
 )
-xt "-371,972,-116,1278"
+xt "-441,926,-116,1323"
 )
 ]
 )
@@ -5471,7 +5492,7 @@ va (VaSet
 vasetType 1
 transparent 1
 )
-xt "-415,1064,-76,1263"
+xt "-425,943,-76,1304"
 )
 (Line
 sl 0

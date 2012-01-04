@@ -26,7 +26,11 @@ END qclic_bio ;
 --
 ARCHITECTURE beh OF qclic_bio IS
 BEGIN
-  i <= To_01(io);
+  with io select
+    i <= '1' when '1',
+         '1' when 'H',
+         '0' when others;
+  -- i <= To_01(std_ulogic(io),'0');
   
   output_p : Process (o) Is
   Begin

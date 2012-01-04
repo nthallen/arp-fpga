@@ -13,17 +13,18 @@ USE ieee.std_logic_unsigned.ALL;
 
 ENTITY qclictrl_tester IS
    PORT( 
-      ExpAck : IN     std_ulogic;
-      QSync  : IN     std_ulogic;
-      RData  : IN     std_logic_vector (15 DOWNTO 0);
-      Addr   : OUT    std_logic_vector (15 DOWNTO 0);
-      ExpRd  : OUT    std_ulogic;
-      ExpWr  : OUT    std_ulogic;
-      F8M    : OUT    std_logic;
-      WData  : OUT    std_logic_vector (15 DOWNTO 0);
-      rst    : OUT    std_logic;
-      QSClk  : INOUT  std_logic;
-      QSData : INOUT  std_logic
+      ExpAck   : IN     std_ulogic;
+      QCLI_out : IN     std_logic_vector (15 DOWNTO 0);
+      QSync    : IN     std_ulogic;
+      RData    : IN     std_logic_vector (15 DOWNTO 0);
+      Addr     : OUT    std_logic_vector (15 DOWNTO 0);
+      ExpRd    : OUT    std_ulogic;
+      ExpWr    : OUT    std_ulogic;
+      F8M      : OUT    std_logic;
+      WData    : OUT    std_logic_vector (15 DOWNTO 0);
+      rst      : OUT    std_logic;
+      QSClk    : INOUT  std_logic;
+      QSData   : INOUT  std_logic
    );
 
 -- Declarations
@@ -118,11 +119,14 @@ Begin
       severity error;
     sbwr( X"1006", X"1234" );
     sbwr( X"1006", X"5678" );
+    -- sbrd( X"1002" ); -- Throw in a status read to see if timeout
+    -- Gets delayed until the read is completed
     sbwr( X"1008", X"9ABC" );
     wait_for_write: loop
       sbrd(X"1000");
-      exit wait_for_write when RData(10) = '0';
+      exit wait_for_write when RData(10) = '0'; -- Write Pending bit
     end loop;
+    wait for 270 us;
     Done <= '1';
     wait;
     -- pragma synthesis_on
