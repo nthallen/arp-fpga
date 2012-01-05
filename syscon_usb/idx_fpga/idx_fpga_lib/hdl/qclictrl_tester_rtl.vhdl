@@ -122,11 +122,72 @@ Begin
     -- sbrd( X"1002" ); -- Throw in a status read to see if timeout
     -- Gets delayed until the read is completed
     sbwr( X"1008", X"9ABC" );
-    wait_for_write: loop
+    loop
       sbrd(X"1000");
-      exit wait_for_write when RData(10) = '0'; -- Write Pending bit
+      exit when RData(10) = '0'; -- Write Pending bit
     end loop;
-    wait for 270 us;
+    loop
+      sbrd(X"1000");
+      exit when RData(14) = '1'; -- Reading
+    end loop;
+    loop
+      sbrd(X"1000");
+      exit when RData(14) = '0'; -- Reading
+    end loop;
+    
+    -- Now let's test the block read:
+    sbwr(X"100A", X"3500");
+    loop
+      wait for 1 ms;
+      sbrd(X"1000");
+      exit when RData(9) = '1';
+    end loop;
+    for i in 1 to 128 loop
+      sbrd(X"1004");
+    end loop;
+    sbrd(X"1000");
+    assert RData = X"0800"
+      report "RData (Ctrlr_status) should be 0800";
+    sbrd(X"1002");
+    assert RData = X"8484"
+      report "RData (QCLI_status) should be 8484";
+    
+    -- Now let's test some error detection and correction
+    sbrd(X"1004"); -- read from empty FIFO
+    assert RData = X"0000"
+      report "Read from empty FIFO should return 0000";
+    sbrd(X"1000"); -- read ctrlr_status
+    assert RData(13) = '1'
+      report "Read from empty FIFO should assert RWConflict";
+    sbwr(X"100C", X"0000");
+    sbrd(X"1000"); -- read ctrlr_status
+    assert RData(13) = '0'
+      report "RWConflict not reset by controller reset";
+      
+    sbwr(X"1006", X"4321"); -- Start Write
+    sbrd(X"1004"); -- Read FIFO with write pending should set RWConflict
+    sbrd(X"1000"); -- read ctrlr_status
+    assert RData(13) = '1' AND RData(10) = '1'
+      report "Read FIFO with WQPending should assert RWConflict";
+    sbwr(X"100C", X"0000"); -- ctrlr reset
+    sbrd(X"1000"); -- read ctrlr_status
+    assert RData(13) = '0' AND RData(10) = '0'
+      report "RWConflict 2 not reset by controller reset";
+    
+    sbwr(X"100A", X"2200"); -- Start a read block
+    loop
+      sbrd(X"1000");
+      exit when RData(9) = '1'; -- Read Complete
+    end loop;
+    sbwr(X"1006", X"DCBA");
+    sbrd(X"1000");
+    assert RData(13) = '1'
+      report "Write with read complete should assert RWConflict";
+    sbwr(X"100C", X"0000"); -- ctrlr reset
+    sbrd(X"1000"); -- read ctrlr_status
+    assert RData(13) = '0' AND RData(8) = '0'
+      report "RWConflict 3 not reset by controller reset";
+     
     Done <= '1';
     wait;
     -- pragma synthesis_on
