@@ -15,12 +15,13 @@ LIBRARY idx_fpga_lib;
 
 ENTITY PDACS_HTW IS
   GENERIC (
-    DACS_BUILD_NUMBER : std_logic_vector(15 DOWNTO 0) := X"000F";
+    DACS_BUILD_NUMBER : std_logic_vector(15 DOWNTO 0) := X"000E";
     INSTRUMENT_ID : std_logic_vector(15 DOWNTO 0) := X"0002";
     PTRH_N_BDS : integer range 5 downto 1 := 3;
     CTR_UG_N_BDS : integer range 5 downto 0 := 0;
     IDX_N_CHANNELS : integer range 15 downto 1 := 2;
     DIGIO_N_CONNECTORS : integer range 4 DOWNTO 1 := 4;
+    -- FORCE_DIR vectors are indexed 0 to 23
     DIGIO_FORCE_DIR : std_ulogic_vector := "111111111111111111100010";
     DIGIO_FORCE_DIR_VAL : std_ulogic_vector := "000000001111001111100000";
     CMD_PROC_N_CMDS : integer := 38
@@ -338,13 +339,11 @@ BEGIN
   BIO(15 DOWNTO 10) <= (others => 'Z');
   BIO(7 DOWNTO 4) <= (others => 'Z');
 
-  -- flow controller solenoid commands are true in low
-  -- as is QCLI Reset
-  DIO(10 DOWNTO 0) <= not cmd_out(34 DOWNTO 24);
-  -- Furon valve commands are true in low
-  DIO(14) <= not cmd_out(35);
-  DIO(15) <= not cmd_out(36);
-  DIO(43) <= not cmd_out(37);
+  DIO(9 DOWNTO 0) <= cmd_out(33 DOWNTO 24);
+  DIO(10) <= not cmd_out(34);
+  DIO(14) <= cmd_out(35);
+  DIO(15) <= cmd_out(36);
+  DIO(43) <= cmd_out(37);
 
   DIO(11) <= idx_Dir(0);
   DIO(12) <= idx_Run(0);

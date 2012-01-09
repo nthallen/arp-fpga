@@ -14,7 +14,7 @@ USE ieee.std_logic_arith.all;
 ENTITY DigIO_Addr IS
   GENERIC (
     BASE_ADDRESS : std_logic_vector (15 DOWNTO 0) := X"0800";
-    N_CONNECTORS : integer range 4 DOWNTO 1 := 2
+    N_CONNECTORS : integer range 8 DOWNTO 1 := 2
   );
   PORT (
     Addr : IN std_logic_vector (15 DOWNTO 0);

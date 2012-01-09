@@ -41,9 +41,10 @@ entity dacs_v2 is
       IDX_N_CHANNELS : integer range 15 downto 1 := 3;
       IDX_BASE_ADDR : std_logic_vector(15 downto 0) := X"0A00";
       DIGIO_BASE_ADDRESS : std_logic_vector (15 DOWNTO 0) := X"0800";
-      DIGIO_N_CONNECTORS : integer range 4 DOWNTO 1 := 2;
+      DIGIO_N_CONNECTORS : integer range 8 DOWNTO 1 := 2;
       DIGIO_FORCE_DIR : std_ulogic_vector := "000000000000";
-      DIGIO_FORCE_DIR_VAL : std_ulogic_vector := "000000000000"
+      DIGIO_FORCE_DIR_VAL : std_ulogic_vector := "000000000000";
+      N_QCLICTRL : integer range 5 downto 0 := 1
     );
     Port (
       fpga_0_rst_1_sys_rst_pin : IN std_logic;
@@ -97,7 +98,11 @@ entity dacs_v2 is
       DA_CS_B     : OUT std_logic_vector(N_AO_CHIPS-1 DOWNTO 0);
       DA_LDAC_B   : OUT std_logic;
       DA_SCK      : OUT std_logic;
-      DA_SDI      : OUT std_logic
+      DA_SDI      : OUT std_logic;
+
+      QSync       : OUT    std_ulogic_vector(N_QCLICTRL-1 DOWNTO 0);
+      QSClk       : INOUT  std_logic_vector(N_QCLICTRL-1 DOWNTO 0);
+      QSData      : INOUT  std_logic_vector(N_QCLICTRL-1 DOWNTO 0)
     );
 end dacs_v2;
 
@@ -190,7 +195,7 @@ architecture Behavioral of dacs_v2 is
   COMPONENT DigIO
      GENERIC (
        DIGIO_BASE_ADDRESS : std_logic_vector (15 DOWNTO 0) := X"0800";
-       DIGIO_N_CONNECTORS : integer range 4 DOWNTO 1 := 2;
+       DIGIO_N_CONNECTORS : integer range 8 DOWNTO 1 := 2;
        DIGIO_FORCE_DIR : std_ulogic_vector := "000000000000";
        DIGIO_FORCE_DIR_VAL : std_ulogic_vector := "000000000000"
      );
@@ -323,18 +328,38 @@ architecture Behavioral of dacs_v2 is
         sda    : INOUT  std_logic_vector(N_ISBITS-1 DOWNTO 0)
      );
   END COMPONENT;
+  COMPONENT qclictrl
+     GENERIC (
+        BASE_ADDR : std_logic_vector(15 DOWNTO 0) := X"1000"
+     );
+     PORT (
+        Addr   : IN     std_logic_vector(15 DOWNTO 0);
+        ExpRd  : IN     std_ulogic;
+        ExpWr  : IN     std_ulogic;
+        F8M    : IN     std_logic;
+        WData  : IN     std_logic_vector(15 DOWNTO 0);
+        rst    : IN     std_logic;
+        ExpAck : OUT    std_ulogic;
+        QSync  : OUT    std_ulogic;
+        RData  : OUT    std_logic_vector(15 DOWNTO 0);
+        QSClk  : INOUT  std_logic;
+        QSData : INOUT  std_logic
+     );
+  END COMPONENT;
   
   FOR ALL : ctr_ungated USE ENTITY idx_fpga_lib.ctr_ungated;
   FOR ALL : ao USE ENTITY idx_fpga_lib.ao;
   FOR ALL : vm USE ENTITY idx_fpga_lib.vm;
   FOR ALL : ptrhm_acquire USE ENTITY idx_fpga_lib.ptrhm_acquire;
+  FOR ALL : qclictrl USE ENTITY idx_fpga_lib.qclictrl;
 
 	attribute box_type : string;
 	attribute box_type of Processor : component is "user_black_box";
 	
 	CONSTANT PTRH0 : integer := 5;
-	CONSTANT CTR_UG0 : integer := PTRH0+1; 
-	CONSTANT N_BOARDS : integer := CTR_UG0+CTR_UG_N_BDS;
+	CONSTANT CTR_UG0 : integer := PTRH0+1;
+	CONSTANT QCLICTRL0 : integer := CTR_UG0+CTR_UG_N_BDS;
+	CONSTANT N_BOARDS : integer := CTR_UG0+CTR_UG_N_BDS+N_QCLICTRL;
 	SIGNAL clk_8_0000MHz : std_logic;
 	SIGNAL clk_66_6667MHz : std_logic;
   SIGNAL xps_epc_0_PRH_Wr_n_pin : std_logic;
@@ -565,6 +590,26 @@ begin
          WData  => WData,
          ExpAck => ExpAck(CTR_UG0+i),
          RData  => iRData(16*(CTR_UG0+i)+15 DOWNTO 16*(CTR_UG0+i))
+      );
+  end generate;
+  
+  qcli : for i in 0 TO N_QCLICTRL-1 generate
+    instanceName : qclictrl
+      GENERIC MAP (
+         BASE_ADDR => CONV_STD_LOGIC_VECTOR(4096+i*16,16)
+      )
+      PORT MAP (
+         Addr   => ExpAddr,
+         ExpRd  => ExpRd,
+         ExpWr  => ExpWr,
+         F8M    => clk_8_0000MHz,
+         WData  => WData,
+         rst    => rst,
+         ExpAck => ExpAck(QCLICTRL0+i),
+         QSync  => QSync(i),
+         RData  => iRData(16*(QCLICTRL0+i)+15 DOWNTO 16*(QCLICTRL0+i)),
+         QSClk  => QSClk(i),
+         QSData => QSData(i)
       );
   end generate;
 

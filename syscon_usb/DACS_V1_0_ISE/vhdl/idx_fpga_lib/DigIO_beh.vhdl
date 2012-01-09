@@ -16,7 +16,7 @@ LIBRARY idx_fpga_lib;
 ENTITY DigIO IS
   GENERIC (
     DIGIO_BASE_ADDRESS : std_logic_vector (15 DOWNTO 0) := X"0800";
-    DIGIO_N_CONNECTORS : integer range 4 DOWNTO 1 := 2;
+    DIGIO_N_CONNECTORS : integer range 8 DOWNTO 1 := 2;
     DIGIO_FORCE_DIR : std_ulogic_vector := "000000000000";
     DIGIO_FORCE_DIR_VAL : std_ulogic_vector := "000000000000"
   );
@@ -48,7 +48,7 @@ ARCHITECTURE beh OF DigIO IS
    COMPONENT DigIO_Addr
       GENERIC (
          BASE_ADDRESS : std_logic_vector (15 DOWNTO 0) := X"0800";
-         N_CONNECTORS : integer range 4 DOWNTO 1       := 2
+         N_CONNECTORS : integer range 8 DOWNTO 1       := 2
       );
       PORT (
          Addr     : IN     std_logic_vector(15 DOWNTO 0);
