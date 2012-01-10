@@ -21,6 +21,7 @@
 #include "xgpio.h"
 #include "xio.h"
 #include "string.h"
+extern void print(char*);
 
 /* BOARD_REV includes the SUBBUS_SUBFUNCTION code (5 for DACS) and the
  * SUBBUS_FEATURES bitmap (in hex). Values are defined in subbus.h
@@ -332,8 +333,8 @@ static void parse_command(char *cmd) {
     case 'D':
     case 'T':
     case 'A':
-    case 'M': read_multi(cmd); return;
     case 'V': nargs = 0; break;
+    case 'M': read_multi(cmd); return;
     case 'R':
     case 'C':
     case 'S':
@@ -472,6 +473,7 @@ int main(void) {
   
   init_gpios();
   subbus_reset();
+  // print("Startup main()\r\n");
   
   while(1) {
     Xuint8 subb_status;
@@ -479,6 +481,9 @@ int main(void) {
       int c = XIo_In8(FTDI_ADDRESS);
       cmd[cmd_byte_num++] = c;
       if ( c == '\n' ) {
+    	cmd[cmd_byte_num] = '\0';
+    	// print(cmd);
+    	// print("\r");
         parse_command(cmd);
         cmd_byte_num = 0;
       } else if (cmd_byte_num >= RECV_BUF_SIZE) {
@@ -516,6 +521,9 @@ int main(void) {
 static void SendError(char *code) {
   send_usb_char('E');
   SendUSB(code);
+  // print("--E");
+  // print(code);
+  // print("\r\n");
 }
 
 /**
