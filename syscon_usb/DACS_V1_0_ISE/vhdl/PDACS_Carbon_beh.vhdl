@@ -32,7 +32,7 @@ ENTITY PDACS_Carbon IS
 
     N_AO_CHIPS : natural range 15 downto 1 := 4;
     IDX_N_CHANNELS : integer range 15 downto 1 := 1;
-    DIGIO_N_CONNECTORS : integer range 4 DOWNTO 1 := 5;
+    DIGIO_N_CONNECTORS : integer range 8 DOWNTO 1 := 5;
     -- FORCE_DIR vectors are indexed 0 to 29
     DIGIO_FORCE_DIR : std_ulogic_vector :=     "111111111111111111111111100000";
     DIGIO_FORCE_DIR_VAL : std_ulogic_vector := "000000000000011111111111100000";
@@ -183,7 +183,7 @@ ARCHITECTURE beh OF PDACS_Carbon IS
       IDX_N_CHANNELS : integer range 15 downto 1 := 3;
       IDX_BASE_ADDR : std_logic_vector(15 downto 0) := X"0A00";
       DIGIO_BASE_ADDRESS : std_logic_vector (15 DOWNTO 0) := X"0800";
-      DIGIO_N_CONNECTORS : integer range 4 DOWNTO 1 := 2;
+      DIGIO_N_CONNECTORS : integer range 8 DOWNTO 1 := 2;
       DIGIO_FORCE_DIR : std_ulogic_vector := "000000000000";
       DIGIO_FORCE_DIR_VAL : std_ulogic_vector := "000000000000";
       N_QCLICTRL : integer range 5 downto 0 := 1
