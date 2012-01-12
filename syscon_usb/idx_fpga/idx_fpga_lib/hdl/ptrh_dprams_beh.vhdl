@@ -16,7 +16,7 @@ ENTITY ptrh_dprams IS
    PORT (
       F8M     : IN     std_ulogic;
       RdEn    : IN     std_ulogic;
-      RegEn   : IN     std_ulogic_vector(12 DOWNTO 0);
+      RegEn   : IN     std_logic_vector(12 DOWNTO 0);
       WrEn    : IN     std_ulogic_vector(12 DOWNTO 0);
       hold_D1 : IN     std_ulogic;
       hold_D2 : IN     std_ulogic;
