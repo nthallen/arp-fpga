@@ -18,8 +18,8 @@ ENTITY ptrh_dpram IS
       hold  : IN     std_logic;
       rData : OUT    std_logic_vector (15 DOWNTO 0);
       wData : IN     std_logic_vector (15 DOWNTO 0);
-      WrEn  : IN     std_ulogic;
-      Full  : OUT    std_ulogic
+      WrEn  : IN     std_logic;
+      Full  : OUT    std_logic
    );
 
 -- Declarations

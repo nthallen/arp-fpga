@@ -17,11 +17,11 @@ ENTITY ptrh_dprams IS
       F8M     : IN     std_ulogic;
       RdEn    : IN     std_ulogic;
       RegEn   : IN     std_logic_vector(12 DOWNTO 0);
-      WrEn    : IN     std_ulogic_vector(12 DOWNTO 0);
+      WrEn    : IN     std_logic_vector(12 DOWNTO 0);
       hold_D1 : IN     std_ulogic;
       hold_D2 : IN     std_ulogic;
       wData   : IN     std_logic_vector(23 DOWNTO 0);
-      Full    : OUT    std_ulogic_vector(12 DOWNTO 0);
+      Full    : OUT    std_logic_vector(12 DOWNTO 0);
       rData   : OUT    std_logic_vector(15 DOWNTO 0)
    );
 END ptrh_dprams;
@@ -38,8 +38,8 @@ ARCHITECTURE beh OF ptrh_dprams IS
          hold  : IN     std_logic;
          rData : OUT    std_logic_vector(15 DOWNTO 0);
          wData : IN     std_logic_vector(15 DOWNTO 0);
-         WrEn  : IN     std_ulogic;
-         Full  : OUT    std_ulogic
+         WrEn  : IN     std_logic;
+         Full  : OUT    std_logic
       );
    END COMPONENT;
    FOR ALL : ptrh_dpram USE ENTITY idx_fpga_lib.ptrh_dpram;

@@ -23,7 +23,7 @@ ENTITY ptrhm_dprams IS
     F8M     : IN     std_ulogic;
     rst     : IN     std_ulogic;
     RdEn    : IN     std_ulogic;
-    RegEn   : IN     std_ulogic_vector(12 DOWNTO 0);
+    RegEn   : IN     std_logic_vector(12 DOWNTO 0);
     PTRHEn  : IN     std_ulogic_vector(N_PTRH-1 DOWNTO 0);
     WrEn    : IN     std_logic_vector(12 DOWNTO 0);
     WrPTRHEn: IN     std_ulogic_vector(N_PTRH-1 DOWNTO 0);
@@ -36,7 +36,7 @@ END ptrhm_dprams;
 ARCHITECTURE beh OF ptrhm_dprams IS
    type iRData_t is array (N_PTRH-1 DOWNTO 0) of std_logic_vector(15 DOWNTO 0);
    SIGNAL iRData : iRData_t;
-   type PTRHRegEn_t is array (N_PTRH-1 DOWNTO 0) of std_ulogic_vector(12 DOWNTO 0);
+   type PTRHRegEn_t is array (N_PTRH-1 DOWNTO 0) of std_logic_vector(12 DOWNTO 0);
    SIGNAL PTRHRegEn : PTRHRegEn_t;
    SIGNAL WrRegEn   : PTRHRegEn_t;
    SIGNAL hold_D1   : std_ulogic_vector(N_PTRH-1 DOWNTO 0);
@@ -56,12 +56,12 @@ ARCHITECTURE beh OF ptrhm_dprams IS
       PORT (
          F8M     : IN     std_ulogic;
          RdEn    : IN     std_ulogic;
-         RegEn   : IN     std_ulogic_vector(12 DOWNTO 0);
-         WrEn    : IN     std_ulogic_vector(12 DOWNTO 0);
+         RegEn   : IN     std_logic_vector(12 DOWNTO 0);
+         WrEn    : IN     std_logic_vector(12 DOWNTO 0);
          hold_D1 : IN     std_ulogic;
          hold_D2 : IN     std_ulogic;
          wData   : IN     std_logic_vector(23 DOWNTO 0);
-         Full    : OUT    std_ulogic_vector(12 DOWNTO 0);
+         Full    : OUT    std_logic_vector(12 DOWNTO 0);
          rData   : OUT    std_logic_vector(15 DOWNTO 0)
       );
    END COMPONENT;
@@ -116,7 +116,7 @@ BEGIN
   Begin
     for i in N_PTRH-1 DOWNTO 0 loop
       if WrPTRHEn(i) = '1' then
-        WrRegEn(i) <= To_StdULogicVector(WrEn);
+        WrRegEn(i) <= WrEn;
       else
         WrRegEn(i) <= (others => '0');
       end if;

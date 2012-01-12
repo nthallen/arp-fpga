@@ -25,7 +25,7 @@ ENTITY ptrhm_addr IS
     Addr   : IN     std_logic_vector (15 DOWNTO 0);
     BdEn   : OUT    std_ulogic;
     PTRHEn : OUT    std_ulogic_vector (N_PTRH-1 DOWNTO 0);
-    RegEn  : OUT    std_ulogic_vector (12 DOWNTO 0)
+    RegEn  : OUT    std_logic_vector (12 DOWNTO 0)
   );
 
 -- Declarations
