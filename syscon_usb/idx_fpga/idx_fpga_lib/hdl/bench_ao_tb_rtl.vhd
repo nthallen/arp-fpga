@@ -46,7 +46,10 @@ ARCHITECTURE rtl OF bench_ao IS
 
    -- Component declarations
    COMPONENT ao
-      PORT (
+     GENERIC ( 
+        N_AO_CHIPS : natural range 15 downto 1 := 2
+     );
+     PORT (
          Addr      : IN     std_logic_vector(15 DOWNTO 0);
          DA_CLR_B  : OUT    std_logic;
          DA_CS_B   : OUT    std_logic_vector(1 DOWNTO 0);
@@ -71,23 +74,26 @@ ARCHITECTURE rtl OF bench_ao IS
 
 BEGIN
 
-         DUT_ao : ao
-            PORT MAP (
-               Addr      => Addr,
-               DA_CLR_B  => DA_CLR_B,
-               DA_CS_B   => DA_CS_B,
-               DA_LDAC_B => DA_LDAC_B,
-               DA_SCK    => DA_SCK,
-               DA_SDI    => DA_SDI,
-               WData     => WData,
-               RData     => RData,
-               ExpAck    => ExpAck,
-               ExpRd     => ExpRd,
-               ExpWr     => ExpWr,
-               F66M      => F66M,
-               F8M       => F8M,
-               rst       => rst
-            );
+   DUT_ao : ao
+     GENERIC MAP (
+       N_AO_CHIPS => 2
+     )
+     PORT MAP (
+       Addr      => Addr,
+       DA_CLR_B  => DA_CLR_B,
+       DA_CS_B   => DA_CS_B,
+       DA_LDAC_B => DA_LDAC_B,
+       DA_SCK    => DA_SCK,
+       DA_SDI    => DA_SDI,
+       WData     => WData,
+       RData     => RData,
+       ExpAck    => ExpAck,
+       ExpRd     => ExpRd,
+       ExpWr     => ExpWr,
+       F66M      => F66M,
+       F8M       => F8M,
+       rst       => rst
+    );
 
     -- Approximately 66.6 MHz
     clock : Process
@@ -175,13 +181,18 @@ Begin
     wait until F8M'Event AND F8M = '1';
     rst <= '0';
     wait until F8M'Event AND F8M = '1';
+    sbwr( X"0400", X"4321" );
+    wait for 1 us;
     sbwr( X"0406", X"55AA" );
     wait for 1 us;
     sbwr( X"0414", X"AA55" );
     wait for 1 us;
+    sbwr( X"0420", X"1234" );
+    wait for 1 us;
+    check_read(X"0400", X"4321");
     check_read(X"0406", X"55AA");
     check_read(X"0415", X"AA55");
-    check_read(X"0400", X"0000");
+    check_read(X"0420", X"1234");
     Done <= '1';
     wait;
     -- pragma synthesis_on
