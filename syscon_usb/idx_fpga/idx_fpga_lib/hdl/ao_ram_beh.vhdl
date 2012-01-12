@@ -13,8 +13,8 @@ USE ieee.std_logic_arith.all;
 USE ieee.std_logic_unsigned.all;
 
 ENTITY ao_ram IS
-   GENERIC (
-     N_AO_CHIPS : natural range 15 downto 2 := 2
+   GENERIC( 
+      N_AO_CHIPS : natural range 15 downto 2 := 2
    );
    PORT( 
       F8M   : IN     std_ulogic;
