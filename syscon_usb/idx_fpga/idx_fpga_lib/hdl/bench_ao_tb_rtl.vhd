@@ -13,12 +13,16 @@ USE ieee.std_logic_arith.all;
 
 
 ENTITY bench_ao IS
+   GENERIC( 
+      N_AO_CHIPS : natural range 15 downto 2 := 4
+   );
 END bench_ao;
 
 
 LIBRARY ieee;
 USE ieee.std_logic_1164.all;
 USE ieee.std_logic_arith.all;
+USE ieee.std_logic_unsigned.all;
 LIBRARY idx_fpga_lib;
 
 ARCHITECTURE rtl OF bench_ao IS
@@ -28,7 +32,7 @@ ARCHITECTURE rtl OF bench_ao IS
    -- Internal signal declarations
    SIGNAL Addr      : std_logic_vector(15 DOWNTO 0);
    SIGNAL DA_CLR_B  : std_logic;
-   SIGNAL DA_CS_B   : std_logic_vector(1 DOWNTO 0);
+   SIGNAL DA_CS_B   : std_logic_vector(N_AO_CHIPS-1 DOWNTO 0);
    SIGNAL DA_LDAC_B : std_logic;
    SIGNAL DA_SCK    : std_logic;
    SIGNAL DA_SDI    : std_logic;
@@ -52,7 +56,7 @@ ARCHITECTURE rtl OF bench_ao IS
      PORT (
          Addr      : IN     std_logic_vector(15 DOWNTO 0);
          DA_CLR_B  : OUT    std_logic;
-         DA_CS_B   : OUT    std_logic_vector(1 DOWNTO 0);
+         DA_CS_B   : OUT    std_logic_vector(N_AO_CHIPS-1 DOWNTO 0);
          DA_LDAC_B : OUT    std_logic;
          DA_SCK    : OUT    std_logic;
          DA_SDI    : OUT    std_logic;
@@ -76,7 +80,7 @@ BEGIN
 
    DUT_ao : ao
      GENERIC MAP (
-       N_AO_CHIPS => 2
+       N_AO_CHIPS => N_AO_CHIPS
      )
      PORT MAP (
        Addr      => Addr,
@@ -169,6 +173,8 @@ BEGIN
         severity error;
       return;
     end procedure;
+    
+    Variable offset : integer;
 Begin
     Done <= '0';
     rst <= '1';
@@ -181,18 +187,20 @@ Begin
     wait until F8M'Event AND F8M = '1';
     rst <= '0';
     wait until F8M'Event AND F8M = '1';
-    sbwr( X"0400", X"4321" );
-    wait for 1 us;
-    sbwr( X"0406", X"55AA" );
-    wait for 1 us;
-    sbwr( X"0414", X"AA55" );
-    wait for 1 us;
-    sbwr( X"0420", X"1234" );
-    wait for 1 us;
-    check_read(X"0400", X"4321");
-    check_read(X"0406", X"55AA");
-    check_read(X"0415", X"AA55");
-    check_read(X"0420", X"1234");
+    for i in 0 to N_AO_CHIPS-1 loop
+      for j in 0 to 7 loop
+        offset := (i*8+j)*2;
+        sbwr( X"0400" + conv_std_logic_vector(offset,16), conv_std_logic_vector(256*offset+offset,16));
+        wait for 1 us;
+      end loop;
+    end loop;
+    for i in 0 to N_AO_CHIPS-1 loop
+      for j in 0 to 7 loop
+        offset := (i*8+j)*2;
+        check_read( X"0400" + conv_std_logic_vector(offset,16), conv_std_logic_vector(256*offset+offset,16));
+        wait for 1 us;
+      end loop;
+    end loop;
     Done <= '1';
     wait;
     -- pragma synthesis_on
