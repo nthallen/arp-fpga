@@ -55,15 +55,15 @@ BEGIN
     end if;
   End Process;
   
-  RdWide : Process (F8M) Is
-    VARIABLE cacheaddr : unsigned(3 DOWNTO 0);
+  RdSide : Process (F8M) Is
+    VARIABLE cacheaddr : integer range 16*8-1 downto 0;
   Begin
     if F8M'Event and F8M = '1' then
       if RdEn = '1' then
-        for i in 3 downto 0 loop
-          cacheaddr(i) := Addr(i+1);
-        end loop;
-        RData <= ao_cache(conv_integer(cacheaddr));
+        cacheaddr := conv_integer(Addr(7 downto 1));
+        if cacheaddr < N_AO_CHIPS*8 then
+          RData <= ao_cache(cacheaddr);
+        end if;
       end if;
     end if;
   End Process;
