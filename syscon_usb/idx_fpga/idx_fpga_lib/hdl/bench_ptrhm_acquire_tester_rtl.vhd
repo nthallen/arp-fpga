@@ -106,8 +106,8 @@ BEGIN
     sbrd_check(X"0216", X"6566");
     sbrd_check(X"0218", X"0064");
 
-    sbrd_check(X"022C", X"0303"); -- only SHT21
-    sbrd_check(X"024C", X"0303"); -- only SHT21
+    sbrd_check(X"022C", X"1003"); -- Select Error (no mux)
+    sbrd_check(X"024C", X"1003"); -- Select Error (no mux)
     
     ClkDone <= '1';
     wait;
