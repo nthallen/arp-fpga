@@ -13,18 +13,19 @@ USE ieee.std_logic_unsigned.ALL;
 
 ENTITY qclictrl_tester IS
    PORT( 
-      ExpAck   : IN     std_ulogic;
-      QCLI_out : IN     std_logic_vector (15 DOWNTO 0);
-      QSync    : IN     std_ulogic;
-      RData    : IN     std_logic_vector (15 DOWNTO 0);
-      Addr     : OUT    std_logic_vector (15 DOWNTO 0);
-      ExpRd    : OUT    std_ulogic;
-      ExpWr    : OUT    std_ulogic;
-      F8M      : OUT    std_logic;
-      WData    : OUT    std_logic_vector (15 DOWNTO 0);
-      rst      : OUT    std_logic;
-      QSClk    : INOUT  std_logic;
-      QSData   : INOUT  std_logic
+      ExpAck    : IN     std_ulogic;
+      QCLI_out  : IN     std_logic_vector (15 DOWNTO 0);
+      QSync     : IN     std_ulogic;
+      RData     : IN     std_logic_vector (15 DOWNTO 0);
+      Addr      : OUT    std_logic_vector (15 DOWNTO 0);
+      ExpRd     : OUT    std_ulogic;
+      ExpWr     : OUT    std_ulogic;
+      F8M       : OUT    std_logic;
+      MQ_enable : OUT    std_logic;
+      WData     : OUT    std_logic_vector (15 DOWNTO 0);
+      rst       : OUT    std_logic;
+      QSClk     : INOUT  std_logic;
+      QSData    : INOUT  std_logic
    );
 
 -- Declarations
@@ -92,6 +93,7 @@ Begin
     QSClk <= 'L';
     QSData <= 'L';
     ExpWr <= '0';
+    MQ_enable <= '1';
     rst <= '1';
     -- pragma synthesis_off
     wait until F8M_int'Event AND F8M_int = '1';
