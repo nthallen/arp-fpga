@@ -594,7 +594,7 @@ begin
   end generate;
   
   qcli : for i in 0 TO N_QCLICTRL-1 generate
-    instanceName : qclictrl
+    qcli : qclictrl
       GENERIC MAP (
          BASE_ADDR => CONV_STD_LOGIC_VECTOR(4096+i*16,16)
       )
