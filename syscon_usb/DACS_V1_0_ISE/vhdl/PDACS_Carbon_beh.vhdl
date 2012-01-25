@@ -336,7 +336,7 @@ BEGIN
        dig_IO(189 DOWNTO 186)         => DIO(23 DOWNTO 20),
        dig_IO(191 DOWNTO 190)         => dig_io_nc(7 DOWNTO 6),
        dig_IO(199 DOWNTO 192)         => DIO(63 DOWNTO 56),
-       dig_IO(200)                    => DIO(7),
+       dig_IO(200)                    => DIO(6),
        dig_IO(239 DOWNTO 201)         => dig_io_nc(46 DOWNTO 8),
        ana_in_SDI                     => AI_AD_MISO,
        ana_in_CS5                     => ana_in_CS5,
@@ -353,8 +353,8 @@ BEGIN
        DA_LDAC_B                      => DA_LDAC_B_int,
        DA_SCK                         => DA_SCK_int,
        DA_SDI                         => DA_SDI_int,
-       QSData                         => DIO(3 DOWNTO 1),
-       QSClk                          => DIO(6 DOWNTO 4),
+       QSData                         => DIO(2 DOWNTO 0),
+       QSClk                          => DIO(5 DOWNTO 3),
        QSync                          => QSync
     );
 
@@ -379,8 +379,9 @@ BEGIN
 
   BIO(15 DOWNTO 8) <= (others => 'Z');
 
-  -- DIO(6 downto 1) are QCLI BIO
-  -- DIO(7) is spare DigIO
+  -- DIO(5 downto 0) are QCLI BIO (wired to DIO(6 downto 1))
+  -- DIO(6) is spare DigIO (wired to DIO7
+  DIO(7) <= 'Z'; -- DIO(7) goes nowhere
   DIO(8) <= cmd_out(24);
   DIO(9) <= not cmd_out(25);
   DIO(15 DOWNTO 10) <= cmd_out(31 DOWNTO 26);
