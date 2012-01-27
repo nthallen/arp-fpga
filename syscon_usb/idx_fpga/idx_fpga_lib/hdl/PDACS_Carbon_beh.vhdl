@@ -244,7 +244,8 @@ ARCHITECTURE beh OF PDACS_Carbon IS
 
       QSync       : OUT    std_ulogic_vector(N_QCLICTRL-1 DOWNTO 0);
       QSClk       : INOUT  std_logic_vector(N_QCLICTRL-1 DOWNTO 0);
-      QSData      : INOUT  std_logic_vector(N_QCLICTRL-1 DOWNTO 0)
+      QSData      : INOUT  std_logic_vector(N_QCLICTRL-1 DOWNTO 0);
+      QNBsy       : IN     std_logic_vector(N_QCLICTRL-1 DOWNTO 0)
     );
   END COMPONENT;
    
@@ -355,7 +356,8 @@ BEGIN
        DA_SDI                         => DA_SDI_int,
        QSData                         => DIO(2 DOWNTO 0),
        QSClk                          => DIO(5 DOWNTO 3),
-       QSync                          => QSync
+       QSync                          => QSync,
+       QNBsy                          => DIO(58 DOWNTO 56)
     );
 
     cmd_proc_i : cmd_proc

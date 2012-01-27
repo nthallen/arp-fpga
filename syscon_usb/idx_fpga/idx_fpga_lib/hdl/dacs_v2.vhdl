@@ -102,7 +102,8 @@ entity dacs_v2 is
 
       QSync       : OUT    std_ulogic_vector(N_QCLICTRL-1 DOWNTO 0);
       QSClk       : INOUT  std_logic_vector(N_QCLICTRL-1 DOWNTO 0);
-      QSData      : INOUT  std_logic_vector(N_QCLICTRL-1 DOWNTO 0)
+      QSData      : INOUT  std_logic_vector(N_QCLICTRL-1 DOWNTO 0);
+      QNBsy       : IN     std_logic_vector(N_QCLICTRL-1 DOWNTO 0)
     );
 end dacs_v2;
 
@@ -337,6 +338,7 @@ architecture Behavioral of dacs_v2 is
         ExpRd  : IN     std_ulogic;
         ExpWr  : IN     std_ulogic;
         F8M    : IN     std_logic;
+        QNBsy  : IN     std_logic;
         WData  : IN     std_logic_vector(15 DOWNTO 0);
         rst    : IN     std_logic;
         ExpAck : OUT    std_ulogic;
@@ -609,7 +611,8 @@ begin
          QSync  => QSync(i),
          RData  => iRData(16*(QCLICTRL0+i)+15 DOWNTO 16*(QCLICTRL0+i)),
          QSClk  => QSClk(i),
-         QSData => QSData(i)
+         QSData => QSData(i),
+         QNBsy  => QNBsy(i)
       );
   end generate;
 
