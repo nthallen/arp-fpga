@@ -37,6 +37,7 @@ ARCHITECTURE rtl OF qclictrl_tester IS
   SIGNAL F8M_int : std_ulogic;
   SIGNAL Done : std_ulogic;
   SIGNAL Read_Result : std_logic_vector(15 DOWNTO 0);
+  SIGNAL WatchForSynch : std_ulogic;
 BEGIN
 
   clock8 : Process
@@ -90,9 +91,11 @@ BEGIN
     end procedure sbwr;
 Begin
     Done <= '0';
+    WatchForSynch <= '0';
     QSClk <= 'L';
     QSData <= 'L';
     ExpWr <= '0';
+    ExpRd <= '0';
     MQ_enable <= '1';
     rst <= '1';
     -- pragma synthesis_off
@@ -102,14 +105,17 @@ Begin
     wait until F8M_int'Event AND F8M_int = '1';
     wait until F8M_int'Event AND F8M_int = '1';
     sbrd(X"1000"); -- read controller status
+    assert RData = X"0000" report "RData should be 0000";
     wait until QSync = '0';
     wait until QSync = '1';
     sbrd(X"1000"); -- read controller status again
+    assert RData = X"4000" report "RData should be 4000 during read";
     sbrd(X"1002"); -- read QCLI status
     wait for 260 us;
     sbrd(X"1000"); -- read controller status again
+    assert RData = X"4000" report "Rdata should be 4000 during read (2)";
     sbrd(X"1002"); -- read QCLI status
-    wait for 260 us;
+    wait for 300 us;
     sbrd(X"1000"); -- read controller status again
     assert RData = X"4800"
       report "RData should be 4800"
@@ -151,8 +157,8 @@ Begin
     assert RData = X"0800"
       report "RData (Ctrlr_status) should be 0800";
     sbrd(X"1002");
-    assert RData = X"8484"
-      report "RData (QCLI_status) should be 8484";
+    assert RData = X"8383"
+      report "RData (QCLI_status) should be 8383";
     
     -- Now let's test some error detection and correction
     sbrd(X"1004"); -- read from empty FIFO
@@ -189,10 +195,27 @@ Begin
     sbrd(X"1000"); -- read ctrlr_status
     assert RData(13) = '0' AND RData(8) = '0'
       report "RWConflict 3 not reset by controller reset";
+      
+    WatchForSynch <= '1';
+    -- wait for 20 sec;
      
     Done <= '1';
     wait;
     -- pragma synthesis_on
+  End Process;
+  
+  WatchSynch: Process
+  Begin
+    -- pragma synthesis_off
+    wait for 40 ns;
+    while Done = '0' loop
+      wait until WatchForSynch = '1' OR Done = '1';
+      wait until QSync = '0' OR Done = '1';
+      wait until QSync = '1' for 10 us;
+      assert QSync = '1' OR Done = '1'
+        report "QSync pulse exceeded 10 us";
+    end loop;
+    wait;
   End Process;
 
   F8M <= F8M_int;
