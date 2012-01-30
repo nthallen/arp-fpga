@@ -14,9 +14,10 @@ USE ieee.std_logic_arith.all;
 
 ENTITY qclic_bio IS
    PORT( 
-      o : IN     std_ulogic;
-      io   : INOUT  std_logic;
-      i : OUT    std_ulogic
+      o  : IN     std_ulogic;
+      en : IN     std_logic;
+      io : INOUT  std_logic;
+      i  : OUT    std_ulogic
    );
 
 -- Declarations
@@ -32,10 +33,14 @@ BEGIN
          '0' when others;
   -- i <= To_01(std_ulogic(io),'0');
   
-  output_p : Process (o) Is
+  output_p : Process (o,en) Is
   Begin
-    if o = '1' then
-      io <= '1';
+    if en = '1' then
+      if o = '1' then
+        io <= '1';
+      else
+        io <= '0';
+      end if;
     else
       io <= 'Z';
     end if;
