@@ -223,7 +223,7 @@ value "fsm"
 )
 (vvPair
 variable "time"
-value "12:08:57"
+value "14:16:11"
 )
 (vvPair
 variable "unit"
@@ -316,10 +316,12 @@ shape (Rectangle
 uid 54,0
 va (VaSet
 vasetType 1
+transparent 1
 fg "65535,65535,65535"
 bg "0,0,0"
 lineColor "39936,56832,65280"
-lineWidth 2
+lineWidth -1
+fillStyle 1
 )
 xt "18651,26846,26951,33046"
 )
@@ -330,12 +332,12 @@ va (VaSet
 vasetType 3
 isHidden 1
 lineColor "39936,56832,65280"
-lineWidth 2
+lineWidth -1
 )
-xt "18751,29846,26851,29846"
+xt "18751,26746,26851,26746"
 pts [
-"18751,29846"
-"26851,29846"
+"18751,26746"
+"26851,26746"
 ]
 )
 bline (Line
@@ -344,12 +346,12 @@ va (VaSet
 vasetType 3
 isHidden 1
 lineColor "39936,56832,65280"
-lineWidth 2
+lineWidth -1
 )
-xt "18751,26746,26851,26746"
+xt "18751,29846,26851,29846"
 pts [
-"18751,26746"
-"26851,26746"
+"18751,29846"
+"26851,29846"
 ]
 )
 ttri (Triangle
@@ -357,12 +359,13 @@ uid 57,0
 ro 90
 va (VaSet
 vasetType 1
+isHidden 1
 fg "0,32768,49152"
 bg "0,0,0"
 lineColor "39936,56832,65280"
 lineWidth -1
 )
-xt "18301,29771,18651,30121"
+xt "18301,23371,18651,23721"
 )
 btri (Triangle
 uid 58,0
@@ -382,13 +385,7 @@ uid 59,0
 va (VaSet
 font "arial,8,0"
 )
-xt "18751,26946,26851,32946"
-st "Busy_cld <= '0';
-RdAck_cld <= '0';
-QSync_cld <= '1';
-qsclk_o_cld <= '0';
-qsdata_o_cld <= '0';
-oen_cld <= '0';"
+xt "18751,20546,26851,26546"
 tm "Actions"
 )
 inActions (MLText
@@ -396,7 +393,13 @@ uid 60,0
 va (VaSet
 font "arial,8,0"
 )
-xt "18801,26746,18801,26746"
+xt "18751,26946,26851,32946"
+st "Busy_cld <= '0';
+RdAck_cld <= '0';
+QSync_cld <= '1';
+qsclk_o_cld <= '0';
+qsdata_o_cld <= '0';
+oen_cld <= '0';"
 tm "Actions"
 )
 exitActions (MLText
@@ -1245,10 +1248,12 @@ shape (Rectangle
 uid 250,0
 va (VaSet
 vasetType 1
+transparent 1
 fg "65535,65535,65535"
 bg "0,0,0"
 lineColor "39936,56832,65280"
-lineWidth 2
+lineWidth -1
+fillStyle 1
 )
 xt "-14689,19897,-7189,24097"
 )
@@ -1259,12 +1264,12 @@ va (VaSet
 vasetType 3
 isHidden 1
 lineColor "39936,56832,65280"
-lineWidth 2
+lineWidth -1
 )
-xt "-14589,21397,-7289,21397"
+xt "-14589,19797,-7289,19797"
 pts [
-"-14589,21397"
-"-7289,21397"
+"-14589,19797"
+"-7289,19797"
 ]
 )
 bline (Line
@@ -1273,12 +1278,12 @@ va (VaSet
 vasetType 3
 isHidden 1
 lineColor "39936,56832,65280"
-lineWidth 2
+lineWidth -1
 )
-xt "-14589,21997,-7289,21997"
+xt "-14589,21397,-7289,21397"
 pts [
-"-14589,21997"
-"-7289,21997"
+"-14589,21397"
+"-7289,21397"
 ]
 )
 ttri (Triangle
@@ -1286,12 +1291,13 @@ uid 253,0
 ro 90
 va (VaSet
 vasetType 1
+isHidden 1
 fg "0,32768,49152"
 bg "0,0,0"
 lineColor "39936,56832,65280"
 lineWidth -1
 )
-xt "-15039,21822,-14689,22172"
+xt "-15039,17422,-14689,17772"
 )
 btri (Triangle
 uid 254,0
@@ -1311,11 +1317,7 @@ uid 255,0
 va (VaSet
 font "arial,8,0"
 )
-xt "-14589,19997,-7289,23997"
-st "SData <= WDataS;
-Busy_cld <= '1';
-SCnt <= \"10001\";
-oen_cld <= '1';"
+xt "-14589,15597,-7289,19597"
 tm "Actions"
 )
 inActions (MLText
@@ -1323,7 +1325,11 @@ uid 256,0
 va (VaSet
 font "arial,8,0"
 )
-xt "-14589,22197,-7289,25197"
+xt "-14589,19997,-7289,23997"
+st "SData <= WDataS;
+Busy_cld <= '1';
+SCnt <= \"10001\";
+oen_cld <= '1';"
 tm "Actions"
 )
 exitActions (MLText
@@ -4045,8 +4051,8 @@ yShown 1
 color "26368,26368,26368"
 )
 packageList &0
-windowSize "0,102,1152,792"
-viewArea "-13482,200,78786,53759"
+windowSize "0,102,1154,792"
+viewArea "-26313,200,70979,53638"
 cachedDiagramExtent "-23948,11752,71062,59853"
 pageSetupInfo (PageSetupInfo
 ptrCmd "Adobe PDF,winspool,"
@@ -4242,10 +4248,12 @@ shape (Rectangle
 uid 482,0
 va (VaSet
 vasetType 1
+transparent 1
 fg "65535,65535,65535"
 bg "0,0,0"
 lineColor "39936,56832,65280"
-lineWidth 2
+lineWidth -1
+fillStyle 1
 )
 xt "-27128,4075,-17128,7275"
 )
@@ -4256,12 +4264,12 @@ va (VaSet
 vasetType 3
 isHidden 1
 lineColor "39936,56832,65280"
-lineWidth 2
+lineWidth -1
 )
-xt "-27028,4825,-17228,4825"
+xt "-27028,3975,-17228,3975"
 pts [
-"-27028,4825"
-"-17228,4825"
+"-27028,3975"
+"-17228,3975"
 ]
 )
 bline (Line
@@ -4270,12 +4278,12 @@ va (VaSet
 vasetType 3
 isHidden 1
 lineColor "39936,56832,65280"
-lineWidth 2
+lineWidth -1
 )
-xt "-27028,5675,-17228,5675"
+xt "-27028,4825,-17228,4825"
 pts [
-"-27028,5675"
-"-17228,5675"
+"-27028,4825"
+"-17228,4825"
 ]
 )
 ttri (Triangle
@@ -4283,12 +4291,13 @@ uid 485,0
 ro 90
 va (VaSet
 vasetType 1
+isHidden 1
 fg "0,32768,49152"
 bg "0,0,0"
 lineColor "39936,56832,65280"
 lineWidth -1
 )
-xt "-27478,5500,-27128,5850"
+xt "-27478,2100,-27128,2450"
 )
 btri (Triangle
 uid 486,0
@@ -4308,10 +4317,7 @@ uid 487,0
 va (VaSet
 font "arial,8,0"
 )
-xt "-27028,4175,-17228,7175"
-st "QSync_cld <= '0';
-Busy_cld <= '1';
-SData <= (others => '0');"
+xt "-27028,775,-17228,3775"
 tm "Actions"
 )
 inActions (MLText
@@ -4319,7 +4325,10 @@ uid 488,0
 va (VaSet
 font "arial,8,0"
 )
-xt "-25528,5875,-18728,8875"
+xt "-27028,4175,-17228,7175"
+st "QSync_cld <= '0';
+Busy_cld <= '1';
+SData <= (others => '0');"
 tm "Actions"
 )
 exitActions (MLText
@@ -7558,8 +7567,8 @@ yShown 1
 color "26368,26368,26368"
 )
 packageList &0
-windowSize "0,102,1152,792"
-viewArea "-25000,8030,50492,51851"
+windowSize "0,102,1154,792"
+viewArea "-33156,-5593,95058,64829"
 cachedDiagramExtent "-31665,-4162,64378,63530"
 pageSetupInfo (PageSetupInfo
 ptrCmd "Adobe PDF,winspool,"
@@ -8337,8 +8346,8 @@ tm "SmCompilerDirectivesTextMgr"
 ]
 associable 1
 )
-windowSize "0,102,1153,792"
-viewArea "-1473,-2410,128631,73031"
+windowSize "0,102,1154,792"
+viewArea "15722,16767,83178,53817"
 cachedDiagramExtent "0,-1000,97970,70960"
 pageSetupInfo (PageSetupInfo
 ptrCmd "Adobe PDF,winspool,"
@@ -8795,7 +8804,7 @@ stateOrder [
 name "csm"
 )
 ]
-lastUid 1526,0
+lastUid 1555,0
 commonDM (CommonDM
 ldm (LogicalDM
 emptyRow *135 (LEmptyRow
