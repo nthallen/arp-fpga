@@ -16,6 +16,7 @@ ENTITY qclic_bio IS
    PORT( 
       o  : IN     std_ulogic;
       en : IN     std_logic;
+      clk: IN     std_logic;
       io : INOUT  std_logic;
       i  : OUT    std_ulogic
    );
@@ -27,11 +28,19 @@ END qclic_bio ;
 --
 ARCHITECTURE beh OF qclic_bio IS
 BEGIN
-  with io select
-    i <= '1' when '1',
-         '1' when 'H',
-         '0' when others;
-  -- i <= To_01(std_ulogic(io),'0');
+  input_p : Process (clk) Is
+  Begin
+    if clk'event and clk = '1' then
+      case io is
+        when '1' =>
+          i <= '1';
+        when 'H' =>
+          i <= '1';
+        when others =>
+          i <= '0';
+      end case;
+    end if;
+  End Process;
   
   output_p : Process (o,en) Is
   Begin
