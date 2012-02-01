@@ -369,10 +369,6 @@ static void parse_command(char *cmd) {
       break;
     case 'W':                         // WRITE with ACK 'W'
       expack = subbus_write(arg1, arg2);
-      XGpio_DiscreteWrite(&Subbus_Addr,1,arg1);  // put it on ADDR bus
-      XGpio_DiscreteWrite(&Subbus_Data,1,arg2);  // put it on DATA bus
-      expack = pulse_rdwr(subb_ctrl | SBCTRL_WR);
-      XGpio_DiscreteWrite(&Subbus_Ctrl,1,subb_ctrl);
       SendUSB(expack ? "W" : "w");
       break;
     case 'F':
