@@ -18,7 +18,7 @@ USE idx_fpga_lib.ptrhm.all;
 
 ENTITY PDACS_Carbon IS
   GENERIC (
-    DACS_BUILD_NUMBER : std_logic_vector(15 DOWNTO 0) := X"0018"; -- #24
+    DACS_BUILD_NUMBER : std_logic_vector(15 DOWNTO 0) := X"0019"; -- #25
     INSTRUMENT_ID : std_logic_vector(15 DOWNTO 0) := X"0003";
     CTR_UG_N_BDS : integer range 5 downto 0 := 0;
     N_QCLICTRL : integer range 5 downto 0 := 3;    
@@ -164,7 +164,6 @@ ARCHITECTURE beh OF PDACS_Carbon IS
    SIGNAL DA_LDAC_B_int                  : std_ulogic;
    SIGNAL DA_CLR_B_int                   : std_ulogic;
    SIGNAL QSync                          : std_ulogic_vector(N_QCLICTRL-1 DOWNTO 0);
-   SIGNAL Probe                          : std_logic_vector(N_QCLICTRL-1 DOWNTO 0);
     
   COMPONENT dacs_v2
     GENERIC (
@@ -246,8 +245,7 @@ ARCHITECTURE beh OF PDACS_Carbon IS
       QSync       : OUT    std_ulogic_vector(N_QCLICTRL-1 DOWNTO 0);
       QSClk       : INOUT  std_logic_vector(N_QCLICTRL-1 DOWNTO 0);
       QSData      : INOUT  std_logic_vector(N_QCLICTRL-1 DOWNTO 0);
-      QNBsy       : IN     std_logic_vector(N_QCLICTRL-1 DOWNTO 0);
-      Probe       : OUT    std_logic_vector(N_QCLICTRL-1 DOWNTO 0)
+      QNBsy       : IN     std_logic_vector(N_QCLICTRL-1 DOWNTO 0)
     );
   END COMPONENT;
    
@@ -359,8 +357,7 @@ BEGIN
        QSData                         => DIO(2 DOWNTO 0),
        QSClk                          => DIO(5 DOWNTO 3),
        QSync                          => QSync,
-       QNBsy                          => DIO(58 DOWNTO 56),
-       Probe                          => Probe
+       QNBsy                          => DIO(58 DOWNTO 56)
     );
 
     cmd_proc_i : cmd_proc
@@ -392,7 +389,7 @@ BEGIN
   DIO(15 DOWNTO 10) <= cmd_out(31 DOWNTO 26);
   -- DIO(19,18) are indexer limits
   -- DIO(23 downto 20) are digIO status
-  DIO(24) <= Probe(2); -- not cmd_out(32);
+  DIO(24) <= not cmd_out(32);
   DIO(27 DOWNTO 25) <= std_logic_vector(QSync);
   DIO(35 DOWNTO 28) <= cmd_out(40 DOWNTO 33);
   DIO(36) <=	idx_Step(0);
