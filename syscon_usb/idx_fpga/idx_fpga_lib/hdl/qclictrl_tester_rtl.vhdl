@@ -126,7 +126,9 @@ Begin
       report "RData should be 0800"
       severity error;
     sbwr( X"1006", X"1234" );
+    wait for 8 us;
     sbwr( X"1006", X"5678" );
+    wait for 8 us;
     -- sbrd( X"1002" ); -- Throw in a status read to see if timeout
     -- Gets delayed until the read is completed
     sbwr( X"1008", X"9ABC" );
@@ -153,7 +155,11 @@ Begin
     for i in 1 to 128 loop
       sbrd(X"1004");
     end loop;
-    sbrd(X"1000");
+    loop
+      wait for 1 ms;
+      sbrd(X"1000");
+      exit when RData(14) = '0';
+    end loop;
     assert RData = X"0800"
       report "RData (Ctrlr_status) should be 0800";
     sbrd(X"1002");
@@ -216,6 +222,7 @@ Begin
         report "QSync pulse exceeded 10 us";
     end loop;
     wait;
+    -- pragma synthesis_on
   End Process;
 
   F8M <= F8M_int;
