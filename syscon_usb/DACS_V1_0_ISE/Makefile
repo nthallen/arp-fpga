@@ -1,6 +1,7 @@
 ELF=Processor/SDK/SDK_Workspace_35/subbus/Debug/subbus.elf
 .PHONY : all
-all : spi_prom.mcs htw_spi_prom.mcs cti_spi_prom.mcs
+# all : spi_prom.mcs htw_spi_prom.mcs cti_spi_prom.mcs
+all : cti_spi_prom.mcs
 spi_prom.mcs : dacsbd_download.bit
 	promgen -spi -w -p mcs -o spi_prom.mcs -s 8192 -u 0 dacsbd_download.bit
 dacsbd_download.bit : dacsbd.bit $(ELF)
