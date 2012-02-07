@@ -18,7 +18,7 @@ USE idx_fpga_lib.ptrhm.all;
 
 ENTITY PDACS_Carbon IS
   GENERIC (
-    DACS_BUILD_NUMBER : std_logic_vector(15 DOWNTO 0) := X"001A"; -- #26
+    DACS_BUILD_NUMBER : std_logic_vector(15 DOWNTO 0) := X"001B"; -- #27
     INSTRUMENT_ID : std_logic_vector(15 DOWNTO 0) := X"0003";
     CTR_UG_N_BDS : integer range 5 downto 0 := 0;
     N_QCLICTRL : integer range 5 downto 0 := 3;    
@@ -308,6 +308,8 @@ BEGIN
        PTRH_SCK_pin(2)                => BIO(2),
        PTRH_SCK_pin(3)                => BIO(4),
        PTRH_SCK_pin(4)                => BIO(6),
+       VM_SCL_pin                     => BIO(8),
+       VM_SDA_pin                     => BIO(9),
        
        subbus_cmdenbl                 => subbus_cmdenbl,
        subbus_cmdstrb                 => subbus_cmdstrb,
