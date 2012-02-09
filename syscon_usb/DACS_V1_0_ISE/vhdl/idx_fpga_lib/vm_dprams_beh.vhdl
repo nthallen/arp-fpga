@@ -19,7 +19,8 @@ ENTITY vm_dprams IS
       RegEn : IN     std_ulogic_vector (4 DOWNTO 0);
       WrEn  : IN     std_ulogic_vector (4 DOWNTO 0);
       wData : IN     std_logic_vector (15 DOWNTO 0);
-      rData : OUT    std_logic_vector (15 DOWNTO 0)
+      rData : OUT    std_logic_vector (15 DOWNTO 0);
+      rst   : IN     std_ulogic
    );
 
 -- Declarations
@@ -31,6 +32,7 @@ ARCHITECTURE beh OF vm_dprams IS
   COMPONENT ptrh_dpram
      PORT (
         F8M   : IN     std_ulogic;
+        rst   : IN     std_ulogic;
         RdEn  : IN     std_ulogic;
         hold  : IN     std_logic;
         rData : OUT    std_logic_vector(15 DOWNTO 0);
@@ -48,6 +50,7 @@ BEGIN
     lo: ptrh_dpram
       PORT MAP (
          F8M   => F8M,
+         rst   => rst,
          RdEn  => RdEn,
          hold  => '0',
          rData => iRData(i),
