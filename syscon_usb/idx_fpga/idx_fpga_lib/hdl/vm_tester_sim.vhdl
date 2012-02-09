@@ -118,7 +118,7 @@ BEGIN
     wait until F8M_int'Event AND F8M_int = '1';
     wait until F8M_int'Event AND F8M_int = '1';
     for i in 0 to 4 loop
-      wait for 1 ms;
+      wait for 10 ms;
       sbrd(X"0360");
       sbrd(X"0362");
       sbrd(X"0364");
@@ -128,7 +128,7 @@ BEGIN
     -- Test timeout
     SCL <= '0';
     for i in 0 to 12 loop
-      wait for 1 ms;
+      wait for 10 ms;
       sbrd(X"0360");
       sbrd(X"0362");
       sbrd(X"0364");
@@ -138,7 +138,7 @@ BEGIN
     SCL <= 'H';
     -- Test recovery
     for i in 0 to 4 loop
-      wait for 1 ms;
+      wait for 10 ms;
       sbrd(X"0360");
       sbrd(X"0362");
       sbrd(X"0364");

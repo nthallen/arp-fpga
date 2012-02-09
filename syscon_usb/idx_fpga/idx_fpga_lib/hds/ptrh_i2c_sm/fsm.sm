@@ -235,7 +235,7 @@ value "fsm"
 )
 (vvPair
 variable "time"
-value "10:36:00"
+value "15:04:54"
 )
 (vvPair
 variable "unit"
@@ -1379,7 +1379,7 @@ lineColor "39936,56832,65280"
 lineWidth -1
 fillStyle 1
 )
-xt "-37518,7634,-28218,12834"
+xt "-37794,7524,-22794,13724"
 )
 autoResize 1
 tline (Line
@@ -1390,10 +1390,10 @@ isHidden 1
 lineColor "39936,56832,65280"
 lineWidth -1
 )
-xt "-37418,7534,-28318,7534"
+xt "-37694,7424,-22894,7424"
 pts [
-"-37418,7534"
-"-28318,7534"
+"-37694,7424"
+"-22894,7424"
 ]
 )
 bline (Line
@@ -1404,10 +1404,10 @@ isHidden 1
 lineColor "39936,56832,65280"
 lineWidth -1
 )
-xt "-37418,9884,-28318,9884"
+xt "-37694,10524,-22894,10524"
 pts [
-"-37418,9884"
-"-28318,9884"
+"-37694,10524"
+"-22894,10524"
 ]
 )
 ttri (Triangle
@@ -1421,7 +1421,7 @@ bg "0,0,0"
 lineColor "39936,56832,65280"
 lineWidth -1
 )
-xt "-37868,7159,-37518,7509"
+xt "-38144,7049,-37794,7399"
 )
 btri (Triangle
 uid 244,0
@@ -1434,14 +1434,14 @@ bg "0,0,0"
 lineColor "39936,56832,65280"
 lineWidth -1
 )
-xt "-37868,6859,-37518,7209"
+xt "-38144,7249,-37794,7599"
 )
 entryActions (MLText
 uid 245,0
 va (VaSet
 font "arial,8,0"
 )
-xt "-37418,7334,-37418,7334"
+xt "-37694,7224,-37694,7224"
 tm "Actions"
 )
 inActions (MLText
@@ -1449,9 +1449,10 @@ uid 246,0
 va (VaSet
 font "arial,8,0"
 )
-xt "-37418,7734,-28318,12734"
+xt "-37694,7624,-22894,13624"
 st "wb_adr_i_cld <= \"000\";
-wb_dat_i_cld <= X\"0E\";
+wb_dat_i_cld <=
+  I2C_CLK_PRESCALE(7 DOWNTO 0);
 wb_we_i_cld <= '1' ;
 wb_cyc_i_cld <= '1' ;
 wb_stb_i_cld <= '1' ;"
@@ -1462,7 +1463,7 @@ uid 247,0
 va (VaSet
 font "arial,8,0"
 )
-xt "-36868,7034,-36868,7034"
+xt "-34294,7424,-34294,7424"
 tm "Actions"
 )
 )
@@ -1705,7 +1706,7 @@ lineColor "39936,56832,65280"
 lineWidth -1
 fillStyle 1
 )
-xt "-7086,8162,2114,13362"
+xt "-7222,7662,8178,13862"
 )
 autoResize 1
 tline (Line
@@ -1716,10 +1717,10 @@ isHidden 1
 lineColor "39936,56832,65280"
 lineWidth -1
 )
-xt "-6986,8062,2014,8062"
+xt "-7122,7562,8078,7562"
 pts [
-"-6986,8062"
-"2014,8062"
+"-7122,7562"
+"8078,7562"
 ]
 )
 bline (Line
@@ -1730,10 +1731,10 @@ isHidden 1
 lineColor "39936,56832,65280"
 lineWidth -1
 )
-xt "-6986,10412,2014,10412"
+xt "-7122,10662,8078,10662"
 pts [
-"-6986,10412"
-"2014,10412"
+"-7122,10662"
+"8078,10662"
 ]
 )
 ttri (Triangle
@@ -1747,7 +1748,7 @@ bg "0,0,0"
 lineColor "39936,56832,65280"
 lineWidth -1
 )
-xt "-7436,7687,-7086,8037"
+xt "-7572,7187,-7222,7537"
 )
 btri (Triangle
 uid 325,0
@@ -1760,14 +1761,14 @@ bg "0,0,0"
 lineColor "39936,56832,65280"
 lineWidth -1
 )
-xt "-7436,7387,-7086,7737"
+xt "-7572,7387,-7222,7737"
 )
 entryActions (MLText
 uid 326,0
 va (VaSet
 font "arial,8,0"
 )
-xt "-6986,7862,-6986,7862"
+xt "-7122,7362,-7122,7362"
 tm "Actions"
 )
 inActions (MLText
@@ -1775,9 +1776,10 @@ uid 327,0
 va (VaSet
 font "arial,8,0"
 )
-xt "-6986,8262,2014,13262"
+xt "-7122,7762,8078,13762"
 st "wb_adr_i_cld <= \"001\";
-wb_dat_i_cld <= X\"00\";
+wb_dat_i_cld <=
+  I2C_CLK_PRESCALE(15 DOWNTO 8);
 wb_we_i_cld <= '1' ;
 wb_cyc_i_cld <= '1' ;
 wb_stb_i_cld <= '1' ;"
@@ -1788,7 +1790,7 @@ uid 328,0
 va (VaSet
 font "arial,8,0"
 )
-xt "-6486,7562,-6486,7562"
+xt "-3522,7562,-3522,7562"
 tm "Actions"
 )
 )
@@ -3429,8 +3431,8 @@ yShown 1
 color "26368,26368,26368"
 )
 packageList &0
-windowSize "0,0,1281,800"
-viewArea "-46300,-2500,36458,48122"
+windowSize "0,224,1281,1024"
+viewArea "-46300,-2500,36458,50306"
 cachedDiagramExtent "-45315,-1439,17313,46622"
 pageSetupInfo (PageSetupInfo
 ptrCmd "Adobe PDF,winspool,"
@@ -17849,7 +17851,7 @@ tm "SmCompilerDirectivesTextMgr"
 associable 1
 )
 windowSize "0,224,1281,1024"
-viewArea "-1400,-2400,111472,63877"
+viewArea "-1400,-2400,111472,69621"
 cachedDiagramExtent "0,-1000,97538,70410"
 pageSetupInfo (PageSetupInfo
 ptrCmd ""
@@ -18315,7 +18317,7 @@ stateOrder [
 name "csm"
 )
 ]
-lastUid 3910,0
+lastUid 3941,0
 commonDM (CommonDM
 ldm (LogicalDM
 emptyRow *255 (LEmptyRow
@@ -18983,6 +18985,14 @@ tm "GenericPragmaColHdrMgr"
 *350 (EolColHdr
 tm "GenericEolColHdrMgr"
 )
+*351 (LogGeneric
+generic (GiElement
+name "I2C_CLK_PRESCALE"
+type "std_logic_vector(15 DOWNTO 0)"
+value "X\"000E\""
+)
+uid 3940,0
+)
 ]
 )
 pdm (PhysicalDM
@@ -18990,7 +19000,7 @@ displayShortBounds 1
 editShortBounds 1
 uid 2085,0
 optionalChildren [
-*351 (Sheet
+*352 (Sheet
 sheetRow (SheetRow
 headerVa (MVa
 cellColor "49152,49152,49152"
@@ -19007,31 +19017,37 @@ cellColor "39936,56832,65280"
 fontColor "0,0,0"
 font "Tahoma,10,0"
 )
-emptyMRCItem *352 (MRCItem
+emptyMRCItem *353 (MRCItem
 litem &339
-pos 0
+pos 1
 dimension 20
 )
 uid 2087,0
 optionalChildren [
-*353 (MRCItem
+*354 (MRCItem
 litem &340
 pos 0
 dimension 20
 uid 2088,0
 )
-*354 (MRCItem
+*355 (MRCItem
 litem &341
 pos 1
 dimension 23
 uid 2089,0
 )
-*355 (MRCItem
+*356 (MRCItem
 litem &342
 pos 2
 hidden 1
 dimension 20
 uid 2090,0
+)
+*357 (MRCItem
+litem &351
+pos 0
+dimension 20
+uid 3941,0
 )
 ]
 )
@@ -19044,43 +19060,43 @@ textAngle 90
 )
 uid 2091,0
 optionalChildren [
-*356 (MRCItem
+*358 (MRCItem
 litem &343
 pos 0
 dimension 20
 uid 2092,0
 )
-*357 (MRCItem
+*359 (MRCItem
 litem &345
 pos 1
 dimension 50
 uid 2093,0
 )
-*358 (MRCItem
+*360 (MRCItem
 litem &346
 pos 2
 dimension 100
 uid 2094,0
 )
-*359 (MRCItem
+*361 (MRCItem
 litem &347
 pos 3
-dimension 100
+dimension 181
 uid 2095,0
 )
-*360 (MRCItem
+*362 (MRCItem
 litem &348
 pos 4
 dimension 50
 uid 2096,0
 )
-*361 (MRCItem
+*363 (MRCItem
 litem &349
 pos 5
 dimension 50
 uid 2097,0
 )
-*362 (MRCItem
+*364 (MRCItem
 litem &350
 pos 6
 dimension 80
@@ -19979,6 +19995,6 @@ pts [
 ]
 )
 )
-activeModelName "StateMachine"
+activeModelName "csm/i2c_init"
 LanguageMgr "VhdlLangMgr"
 )
