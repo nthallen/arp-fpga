@@ -55,6 +55,7 @@ ARCHITECTURE beh OF ptrhm_dprams IS
    COMPONENT ptrh_dprams
       PORT (
          F8M     : IN     std_ulogic;
+         rst     : IN     std_ulogic;
          RdEn    : IN     std_ulogic;
          RegEn   : IN     std_logic_vector(12 DOWNTO 0);
          WrEn    : IN     std_logic_vector(12 DOWNTO 0);
@@ -90,6 +91,7 @@ BEGIN
     dprams : ptrh_dprams
       PORT MAP (
         F8M     => F8M,
+        rst     => rst,
         RdEn    => RdEn,
         RegEn   => PTRHRegEn(i),
         WrEn    => WrRegEn(i),
