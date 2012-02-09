@@ -15,6 +15,7 @@ LIBRARY idx_fpga_lib;
 ENTITY ptrh_dprams IS
    PORT (
       F8M     : IN     std_ulogic;
+      rst     : IN     std_ulogic;
       RdEn    : IN     std_ulogic;
       RegEn   : IN     std_logic_vector(12 DOWNTO 0);
       WrEn    : IN     std_logic_vector(12 DOWNTO 0);
@@ -34,6 +35,7 @@ ARCHITECTURE beh OF ptrh_dprams IS
    COMPONENT ptrh_dpram
       PORT (
          F8M   : IN     std_ulogic;
+         rst   : IN     std_ulogic;
          RdEn  : IN     std_ulogic;
          hold  : IN     std_logic;
          rData : OUT    std_logic_vector(15 DOWNTO 0);
@@ -55,6 +57,7 @@ BEGIN
       hi: ptrh_dpram
         PORT MAP (
            F8M   => F8M,
+           rst   => rst,
            RdEn  => RdEn,
            hold  => hold(i),
            rData => iRData(i),
@@ -68,6 +71,7 @@ BEGIN
       lo: ptrh_dpram
         PORT MAP (
            F8M   => F8M,
+           rst   => rst,
            RdEn  => RdEn,
            hold  => hold(i),
            rData => iRData(i),
