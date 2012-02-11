@@ -1,0 +1,47 @@
+design_file : design_unit+ .
+design_unit : context_item* library_unit .
+library_unit : entity_declaration / architecture_body .
+context_item :
+  'library' ident ';' /
+  'use' libref ';' .
+libref : ident / libref '.' ident .
+entity_declaration : 'entity' ident 'is' generic_clause port_clause 'end' opt_entity ident ';' .
+opt_entity : / 'entity' .
+architecture_body :
+  'architecture' ident 'of' ident 'is'
+    architecture_declarative_part+
+  'begin'
+    component_inst+
+  'end' opt_arch ident ';' .
+opt_arch : / 'architecture' .
+
+generic_clause : . /* I don't think we'll see generic_clauses in ngc output */
+port_clause : 'port' '(' port_list ')' ';' .
+port_list :
+  interface_signal_declaration /
+  port_list ';' interface_signal_declaration .
+interface_signal_declaration : [ 'SIGNAL' ] ident ':' [ mode ] signal_type opt_initializer .
+mode : 'in' / 'out' / 'inout' .
+opt_initializer : / ':=' expression .
+
+architecture_declarative_part : component_declaration / signal_declaration .
+component_declaration : 'component' ident [ 'is' ] generic_clause port_clause 'end' 'component' ';' .
+signal_declaration : 'signal' ident ':' signal_type ';' .
+signal_type :
+  'std_logic' /
+  'STD_LOGIC' /
+  'std_logic_vector' '(' integer vec_dir integer ')' /
+  'STD_LOGIC_VECTOR' '(' integer vec_dir integer ')' .
+vec_dir : 'downto' / 'DOWNTO' / 'to' / 'TO' .
+
+component_inst : ident ':' ident generic_maps port_maps ';' .
+generic_maps : /
+  'generic' 'map' '(' generic_map_list ')' .
+generic_map_list : generic_map / generic_map_list ',' generic_map .
+generic_map : ident '=>' expression .
+expression : std_logic_const / hex_const / sig_ref / integer / string .
+sig_ref : ident / ident '(' integer ')' .
+port_maps : /
+  'port' 'map' '(' port_map_list ')' .
+port_map_list : port_map / port_map_list ',' port_map .
+port_map : sig_ref '=>' expression .
