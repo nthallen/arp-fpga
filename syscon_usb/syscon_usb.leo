@@ -56,7 +56,7 @@
 </v>
 </v>
 <v t="ntallen.20100525090916.1257" a="E"><vh>Development Plan</vh>
-<v t="ntallen.20100525090916.1259" a="E"><vh>Document Serial Protocol</vh>
+<v t="ntallen.20100525090916.1259"><vh>Document Serial Protocol</vh>
 <v t="ntallen.20110123092829.1413"><vh>Error Codes</vh></v>
 </v>
 <v t="ntallen.20100803111918.1303"><vh>IPC</vh></v>
@@ -106,7 +106,7 @@
 </v>
 <v t="ntallen.20101022104642.1371"><vh>ana_hwside</vh>
 <v t="ntallen.20101019142341.1364"><vh>ana_acquire</vh>
-<v t="ntallen.20110118143100.1406"><vh>sub-muxing</vh></v>
+<v t="ntallen.20110118143100.1406"><vh>AI configuration and sub-muxing</vh></v>
 </v>
 <v t="ntallen.20101019142341.1362"><vh>ana_s16</vh></v>
 <v t="ntallen.20101019142341.1360"><vh>ana_s5</vh>
@@ -133,18 +133,88 @@
 <v t="ntallen.20111123115724.1441"><vh>Generics</vh></v>
 </v>
 <v t="ntallen.20110227134141.1425"><vh>Counters</vh></v>
-<v t="ntallen.20110418174231.1429"><vh>LTC4151</vh></v>
-<v t="ntallen.20111212160628.1443" a="E"><vh>QCLI Serial Interface</vh>
-<v t="ntallen.20111212160628.1444"><vh>Subbus Interface</vh></v>
+<v t="ntallen.20110418174231.1429"><vh>VM: LTC4151</vh></v>
+<v t="ntallen.20111212160628.1443"><vh>QCLI Serial Interface</vh>
+<v t="ntallen.20111212160628.1444"><vh>Subbus Interface</vh>
+<v t="ntallen.20111213091253.1453"><vh>Old Subbus Interface</vh></v>
+<v t="ntallen.20111213091253.1451"><vh>Server Requirements</vh></v>
+<v t="ntallen.20111213091253.1452"><vh>Programming Requirements</vh></v>
+<v t="ntallen.20120104141216.1461"><vh>Verify (Read Block)</vh></v>
+</v>
 <v t="ntallen.20111212160628.1445"><vh>QCLI Interface</vh></v>
-<v t="ntallen.20111212160628.1447"><vh>Engine Operation</vh></v>
+<v t="ntallen.20111212160628.1447"><vh>Engine Operation</vh>
+<v t="ntallen.20111215085119.1458"><vh>Write to FIFO</vh></v>
+<v t="ntallen.20111215085119.1457"><vh>Read FIFO</vh></v>
+</v>
+</v>
+<v t="ntallen.20120110154657.1467" a="E"><vh>DACS diagnostic generator</vh>
+<v t="ntallen.20120111082754.1514"><vh>Zero Order generator</vh></v>
+<v t="ntallen.20120110154657.1471"><vh>Organizational</vh>
+<v t="ntallen.20120110154657.1468"><vh>VERSION</vh></v>
+<v t="ntallen.20120110154657.1469"><vh>Experiment.config</vh></v>
+<v t="ntallen.20120110154657.1476"><vh>types.tmc</vh></v>
+<v t="ntallen.20120110154657.1470"><vh>$mnemonic.spec</vh></v>
+<v t="ntallen.20120110154657.1472"><vh>interact</vh></v>
+<v t="ntallen.20120110154657.1473"><vh>$mnemonic.doit</vh></v>
+<v t="ntallen.20120110154657.1474"><vh>$mnemonic.tma</vh></v>
+</v>
+<v t="ntallen.20120110154657.1477"><vh>AI</vh>
+<v t="ntallen.20120110154657.1482"><vh>Signal Defs</vh></v>
+</v>
+<v t="ntallen.20120110154657.1478"><vh>AO</vh>
+<v t="ntallen.20120110154657.1483"><vh>Signal Defs</vh></v>
+</v>
+<v t="ntallen.20120110154657.1479"><vh>Counters</vh>
+<v t="ntallen.20120110154657.1484"><vh>Signal Defs</vh></v>
+</v>
+<v t="ntallen.20120110154657.1480" a="E"><vh>DigIO</vh>
+<v t="ntallen.20120110154657.1481"><vh>Processed Command</vh></v>
+<v t="ntallen.20120110154657.1485"><vh>Unprocessed Command</vh></v>
+<v t="ntallen.20120110154657.1486"><vh>Unaffiliated Status</vh></v>
+<v t="ntallen.20120118103503.1551" a="E"><vh>First Pass</vh>
+<v t="ntallen.20120118103503.1552"><vh>digio.tmc</vh></v>
+<v t="ntallen.20120118103503.1553"><vh>digio_conv.tmc</vh></v>
+<v t="ntallen.20120118103503.1554"><vh>digio.cmd</vh></v>
+<v t="ntallen.20120118103503.1555"><vh>digio.tbl</vh></v>
+<v t="ntallen.20120118103503.1556"><vh>digio.dccc</vh></v>
+</v>
+</v>
+<v t="ntallen.20120111082754.1509"><vh>PTRHM</vh>
+<v t="ntallen.20120111082754.1515"><vh>types.tmc</vh></v>
+<v t="ntallen.20120111082754.1516"><vh>ptrh.tmc</vh></v>
+<v t="ntallen.20120111082754.1520"><vh>ptrh_col.tmc</vh></v>
+<v t="ntallen.20120111082754.1517"><vh>ptrh_conv.tmc</vh></v>
+<v t="ntallen.20120111082754.1518"><vh>ptrh.tbl</vh></v>
+<v t="ntallen.20120111082754.1519"><vh>spec</vh></v>
+</v>
+<v t="ntallen.20120111082754.1510"><vh>QCLI</vh>
+<v t="ntallen.20120113132201.1535"><vh>wavesN.qcli</vh></v>
+<v t="ntallen.20120113132201.1536"><vh>qcli.cmd</vh></v>
+<v t="ntallen.20120113132201.1540"><vh>qcli.tmc</vh></v>
+<v t="ntallen.20120113132201.1537"><vh>qclis.cmd</vh></v>
+<v t="ntallen.20120113132201.1544"><vh>qcli_col.tmc</vh></v>
+<v t="ntallen.20120113132201.1541"><vh>qcli_conv.tmc</vh></v>
+<v t="ntallen.20120113132201.1542"><vh>qcli.tbl</vh></v>
+<v t="ntallen.20120113132201.1543"><vh>interact</vh></v>
+</v>
+<v t="ntallen.20120111082754.1511"><vh>Indexer</vh></v>
+<v t="ntallen.20120111082754.1512"><vh>Voltage Monitor</vh></v>
+<v t="ntallen.20120111082754.1513"><vh>Syscon</vh></v>
+<v t="ntallen.20120111082754.1505"><vh>NETS2</vh>
+<v t="ntallen.20120111082754.1506"><vh>Affinity example</vh></v>
+<v t="ntallen.20120111082754.1508"><vh>Command Model</vh></v>
+</v>
 </v>
 </v>
 <v t="ntallen.20100823102718.1327" a="E"><vh>Documentation</vh>
-<v t="ntallen.20100525090916.1259" a="E"></v>
+<v t="ntallen.20100525090916.1259"></v>
+<v t="ntallen.20110118143100.1406"></v>
 <v t="ntallen.20100824101804.1329"><vh>Document API</vh></v>
+<v t="ntallen.20120109083521.1463"><vh>Laying out a new instrument</vh>
+<v t="ntallen.20120109083521.1464"><vh>Digital Commands and Status</vh></v>
 </v>
-<v t="ntallen.20110115103957.1399"><vh>Revisions</vh>
+</v>
+<v t="ntallen.20110115103957.1399" a="E"><vh>Revisions</vh>
 <v t="ntallen.20110115103957.1400"><vh>DACS_V1_0_ISE</vh></v>
 </v>
 </v>
@@ -221,11 +291,12 @@ Devices /dev/serusb1 and /dev/serusb2 show up.
 <t tx="ntallen.20100525090916.1257"></t>
 <t tx="ntallen.20100525090916.1258">I'm inclined to review the code for read and write and consider implementing some of it in VHDL.
 The read logic is faulty, since it resets EXPRD before reading in the data (which is not latched in hardware)</t>
-<t tx="ntallen.20100525090916.1259">&lt;hex16&gt; : [0-9A-F]{4}
+<t tx="ntallen.20100525090916.1259">&lt;hex16&gt; : [0-9A-F]{1,4}
 &lt;addr&gt; : &lt;hex16&gt;
 &lt;addr_list&gt; : &lt;addr_list_elt&gt;
             : &lt;addr_list&gt; ',' &lt;addr_list_elt&gt;
-&lt;addr_list_elt&gt; : &lt;addr&gt; [ ':' &lt;addr&gt; ':' &lt;addr&gt; ]
+&lt;addr_list_elt&gt; : &lt;addr&gt; [ ':' &lt;hex16&gt; ':' &lt;addr&gt; ]
+                : &lt;hex16&gt; '@' &lt;addr&gt;
 &lt;data&gt; : &lt;hex16&gt;
 &lt;cmdline&gt; : &lt;cmd&gt; '\n'
 &lt;bit&gt; : '0' | '1'
@@ -240,11 +311,12 @@ The read logic is faulty, since it resets EXPRD before reading in the data (whic
     I &lt;digit&gt; : &lt;addr&gt; // Define and enable Interrupt: response: i &lt;digit&gt;
     I &lt;digit&gt;  // Undefine and disable Interrupt: response: i &lt;digit&gt;
     ''         // NOP: response code: 0
-    M &lt;addr_list&gt;
+    M &lt;hex16&gt; '#' &lt;addr_list&gt;
     D          // Read switches: response: D&lt;data&gt; | E&lt;digit&gt; (no switches)
     F &lt;data&gt;   // Set failure: response: F | E
     F          // Read failure: response F &lt;data&gt; | E
     T          // Tick to reset 2-minute timeout: No response
+    A          // Disarm reset timer
 
 Responses:
     R &lt;data&gt; '\n'  // Read data with acknowledge asserted
@@ -1131,8 +1203,38 @@ ESwitchBit: An array of N_PTRH elements in the range 7 downto 0
 We need to address multiple QCLIs. It is probably smart to keep the circuits independent, provided we have enough lines. As detailed elsewhere, it is possible to share clock and data lines, but that would require a more serialized architecture.
 
 If we are careful and mimic the anaio interface, we could use the existing qcli utils to communicate with the QCLIs. Alternately, we could provide an enhanced interface that might make programming and/or verification more efficient.</t>
-<t tx="ntallen.20111212160628.1444">Read /qclutil/qclisb.c to understand subbus interface.
-</t>
+<t tx="ntallen.20111212160628.1444">0: R: Controller Status
+    Used to report FIFO status and whether read block operation is complete
+    0-7: 8 bits indicating number of words in FIFO (replacing other two FIFO bits)
+    8: Read Block Operation Pending
+    9: Read Block Operation Complete (cleared when FIFO is drained)
+    10: Write Command Pending (set on write FIFO, clear when FIFO emptied and WriteStop is set)
+    11: QCLI Responding (set whenever data is received. cleared on a timeout)
+    12: FIFO Overflow
+    13: Write during RB conflict (RWConflict)
+    14: Reading from QCLI (block TOset)
+2: R: QCLI Status
+    Reports the most recently read QCLI status and triggers another status report.
+    Status is read at some reasonably slow rate in the absence of subbus reads
+4: R: ReadFIFO
+    Reports next word from the ReadFIFO or zero if the FIFO is empty. The FIFO
+    is big enough to store a full block (128 words).
+6: W: Write
+    Writes a word to the write FIFO expecting more to follow. An attempt to write
+    to the QCLI during a block read operation will be ignored and will set the
+    busy bit in the controller status word.
+8: W: WriteStop
+    Writes a word to the write FIFO and indicates that this transmission is complete.
+    When the write FIFO is empty, if the WriteStop bit is set, a new sync is
+    performed to obtain the current status.
+A: W: ReadBlock
+    Specifies the block address to be read. This command should only be issued
+    when the write FIFO is empty and the QCLI is in idle mode. It will lock out
+    commands except for ConrtollerReset. Read the controller Status to see when
+    the block is ready for transfer.
+C: W: ControllerReset
+    This command will interrupt any partial block writes, reset the FIFO,
+    and break out of a block read operation.</t>
 <t tx="ntallen.20111212160628.1445">This interface was designed before the QCLI was conceived. It was intended to talk to a specific A/D or a specific D/A. The QCLI interface was designed to be compatible with those two capabilities. The result is an interface definition unlike any other.
 
 There are 4 signals on the QCLI:
@@ -1154,5 +1256,494 @@ For a read request, QSYNC is pulsed low while holding QSCLK low. When the QCLI o
 For a write, QSYNC is driven low, and then SDATA and QSCLK are driven to clock out 16 bits [[presumably in the same bit order used for read]]. After 16 bits are shifted, QSYNC is raised to mark the end of the data transfer. QSYNC must remain high for at least one microsecond before writing another value. There may be other constraints governing the writing speed.
 </t>
 <t tx="ntallen.20111212160628.1447">Details need to be filled in, but the ANAIO circuit continuously polled the QCLI for status information so a simple subbus read would give the current status. I still need to figure out how output and requests to read other data was handled. The speed of the polling is up for grabs. ANAIO did something like 400 Hz, but I think that is much faster than we require.</t>
+<t tx="ntallen.20111213091253.1451">All of the commands issued during normal operations involve writing one to three words to the QCLI and then switching back to read mode to get the status. The server does not deal with the status at all, which is to say it does not need to actually report the status, just make sure that the status will be read.
+
+A simple implementation would be to have two write addresses, one for basic writing and one for a final word that would switch back to read mode. I would also create a FIFO of at least 3 words for holding write data.
+
+This would then benefit from a multi-write subbus interface:
+    W&lt;addr&gt;:&lt;data&gt;,&lt;data&gt;;&lt;addr&gt;:&lt;data&gt;...
+</t>
+<t tx="ntallen.20111213091253.1452">Writing out a program involves writing multiple blocks
+Writing out a block involves:
+    QCLI_LOAD_MSB
+    QCLI_WRITE_ADDRESS
+    for blocklen
+      QCLI_LOAD_MSB
+      QCLI_WRITE_DATA
+      chksum += value
+    end
+    QCLI_LOAD_MSB
+    QCLI_WRITE_CHKSUM
+    Read status to verify checksum and firmware OK
+    QCLI_PROGRAM_SECTOR
+    Monitor status to observe expected modes
+
+Note that for a block of 128 words, this requires writing 260 words
+before verifying the checksum. Controller's FIFO only holds 128, so
+I'll need to do some batching.
+
+Reading the controller status can tell us how many bytes are left
+in the FIFO and whether the write is completed. The current design
+goes directly from "Write Pending" to "Reading from QCLI", so if
+you wait for both to be clear, it is OK to read the qcli status.
+</t>
+<t tx="ntallen.20111213091253.1453">Read /qclutil/qclisb.c to understand subbus interface.
+
+#define ANAIO_STATUS_OFFSET 6
+#define ANAIO_DAC_OFFSET 0x60
+#define ANAIO_HRDAC_OFFSET 0x70
+#define ANAIO_HRADC_OFFSET 0x78
+#define DAC_MODE_BITS 0x0C
+
+Reading from the read address (base+ANAIO_HRADC_OFFSET) puts the circuit in read mode
+Writing to the write address (base+ANAIO_HRDAC_OFFSET) puts the circuit in write mode
+After writing, we need to wait until the data is shifted out before writing again, which I implemented as a 3ms delay. 3ms appears to be overkill, since at 16KHz, it takes 1ms to shift out 16 bits.
+
+After writing, we need to switch back to read mode. In read mode, ANAIO polls the QCLI at 400Hz for status. I think that's where the 3ms comes from. 400Hz = 2.5 ms, and if you add in the 1ms to transfer the data, you get 3.5 ms maximum delay before fresh status is available.
+
+Whenever a sync pulse is sent to the QCLI, it responds with data, which is the status word unless the QCLI is in memory read mode. In memory read mode, an address has to be written for each word and then a read is performed. This is clearly a case where a hardware optimization would be very helpful</t>
+<t tx="ntallen.20111215085119.1457">FIFO semantics
+    FIFOhead is the address of the first word in the FIFO (next to be read)
+    FIFOtail is the address where the next word will be written
+    if FIFOhead = FIFOtail, the FIFO is either empty (FIFOnonempty = 0 AND FIFOfull = 0)
+      or full (FIFOnonempty = 1 AND FIFOfull = 1)
+    FIFO_rdata will always report the data at FIFOhead
+if ! FIFOnonempty {
+  FIFO_rdata &lt;= (others =&gt; '0')
+} else {
+  FIFOhead &lt;= FIFOhead+1
+  if FIFOhead = FIFOtail {
+    FIFOnonempty &lt;= '0';
+    FIFO_rdata &lt;= (others =&gt; '0');
+    FIFOcnt &lt;= 0;
+  } else {
+    FIFOfull &lt;= '0';
+    FIFOcnt &lt;= FIFOcnt-1;
+    raddr &lt;= FIFOhead;
+    rRd &lt;= '1';
+    FIFO_rdata &lt;= ram_rdata;
+    rRd &lt;= '0';
+  }
+}
+    
+FIFO_rdata &lt;= ram_rdata(FIFOhead)</t>
+<t tx="ntallen.20111215085119.1458">If FIFOfull = '1' {
+  ctrlr_status(12) &lt;= '1';
+} else {
+  raddr &lt;= FIFOtail;
+  ram_wdata &lt;= WDataC;
+  rWr &lt;= '1';
+  FIFOtail &lt;= FIFOtail+1;
+  
+  rWr &lt;= '0';
+  FIFOnonempty &lt;= '1';
+  FIFO_cnt &lt;= FIFO_cnt+1;
+  if FIFOtail = FIFOhead {
+    FIFOfull &lt;= '1';
+  }
+}
+</t>
+<t tx="ntallen.20120104141216.1461">
+Verifying a program involves reading a sequence of blocks
+Reading a block involves:
+    QCLI_LOAD_MSB
+    -- QCLI_WRITE_ADDRESS
+    QCLI_READ_DATA
+    for blocklen
+        QCLI_WRITE_ADDRESS
+        Read data
+    end
+
+The current read code keeps reading in case the serial transmission was flawed, which is possible, but my inclination is to provide a separate address to set write to read a block, then perform a multi-read command from a FIFO. I would probably want to provide a separate status address</t>
+<t tx="ntallen.20120109083521.1463">Connector listings map instrument signals onto board signals
+e.g. L2_On_Off (command output) is mapped to DIO[72]
+
+The next step is to map those through the subbus architecture.</t>
+<t tx="ntallen.20120109083521.1464">Digital commands are implemented using both DigIO and cmd_proc.
+Each digital command is mapped to a cmd_proc output and then
+implicitly to two DigIO outputs (on &amp; off).
+
+Each digital status input is mapped to a DigIO port.
+
+Step 1:
+    On DIO sheet, Assign command outputs to Cmd&lt;n&gt;
+    Be sure to assign all the power board commands and status
+    By convention, start by numbering power board commands at Cmd&lt;0 to 23&gt;
+    Assign other commands from Cmd&lt;24&gt; on up.
+    Assign CmdProc digital status lines for these commands next
+    Assign Power Board status lines next
+    Subbus inputs (DIO[62:60]) get routed to DACS_Switches, but could go
+      to spare DigIO inputs as well for diagnostic purposes. DIO[63] SPR_IN(1)
+      was troublesome, as I recall.
+    
+    10 DigIO inputs
+    4 SB inputs
+    2 Indxr inputs</t>
+<t tx="ntallen.20120110154657.1467">As we develop new instruments, the standalone DACSdiag does not really work.
+Each instrument has a different combination of features.
+
+I used to generate code with NETS. I could generate displays for each connector.
+The difference with DACS is that all the internal stuff does not get input into
+the database, but maybe it should. Ideally, I would extract that information
+directly from the VHDL for e.g. PDACS_Carbon, but that is probably overkill.
+
+This can be attacked in layers. The most urgent need is to get stuff running,
+so I might need to manually create intermediate formats.</t>
+<t tx="ntallen.20120110154657.1468">1.0 of course</t>
+<t tx="ntallen.20120110154657.1469">Experiment=$mnemonic
+HomeDir=/home/$mnemonic
+RUNFILE=interact
+SUBBUSD=serusb
+RunType=ask
+Extractions=
+Analysis=</t>
+<t tx="ntallen.20120110154657.1470"></t>
+<t tx="ntallen.20120110154657.1471">Run with generic names
+Then with specific names</t>
+<t tx="ntallen.20120110154657.1472"></t>
+<t tx="ntallen.20120110154657.1473"></t>
+<t tx="ntallen.20120110154657.1474">Combine elements from other modules as necessary
+</t>
+<t tx="ntallen.20120110154657.1476">Generic type definitions
+Synch, MFCtr definitions
+</t>
+<t tx="ntallen.20120110154657.1477">Need to configure the MUXed channels.
+    Mux Input_Addr, Output_Addr
+    Input_Addr is the address of the unmuxed channel
+    Output_Addr is the address of the row
+Could configure gains.
+Need to generate:
+    tmc, collection
+    tbl display
+    cmd for playing with controls</t>
+<t tx="ntallen.20120110154657.1478">Specify N Chips
+Generate:
+    tmc, collection
+    tbl display
+    cmd commands</t>
+<t tx="ntallen.20120110154657.1479">Specify number of ungated counters
+Generate
+    tmc collection
+    tbl display
+    Contribute to edf extraction
+    </t>
+<t tx="ntallen.20120110154657.1480">Requires considerably more configuration
+DigIO consists of a number of connectors with 6 ports each
+Each port can be configured for input or output
+Outputs are generally controlled by DCCC
+    Many outputs are routed to command processor and paired
+    with internal digital status lines. May also have external
+    status lines.
+Inputs are read directly by telemetry, but may be associated with
+specific command lines
+
+May or may not assume that command outputs are contiguous</t>
+<t tx="ntallen.20120110154657.1481">A full blown command has all this useful information
+    Command Name
+    DIO number
+    DACS connector and pin
+    CB connector and pin
+    Command Number
+    On dig_IO index
+    Off dig_IO index
+    DS dig_IO index
+    S dig_IO index</t>
+<t tx="ntallen.20120110154657.1482">The next level of configuration is to identify channels by name and connector:
+    Signal Name
+    Voltage Range
+    DACS connector pin (maps to collection addr)
+    Mux index (if collection addr is muxed: see mux definitions)
+    CB connector pin</t>
+<t tx="ntallen.20120110154657.1483">The next level of configuration is to identify channels by name and connector:
+    Signal Name
+    Voltage Range (fixed 0-10)
+    DACS connector pin (maps to collection, cmd addr)
+    CB connector pin</t>
+<t tx="ntallen.20120110154657.1484">The next level of configuration is to identify channels by name and connector:
+    Signal Name
+    DACS connector pin (maps to collection, cmd addr)
+    CB connector pin</t>
+<t tx="ntallen.20120110154657.1485"></t>
+<t tx="ntallen.20120110154657.1486"></t>
+<t tx="ntallen.20120111082754.1505">NETS handled interconnection of wires.
+Signals connected by a wire were equivalent
+Sometimes that meant an address was associated with a signal
+
+Given a rewrite, I would like to allow attributes to be associated with signals,
+address being one such attribute.
+
+Attributes:
+    Address
+    Mux Index
+    Affinity with another signal
+    Mux Configuration
+
+From NETS, we know signals are associated with a list of Comp:Conn:Pin triples
+This means a signal has associations with multiple components and multiple connectors
+In practice, we don't always realize all of those associations on the screen,
+but sometimes it is useful to see them during development.
+
+I might want to see all the signals on the DACS, DACS connector or a connector board
+connector during test. Ultimately, I am more interested in the 'leaf' components, not
+the intermediate distribution panels.
+
+In some cases I might want to provide a different grouping, perhaps involving multiple
+components into a subsystem or a hierarchy of subsystems. Some of this organization
+can take place at the signal level, and some of these can be determined automatically.
+
+Currently we have associations with Comp, Comp:Conn and Comp:Conn:Pin
+Suppose we allowed arbitrary new categories (e.g. CmdGroup)
+These don't need to be named explicitly. They can be identified by association
+(Cmd0S is in the CmdGroup of Cmd0.) The role within the group should also be defined,
+perhaps both mnemonically and verbosely:
+    Cmd0 CmdGroup CmdO Command Output
+    Cmd0S CmdGroup(Cmd0) S Command Status
+    Cmd0DS CmdGroup(Cmd0) DS Command Processor Status
+    Cmd0On CmdGroup(Cmd0) On Command Processor On Input
+    Cmd0Off CmdGroup(Cmd0) Off Command Processor Off Input
+    Cmd0I CmdGroup(Cmd0) I Command Current
+
+When a category is created, 
+When displayed, signal names might be omitted in favor of column headings based on group mnemonics.
+Only columns for channels reported in telemetry would appear
+
+One-off groupings might also be useful. Again, the display would likely use the group title and
+mnemonic labels.</t>
+<t tx="ntallen.20120111082754.1506">AI Mux0V has address 0xC1E and mux_cfg 0x100
+  From this we know it's muxed values will appear at addressess 0xD10 through 0xD1E
+
+Mux0 has output Mux0V, inputs Mux0_nV
+
+Mux0_0V Muxed=Mux0V MuxIdx=0
+    From this and the definition of Mux0V, we know Mux0_0V has address 0xD10
+    This could also be defined as an affinity:
+        Mux0_0V has an affinity of type 'Mux' to Mux0V with MuxIdx=0
+
+LMB_I is equated to Mux0_0V
+
+In the end, the fact that LMB_I goes through a mux is irrelevant. The salient features are:
+    LMB_I is:
+        Analog Input
+        Address 0xD10
+        Located on DACS, PB, LMB
+        Affinity to Cmd(0) of type 'Related' with Relation=Current
+
+</t>
+<t tx="ntallen.20120111082754.1508">The DACS is designed to be coupled to a power board (PB)
+Internal to the DACS, commands are implemented using DigIO
+and command processor (CP)
+A command to the power board is associated with the following:
+    1 Command output from CP to the PB
+    2 Command inputs to the CP from DigIO
+    1 Digital Status from the CP to DigIO (_DS)
+    1 Digital Status from the PB to DigIO (_S)
+    1 Analog input from PB* (current)
+
+The Analog input association logically has to be made on the PB,
+since the mux actually exists there. Of course we could consider
+the DACS/PB to be a single combined system, but it is probably
+worth considering the general case.
+
+Currently</t>
+<t tx="ntallen.20120111082754.1509">/* DACS PTRH */
+
+</t>
+<t tx="ntallen.20120111082754.1510"></t>
+<t tx="ntallen.20120111082754.1511"></t>
+<t tx="ntallen.20120111082754.1512"></t>
+<t tx="ntallen.20120111082754.1513">Switches, Fail Lights</t>
+<t tx="ntallen.20120111082754.1514">Script to read basic configuration file and generate a DACSdiag source directory:
+    Experiment=DACS_CI
+    HomeDir=/home/DACS_CI
+    
+    AI_MUX(0xC1E, 0x100) means we need to collect, display 0xD10 through 0xD1E
+    AI_MUX(0xC5E, 0x120) 0xD30 through 0xD3E
+    AI_MUX(0xC9E, 0x140) 0xD50 through 0xD5E
+    
+    DIGIO_N_CONNECTORS
+    Need to know which DigIO ports are outputs
+    Need to know which outputs go to CP
+    Which inputs are associated with which commands and how
+    
+    N_PTRH
+    N_AO_CHIPS
+    IDX_N_CHANNELS
+    N_QCLICTRL
+    CTR_UG_N_BDS
+</t>
+<t tx="ntallen.20120111082754.1515">TM typedef unsigned char MS5607Db { text "%3d"; }
+TM typedef UINT PTRH_S { text " %03x"; }
+TM typedef double PTRHT_t { text "%5.1lf"; }
+TM typedef double SHT21RH_t { text "%4.1lf"; }
+TM typedef double PTRHP_t { text "%7.2lf"; }
+</t>
+<t tx="ntallen.20120111082754.1516">%{
+  #include "ptrhm.h"
+  ptrhm PTRH_0 = ptrhm("DACS",0x300,0xB177,0x9A58,0x6DBF,0x62BA,0x81BF,0x6C80);
+  ptrhm PTRH_1 = ptrhm("SPV", 0x320,0xB4E4,0x9BD8,0x7383,0x6D36,0x7629,0x6C80);
+%}
+
+TM 1 Hz UINT DACS_T1;
+TM 1 Hz UINT DACS_RH;
+TM 1 Hz UINT DACS_T2a; collect DACS_T2a = PTRH_0.MS5607Ta();
+TM 1 Hz MS5607Db DACS_T2b; collect DACS_T2b = PTRH_0.MS5607Tb(); 
+TM 1 Hz UINT DACS_Pa; collect DACS_Pa = PTRH_0.MS5607Pa();
+TM 1 Hz MS5607Db DACS_Pb; collect DACS_Pb = PTRH_0.MS5607Pb(); 
+TM 1 Hz PTRH_S DACS_PTRHS; collect DACS_PTRHS = PTRH_0.Status();
+Group PTRH_0 ( PTRH_0_T1, ... ) {
+    PTRH_0.collect();
+    PTRH_0_T1 = PTRH_0.SHT21T();
+    PTRH_0_RH = PTRH_0.SHT21RH();
+    PRTH_0_ ...
+}
+
+TM 1 Hz UINT SPV_T1; collect SPV_T1 = PTRH_1.SHT21T();
+TM 1 Hz UINT SPV_RH; collect SPV_RH = PTRH_1.SHT21RH();
+TM 1 Hz UINT SPV_T2a; collect SPV_T2a = PTRH_1.MS5607Ta();
+TM 1 Hz MS5607Db SPV_T2b; collect SPV_T2b = PTRH_1.MS5607Tb(); 
+TM 1 Hz UINT SPV_Pa; collect SPV_Pa = PTRH_1.MS5607Pa();
+TM 1 Hz MS5607Db SPV_Pb; collect SPV_Pb = PTRH_1.MS5607Pb(); 
+TM 1 Hz PTRH_S SPV_PTRHS; collect SPV_PTRHS = PTRH_1.Status();</t>
+<t tx="ntallen.20120111082754.1517">PTRHT_t PTRH_0_T1C; invalidate PTRH_0_T1C;
+{ PTRH_0_T1C = PTRH_0_ptrh.SHT21T(PTRH_0_T1); Validate PTRH_0_T1C; }
+PTRHT_t PTRH_0_T2C; invalidate PTRH_0_T2C;
+{ PTRH_0_T2C = PTRH_0_ptrh.MS5607T(PTRH_0_T2a, PTRH_0_T2b); Validate PTRH_0_T2C; }
+SHT21RH_t PTRH_0_RHC; invalidate PTRH_0_RHC;
+{ PTRH_0_RHC = PTRH_0_ptrh.SHT21RH(PTRH_0_RH); Validate PTRH_0_RHC; }
+PTRHP_t PTRH_0_P; invalidate PTRH_0_P;
+{ PTRH_0_P = PTRH_0_ptrh.MS5607P(PTRH_0_Pa, PTRH_0_Pb) * 760./1013.; Validate PTRH_0_P; }
+</t>
+<t tx="ntallen.20120111082754.1518">Display PTRH_0_PTRHS, PTRH_0_T1C, PTRH_0_RHC, PTRH_0_T2C, PTRH_0_P
+
+PTRH
+        RH_T P_T  RH    P 
+         C    C    %   Torr Status
+</t>
+<t tx="ntallen.20120111082754.1519">copy in ptrhm.h ptrhm.cc ptrhm_col.cc
+tmcbase gets ptrh.tmc ptrhm.cc
+tbl gets ptrh.tbl
+col gets ptrh_col.tmc ptrhm_col.cc
+conv gets ptrh_conv.tmc
+</t>
+<t tx="ntallen.20120111082754.1520">TM INITFUNC DACS_ptrh.check_coeffs();
+TM INITFUNC SPV_ptrh.check_coeffs();</t>
+<t tx="ntallen.20120113132201.1535">Raw waveform definition. Could be copied from generic
+
+</t>
+<t tx="ntallen.20120113132201.1536">Generic, copied, combined with ssp.cmd</t>
+<t tx="ntallen.20120113132201.1537">Contains interface definitions:
+    %INTERFACE &lt;QCLI0&gt;
+    ...
+    &amp;QCLI &lt;cmdif_rd *&gt;
+      : QCLI0 { $0 = &amp;if_QCLI0; }
+      : ...
+      ;
+%INTERFACE &lt;SSP&gt;
+
+%{
+
+#ifdef SERVER
+  #include "hsatod.h"
+  #define QCLI_ICOS \
+      (HSAD_OPT_A|HSAD_OPT_B|HSAD_OPT_C|HSAD_TRIG_3|HSAD_TRIG_RISING)
+
+  hsatod_setup_t ssp_setup;
+
+  static struct ssp_bd_s {
+    hsatod_setup_t *setup;
+    cmdif_rd *intf;
+  } ssp_bd[1] = {
+    { &amp;ssp_setup, &amp;if_SSP },
+  };
+
+#endif
+
+%}
+
+# &amp;SSP returns an index into ssp_bd[]
+&amp;SSP &lt;int&gt;
+  : SSP { $0 = 0; }
+  ;
+
+&amp;command
+  : Select QCLI Waveform &amp;QCLI_Wave * {
+      *ssp_bd[0].setup = QCLI_Waves[$4];
+      if_QCLI.Turf( "SW:%d\n", $4 );
+    }
+  ;
+</t>
+<t tx="ntallen.20120113132201.1540">Generated
+
+%QCLI%_Wave
+%QCLI%_s
+%QCLI%_Stale
+
+%QCLI%_ctrl_s</t>
+<t tx="ntallen.20120113132201.1541">Generated
+</t>
+<t tx="ntallen.20120113132201.1542">%QCLI%_Wave
+%QCLI%_s broken out by bit
+%QCLI%_Stale
+
+%QCLI%_ctrl_s
+%SSP% vars</t>
+<t tx="ntallen.20120113132201.1543">need to start a qcli driver for each qcli, ssp driver for each ssp
+</t>
+<t tx="ntallen.20120113132201.1544">Generated
+
+%{
+  ssp_data_t SSP;
+  qcli_data_t QCLI;
+%}
+</t>
+<t tx="ntallen.20120118103503.1551">CP_NCMDS=50 --The number of command processor commands
+CP_DS=104   --The index into the dig_IO&lt;&gt; vector of the first DS bit
+PB_S=160    --The index into the dig_IO&lt;&gt; vector of the first power board status bit
+
+PB_S must be divisible by 8
+CP_DS must be divisible by 8
+
+There are CP_NCMDS DS bits starting at dig_IO&lt;CP_DS&gt;
+There are 24 S bits starting at dig_IO&lt;PB_S&gt;</t>
+<t tx="ntallen.20120118103503.1552">Define status words
+
+There are ceil(CP_NCMDS/8) DS status words and 3 S status words
+These start at port CP_DS/8.
+
+The DS for command i is dig_IO&lt;CP_DS+i&gt;, where 0 &lt;= i &lt; CP_NCMDS
+The connport is floor((CP_DS+i)/8)
+port is connport % 6
+conn is floor(connport / 6)
+bit is (CP_DS+i)%8
+
+offset[port] = { 8, 17, 10, 19, 12, 21 }
+addr = 0x800 + conn*0x20 + offset[port]
+xaddr = sprintf( "%03X", addr );
+
+TM typedef unsigned char DStat { text "%02x"; collect x = sbrba(x.address); }
+
+for each connport, generate:
+    TM 1 Hz DStat DS&lt;xaddr&gt;; Address DS&lt;xaddr&gt; 0x&lt;xaddr&gt;;
+</t>
+<t tx="ntallen.20120118103503.1553">For each DS, determine bit, conn, port, xaddr
+
+on_off_t Cmd_&lt;n&gt;_DS; invalidate Cmd_&lt;n&gt;_DS;
+{ Cmd_&lt;n&gt;_DS = (DS&lt;xaddr&gt; &gt;&gt; bit) &amp; 1; Validate Cmd_&lt;n&gt;_DS; }
+
+For each S, determine bit, conn, port, xaddr
+
+on_off_t Cmd_&lt;n&gt;_S; invalidate Cmd_&lt;n&gt;_S;
+{ Cmd_&lt;n&gt;_S = (DS&lt;xaddr&gt; &gt;&gt; bit) &amp; 1; Validate Cmd_&lt;n&gt;_S; }
+</t>
+<t tx="ntallen.20120118103503.1554">Just a list of commands</t>
+<t tx="ntallen.20120118103503.1555">3 columns with 8 rows of &lt;cmd&gt;: DS S
+Additional columns with &lt;cmd&gt;: S</t>
+<t tx="ntallen.20120118103503.1556">In this model, the first CP_NCMDS/8 ports are outputs, and all the rest are inputs.
+
+### due to the experiment-specific nature of the DACS, we can assume that the
+### input/output configuration is fixed, so nothing needs to be written by dccc.
+
+Hence all we have to write out are the address value pairs for the command outputs.
+We don't need to address all of the input ports.</t>
 </tnodes>
 </leo_file>
