@@ -1,0 +1,71 @@
+ATTR Key : DefTableKey;
+ATTR ScopeKey : DefTableKey;
+
+%-----------------------------------------------------------------------------
+% The global scope is used for all entity and component names.
+% Inside components I will use 
+%   SYMBOL Program      INHERITS RootScope END;
+%   SYMBOL Block        INHERITS RangeScope END;
+%   SYMBOL DefIdent     INHERITS IdDefScope END;
+% IdDefScope, IdUseScope, ChkIdUse
+%   SYMBOL UseIdent     INHERITS IdUseEnv END;
+%   SYMBOL TypeUseIdent INHERITS IdUseEnv END;
+%   SYMBOL UseIdent INHERITS ChkIdUse END;
+%-----------------------------------------------------------------------------
+SYMBOL design_file INHERITS RootScope, ExportRange
+  COMPUTE THIS.ScopeKey = NewKey(); END;
+SYMBOL entity_decl_body INHERITS ExportRange
+  COMPUTE INH.ScopeKey = INCLUDING entity_declaration.Key; END;
+SYMBOL architecture_body INHERITS ExportRange
+  COMPUTE INH.ScopeKey = INCLUDING architecture_declaration.Key; END;
+SYMBOL component_decl_body INHERITS ExportRange
+  COMPUTE INH.ScopeKey = INCLUDING component_declaration.Key; END;
+
+RULE: entity_declaration ::= 'entity' DefIdent entity_decl_body
+  COMPUTE entity_declaration.Key = DefIdent.Key; END;
+
+RULE: architecture_declaration ::=
+  'architecture' ident 'of' UseIdent architecture_body ident ';'
+COMPUTE
+  architecture_declaration.Key = UseIdent.Key;
+  printf( "Architecture of %s bound to Key %d\n", StringTable(UseIdent.Sym),
+    architecture_declaration.Key );
+  IF(NE(ident[1],ident[2]),
+      message(ERROR, CatStrInd(CatStrStr(CatStrInd(
+        "Architecture closing identifier does not match opening: ", 
+        ident[1] ), " != " ), ident[2]),
+        0, COORDREF));
+END;
+
+RULE: component_declaration ::= 'component' DefIdent component_decl_body
+COMPUTE
+  component_declaration.Key = DefIdent.Key;
+END;
+RULE: component_inst ::= DefIdent ':' UseIdent generic_maps port_maps ';'
+COMPUTE
+  component_inst.Key = UseIdent.Key;
+END;
+
+RULE: DefIdent ::= ident COMPUTE DefIdent.Sym = ident; END;
+SYMBOL DefIdent INHERITS IdDefScope END;
+RULE: UseIdent ::= ident COMPUTE UseIdent.Sym = ident; END;
+SYMBOL UseIdent INHERITS QualIdUse, ChkQualIdUse COMPUTE
+  INH.ScopeKey =
+    INCLUDING(
+      design_file.ScopeKey,
+      architecture_declaration.Key,
+      entity_declaration.Key,
+      component_declaration.Key,
+      component_inst.Key);
+END;
+
+RULE: opt_is ::= 'is' END;
+RULE: opt_is ::= END;
+
+SYMBOL DefIdent INHERITS Unique COMPUTE
+  IF (NOT (THIS.Unique),
+  message(ERROR, 
+    CatStrInd ("identifier is multiply defined: ", 
+    THIS.Sym),
+    0, COORDREF));
+END;
