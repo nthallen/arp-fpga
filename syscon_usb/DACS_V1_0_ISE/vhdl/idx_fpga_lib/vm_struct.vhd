@@ -28,7 +28,9 @@ ENTITY vm IS
    );
 
 -- Declarations
-
+  attribute PULLUP: string;
+  attribute PULLUP of SCL : SIGNAL is TRUE;
+  attribute PULLUP of SDA : SIGNAL is TRUE;
 END vm ;
 
 --
