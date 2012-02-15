@@ -44,7 +44,8 @@ entity dacs_v2 is
       DIGIO_N_CONNECTORS : integer range 8 DOWNTO 1 := 2;
       DIGIO_FORCE_DIR : std_ulogic_vector := "000000000000";
       DIGIO_FORCE_DIR_VAL : std_ulogic_vector := "000000000000";
-      N_QCLICTRL : integer range 5 downto 0 := 1
+      N_QCLICTRL : integer range 5 downto 0 := 1;
+      N_VM : integer range 5 downto 0 := 1
     );
     Port (
       fpga_0_rst_1_sys_rst_pin : IN std_logic;
@@ -61,8 +62,8 @@ entity dacs_v2 is
       fpga_0_RS232_TX_pin : OUT std_logic;
       PTRH_SDA_pin : INOUT std_logic_vector(N_ISBITS-1 DOWNTO 0);
       PTRH_SCK_pin : INOUT std_logic_vector(N_ISBITS-1 DOWNTO 0);
-      VM_SDA_pin : INOUT std_logic;
-      VM_SCL_pin : INOUT std_logic;
+      VM_SDA_pin : INOUT std_logic_vector(N_VM-1 DOWNTO 0);
+      VM_SCL_pin : INOUT std_logic_vector(N_VM-1 DOWNTO 0);
       
       subbus_cmdenbl : OUT std_ulogic;
       subbus_cmdstrb : OUT std_ulogic;
@@ -277,22 +278,6 @@ architecture Behavioral of dacs_v2 is
      );
   END COMPONENT;
   
-  COMPONENT ptrh
-     GENERIC (
-        BASE_ADDR : unsigned(15 DOWNTO 0) := X"0300"
-     );
-     PORT (
-        Addr   : IN     std_logic_vector(15 DOWNTO 0);
-        ExpRd  : IN     std_ulogic;
-        ExpWr  : IN     std_ulogic;
-        F8M    : IN     std_ulogic;
-        rst    : IN     std_ulogic;
-        ExpAck : OUT    std_ulogic;
-        rData  : OUT    std_logic_vector(15 DOWNTO 0);
-        scl    : INOUT  std_logic;
-        sda    : INOUT  std_logic
-     );
-  END COMPONENT;
   COMPONENT vm
      GENERIC (
         BASE_ADDR : unsigned(15 DOWNTO 0) := X"0360"
@@ -308,6 +293,7 @@ architecture Behavioral of dacs_v2 is
         SDA    : INOUT  std_logic
      );
   END COMPONENT;
+
   COMPONENT ptrhm_acquire
      GENERIC (
         N_PTRH      : integer range 16 downto 1 := 8;
@@ -329,6 +315,7 @@ architecture Behavioral of dacs_v2 is
         sda    : INOUT  std_logic_vector(N_ISBITS-1 DOWNTO 0)
      );
   END COMPONENT;
+
   COMPONENT qclictrl
      GENERIC (
         BASE_ADDR : std_logic_vector(15 DOWNTO 0) := X"1000"
@@ -358,10 +345,15 @@ architecture Behavioral of dacs_v2 is
 	attribute box_type : string;
 	attribute box_type of Processor : component is "user_black_box";
 	
-	CONSTANT PTRH0 : integer := 5;
-	CONSTANT CTR_UG0 : integer := PTRH0+1;
-	CONSTANT QCLICTRL0 : integer := CTR_UG0+CTR_UG_N_BDS;
-	CONSTANT N_BOARDS : integer := CTR_UG0+CTR_UG_N_BDS+N_QCLICTRL;
+	CONSTANT IDX_BDNO : integer := 0;
+	CONSTANT DIGIO_BDNO : integer := 1;
+	CONSTANT AI_BDNO : integer := 2;
+	CONSTANT AO_BDNO : integer := 3;
+	CONSTANT PTRHM_BDNO : integer := 4;
+	CONSTANT VM_BDNO : integer := PTRHM_BDNO+1;
+	CONSTANT CTR_UG_BDNO : integer := VM_BDNO+N_VM;
+	CONSTANT QCLI_BDNO : integer := CTR_UG_BDNO+CTR_UG_N_BDS;
+	CONSTANT N_BOARDS : integer := QCLI_BDNO+N_QCLICTRL;
 	SIGNAL clk_8_0000MHz : std_logic;
 	SIGNAL clk_66_6667MHz : std_logic;
   SIGNAL xps_epc_0_PRH_Wr_n_pin : std_logic;
@@ -472,9 +464,9 @@ begin
        Run         => idx_Run,
        Step        => idx_Step,
        WData       => WData,
-       ExpAck      => ExpAck(0),
+       ExpAck      => ExpAck(IDX_BDNO),
        BdIntr      => BdIntr(0),
-       RData       => iRData(15 DOWNTO 0)
+       RData       => iRData(16*IDX_BDNO+15 DOWNTO 16*IDX_BDNO)
    	);
 
  Inst_DigIO : DigIO
@@ -493,8 +485,8 @@ begin
        IO     => dig_IO,
        Dir    => dig_Dir,
        WData  => WData,
-       ExpAck => ExpAck(1),
-       Rdata  => iRData(16*1+15 DOWNTO 16*1)
+       ExpAck => ExpAck(DIGIO_BDNO),
+       Rdata  => iRData(16*DIGIO_BDNO+15 DOWNTO 16*DIGIO_BDNO)
     );
 
  Inst_ana_in : ana_input
@@ -512,8 +504,8 @@ begin
        SCK5   => ana_in_SCK5,
        SDO    => ana_in_SDO,
        WData  => WData,
-       ExpAck => ExpAck(2),
-       RData  => iRData(16*2+15 DOWNTO 16*2)
+       ExpAck => ExpAck(AI_BDNO),
+       RData  => iRData(16*AI_BDNO+15 DOWNTO 16*AI_BDNO)
     );
 
   Inst_ao : ao
@@ -533,23 +525,8 @@ begin
         DA_SCK    => DA_SCK,
         DA_SDI    => DA_SDI,
         WData     => WData,
-        ExpAck    => ExpAck(3),
-        RData     => iRData(16*3+15 DOWNTO 16*3)
-     );
-
-  Inst_vm : vm
-     GENERIC MAP (
-        BASE_ADDR => X"03A0"
-     )
-     PORT MAP (
-        Addr   => ExpAddr,
-        ExpRd  => ExpRd,
-        F8M    => clk_8_0000MHz,
-        rst    => rst,
-        ExpAck => ExpAck(4),
-        rData  => iRData(16*4+15 DOWNTO 16*4),
-        SCL    => VM_SCL_pin,
-        SDA    => VM_SDA_pin
+        ExpAck    => ExpAck(AO_BDNO),
+        RData     => iRData(16*AO_BDNO+15 DOWNTO 16*AO_BDNO)
      );
 
   ptrhm : ptrhm_acquire
@@ -567,12 +544,29 @@ begin
         ExpWr  => ExpWr,
         F8M    => clk_8_0000MHz,
         rst    => rst,
-        ExpAck => ExpAck(PTRH0),
-        rData  => iRData(16*PTRH0+15 DOWNTO 16*PTRH0),
+        ExpAck => ExpAck(PTRHM_BDNO),
+        rData  => iRData(16*PTRHM_BDNO+15 DOWNTO 16*PTRHM_BDNO),
         scl    => PTRH_SCK_pin,
         sda    => PTRH_SDA_pin
      );
 
+  vms : for i in 0 TO N_VM-1 generate
+    Inst_vm : vm
+       GENERIC MAP (
+         -- 864 = 0x360
+         BASE_ADDR => CONV_UNSIGNED(864+i*16,16)
+       )
+       PORT MAP (
+          Addr   => ExpAddr,
+          ExpRd  => ExpRd,
+          F8M    => clk_8_0000MHz,
+          rst    => rst,
+          ExpAck => ExpAck(VM_BDNO+i),
+          rData  => iRData(16*(VM_BDNO+i)+15 DOWNTO 16*(VM_BDNO+i)),
+          SCL    => VM_SCL_pin(i),
+          SDA    => VM_SDA_pin(i)
+       );
+  end generate;
 
   ctrs : for i in 0 TO CTR_UG_N_BDS-1 generate
     
@@ -590,8 +584,8 @@ begin
          rst    => rst,
          PMT    => ctr_PMT(i*4+3 DOWNTO i*4),
          WData  => WData,
-         ExpAck => ExpAck(CTR_UG0+i),
-         RData  => iRData(16*(CTR_UG0+i)+15 DOWNTO 16*(CTR_UG0+i))
+         ExpAck => ExpAck(CTR_UG_BDNO+i),
+         RData  => iRData(16*(CTR_UG_BDNO+i)+15 DOWNTO 16*(CTR_UG_BDNO+i))
       );
   end generate;
   
@@ -607,9 +601,9 @@ begin
          F8M    => clk_8_0000MHz,
          WData  => WData,
          rst    => rst,
-         ExpAck => ExpAck(QCLICTRL0+i),
+         ExpAck => ExpAck(QCLI_BDNO+i),
          QSync  => QSync(i),
-         RData  => iRData(16*(QCLICTRL0+i)+15 DOWNTO 16*(QCLICTRL0+i)),
+         RData  => iRData(16*(QCLI_BDNO+i)+15 DOWNTO 16*(QCLI_BDNO+i)),
          QSClk  => QSClk(i),
          QSData => QSData(i),
          QNBsy  => QNBsy(i)

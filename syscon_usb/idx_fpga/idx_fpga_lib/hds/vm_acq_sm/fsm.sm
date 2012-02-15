@@ -73,19 +73,19 @@ value "C:\\HDS\\idx_fpga\\idx_fpga_lib\\hds\\vm_acq_sm"
 )
 (vvPair
 variable "date"
-value "02/ 9/2012"
+value "02/15/2012"
 )
 (vvPair
 variable "day"
-value "Thu"
+value "Wed"
 )
 (vvPair
 variable "day_long"
-value "Thursday"
+value "Wednesday"
 )
 (vvPair
 variable "dd"
-value "09"
+value "15"
 )
 (vvPair
 variable "entity_name"
@@ -209,7 +209,7 @@ value "fsm"
 )
 (vvPair
 variable "time"
-value "09:37:18"
+value "11:26:18"
 )
 (vvPair
 variable "unit"
@@ -802,7 +802,7 @@ va (VaSet
 fg "0,0,32768"
 bg "0,0,32768"
 )
-xt "100471,98579,109071,99579"
+xt "100471,98579,109171,99579"
 st "
 by %user on %dd %month %year
 "
@@ -2987,16 +2987,16 @@ optionalChildren [
 uid 589,0
 sl 0
 ro 270
-xt "63595,31162,65845,32162"
+xt "67194,31162,69444,32162"
 )
 (Line
 uid 590,0
 sl 0
 ro 270
-xt "63095,31662,63595,31662"
+xt "66694,31662,67194,31662"
 pts [
-"63095,31662"
-"63595,31662"
+"66694,31662"
+"67194,31662"
 ]
 )
 ]
@@ -3009,9 +3009,9 @@ uid 592,0
 va (VaSet
 font "arial,8,1"
 )
-xt "66345,31162,69745,32162"
+xt "69944,31162,73344,32162"
 st "vm_I1_a"
-blo "66345,31962"
+blo "69944,31962"
 tm "LinkName"
 )
 )
@@ -8116,7 +8116,9 @@ pts [
 start &19
 end &24
 ss 0
-cond "Done = '1'"
+cond "Done = '1'
+  OR
+Err = '1'"
 tb (TransitionBlock
 uid 374,0
 ps "CenterOffsetStrategy"
@@ -8128,7 +8130,7 @@ fg "65535,65535,65535"
 bg "0,0,0"
 lineColor "0,32768,49152"
 )
-xt "50552,12319,55852,14319"
+xt "50552,12319,55852,16319"
 )
 autoResize 1
 lineShape (Line
@@ -8148,8 +8150,10 @@ uid 377,0
 va (VaSet
 font "arial,8,0"
 )
-xt "51052,12819,55352,13819"
-st "Done = '1'"
+xt "51052,12819,55352,15819"
+st "Done = '1'
+  OR
+Err = '1'"
 tm "Condition"
 )
 actions (MLText
@@ -8157,7 +8161,7 @@ uid 378,0
 va (VaSet
 font "arial,8,0"
 )
-xt "53202,14219,53202,14219"
+xt "53202,16219,53202,16219"
 tm "Actions"
 )
 )
@@ -9013,17 +9017,19 @@ uid 594,0
 va (VaSet
 vasetType 3
 )
-xt "57907,31662,63095,31674"
+xt "57907,31662,66694,31676"
 pts [
-"57907,31674"
-"63095,31662"
+"57907,31676"
+"66694,31662"
 ]
 )
 start &31
 end &32
 ss 0
 es 0
-cond "Done = '1'"
+cond "Done = '1'
+  OR
+Err = '1'"
 tb (TransitionBlock
 uid 595,0
 ps "CenterOffsetStrategy"
@@ -9035,7 +9041,7 @@ fg "65535,65535,65535"
 bg "0,0,0"
 lineColor "0,32768,49152"
 )
-xt "58615,29188,63915,31188"
+xt "60415,29189,65715,33189"
 )
 autoResize 1
 lineShape (Line
@@ -9044,10 +9050,10 @@ va (VaSet
 vasetType 3
 isHidden 1
 )
-xt "60815,31088,60815,31088"
+xt "62615,31089,62615,31089"
 pts [
-"60815,31088"
-"60815,31088"
+"62615,31089"
+"62615,31089"
 ]
 )
 condition (MLText
@@ -9055,8 +9061,10 @@ uid 598,0
 va (VaSet
 font "arial,8,0"
 )
-xt "59115,29688,63415,30688"
-st "Done = '1'"
+xt "60915,29689,65215,32689"
+st "Done = '1'
+  OR
+Err = '1'"
 tm "Condition"
 )
 actions (MLText
@@ -9064,7 +9072,7 @@ uid 599,0
 va (VaSet
 font "arial,8,0"
 )
-xt "61265,31088,61265,31088"
+xt "63065,33089,63065,33089"
 tm "Actions"
 )
 )
@@ -9079,7 +9087,7 @@ isHidden 1
 fg "65535,65535,65535"
 bg "0,0,0"
 )
-xt "57644,30891,59206,32453"
+xt "58004,30893,59566,32455"
 radius 781
 )
 pr (Text
@@ -9088,10 +9096,10 @@ va (VaSet
 isHidden 1
 font "arial,8,0"
 )
-xt "58025,31172,58825,32172"
+xt "58385,31174,59185,32174"
 st "1"
 ju 0
-blo "58425,31972"
+blo "58785,31974"
 tm "TransitionPriority"
 )
 padding "100,100"
@@ -12846,7 +12854,7 @@ tm "SmCompilerDirectivesTextMgr"
 associable 1
 )
 windowSize "0,22,1281,800"
-viewArea "-2436,15280,75390,59364"
+viewArea "6828,-13781,119125,49829"
 cachedDiagramExtent "0,-1000,137271,157899"
 pageSetupInfo (PageSetupInfo
 ptrCmd "Adobe PDF,winspool,"
@@ -13302,7 +13310,7 @@ stateOrder [
 name "csm"
 )
 ]
-lastUid 1684,0
+lastUid 1713,0
 commonDM (CommonDM
 ldm (LogicalDM
 emptyRow *157 (LEmptyRow

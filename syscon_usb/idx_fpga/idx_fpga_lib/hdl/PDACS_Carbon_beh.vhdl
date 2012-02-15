@@ -18,10 +18,11 @@ USE idx_fpga_lib.ptrhm.all;
 
 ENTITY PDACS_Carbon IS
   GENERIC (
-    DACS_BUILD_NUMBER : std_logic_vector(15 DOWNTO 0) := X"001D"; -- #29
+    DACS_BUILD_NUMBER : std_logic_vector(15 DOWNTO 0) := X"001E"; -- #30
     INSTRUMENT_ID : std_logic_vector(15 DOWNTO 0) := X"0003";
     CTR_UG_N_BDS : integer range 5 downto 0 := 0;
-    N_QCLICTRL : integer range 5 downto 0 := 3;    
+    N_QCLICTRL : integer range 5 downto 0 := 3;
+    N_VM : integer range 5 downto 0 := 3;
 
     N_PTRH : integer range 16 downto 1 := 9;
     N_ISBITS    : integer range 8 downto 1 := 5;
@@ -186,7 +187,8 @@ ARCHITECTURE beh OF PDACS_Carbon IS
       DIGIO_N_CONNECTORS : integer range 8 DOWNTO 1 := 2;
       DIGIO_FORCE_DIR : std_ulogic_vector := "000000000000";
       DIGIO_FORCE_DIR_VAL : std_ulogic_vector := "000000000000";
-      N_QCLICTRL : integer range 5 downto 0 := 1
+      N_QCLICTRL : integer range 5 downto 0 := 1;
+      N_VM : integer range 5 downto 0 := 1
     );
     Port (
       fpga_0_rst_1_sys_rst_pin : IN std_logic;
@@ -203,8 +205,8 @@ ARCHITECTURE beh OF PDACS_Carbon IS
       fpga_0_RS232_TX_pin : OUT std_logic;
       PTRH_SDA_pin : INOUT std_logic_vector(N_ISBITS-1 DOWNTO 0);
       PTRH_SCK_pin : INOUT std_logic_vector(N_ISBITS-1 DOWNTO 0);
-      VM_SDA_pin : INOUT std_logic;
-      VM_SCL_pin : INOUT std_logic;
+      VM_SDA_pin : INOUT std_logic_vector(N_VM-1 DOWNTO 0);
+      VM_SCL_pin : INOUT std_logic_vector(N_VM-1 DOWNTO 0);
       
       subbus_cmdenbl : OUT std_ulogic;
       subbus_cmdstrb : OUT std_ulogic;
@@ -282,7 +284,8 @@ BEGIN
       DIGIO_N_CONNECTORS => DIGIO_N_CONNECTORS,
       DIGIO_FORCE_DIR => DIGIO_FORCE_DIR,
       DIGIO_FORCE_DIR_VAL => DIGIO_FORCE_DIR_VAL,
-      N_QCLICTRL => N_QCLICTRL
+      N_QCLICTRL => N_QCLICTRL,
+      N_VM => N_VM
     )
     PORT MAP (
        fpga_0_rst_1_sys_rst_pin       => FPGA_CPU_RESET,
@@ -308,8 +311,12 @@ BEGIN
        PTRH_SCK_pin(2)                => BIO(2),
        PTRH_SCK_pin(3)                => BIO(4),
        PTRH_SCK_pin(4)                => BIO(6),
-       VM_SCL_pin                     => BIO(8),
-       VM_SDA_pin                     => BIO(9),
+       VM_SCL_pin(0)                  => BIO(8),
+       VM_SCL_pin(1)                  => BIO(10),
+       VM_SCL_pin(2)                  => BIO(12),
+       VM_SDA_pin(0)                  => BIO(9),
+       VM_SDA_pin(1)                  => BIO(11),
+       VM_SDA_pin(2)                  => BIO(13),
        
        subbus_cmdenbl                 => subbus_cmdenbl,
        subbus_cmdstrb                 => subbus_cmdstrb,
@@ -381,7 +388,8 @@ BEGIN
   AI_MUX0_A <= ana_in_Row(2 DOWNTO 0);
   AI_MUX1_A <= ana_in_Row(2 DOWNTO 0);
 
-  BIO(15 DOWNTO 8) <= (others => 'Z');
+  -- BIO(13 DOWNTO 8) are VM I2C lines
+  BIO(15 DOWNTO 14) <= (others => 'Z');
 
   -- DIO(5 downto 0) are QCLI BIO (wired to DIO(6 downto 1))
   -- DIO(6) is spare DigIO (wired to DIO7
