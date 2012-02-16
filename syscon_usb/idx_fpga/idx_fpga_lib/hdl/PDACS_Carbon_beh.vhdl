@@ -18,7 +18,7 @@ USE idx_fpga_lib.ptrhm.all;
 
 ENTITY PDACS_Carbon IS
   GENERIC (
-    DACS_BUILD_NUMBER : std_logic_vector(15 DOWNTO 0) := X"001E"; -- #30
+    DACS_BUILD_NUMBER : std_logic_vector(15 DOWNTO 0) := X"001F"; -- #31
     INSTRUMENT_ID : std_logic_vector(15 DOWNTO 0) := X"0003";
     CTR_UG_N_BDS : integer range 5 downto 0 := 0;
     N_QCLICTRL : integer range 5 downto 0 := 3;
@@ -177,7 +177,7 @@ ARCHITECTURE beh OF PDACS_Carbon IS
       ESID        : ESID_array := ( 3, 2, 1, 0, 0, 0, 0, 0 );
       ESwitchBit  : ESB_array  := ( 0, 0, 0, 4, 3, 2, 1, 0 );
       ISwitchBit  : ISB_array  := ( 3, 2, 1, 0 );
-      ESwitchAddr : ESA_array  := ( "0000000", "0000000", "0000000", "1110000" );
+      ESwitchAddr : ESA_array  := ( "1110000", "0000000", "0000000", "0000000" );
       
       N_AO_CHIPS : natural range 15 downto 1 := 2;
       CTR_UG_N_BDS : integer range 5 downto 0 := 2;
