@@ -172,12 +172,12 @@ ARCHITECTURE beh OF PDACS_Carbon IS
       INSTRUMENT_ID : std_logic_vector(15 DOWNTO 0) := X"0001";
       N_INTERRUPTS : integer range 15 downto 1 := 1;
       
-      N_PTRH      : integer range 16 downto 1 := 8;
-      N_ISBITS    : integer range 8 downto 1 := 4;
-      ESID        : ESID_array := ( 3, 2, 1, 0, 0, 0, 0, 0 );
-      ESwitchBit  : ESB_array  := ( 0, 0, 0, 4, 3, 2, 1, 0 );
-      ISwitchBit  : ISB_array  := ( 3, 2, 1, 0 );
-      ESwitchAddr : ESA_array  := ( "1110000", "0000000", "0000000", "0000000" );
+      N_PTRH      : integer range 16 downto 1 := 9;
+      N_ISBITS    : integer range 8 downto 1 := 5;
+      ESID        : ESID_array := ( 0, 1, 1, 1, 1, 1, 2, 3, 4 );
+      ESwitchBit  : ESB_array  := ( 0, 0, 1, 2, 3, 4, 0, 0, 0 );
+      ISwitchBit  : ISB_array  := ( 0, 1, 2, 3, 4 );
+      ESwitchAddr : ESA_array  := ( "0000000", "1110000", "0000000", "0000000", "0000000" );
       
       N_AO_CHIPS : natural range 15 downto 1 := 2;
       CTR_UG_N_BDS : integer range 5 downto 0 := 2;
