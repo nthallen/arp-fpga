@@ -86,6 +86,7 @@ BEGIN
     sda <= (others => 'H');
     m_sda <= (others => 'H');
     m_scl <= (others => 'H');
+    sda(2) <= '0';
     -- pragma synthesis_off
     wait until F8M'event AND F8M = '1';
     wait until F8M'event AND F8M = '1';
@@ -110,6 +111,7 @@ BEGIN
     sbrd_check(X"024C", X"0003");
     sbrd_check(X"026C", X"1003"); -- Select Error (no mux)
     
+    wait for 850 ms;
     ClkDone <= '1';
     wait;
     -- pragma synthesis_on

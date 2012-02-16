@@ -11,10 +11,6 @@ library "ieee"
 unitName "std_logic_arith"
 )
 (DmPackageRef
-library "ieee"
-unitName "numeric_std"
-)
-(DmPackageRef
 library "idx_fpga_lib"
 unitName "ptrhm"
 )
@@ -301,7 +297,7 @@ font "Tahoma,10,0"
 )
 emptyMRCItem *32 (MRCItem
 litem &1
-pos 3
+pos 17
 dimension 20
 )
 uid 208,0
@@ -561,7 +557,7 @@ font "Tahoma,10,0"
 )
 emptyMRCItem *74 (MRCItem
 litem &61
-pos 3
+pos 0
 dimension 20
 )
 uid 236,0
@@ -696,19 +692,19 @@ value "C:\\HDS\\idx_fpga\\idx_fpga_lib\\hds\\ptrhm_i2c_sm"
 )
 (vvPair
 variable "date"
-value "11/ 4/2011"
+value "02/16/2012"
 )
 (vvPair
 variable "day"
-value "Fri"
+value "Thu"
 )
 (vvPair
 variable "day_long"
-value "Friday"
+value "Thursday"
 )
 (vvPair
 variable "dd"
-value "04"
+value "16"
 )
 (vvPair
 variable "entity_name"
@@ -756,7 +752,7 @@ value "$HDS_PROJECT_DIR/idx_fpga_lib/work"
 )
 (vvPair
 variable "mm"
-value "11"
+value "02"
 )
 (vvPair
 variable "module_name"
@@ -764,11 +760,11 @@ value "ptrhm_i2c_sm"
 )
 (vvPair
 variable "month"
-value "Nov"
+value "Feb"
 )
 (vvPair
 variable "month_long"
-value "November"
+value "February"
 )
 (vvPair
 variable "p"
@@ -832,7 +828,7 @@ value "symbol"
 )
 (vvPair
 variable "time"
-value "09:22:01"
+value "14:54:09"
 )
 (vvPair
 variable "unit"
@@ -852,11 +848,11 @@ value "symbol"
 )
 (vvPair
 variable "year"
-value "2011"
+value "2012"
 )
 (vvPair
 variable "yy"
-value "11"
+value "12"
 )
 ]
 )
@@ -900,8 +896,7 @@ va (VaSet
 font "Courier New,8,0"
 )
 xt "44000,8400,61000,9200"
-st "arst_i    : OUT    std_logic  ;
-"
+st "arst_i    : OUT    std_logic  ;"
 )
 thePort (LogicalPort
 m 1
@@ -946,8 +941,7 @@ va (VaSet
 font "Courier New,8,0"
 )
 xt "44000,2800,62500,3600"
-st "cmd       : IN     ptrhm_i2c_op  ;
-"
+st "cmd       : IN     ptrhm_i2c_op  ;"
 )
 thePort (LogicalPort
 decl (Decl
@@ -991,8 +985,7 @@ va (VaSet
 font "Courier New,8,0"
 )
 xt "44000,9200,61500,10000"
-st "done      : OUT    std_ulogic  ;
-"
+st "done      : OUT    std_ulogic  ;"
 )
 thePort (LogicalPort
 m 1
@@ -1037,8 +1030,7 @@ va (VaSet
 font "Courier New,8,0"
 )
 xt "44000,10000,61500,10800"
-st "err       : OUT    std_ulogic  ;
-"
+st "err       : OUT    std_ulogic  ;"
 )
 thePort (LogicalPort
 m 1
@@ -1083,8 +1075,7 @@ va (VaSet
 font "Courier New,8,0"
 )
 xt "44000,2000,61500,2800"
-st "F8M       : IN     std_ulogic  ;
-"
+st "F8M       : IN     std_ulogic  ;"
 )
 thePort (LogicalPort
 decl (Decl
@@ -1128,8 +1119,7 @@ va (VaSet
 font "Courier New,8,0"
 )
 xt "44000,3600,71500,4400"
-st "i2c_addr  : IN     std_ulogic_vector (6 DOWNTO 0) ;
-"
+st "i2c_addr  : IN     std_ulogic_vector (6 DOWNTO 0) ;"
 )
 thePort (LogicalPort
 decl (Decl
@@ -1174,8 +1164,7 @@ va (VaSet
 font "Courier New,8,0"
 )
 xt "44000,10800,71500,11600"
-st "i2c_rdata : OUT    std_logic_vector (23 DOWNTO 0) ;
-"
+st "i2c_rdata : OUT    std_logic_vector (23 DOWNTO 0) ;"
 )
 thePort (LogicalPort
 m 1
@@ -1221,8 +1210,7 @@ va (VaSet
 font "Courier New,8,0"
 )
 xt "44000,4400,71000,5200"
-st "i2c_wdata : IN     std_logic_vector (7 DOWNTO 0) ;
-"
+st "i2c_wdata : IN     std_logic_vector (7 DOWNTO 0) ;"
 )
 thePort (LogicalPort
 decl (Decl
@@ -1267,8 +1255,7 @@ va (VaSet
 font "Courier New,8,0"
 )
 xt "44000,5200,61500,6000"
-st "rst       : IN     std_ulogic  ;
-"
+st "rst       : IN     std_ulogic  ;"
 )
 thePort (LogicalPort
 decl (Decl
@@ -1313,8 +1300,7 @@ va (VaSet
 font "Courier New,8,0"
 )
 xt "44000,6000,61000,6800"
-st "wb_ack_o  : IN     std_logic  ;
-"
+st "wb_ack_o  : IN     std_logic  ;"
 )
 thePort (LogicalPort
 decl (Decl
@@ -1359,8 +1345,7 @@ va (VaSet
 font "Courier New,8,0"
 )
 xt "44000,11600,71000,12400"
-st "wb_adr_i  : OUT    std_logic_vector (2 DOWNTO 0) ;
-"
+st "wb_adr_i  : OUT    std_logic_vector (2 DOWNTO 0) ;"
 )
 thePort (LogicalPort
 m 1
@@ -1407,8 +1392,7 @@ va (VaSet
 font "Courier New,8,0"
 )
 xt "44000,12400,61000,13200"
-st "wb_cyc_i  : OUT    std_logic  ;
-"
+st "wb_cyc_i  : OUT    std_logic  ;"
 )
 thePort (LogicalPort
 m 1
@@ -1454,8 +1438,7 @@ va (VaSet
 font "Courier New,8,0"
 )
 xt "44000,13200,71000,14000"
-st "wb_dat_i  : OUT    std_logic_vector (7 DOWNTO 0) ;
-"
+st "wb_dat_i  : OUT    std_logic_vector (7 DOWNTO 0) ;"
 )
 thePort (LogicalPort
 m 1
@@ -1502,8 +1485,7 @@ va (VaSet
 font "Courier New,8,0"
 )
 xt "44000,6800,71000,7600"
-st "wb_dat_o  : IN     std_logic_vector (7 DOWNTO 0) ;
-"
+st "wb_dat_o  : IN     std_logic_vector (7 DOWNTO 0) ;"
 )
 thePort (LogicalPort
 decl (Decl
@@ -1549,8 +1531,7 @@ va (VaSet
 font "Courier New,8,0"
 )
 xt "44000,7600,61000,8400"
-st "wb_inta_o : IN     std_logic  ;
-"
+st "wb_inta_o : IN     std_logic  ;"
 )
 thePort (LogicalPort
 decl (Decl
@@ -1595,8 +1576,7 @@ va (VaSet
 font "Courier New,8,0"
 )
 xt "44000,14000,61000,14800"
-st "wb_stb_i  : OUT    std_logic  ;
-"
+st "wb_stb_i  : OUT    std_logic  ;"
 )
 thePort (LogicalPort
 m 1
@@ -1642,8 +1622,7 @@ va (VaSet
 font "Courier New,8,0"
 )
 xt "44000,14800,60000,15600"
-st "wb_we_i   : OUT    std_logic 
-"
+st "wb_we_i   : OUT    std_logic "
 )
 thePort (LogicalPort
 m 1
@@ -2074,11 +2053,10 @@ uid 50,0
 va (VaSet
 font "arial,8,0"
 )
-xt "0,1000,10900,8000"
+xt "0,1000,10900,7000"
 st "LIBRARY ieee;
 USE ieee.std_logic_1164.all;
 USE ieee.std_logic_arith.all;
-USE ieee.numeric_std.all;
 LIBRARY idx_fpga_lib;
 USE idx_fpga_lib.ptrhm.all;
 USE idx_fpga_lib.All;"
@@ -2086,10 +2064,11 @@ tm "PackageList"
 )
 ]
 )
-windowSize "0,0,1015,690"
-viewArea "0,0,0,0"
-cachedDiagramExtent "0,0,0,0"
-pageBreakOrigin "0,0"
+windowSize "0,0,1016,690"
+viewArea "-4084,-1045,74660,52473"
+cachedDiagramExtent "-3000,0,71500,51000"
+hasePageBreakOrigin 1
+pageBreakOrigin "-4000,0"
 defaultCommentText (CommentText
 shape (Rectangle
 layer 0
@@ -2358,6 +2337,8 @@ xt "42000,0,42000,0"
 tm "SyDeclarativeTextMgr"
 )
 )
-lastUid 1310,0
+lastUid 1333,0
+okToSyncOnLoad 1
+OkToSyncGenericsOnLoad 1
 activeModelName "Symbol:CDM"
 )
