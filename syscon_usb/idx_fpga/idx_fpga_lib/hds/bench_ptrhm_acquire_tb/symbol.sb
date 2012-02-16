@@ -221,7 +221,7 @@ tm "GenericEolColHdrMgr"
 generic (GiElement
 name "N_ISBITS"
 type "integer"
-value "5"
+value "4"
 )
 uid 109,0
 )
@@ -229,7 +229,7 @@ uid 109,0
 generic (GiElement
 name "ESID"
 type "ESID_array"
-value "( 0, 1, 1, 1, 1, 1, 2, 3, 4 )"
+value "( 3, 2, 1, 0, 0, 0, 0, 0 )"
 )
 uid 111,0
 )
@@ -237,7 +237,7 @@ uid 111,0
 generic (GiElement
 name "ISwitchBit"
 type "ISB_array"
-value "( 0, 1, 2, 3, 4 )"
+value "( 3, 2, 1, 0 )"
 )
 uid 113,0
 )
@@ -245,7 +245,7 @@ uid 113,0
 generic (GiElement
 name "ESwitchAddr"
 type "ESA_array"
-value "( \"0000000\", \"1110000\", \"0000000\", \"0000000\", \"0000000\" )"
+value "( \"1110000\",  \"0000000\", \"0000000\", \"0000000\" )"
 )
 uid 115,0
 )
@@ -253,7 +253,7 @@ uid 115,0
 generic (GiElement
 name "ESwitchBit"
 type "ESB_array"
-value "( 0, 0, 1, 2, 4, 5, 0, 0, 0 )"
+value "( 0, 0, 0, 4, 3, 2, 1, 0 )"
 )
 uid 117,0
 )
@@ -261,7 +261,7 @@ uid 117,0
 generic (GiElement
 name "N_PTRH"
 type "integer"
-value "9"
+value "8"
 )
 uid 119,0
 )
@@ -317,37 +317,37 @@ uid 99,0
 )
 *50 (MRCItem
 litem &39
-pos 0
+pos 1
 dimension 20
 uid 108,0
 )
 *51 (MRCItem
 litem &40
-pos 1
+pos 2
 dimension 20
 uid 110,0
 )
 *52 (MRCItem
 litem &41
-pos 2
+pos 4
 dimension 20
 uid 112,0
 )
 *53 (MRCItem
 litem &42
-pos 3
+pos 5
 dimension 20
 uid 114,0
 )
 *54 (MRCItem
 litem &43
-pos 4
+pos 3
 dimension 20
 uid 116,0
 )
 *55 (MRCItem
 litem &44
-pos 5
+pos 0
 dimension 20
 uid 118,0
 )
@@ -462,19 +462,19 @@ value "C:\\HDS\\idx_fpga\\idx_fpga_lib\\hds\\bench_ptrhm_acquire_tb"
 )
 (vvPair
 variable "date"
-value "01/20/2012"
+value "02/16/2012"
 )
 (vvPair
 variable "day"
-value "Fri"
+value "Thu"
 )
 (vvPair
 variable "day_long"
-value "Friday"
+value "Thursday"
 )
 (vvPair
 variable "dd"
-value "20"
+value "16"
 )
 (vvPair
 variable "entity_name"
@@ -522,7 +522,7 @@ value "$HDS_PROJECT_DIR/idx_fpga_lib/work"
 )
 (vvPair
 variable "mm"
-value "01"
+value "02"
 )
 (vvPair
 variable "module_name"
@@ -530,11 +530,11 @@ value "bench_ptrhm_acquire_tb"
 )
 (vvPair
 variable "month"
-value "Jan"
+value "Feb"
 )
 (vvPair
 variable "month_long"
-value "January"
+value "February"
 )
 (vvPair
 variable "p"
@@ -598,7 +598,7 @@ value "symbol"
 )
 (vvPair
 variable "time"
-value "14:19:21"
+value "08:53:38"
 )
 (vvPair
 variable "unit"
@@ -674,15 +674,15 @@ uid 15,0
 va (VaSet
 font "Courier New,8,0"
 )
-xt "0,12000,43000,18400"
+xt "0,12000,38000,18400"
 st "Generic Declarations
 
-N_ISBITS    integer    5                                                          
-ESID        ESID_array ( 0, 1, 1, 1, 1, 1, 2, 3, 4 )                              
-ISwitchBit  ISB_array  ( 0, 1, 2, 3, 4 )                                          
-ESwitchAddr ESA_array  ( \"0000000\", \"1110000\", \"0000000\", \"0000000\", \"0000000\" )  
-ESwitchBit  ESB_array  ( 0, 0, 1, 2, 4, 5, 0, 0, 0 )                              
-N_PTRH      integer    9                                                          
+N_PTRH      integer    8                                                
+N_ISBITS    integer    4                                                
+ESID        ESID_array ( 3, 2, 1, 0, 0, 0, 0, 0 )                       
+ESwitchBit  ESB_array  ( 0, 0, 0, 4, 3, 2, 1, 0 )                       
+ISwitchBit  ISB_array  ( 3, 2, 1, 0 )                                   
+ESwitchAddr ESA_array  ( \"1110000\",  \"0000000\", \"0000000\", \"0000000\" )  
 "
 )
 header "Generic Declarations"
@@ -690,34 +690,34 @@ showHdrWhenContentsEmpty 1
 )
 elements [
 (GiElement
+name "N_PTRH"
+type "integer"
+value "8"
+)
+(GiElement
 name "N_ISBITS"
 type "integer"
-value "5"
+value "4"
 )
 (GiElement
 name "ESID"
 type "ESID_array"
-value "( 0, 1, 1, 1, 1, 1, 2, 3, 4 )"
-)
-(GiElement
-name "ISwitchBit"
-type "ISB_array"
-value "( 0, 1, 2, 3, 4 )"
-)
-(GiElement
-name "ESwitchAddr"
-type "ESA_array"
-value "( \"0000000\", \"1110000\", \"0000000\", \"0000000\", \"0000000\" )"
+value "( 3, 2, 1, 0, 0, 0, 0, 0 )"
 )
 (GiElement
 name "ESwitchBit"
 type "ESB_array"
-value "( 0, 0, 1, 2, 4, 5, 0, 0, 0 )"
+value "( 0, 0, 0, 4, 3, 2, 1, 0 )"
 )
 (GiElement
-name "N_PTRH"
-type "integer"
-value "9"
+name "ISwitchBit"
+type "ISB_array"
+value "( 3, 2, 1, 0 )"
+)
+(GiElement
+name "ESwitchAddr"
+type "ESA_array"
+value "( \"1110000\",  \"0000000\", \"0000000\", \"0000000\" )"
 )
 ]
 )
@@ -1366,7 +1366,7 @@ xt "42000,0,42000,0"
 tm "SyDeclarativeTextMgr"
 )
 )
-lastUid 280,0
+lastUid 326,0
 okToSyncOnLoad 1
 OkToSyncGenericsOnLoad 1
 activeModelName "Symbol:CDM"
