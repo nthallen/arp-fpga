@@ -23,7 +23,8 @@ ENTITY i2c_half_switch IS
   );
 
 -- Declarations
-
+   attribute PULLUP: string;
+   attribute PULLUP of pad : SIGNAL is "TRUE";
 END i2c_half_switch ;
 
 --
