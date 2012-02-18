@@ -1,4 +1,5 @@
-design_file : design_unit+ .
+design_file : design_file_liner .
+design_file_liner : design_unit+ .
 design_unit : context_item* library_unit .
 library_unit : entity_declaration / architecture_declaration .
 
@@ -7,8 +8,8 @@ context_item :
   'use' libref ';' .
 libref : ident / libref '.' ident .
 
-entity_declaration : 'entity' DefIdent entity_decl_body .
-entity_decl_body : 'is' generic_clause port_clause 'end' opt_entity UseIdent ';' .
+entity_declaration : 'entity' DefIdent entity_decl_body  UseIdent ';' .
+entity_decl_body : 'is' generic_clause port_clause 'end' opt_entity .
 architecture_declaration :
   'architecture' ident 'of' UseIdent architecture_body ident ';' .
 architecture_body :
@@ -38,7 +39,8 @@ signal_type :
   'STD_LOGIC_VECTOR' '(' integer vec_dir integer ')' .
 vec_dir : 'downto' / 'DOWNTO' / 'to' / 'TO' .
 
-component_inst : DefIdent ':' UseIdent generic_maps port_maps ';' .
+component_inst : DefIdent ':' UseIdent component_inst_body ';' .
+component_inst_body : generic_maps port_maps .
 generic_maps : /
   'generic' 'map' '(' generic_map_list ')' .
 generic_map_list : generic_map / generic_map_list ',' generic_map .

@@ -42,3 +42,8 @@ For each signal, recursively calculate its provenance:
   If there are unregistered inputs (including registered with a different clock),
     I want to know where in the input logic they exist and how many other
     signals have that unregistered signal as an input.
+
+==============================
+Name Analysis
+==============================
+Architecture needs to inherit namespace (environment) from entity.

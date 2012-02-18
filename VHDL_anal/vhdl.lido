@@ -12,24 +12,37 @@ ATTR ScopeKey : DefTableKey;
 %   SYMBOL TypeUseIdent INHERITS IdUseEnv END;
 %   SYMBOL UseIdent INHERITS ChkIdUse END;
 %-----------------------------------------------------------------------------
-SYMBOL design_file INHERITS RootScope, ExportRange
-  COMPUTE THIS.ScopeKey = NewKey(); END;
+SYMBOL design_file INHERITS RootScope END;
+SYMBOL design_file_liner INHERITS ExportRange
+COMPUTE
+  SYNT.ScopeKey = NewKey();
+  printf("design_file ScopeKey = %d\n", THIS.ScopeKey );
+  printf("design_file Env = %d\n", THIS.Env );
+END;
 SYMBOL entity_decl_body INHERITS ExportRange
   COMPUTE INH.ScopeKey = INCLUDING entity_declaration.Key; END;
 SYMBOL architecture_body INHERITS ExportRange
   COMPUTE INH.ScopeKey = INCLUDING architecture_declaration.Key; END;
-SYMBOL component_decl_body INHERITS ExportRange
-  COMPUTE INH.ScopeKey = INCLUDING component_declaration.Key; END;
+%SYMBOL component_decl_body INHERITS ExportRange
+%  COMPUTE INH.ScopeKey = INCLUDING component_declaration.Key; END;
+%SYMBOL component_inst_body INHERITS ExportRange
+%  COMPUTE INH.ScopeKey = INCLUDING component_inst.Key; END;
 
-RULE: entity_declaration ::= 'entity' DefIdent entity_decl_body
-  COMPUTE entity_declaration.Key = DefIdent.Key; END;
+RULE: entity_declaration ::= 'entity' DefIdent entity_decl_body UseIdent ';'
+COMPUTE
+  entity_declaration.Key = DefIdent.Key;
+  printf( "Entity %s bound to Key %d\n", StringTable(DefIdent.Sym),
+    entity_declaration.Key );
+END;
 
 RULE: architecture_declaration ::=
   'architecture' ident 'of' UseIdent architecture_body ident ';'
 COMPUTE
   architecture_declaration.Key = UseIdent.Key;
   printf( "Architecture of %s bound to Key %d\n", StringTable(UseIdent.Sym),
-    architecture_declaration.Key );
+    UseIdent.Key );
+  printf( "Architecture UseIdent.ScopeKey = %d\n", UseIdent.ScopeKey ); % <- INCLUDING design_file.GotScopeProp;
+  printf( "Architecture UseIdent.Scope = %d\n", UseIdent.Scope );
   IF(NE(ident[1],ident[2]),
       message(ERROR, CatStrInd(CatStrStr(CatStrInd(
         "Architecture closing identifier does not match opening: ", 
@@ -41,22 +54,23 @@ RULE: component_declaration ::= 'component' DefIdent component_decl_body
 COMPUTE
   component_declaration.Key = DefIdent.Key;
 END;
-RULE: component_inst ::= DefIdent ':' UseIdent generic_maps port_maps ';'
-COMPUTE
-  component_inst.Key = UseIdent.Key;
-END;
+%RULE: component_inst ::= DefIdent ':' UseIdent component_inst_body ';'
+%COMPUTE
+  % component_inst.Key = UseIdent.Key;
+%END;
 
 RULE: DefIdent ::= ident COMPUTE DefIdent.Sym = ident; END;
 SYMBOL DefIdent INHERITS IdDefScope END;
 RULE: UseIdent ::= ident COMPUTE UseIdent.Sym = ident; END;
 SYMBOL UseIdent INHERITS QualIdUse, ChkQualIdUse COMPUTE
+%  INH.ScopeKey = INCLUDING design_file_liner.ScopeKey;
   INH.ScopeKey =
     INCLUDING(
-      design_file.ScopeKey,
-      architecture_declaration.Key,
-      entity_declaration.Key,
-      component_declaration.Key,
-      component_inst.Key);
+      design_file_liner.ScopeKey,
+      entity_decl_body.ScopeKey);
+%      architecture_body.ScopeKey );
+%     component_decl_body.ScopeKey,
+%     component_inst_body.ScopeKey);
 END;
 
 RULE: opt_is ::= 'is' END;
