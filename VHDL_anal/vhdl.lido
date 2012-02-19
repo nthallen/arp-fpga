@@ -11,10 +11,7 @@ SYMBOL entity_decl_body INHERITS ExportRange
 END;
 SYMBOL EntityRef INHERITS InheritScope, ChkInherit END;
 SYMBOL architecture_body INHERITS InhRange END;
-%SYMBOL component_decl_body INHERITS ExportRange
-%  COMPUTE INH.ScopeKey = INCLUDING component_declaration.Key; END;
-%SYMBOL component_inst_body INHERITS ExportRange
-%  COMPUTE INH.ScopeKey = INCLUDING component_inst.Key; END;
+SYMBOL component_decl_body INHERITS ExportRange END;
 
 RULE: entity_declaration ::= 'entity' DefIdent entity_decl_body UseIdent ';'
 COMPUTE
@@ -41,12 +38,12 @@ END;
 
 RULE: component_declaration ::= 'component' DefIdent component_decl_body
 COMPUTE
-  component_declaration.Key = DefIdent.Key;
+  component_decl_body.ScopeKey = DefIdent.Key;
 END;
-%RULE: component_inst ::= DefIdent ':' UseIdent component_inst_body ';'
-%COMPUTE
-  % component_inst.Key = UseIdent.Key;
-%END;
+RULE: component_inst ::= DefIdent ':' UseIdent component_inst_body ';'
+COMPUTE
+  component_inst_body.Key = UseIdent.Key;
+END;
 
 RULE: DefIdent ::= ident COMPUTE DefIdent.Sym = ident; END;
 SYMBOL DefIdent INHERITS IdDefScope END;
