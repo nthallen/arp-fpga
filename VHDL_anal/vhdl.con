@@ -1,5 +1,4 @@
-design_file : design_file_liner .
-design_file_liner : design_unit+ .
+design_file : design_unit+ .
 design_unit : context_item* library_unit .
 library_unit : entity_declaration / architecture_declaration .
 
@@ -11,7 +10,8 @@ libref : ident / libref '.' ident .
 entity_declaration : 'entity' DefIdent entity_decl_body  UseIdent ';' .
 entity_decl_body : 'is' generic_clause port_clause 'end' opt_entity .
 architecture_declaration :
-  'architecture' ident 'of' UseIdent architecture_body ident ';' .
+  'architecture' DefIdent 'of' EntityRef architecture_body UseIdent ';' .
+EntityRef : UseIdent .
 architecture_body :
   'is'
     architecture_declarative_part+

@@ -3,26 +3,14 @@ ATTR ScopeKey : DefTableKey;
 
 %-----------------------------------------------------------------------------
 % The global scope is used for all entity and component names.
-% Inside components I will use 
-%   SYMBOL Program      INHERITS RootScope END;
-%   SYMBOL Block        INHERITS RangeScope END;
-%   SYMBOL DefIdent     INHERITS IdDefScope END;
-% IdDefScope, IdUseScope, ChkIdUse
-%   SYMBOL UseIdent     INHERITS IdUseEnv END;
-%   SYMBOL TypeUseIdent INHERITS IdUseEnv END;
-%   SYMBOL UseIdent INHERITS ChkIdUse END;
 %-----------------------------------------------------------------------------
-SYMBOL design_file INHERITS RootScope END;
-SYMBOL design_file_liner INHERITS ExportRange
-COMPUTE
-  SYNT.ScopeKey = NewKey();
-  printf("design_file ScopeKey = %d\n", THIS.ScopeKey );
-  printf("design_file Env = %d\n", THIS.Env );
-END;
+% SYMBOL design_file INHERITS RootScope END;
+
 SYMBOL entity_decl_body INHERITS ExportRange
-  COMPUTE INH.ScopeKey = INCLUDING entity_declaration.Key; END;
-SYMBOL architecture_body INHERITS ExportRange
-  COMPUTE INH.ScopeKey = INCLUDING architecture_declaration.Key; END;
+  COMPUTE INH.ScopeKey = INCLUDING entity_declaration.Key;
+END;
+SYMBOL EntityRef INHERITS InheritScope, ChkInherit END;
+SYMBOL architecture_body INHERITS InhRange END;
 %SYMBOL component_decl_body INHERITS ExportRange
 %  COMPUTE INH.ScopeKey = INCLUDING component_declaration.Key; END;
 %SYMBOL component_inst_body INHERITS ExportRange
@@ -36,18 +24,19 @@ COMPUTE
 END;
 
 RULE: architecture_declaration ::=
-  'architecture' ident 'of' UseIdent architecture_body ident ';'
+  'architecture' DefIdent 'of' EntityRef architecture_body UseIdent ';'
 COMPUTE
-  architecture_declaration.Key = UseIdent.Key;
-  printf( "Architecture of %s bound to Key %d\n", StringTable(UseIdent.Sym),
-    UseIdent.Key );
-  printf( "Architecture UseIdent.ScopeKey = %d\n", UseIdent.ScopeKey ); % <- INCLUDING design_file.GotScopeProp;
-  printf( "Architecture UseIdent.Scope = %d\n", UseIdent.Scope );
-  IF(NE(ident[1],ident[2]),
+  EntityRef.InnerScope = architecture_body.Env;
+  architecture_body.GotInh = EntityRef.InheritOk;
+  IF(NE(DefIdent.Key,UseIdent.Key),
       message(ERROR, CatStrInd(CatStrStr(CatStrInd(
         "Architecture closing identifier does not match opening: ", 
-        ident[1] ), " != " ), ident[2]),
+        DefIdent.Sym ), " != " ), UseIdent.Sym),
         0, COORDREF));
+END;
+
+RULE: EntityRef ::= UseIdent COMPUTE
+  EntityRef.ScopeKey = UseIdent.Key;
 END;
 
 RULE: component_declaration ::= 'component' DefIdent component_decl_body
@@ -62,15 +51,7 @@ END;
 RULE: DefIdent ::= ident COMPUTE DefIdent.Sym = ident; END;
 SYMBOL DefIdent INHERITS IdDefScope END;
 RULE: UseIdent ::= ident COMPUTE UseIdent.Sym = ident; END;
-SYMBOL UseIdent INHERITS QualIdUse, ChkQualIdUse COMPUTE
-%  INH.ScopeKey = INCLUDING design_file_liner.ScopeKey;
-  INH.ScopeKey =
-    INCLUDING(
-      design_file_liner.ScopeKey,
-      entity_decl_body.ScopeKey);
-%      architecture_body.ScopeKey );
-%     component_decl_body.ScopeKey,
-%     component_inst_body.ScopeKey);
+SYMBOL UseIdent INHERITS IdUseScope COMPUTE
 END;
 
 RULE: opt_is ::= 'is' END;
