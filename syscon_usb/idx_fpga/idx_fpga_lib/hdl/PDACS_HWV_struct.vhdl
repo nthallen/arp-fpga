@@ -15,7 +15,7 @@ USE idx_fpga_lib.ptrhm.all;
 
 ENTITY PDACS_HWV IS
   GENERIC (
-    DACS_BUILD_NUMBER : std_logic_vector(15 DOWNTO 0) := X"0021"; -- #33
+    DACS_BUILD_NUMBER : std_logic_vector(15 DOWNTO 0) := X"0022"; -- #34
     INSTRUMENT_ID : std_logic_vector(15 DOWNTO 0) := X"0001"; -- HWV
     CTR_UG_N_BDS : integer range 5 downto 0 := 3;
     N_QCLICTRL : integer range 5 downto 0 := 1;
