@@ -49,7 +49,7 @@ int tcp_create( char *hostname ) {
 // tcp_send() sends the specified command, then waits for a response,
 // which should be an ascii-encoded integer. It returns the value.
 int tcp_send( char * cmd ) {
-  char recv_buf[RECV_BUF_SIZE];
+  unsigned char recv_buf[RECV_BUF_SIZE];
   int rv, i;
   int cmdlen = strlen(cmd);
   rv = send( tcp_socket, cmd, cmdlen, 0);
