@@ -94,7 +94,7 @@ BEGIN
        ExpAck    => ExpAck,
        ExpRd     => ExpRd,
        ExpWr     => ExpWr,
-       F66M      => F66M,
+       F66M      => F8M,
        F8M       => F8M,
        rst       => rst
     );
@@ -191,7 +191,7 @@ Begin
       for j in 0 to 7 loop
         offset := (i*8+j)*2;
         sbwr( X"0400" + conv_std_logic_vector(offset,16), conv_std_logic_vector(256*offset+offset,16));
-        wait for 1 us;
+        wait for 6 us;
       end loop;
     end loop;
     for i in 0 to N_AO_CHIPS-1 loop

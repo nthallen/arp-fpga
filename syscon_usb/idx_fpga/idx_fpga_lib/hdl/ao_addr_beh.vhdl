@@ -19,8 +19,10 @@ ENTITY ao_addr IS
       N_AO_CHIPS : natural range 15 downto 2     := 2
    );
    PORT( 
-      Addr : IN     std_logic_vector (15 DOWNTO 0);
-      BdEn : OUT    std_ulogic
+      AO_Idle : IN     std_logic;
+      Addr    : IN     std_logic_vector (15 DOWNTO 0);
+      ExpAck  : IN     std_ulogic;
+      BdEn    : OUT    std_ulogic
    );
 
 -- Declarations
@@ -30,9 +32,10 @@ END ao_addr ;
 --
 ARCHITECTURE beh OF ao_addr IS
 BEGIN
-  BdEn_out : Process (Addr) Is
+  BdEn_out : Process (Addr, AO_Idle, ExpAck) Is
   begin
-    if  Addr >= BASE_ADDR AND
+    if  ( AO_Idle = '1' OR ExpAck = '1' ) AND
+        Addr >= BASE_ADDR AND
         Addr < BASE_ADDR + conv_std_logic_vector(N_AO_CHIPS,4) * AO_INCR then
       BdEn <= '1';
     else
