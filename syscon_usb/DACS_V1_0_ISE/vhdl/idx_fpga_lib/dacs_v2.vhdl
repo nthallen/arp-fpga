@@ -12,7 +12,8 @@
 --
 -- Dependencies: 
 --
--- Revision: 
+-- Revision:
+-- Build 35: Reduce AO to 8 MHz
 -- Revision 0.01 - File Created
 -- Additional Comments: 
 --
@@ -25,7 +26,7 @@ USE idx_fpga_lib.ptrhm.all;
 
 entity dacs_v2 is
     GENERIC (
-      DACS_BUILD_NUMBER : std_logic_vector(15 DOWNTO 0) := X"0010";
+      DACS_BUILD_NUMBER : std_logic_vector(15 DOWNTO 0) := X"0023";
       INSTRUMENT_ID : std_logic_vector(15 DOWNTO 0) := X"0001";
       N_INTERRUPTS : integer range 15 downto 1 := 1;
       
@@ -516,7 +517,7 @@ begin
         Addr      => ExpAddr,
         ExpRd     => ExpRd,
         ExpWr     => ExpWr,
-        F66M      => clk_66_6667MHz,
+        F66M      => clk_8_0000MHz,
         F8M       => clk_8_0000MHz,
         rst       => rst,
         DA_CLR_B  => DA_CLR_B,
