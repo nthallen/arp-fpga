@@ -6,6 +6,7 @@
 --          at - 13:25:16 11/18/2010
 --
 -- PDACS_Carbon DACS implementation for Carbon Isotopes Instrument
+-- 5/2/12 Build 35: Reduce AO clock to 8 MHz
 -- 12/1/11 First pass is based on DACSbd (HWV) but using ptrhm_acquire.
 --
 -- INSTRUMENT_ID Values are defined in DACSutil/DACS_ID.tmc
@@ -18,7 +19,7 @@ USE idx_fpga_lib.ptrhm.all;
 
 ENTITY PDACS_Carbon IS
   GENERIC (
-    DACS_BUILD_NUMBER : std_logic_vector(15 DOWNTO 0) := X"0021"; -- #33
+    DACS_BUILD_NUMBER : std_logic_vector(15 DOWNTO 0) := X"0023"; -- #35
     INSTRUMENT_ID : std_logic_vector(15 DOWNTO 0) := X"0003";
     CTR_UG_N_BDS : integer range 5 downto 0 := 0;
     N_QCLICTRL : integer range 5 downto 0 := 3;
