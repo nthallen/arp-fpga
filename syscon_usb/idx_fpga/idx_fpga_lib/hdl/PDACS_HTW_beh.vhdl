@@ -21,6 +21,7 @@ ENTITY PDACS_HTW IS
     CTR_UG_N_BDS : integer range 5 downto 0 := 0;
     IDX_N_CHANNELS : integer range 15 downto 1 := 2;
     DIGIO_N_CONNECTORS : integer range 4 DOWNTO 1 := 4;
+    -- FORCE_DIR vectors are indexed 0 to 23
     DIGIO_FORCE_DIR : std_ulogic_vector := "111111111111111111100010";
     DIGIO_FORCE_DIR_VAL : std_ulogic_vector := "000000001111001111100000";
     CMD_PROC_N_CMDS : integer := 38
