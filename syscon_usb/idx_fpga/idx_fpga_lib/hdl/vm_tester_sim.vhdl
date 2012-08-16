@@ -146,6 +146,27 @@ BEGIN
       sbrd(X"0368");
     end loop;
     
+    -- Test loss of arbitration
+    SDA <= '0';
+    for i in 0 to 4 loop
+      wait for 10 ms;
+      sbrd(X"0360");
+      sbrd(X"0362");
+      sbrd(X"0364");
+      sbrd(X"0366");
+      sbrd(X"0368");
+    end loop;
+    -- and recovery?
+    SDA <= 'H';
+    for i in 0 to 4 loop
+      wait for 10 ms;
+      sbrd(X"0360");
+      sbrd(X"0362");
+      sbrd(X"0364");
+      sbrd(X"0366");
+      sbrd(X"0368");
+    end loop;
+    
     Done <= '1';
     wait;
     -- pragma synthesis_on
