@@ -36,8 +36,6 @@ ARCHITECTURE beh OF fifo IS
   type FIFO_t is array (FIFO_LENGTH-1 DOWNTO 0) of std_logic_vector(FIFO_WIDTH-1 DOWNTO 0);
   SIGNAL FIFOdata : FIFO_t;
   SIGNAL FIFOcnt : std_logic_vector(7 DOWNTO 0);
-  SIGNAL WHold : std_logic_vector(FIFO_WIDTH-1 DOWNTO 0);
-  SIGNAL WHeld : std_logic;
 BEGIN
   action : Process (Clk) IS
     VARIABLE iaddr : integer range 255 DOWNTO 0;
@@ -50,27 +48,28 @@ BEGIN
         for i in 1 to FIFO_LENGTH loop
           FIFOdata(i-1) <= (others => '0');
         end loop;
-        WHold <= (others => '0');
-        WHeld <= '0';
       else
-        if WE = '1' then
-          WHold <= WData;
-          WHeld <= '1';
-        end if;
         if RE = '1' AND Empty = '0' then
           for i in 1 to FIFO_LENGTH-1 loop
             FIFOdata(i-1) <= FIFOdata(i);
           end loop;
           FIFOdata(FIFO_LENGTH-1) <= (others => '0');
-          if FIFOcnt = 1 then
-            Empty <= '1';
+          if WE = '1' then
+            iaddr := conv_integer(FIFOcnt-1);
+            if iaddr < FIFO_LENGTH then
+              FIFOdata(iaddr) <= WData;
+            end if;
+          else
+            if FIFOcnt = 1 then
+              Empty <= '1';
+            end if;
+            Full <= '0';
+            FIFOcnt <= FIFOcnt-1;
           end if;
-          Full <= '0';
-          FIFOcnt <= FIFOcnt-1;
-        elsif WHeld = '1' AND Full = '0' then
+        elsif WE = '1' AND Full = '0' then
           iaddr := conv_integer(FIFOcnt);
           if iaddr < FIFO_LENGTH then
-            FIFOdata(iaddr) <= WHold;
+            FIFOdata(iaddr) <= WData;
           end if;
           if FIFOcnt >= FIFO_LENGTH-1 then
             Full <= '1';
@@ -79,7 +78,6 @@ BEGIN
           end if;
           FIFOcnt <= FIFOcnt + 1;
           Empty <= '0';
-          WHeld <= '0';
         end if;
       end if;
     end if;
