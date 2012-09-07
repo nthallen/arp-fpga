@@ -147,7 +147,18 @@
 <v t="ntallen.20111215085119.1457"><vh>Read FIFO</vh></v>
 </v>
 </v>
-<v t="ntallen.20120110154657.1467" a="E"><vh>DACS diagnostic generator</vh>
+<v t="ntallen.20120816125014.1563" a="E"><vh>LK204-7T-1U Display</vh>
+<v t="ntallen.20120816125014.1564" a="E"><vh>LK204 VHDL Driver</vh>
+<v t="ntallen.20120817130002.1569" a="E"><vh>Architecture</vh>
+<v t="ntallen.20120817161609.1571"><vh>FIFO</vh></v>
+<v t="ntallen.20120904164051.1587"><vh>LK204_I2C</vh></v>
+<v t="ntallen.20120904164051.1588"><vh>LK204_SM</vh></v>
+</v>
+<v t="ntallen.20120823092853.1573"><vh>VHDL Alternatives</vh></v>
+</v>
+<v t="ntallen.20120816125014.1565"><vh>LK204 QNX Driver</vh></v>
+</v>
+<v t="ntallen.20120110154657.1467"><vh>DACS diagnostic generator</vh>
 <v t="ntallen.20120111082754.1514"><vh>Zero Order generator</vh></v>
 <v t="ntallen.20120110154657.1471"><vh>Organizational</vh>
 <v t="ntallen.20120110154657.1468"><vh>VERSION</vh></v>
@@ -167,11 +178,11 @@
 <v t="ntallen.20120110154657.1479"><vh>Counters</vh>
 <v t="ntallen.20120110154657.1484"><vh>Signal Defs</vh></v>
 </v>
-<v t="ntallen.20120110154657.1480" a="E"><vh>DigIO</vh>
+<v t="ntallen.20120110154657.1480"><vh>DigIO</vh>
 <v t="ntallen.20120110154657.1481"><vh>Processed Command</vh></v>
 <v t="ntallen.20120110154657.1485"><vh>Unprocessed Command</vh></v>
 <v t="ntallen.20120110154657.1486"><vh>Unaffiliated Status</vh></v>
-<v t="ntallen.20120118103503.1551" a="E"><vh>First Pass</vh>
+<v t="ntallen.20120118103503.1551"><vh>First Pass</vh>
 <v t="ntallen.20120118103503.1552"><vh>digio.tmc</vh></v>
 <v t="ntallen.20120118103503.1553"><vh>digio_conv.tmc</vh></v>
 <v t="ntallen.20120118103503.1554"><vh>digio.cmd</vh></v>
@@ -206,15 +217,22 @@
 </v>
 </v>
 </v>
-<v t="ntallen.20100823102718.1327" a="E"><vh>Documentation</vh>
+<v t="ntallen.20100823102718.1327"><vh>Documentation</vh>
 <v t="ntallen.20100525090916.1259"></v>
 <v t="ntallen.20110118143100.1406"></v>
 <v t="ntallen.20100824101804.1329"><vh>Document API</vh></v>
 <v t="ntallen.20120109083521.1463"><vh>Laying out a new instrument</vh>
 <v t="ntallen.20120109083521.1464"><vh>Digital Commands and Status</vh></v>
 </v>
+<v t="ntallen.20120824140516.1575"><vh>Interrupt Implementation</vh>
+<v t="ntallen.20120824140516.1576"><vh>FPGA/VHDL: Card</vh></v>
+<v t="ntallen.20120824140516.1577"><vh>FPGA/VHDL: Syscon</vh></v>
+<v t="ntallen.20120824140516.1578"><vh>FPGA/CPU: subbus</vh></v>
+<v t="ntallen.20120824140516.1579"><vh>Host/CPU: subbusd_serusb</vh></v>
+<v t="ntallen.20120824140516.1580"><vh>Host/CPU: Card Driver</vh></v>
 </v>
-<v t="ntallen.20110115103957.1399" a="E"><vh>Revisions</vh>
+</v>
+<v t="ntallen.20110115103957.1399"><vh>Revisions</vh>
 <v t="ntallen.20110115103957.1400"><vh>DACS_V1_0_ISE</vh></v>
 </v>
 </v>
@@ -1745,5 +1763,203 @@ Additional columns with &lt;cmd&gt;: S</t>
 
 Hence all we have to write out are the address value pairs for the command outputs.
 We don't need to address all of the input ports.</t>
+<t tx="ntallen.20120816125014.1563">I2C interface to display with attached keyboard:
+    I2C Address: 80
+    Write out text for display and control codes
+    Write out a poll command to read key press data
+    Read key press data:
+        0 means no key press
+        0x80 bit means more keys
+    
+Probably want to include an additional I2C peripheral to read
+switch positions.</t>
+<t tx="ntallen.20120816125014.1564">Initialize device:
+    254 79: Auto transmit key presses off
+Poll device for keyboard and switch status
+    W80: 254 38: Poll for key press, then read. If non-zero,
+        queue data. If MSB set, read another immediately
+    RXX: Read switch status
+
+Accept subbus writes for buffering directly to device
+Produce interrupt on key press
+Report key press data on subbus read
+    Return 0 if no key press data is present
+    Clear interrupt when buffer is empty
+Report switch status on subbus read
+Report I2C status</t>
+<t tx="ntallen.20120816125014.1565">Accept writes of data to go directly to the device
+    Send with mwrite
+Monitor interrupt line for key press data
+    Read key press data with mread
+    Do something with the key press data:
+        Write to TM
+        </t>
+<t tx="ntallen.20120817130002.1569">Similar to ptrhm_acquire
+provide wqueue, rqueue and timeout_100msec blocks
+
+LK204_engine
+  LK204_sm:
+    loop {
+        if (!wqueue_empty) {
+            wr_i2c( X"80", 0 );
+            loop {
+              read char
+              read isempty
+              wr_i2c( char, isempty );
+            } while ! isempty;
+        } else if (timeout_100msec) {
+            read switch status
+            if (!rqueue_full)
+                read for data until no more data
+            reset timeout
+        }
+    }
+  LK204_i2c:
+    i2c_init {
+      set clock divisor, enable core and interrupts
+        wr_i2ctop("000", X"0E"); -- LSB
+        wr_i2ctop("001", X"00"); -- MSB
+        wr_isctop("010", X"CO"); -- enable core and interrupts
+      initialize switch interface
+        TBD
+    }
+    wr_i2c( data, stop ) {
+        write data to "011"
+        write command to "100"
+    }
+    rd_i2c( addr ) {
+    }</t>
+<t tx="ntallen.20120817161609.1571">This is a dual-port FIFO that allows simultaneous reads and writes,
+
+RData always reports the next value in the FIFO unless Empty is asserted
+RE advances RData to the next value or sets Empty
+
+WE copies WData to end of FIFO unless Full is asserted</t>
+<t tx="ntallen.20120823092853.1573">Interconnect diagram is fairly concise, but it can combine unnecessary details.
+It also makes all inputs and outputs to be of equivalent importance.
+If we define the block as an object, then various interfaces to the object
+can make clear which ports are used for which purposes.</t>
+<t tx="ntallen.20120824140516.1575">Interrupt processing, like everything DACS, must be implemented at many layers:
+    FPGA/VHDL: 'card'
+    FPGA/VHDL: syscon
+    FPGA/CPU: subbus
+    Host/CPU: subbusd_serusb
+    Host/CPU: card driver
+</t>
+<t tx="ntallen.20120824140516.1576">PORT (
+    INTA        : IN     std_ulogic;
+    BdIntr      : OUT    std_ulogic;
+    RData       : OUT    std_logic_vector (15 DOWNTO 0);
+    ExpAck      : OUT    std_ulogic;
+    F8M         : IN     std_ulogic;
+    rst         : IN     std_ulogic
+);
+
+To signal an interrupt, drive BdIntr to '1'.
+Do not update BdIntr while INTA is high.
+If BdIntr was asserted during INTA, clear it
+
+Logic for this is in Intr state machine
+
+Do not assert ExpAck When INTA is '1'. (syscon acknowledges)
+</t>
+<t tx="ntallen.20120824140516.1577">If any board asserts their assigned BdIntr pin, asserts interrupt (status(2)) back to FPGA/CPU
+
+Recognizes a subbus read on address X"0040" as an interrupt acknowledge cycle.
+Asserts INTA for the same duration as ExpRd
+Reports the BdIntr vector (which should be stable throughout INTA)</t>
+<t tx="ntallen.20120824140516.1578">Static table mapping card base address to interrupt vector bit
+Accepts interrupt attach requests mapping a card base address to an interrupt ID
+Polls status port for interrupt pin (status(2))
+On interrupt, reads from INTA address (X"0040")
+For each bit that is set, report the interrupt code (In) where 'n' is the interrupt ID
+
+</t>
+<t tx="ntallen.20120824140516.1579">Accepts interrupt attach requests mapping a card base address with a struct sigevent,
+allowing client to receive a signal or pulse when the interrupt arrives.
+</t>
+<t tx="ntallen.20120824140516.1580">Create a pulse
+Call subbus_int_attach() to map card base address to this pulse
+Service pulse to handle interrupt
+</t>
+<t tx="ntallen.20120904164051.1587">State Machine, handles:
+    Configuration of I2C Master (set rate, enable interrupts, engine)
+    Initialize switch interface? (or is that done at a higher level?)
+Commands:
+    WrI2C: Writes I2Cwdata out with or without stop. This is used to write address data as well,
+      which means the r/w bit must be encoded with the address at a higher level.
+      If no ACK is observed, a stop transition is output before Done is asserted.
+    RdI2C: Read one byte with NACK. Address is on I2Cwdata.
+
+    i2c_init {
+      set clock divisor, enable core and interrupts
+        wr_i2ctop("000", X"0E"); -- LSB
+        wr_i2ctop("001", X"00"); -- MSB
+        wr_isctop("010", X"CO"); -- enable core and interrupts
+        set Done
+      # initialize switch interface
+        # TBD
+    }
+    loop {
+      if (WrI2C) wr_i2c(I2Cwdata, WrStart, WrStop);
+      elsif (RdI2C) rd_i2c(I2Cwdata);
+    }
+    
+    wr_i2c( data, start, stop ) {
+        wr_i2ctop("011", data);
+        wr_i2ctop("100", start + stop + WR + IACK); // wait for Intr
+        stat &lt;= rd_i2ctop("100");
+        if ( stat(7) == 0 ) { // ACK
+          if ( stop ) Done &lt;= 1
+        } else {
+          if (stat(5)) { // Lost Arbitration (SDA stuck)
+            delay(40msec); // and then what? try again?
+          }
+          wr_i2ctop("100", STO + IACK); // wait for Intr
+          Err &lt;= 1;
+        }
+    }
+    rd_i2c( addr ) {
+        wr_i2c(addr(7:1) &amp; 1, 1, 0);
+        if (Done || Err) return;
+        wr_i2ctop("100", RD + NACK + STO + IACK); wait for Intr
+        I2Crdata &lt;= rd_i2ctop("011");
+        Done &lt;= 1;
+    }
+    // abstracting wr_i2ctop would save a couple states at the top
+    // level and introduce more below, so inline it.
+    wr_i2ctop(addr, data) {
+      wb_adr_i &lt;= addr;
+      wb_dat_i &lt;= data;
+      wb_we_i &lt;= '1';
+      wb_cyc_i &lt;= '1';
+      wb_stb_i &lt;= '1';
+      wait until wb_ack_o = '1';
+      wb_cyc_i &lt;= '0';
+      wb_stb_i &lt;= '0';
+      if (addr = "100" AND data &amp; IACK) {
+        wait until wb_ack_o = '0' and wb_inta_o = '0'
+        wait until wb_inta_o = '1'
+      } else {
+        wait until wb_ack_o = '0'
+      }
+    }</t>
+<t tx="ntallen.20120904164051.1588">Talks to LK204_I2C
+    loop {
+        if (!wqueue_empty) {
+            LK204_I2C(Wr, STA, !STO, X"80");
+            loop {
+              read char
+              read isempty
+              LK204_I2C(Wr, !STA, isempty, char);
+            } while ! isempty;
+        } else if (timeout_100msec) {
+            read switch status
+            if (!rqueue_full)
+                read for data until no more data
+            reset timeout
+        }
+    }
+</t>
 </tnodes>
 </leo_file>
