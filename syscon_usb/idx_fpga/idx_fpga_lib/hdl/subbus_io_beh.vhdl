@@ -25,8 +25,12 @@ ENTITY subbus_io IS
       WrEn   : OUT    std_ulogic;
       BdEn   : IN     std_ulogic
    );
-
--- Declarations
+  -- ExpRd,ExpWr,ExpAck all external.
+  -- RdEn, WrEn are our qualified versions
+  -- RdEn and WrEn are both qualified with BdEn
+  -- WrEn is one clock pulse long.
+  -- RdEn is longer
+  -- BdEn is 1 when Addr selects an element
 
 END subbus_io ;
 
