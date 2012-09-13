@@ -13,17 +13,14 @@ USE ieee.std_logic_unsigned.all;
 USE ieee.std_logic_arith.all;
 
 ENTITY lk204_stat IS
-   GENERIC( 
-      FIFO_WIDTH : integer range 16 downto 1 := 1
-   );
    PORT( 
       F8M      : IN     std_ulogic;
-      KeyData  : IN     std_logic_vector (FIFO_WIDTH-1 DOWNTO 0);
+      KeyData  : IN     std_logic_vector (7 DOWNTO 0);
       KeyEmpty : IN     std_logic;
       RdEn     : IN     std_ulogic;
       Status   : IN     std_logic_vector (15 DOWNTO 0);
-      KeyRE    : OUT    std_logic_vector;
-      RData    : OUT    std_logic_vector (FIFO_WIDTH-1 DOWNTO 0);
+      KeyRE    : OUT    std_logic;
+      RData    : OUT    std_logic_vector (15 DOWNTO 0);
       Rst      : IN     std_logic;
       LK204    : IN     std_logic
    );
@@ -35,6 +32,7 @@ END lk204_stat ;
 --
 ARCHITECTURE beh OF lk204_stat IS
     SIGNAL Reading : std_logic;
+    SIGNAL RdFIFO : std_logic;
 BEGIN
   RData_proc : Process (F8M) is
   Begin
@@ -43,21 +41,23 @@ BEGIN
         Reading <= '0';
         KeyRE <= '0';
         RData <= (others => '0');
+        RdFIFO <= '0';
       else
-        if RdKey = '1' then
-          RData(15 DOWNTO FIFO_WIDTH) <= (others => '0');
-          RData(FIFO_WIDTH-1 DOWNTO 0) <= KeyData;
-          -- KeyData will be zero if KeyEmpty
-        else
-          RData <= Status;
-        end if;
-        
-        if Reading = '1' AND RdEn = '0' then
-          Reading <= '0';
-          KeyRE <= '1';
-        elsif RdEn = '1' AND RdKey = '1' then
+        if RdEn = '1' AND Reading = '0' then
+          if LK204 = '1' then
+            RData(15 DOWNTO 8) <= (others => '0');
+            RData(7 DOWNTO 0) <= KeyData;
+            RdFIFO <= not KeyEmpty;
+            -- KeyData will be zero if KeyEmpty
+          else
+            RdFIFO <= '0';
+            RData <= Status;
+            RData(4) <= not KeyEmpty;
+          end if;
           Reading <= '1';
-          KeyRE <= '0';
+        elsif RdEn = '0' AND Reading = '1' then
+          Reading <= '0';
+          KeyRE <= RdFIFO;
         else
           KeyRE <= '0';
         end if;

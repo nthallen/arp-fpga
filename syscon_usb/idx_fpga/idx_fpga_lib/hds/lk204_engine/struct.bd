@@ -54,6 +54,11 @@ name "EngI2C"
 duLibraryName "idx_fpga_lib"
 duName "lk204_i2c"
 elements [
+(GiElement
+name "I2C_CLK_PRESCALE"
+type "std_logic_vector(15 DOWNTO 0)"
+value "X\"000E\""
+)
 ]
 mwi 0
 uid 1096,0
@@ -111,19 +116,19 @@ value "C:\\HDS\\idx_fpga\\idx_fpga_lib\\hds\\lk204_engine"
 )
 (vvPair
 variable "date"
-value "09/12/2012"
+value "09/13/2012"
 )
 (vvPair
 variable "day"
-value "Wed"
+value "Thu"
 )
 (vvPair
 variable "day_long"
-value "Wednesday"
+value "Thursday"
 )
 (vvPair
 variable "dd"
-value "12"
+value "13"
 )
 (vvPair
 variable "entity_name"
@@ -247,7 +252,7 @@ value "struct"
 )
 (vvPair
 variable "time"
-value "13:08:26"
+value "10:26:50"
 )
 (vvPair
 variable "unit"
@@ -338,8 +343,7 @@ va (VaSet
 font "Courier New,8,0"
 )
 xt "22000,2000,45500,2800"
-st "CharData     : std_logic_vector(8 DOWNTO 0)
-"
+st "CharData     : std_logic_vector(8 DOWNTO 0)"
 )
 )
 *3 (PortIoIn
@@ -401,8 +405,7 @@ va (VaSet
 font "Courier New,8,0"
 )
 xt "22000,2800,35500,3600"
-st "Empty        : std_logic
-"
+st "Empty        : std_logic"
 )
 )
 *5 (PortIoIn
@@ -464,8 +467,7 @@ va (VaSet
 font "Courier New,8,0"
 )
 xt "22000,3600,36000,4400"
-st "F8M          : std_ulogic
-"
+st "F8M          : std_ulogic"
 )
 )
 *7 (PortIoIn
@@ -527,8 +529,7 @@ va (VaSet
 font "Courier New,8,0"
 )
 xt "22000,4400,35500,5200"
-st "Full         : std_logic
-"
+st "Full         : std_logic"
 )
 )
 *9 (PortIoOut
@@ -591,8 +592,7 @@ va (VaSet
 font "Courier New,8,0"
 )
 xt "22000,7600,35500,8400"
-st "RE           : std_logic
-"
+st "RE           : std_logic"
 )
 )
 *11 (PortIoIn
@@ -654,8 +654,7 @@ va (VaSet
 font "Courier New,8,0"
 )
 xt "22000,5200,35500,6000"
-st "Rst          : std_logic
-"
+st "Rst          : std_logic"
 )
 )
 *13 (PortIoIn
@@ -716,8 +715,7 @@ va (VaSet
 font "Courier New,8,0"
 )
 xt "22000,6000,35500,6800"
-st "scl_pad_i    : std_logic
-"
+st "scl_pad_i    : std_logic"
 )
 )
 *15 (PortIoOut
@@ -781,8 +779,7 @@ va (VaSet
 font "Courier New,8,0"
 )
 xt "22000,10800,48500,11600"
-st "scl_pad_o    : std_logic -- i2c clock line output
-"
+st "scl_pad_o    : std_logic -- i2c clock line output"
 )
 )
 *17 (PortIoOut
@@ -846,8 +843,7 @@ va (VaSet
 font "Courier New,8,0"
 )
 xt "22000,11600,58000,12400"
-st "scl_padoen_o : std_logic -- i2c clock line output enable, active low
-"
+st "scl_padoen_o : std_logic -- i2c clock line output enable, active low"
 )
 )
 *19 (PortIoIn
@@ -908,8 +904,7 @@ va (VaSet
 font "Courier New,8,0"
 )
 xt "22000,6800,35500,7600"
-st "sda_pad_i    : std_logic
-"
+st "sda_pad_i    : std_logic"
 )
 )
 *21 (PortIoOut
@@ -973,8 +968,7 @@ va (VaSet
 font "Courier New,8,0"
 )
 xt "22000,12400,48000,13200"
-st "sda_pad_o    : std_logic -- i2c data line output
-"
+st "sda_pad_o    : std_logic -- i2c data line output"
 )
 )
 *23 (PortIoOut
@@ -1038,8 +1032,7 @@ va (VaSet
 font "Courier New,8,0"
 )
 xt "22000,13200,57500,14000"
-st "sda_padoen_o : std_logic -- i2c data line output enable, active low
-"
+st "sda_padoen_o : std_logic -- i2c data line output enable, active low"
 )
 )
 *25 (PortIoOut
@@ -1102,8 +1095,7 @@ va (VaSet
 font "Courier New,8,0"
 )
 xt "22000,8400,45500,9200"
-st "SData        : std_logic_vector(7 DOWNTO 0)
-"
+st "SData        : std_logic_vector(7 DOWNTO 0)"
 )
 )
 *27 (PortIoOut
@@ -1166,8 +1158,7 @@ va (VaSet
 font "Courier New,8,0"
 )
 xt "22000,9200,46000,10000"
-st "Status       : std_logic_vector(15 DOWNTO 0)
-"
+st "Status       : std_logic_vector(15 DOWNTO 0)"
 )
 )
 *29 (PortIoOut
@@ -1230,8 +1221,7 @@ va (VaSet
 font "Courier New,8,0"
 )
 xt "22000,10000,35500,10800"
-st "WE           : std_logic
-"
+st "WE           : std_logic"
 )
 )
 *31 (Grouping
@@ -2395,16 +2385,14 @@ preAdd 0
 posAdd 0
 o 25
 suid 16,0
-i "not ARST_LVL"
 )
 declText (MLText
 uid 450,0
 va (VaSet
 font "Courier New,8,0"
 )
-xt "22000,22200,58500,23000"
-st "SIGNAL arst_i       : std_logic := not ARST_LVL -- asynchronous reset
-"
+xt "22000,22200,50500,23000"
+st "SIGNAL arst_i       : std_logic -- asynchronous reset"
 )
 )
 *68 (Net
@@ -2424,8 +2412,7 @@ va (VaSet
 font "Courier New,8,0"
 )
 xt "22000,27800,57000,28600"
-st "SIGNAL wb_inta_o    : std_logic -- interrupt request output signal
-"
+st "SIGNAL wb_inta_o    : std_logic -- interrupt request output signal"
 )
 )
 *69 (Net
@@ -2445,8 +2432,7 @@ va (VaSet
 font "Courier New,8,0"
 )
 xt "22000,23800,55500,24600"
-st "SIGNAL wb_ack_o     : std_logic -- Bus cycle acknowledge output
-"
+st "SIGNAL wb_ack_o     : std_logic -- Bus cycle acknowledge output"
 )
 )
 *70 (Net
@@ -2466,8 +2452,7 @@ va (VaSet
 font "Courier New,8,0"
 )
 xt "22000,25400,52000,26200"
-st "SIGNAL wb_cyc_i     : std_logic -- Valid bus cycle input
-"
+st "SIGNAL wb_cyc_i     : std_logic -- Valid bus cycle input"
 )
 )
 *71 (Net
@@ -2487,8 +2472,7 @@ va (VaSet
 font "Courier New,8,0"
 )
 xt "22000,28600,59000,29400"
-st "SIGNAL wb_stb_i     : std_logic -- Strobe signals / core select signal
-"
+st "SIGNAL wb_stb_i     : std_logic -- Strobe signals / core select signal"
 )
 )
 *72 (Net
@@ -2508,8 +2492,7 @@ va (VaSet
 font "Courier New,8,0"
 )
 xt "22000,29400,50500,30200"
-st "SIGNAL wb_we_i      : std_logic -- Write enable input
-"
+st "SIGNAL wb_we_i      : std_logic -- Write enable input"
 )
 )
 *73 (Net
@@ -2530,8 +2513,7 @@ va (VaSet
 font "Courier New,8,0"
 )
 xt "22000,27000,58000,27800"
-st "SIGNAL wb_dat_o     : std_logic_vector(7 downto 0) -- Databus output
-"
+st "SIGNAL wb_dat_o     : std_logic_vector(7 downto 0) -- Databus output"
 )
 )
 *74 (Net
@@ -2552,8 +2534,7 @@ va (VaSet
 font "Courier New,8,0"
 )
 xt "22000,26200,57500,27000"
-st "SIGNAL wb_dat_i     : std_logic_vector(7 downto 0) -- Databus input
-"
+st "SIGNAL wb_dat_i     : std_logic_vector(7 downto 0) -- Databus input"
 )
 )
 *75 (Net
@@ -2574,8 +2555,7 @@ va (VaSet
 font "Courier New,8,0"
 )
 xt "22000,24600,60000,25400"
-st "SIGNAL wb_adr_i     : std_logic_vector(2 downto 0) -- lower address bits
-"
+st "SIGNAL wb_adr_i     : std_logic_vector(2 downto 0) -- lower address bits"
 )
 )
 *76 (Net
@@ -2592,8 +2572,7 @@ va (VaSet
 font "Courier New,8,0"
 )
 xt "22000,19800,39000,20600"
-st "SIGNAL WrI2C        : std_logic
-"
+st "SIGNAL WrI2C        : std_logic"
 )
 )
 *77 (Net
@@ -2611,8 +2590,7 @@ va (VaSet
 font "Courier New,8,0"
 )
 xt "22000,17400,49000,18200"
-st "SIGNAL I2Cwdata     : std_logic_vector(7 DOWNTO 0)
-"
+st "SIGNAL I2Cwdata     : std_logic_vector(7 DOWNTO 0)"
 )
 )
 *78 (Net
@@ -2629,8 +2607,7 @@ va (VaSet
 font "Courier New,8,0"
 )
 xt "22000,21400,39000,22200"
-st "SIGNAL WrStop       : std_logic
-"
+st "SIGNAL WrStop       : std_logic"
 )
 )
 *79 (Net
@@ -2647,8 +2624,7 @@ va (VaSet
 font "Courier New,8,0"
 )
 xt "22000,15000,39000,15800"
-st "SIGNAL Done         : std_logic
-"
+st "SIGNAL Done         : std_logic"
 )
 )
 *80 (Net
@@ -2665,8 +2641,7 @@ va (VaSet
 font "Courier New,8,0"
 )
 xt "22000,15800,39000,16600"
-st "SIGNAL Err          : std_logic
-"
+st "SIGNAL Err          : std_logic"
 )
 )
 *81 (Net
@@ -2683,8 +2658,7 @@ va (VaSet
 font "Courier New,8,0"
 )
 xt "22000,18200,39000,19000"
-st "SIGNAL RdI2C        : std_logic
-"
+st "SIGNAL RdI2C        : std_logic"
 )
 )
 *82 (Net
@@ -2702,8 +2676,7 @@ va (VaSet
 font "Courier New,8,0"
 )
 xt "22000,16600,49000,17400"
-st "SIGNAL I2Crdata     : std_logic_vector(7 DOWNTO 0)
-"
+st "SIGNAL I2Crdata     : std_logic_vector(7 DOWNTO 0)"
 )
 )
 *83 (Net
@@ -2720,8 +2693,7 @@ va (VaSet
 font "Courier New,8,0"
 )
 xt "22000,20600,39000,21400"
-st "SIGNAL WrStart      : std_logic
-"
+st "SIGNAL WrStart      : std_logic"
 )
 )
 *84 (Blk
@@ -2819,8 +2791,7 @@ va (VaSet
 font "Courier New,8,0"
 )
 xt "22000,23000,39000,23800"
-st "SIGNAL timeout      : std_logic
-"
+st "SIGNAL timeout      : std_logic"
 )
 )
 *89 (SaComponent
@@ -3580,13 +3551,21 @@ uid 1103,0
 text (MLText
 uid 1104,0
 va (VaSet
+isHidden 1
 font "Courier New,8,0"
 )
 xt "-4000,35000,30500,35800"
+st "I2C_CLK_PRESCALE = X\"000E\"    ( std_logic_vector(15 DOWNTO 0) )  
+"
 )
 header ""
 )
 elements [
+(GiElement
+name "I2C_CLK_PRESCALE"
+type "std_logic_vector(15 DOWNTO 0)"
+value "X\"000E\""
+)
 ]
 )
 viewicon (ZoomableIcon
@@ -3622,8 +3601,7 @@ va (VaSet
 font "Courier New,8,0"
 )
 xt "22000,19000,39000,19800"
-st "SIGNAL TOrst        : std_logic
-"
+st "SIGNAL TOrst        : std_logic"
 )
 )
 *113 (Wire
@@ -5317,8 +5295,8 @@ tm "BdCompilerDirectivesTextMgr"
 ]
 associable 1
 )
-windowSize "0,0,1281,1002"
-viewArea "-3739,-1020,70620,58761"
+windowSize "0,22,1281,1024"
+viewArea "-3700,-1000,70570,58710"
 cachedDiagramExtent "-4000,0,70000,57000"
 pageSetupInfo (PageSetupInfo
 ptrCmd "Adobe PDF,winspool,"
@@ -5344,7 +5322,7 @@ exportStdPackageRefs 1
 )
 hasePageBreakOrigin 1
 pageBreakOrigin "-7000,0"
-lastUid 1247,0
+lastUid 1385,0
 defaultCommentText (CommentText
 shape (Rectangle
 layer 0
@@ -6629,7 +6607,6 @@ preAdd 0
 posAdd 0
 o 25
 suid 16,0
-i "not ARST_LVL"
 )
 )
 uid 521,0

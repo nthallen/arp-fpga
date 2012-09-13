@@ -13,13 +13,11 @@ USE ieee.std_logic_unsigned.all;
 USE ieee.std_logic_arith.all;
 
 ENTITY lk204_wd IS
-   GENERIC( 
-      FIFO_WIDTH : integer range 14 downto 1 := 8
-   );
    PORT( 
       LK204  : IN     std_logic;
       WData  : IN     std_logic_vector (15 DOWNTO 0);
-      WData1 : OUT    std_logic_vector (FIFO_WIDTH DOWNTO 0)
+      En     : OUT    std_ulogic_vector (0 TO 0);
+      WData1 : OUT    std_logic_vector (8 DOWNTO 0)
    );
 
 -- Declarations
@@ -29,7 +27,8 @@ END lk204_wd ;
 --
 ARCHITECTURE struct OF lk204_wd IS
 BEGIN
-  WData1(FIFO_WIDTH-1 DOWNTO 0) <= WData(FIFO_WIDTH-1 DOWNTO 0);
-  WData1(FIFO_WIDTH) <= LK204;
+  WData1(7 DOWNTO 0) <= WData(7 DOWNTO 0);
+  WData1(8) <= LK204;
+  En(0) <= '1';
 END ARCHITECTURE struct;
 
