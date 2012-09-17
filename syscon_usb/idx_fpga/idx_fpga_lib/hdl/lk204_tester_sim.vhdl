@@ -111,33 +111,36 @@ BEGIN
     wait until F8M'Event AND F8M = '1';
     wait until F8M'Event AND F8M = '1';
     
-    sbrd( X"1101" );
+    sbrd( X"1104" );
     wait for 350 us;
-    sbrd( X"1101" );
+    sbrd( X"1104" );
     wait for 350 us;
-    sbrd( X"1101" );
+    sbrd( X"1104" );
     wait for 350 us;
-    sbrd( X"1101" );
+    sbrd( X"1104" );
     wait for 350 us;
-    sbrd( X"1101" );
-    sbwr( X"1100", X"0048"); -- H
+    sbrd( X"1104" );
+    sbwr( X"1102", X"0048"); -- H
     wait for 350 us;
-    sbrd( X"1101" );
-    sbwr( X"1100", X"0065"); -- e
-    sbwr( X"1100", X"006C"); -- l
-    sbwr( X"1100", X"006C"); -- l
-    sbwr( X"1100", X"006F"); -- o
+    sbrd( X"1104" );
+    sbwr( X"1102", X"0065"); -- e
+    sbwr( X"1102", X"006C"); -- l
+    sbwr( X"1102", X"006C"); -- l
+    sbwr( X"1102", X"006F"); -- o
     wait for 350 us;
-    sbrd( X"1101" );
+    sbrd( X"1104" );
     wait for 350 us;
-    sbrd( X"1101" );
+    sbrd( X"1104" );
     wait for 100 ms;
-    sbrd( X"1101" );
+    sbrd( X"1104" );
     assert Read_Result(4) = '1'
       report "Expected non-empty flag" severity error;
+    assert BdIntr = '0'
+      report "Expected BdIntr to be masked" severity error;
+    sbwr( X"1100", X"0020"); -- Enable interrupt
     assert BdIntr = '1'
-      report "Expected BdIntr" severity error;
-    sbrd( X"1100"); -- Read from the keypad queue
+      report "Expected BdIntr to be unmasked" severity error;
+    sbrd( X"1102"); -- Read from the keypad queue
     wait for 1 us;
     assert Read_Result(4) = '1'
       report "Expected empty flag" severity error;

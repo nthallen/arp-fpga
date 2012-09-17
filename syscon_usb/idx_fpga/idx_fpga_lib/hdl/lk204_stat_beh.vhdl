@@ -22,7 +22,8 @@ ENTITY lk204_stat IS
       KeyRE    : OUT    std_logic;
       RData    : OUT    std_logic_vector (15 DOWNTO 0);
       Rst      : IN     std_logic;
-      LK204    : IN     std_logic
+      LK204    : IN     std_logic;
+      PCA      : IN     std_logic
    );
 
 -- Declarations
@@ -49,10 +50,13 @@ BEGIN
             RData(7 DOWNTO 0) <= KeyData;
             RdFIFO <= not KeyEmpty;
             -- KeyData will be zero if KeyEmpty
-          else
+          elsif PCA = '1' then
             RdFIFO <= '0';
             RData <= Status;
             RData(4) <= not KeyEmpty;
+          else
+            RdFIFO <= '0';
+            RData <= (others => '0');
           end if;
           Reading <= '1';
         elsif RdEn = '0' AND Reading = '1' then
