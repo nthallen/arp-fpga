@@ -67,7 +67,8 @@ typedef struct {
 } board_intr_t;
 
 static const board_intr_t bd_intrs[] = {
-    { 0x0A00, 0x0001 }
+    { 0x0A00, 0x0001 },
+    { 0x1100, 0x0002 }
 };
 
 #define N_INTERRUPTS (sizeof(bd_intrs)/sizeof(board_intr_t))
