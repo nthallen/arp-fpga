@@ -11,18 +11,19 @@ LIBRARY ieee;
 USE ieee.std_logic_1164.all;
 
 ENTITY i2c_half_switch IS
-  GENERIC (
-    N_ISBITS : integer range 20 downto 2 := 4
-  );
-  PORT( 
-    En       : IN     std_ulogic_vector (N_ISBITS-1 DOWNTO 0);
-    pad_o    : IN     std_logic;
-    padoen_o : IN     std_logic;
-    pad_i    : OUT    std_logic;
-    pad      : INOUT  std_logic_vector (N_ISBITS-1 DOWNTO 0)
-  );
+   GENERIC( 
+      N_ISBITS : integer range 20 downto 1 := 4
+   );
+   PORT( 
+      En       : IN     std_ulogic_vector (N_ISBITS-1 DOWNTO 0);
+      pad_o    : IN     std_logic;
+      padoen_o : IN     std_logic;
+      pad_i    : OUT    std_logic;
+      pad      : INOUT  std_logic_vector (N_ISBITS-1 DOWNTO 0)
+   );
 
 -- Declarations
+
 END i2c_half_switch ;
 
 --

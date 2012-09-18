@@ -6,6 +6,8 @@
 --          at - 13:25:16 11/18/2010
 --
 -- PDACS_Carbon DACS implementation for Carbon Isotopes Instrument
+-- 9/17/12 Build 36: Test build to run on backup HWV PDACS with LK204
+--         mapped to third power board connector and N_VM = 2.
 -- 5/2/12 Build 35: Reduce AO clock to 8 MHz
 -- 12/1/11 First pass is based on DACSbd (HWV) but using ptrhm_acquire.
 --
@@ -19,11 +21,13 @@ USE idx_fpga_lib.ptrhm.all;
 
 ENTITY PDACS_Carbon IS
   GENERIC (
-    DACS_BUILD_NUMBER : std_logic_vector(15 DOWNTO 0) := X"0023"; -- #35
+    DACS_BUILD_NUMBER : std_logic_vector(15 DOWNTO 0) := X"0024"; -- #36
     INSTRUMENT_ID : std_logic_vector(15 DOWNTO 0) := X"0003";
+    N_INTERRUPTS : integer range 15 downto 1 := 2;
     CTR_UG_N_BDS : integer range 5 downto 0 := 0;
     N_QCLICTRL : integer range 5 downto 0 := 3;
-    N_VM : integer range 5 downto 0 := 3;
+    N_VM : integer range 5 downto 0 := 2;
+    N_LK204 : integer range 1 downto 0 := 1;
 
     N_PTRH : integer range 16 downto 1 := 9;
     N_ISBITS    : integer range 8 downto 1 := 5;
@@ -169,7 +173,7 @@ ARCHITECTURE beh OF PDACS_Carbon IS
     
   COMPONENT dacs_v2
     GENERIC (
-      DACS_BUILD_NUMBER : std_logic_vector(15 DOWNTO 0) := X"0010";
+      DACS_BUILD_NUMBER : std_logic_vector(15 DOWNTO 0) := X"0024"; -- 36
       INSTRUMENT_ID : std_logic_vector(15 DOWNTO 0) := X"0001";
       N_INTERRUPTS : integer range 15 downto 1 := 1;
       
@@ -189,7 +193,8 @@ ARCHITECTURE beh OF PDACS_Carbon IS
       DIGIO_FORCE_DIR : std_ulogic_vector := "000000000000";
       DIGIO_FORCE_DIR_VAL : std_ulogic_vector := "000000000000";
       N_QCLICTRL : integer range 5 downto 0 := 1;
-      N_VM : integer range 5 downto 0 := 1
+      N_VM : integer range 5 downto 0 := 1;
+      N_LK204 : integer range 1 downto 0 := 0
     );
     Port (
       fpga_0_rst_1_sys_rst_pin : IN std_logic;
@@ -208,6 +213,8 @@ ARCHITECTURE beh OF PDACS_Carbon IS
       PTRH_SCK_pin : INOUT std_logic_vector(N_ISBITS-1 DOWNTO 0);
       VM_SDA_pin : INOUT std_logic_vector(N_VM-1 DOWNTO 0);
       VM_SCL_pin : INOUT std_logic_vector(N_VM-1 DOWNTO 0);
+      LK204_SDA_pin : INOUT std_logic_vector(N_LK204-1 DOWNTO 0);
+      LK204_SCL_pin : INOUT std_logic_vector(N_LK204-1 DOWNTO 0);
       
       subbus_cmdenbl : OUT std_ulogic;
       subbus_cmdstrb : OUT std_ulogic;
@@ -271,6 +278,7 @@ BEGIN
     GENERIC MAP (
       DACS_BUILD_NUMBER => DACS_BUILD_NUMBER,
       INSTRUMENT_ID => INSTRUMENT_ID,
+      N_INTERRUPTS => N_INTERRUPTS,
       CTR_UG_N_BDS => CTR_UG_N_BDS,
 
       N_PTRH => N_PTRH,
@@ -286,7 +294,8 @@ BEGIN
       DIGIO_FORCE_DIR => DIGIO_FORCE_DIR,
       DIGIO_FORCE_DIR_VAL => DIGIO_FORCE_DIR_VAL,
       N_QCLICTRL => N_QCLICTRL,
-      N_VM => N_VM
+      N_VM => N_VM,
+      N_LK204 => N_LK204
     )
     PORT MAP (
        fpga_0_rst_1_sys_rst_pin       => FPGA_CPU_RESET,
@@ -314,10 +323,10 @@ BEGIN
        PTRH_SCK_pin(4)                => BIO(6),
        VM_SCL_pin(0)                  => BIO(8),
        VM_SCL_pin(1)                  => BIO(10),
-       VM_SCL_pin(2)                  => BIO(12),
+       LK204_SCL_pin(0)               => BIO(12),
        VM_SDA_pin(0)                  => BIO(9),
        VM_SDA_pin(1)                  => BIO(11),
-       VM_SDA_pin(2)                  => BIO(13),
+       LK204_SDA_pin(0)               => BIO(13),
        
        subbus_cmdenbl                 => subbus_cmdenbl,
        subbus_cmdstrb                 => subbus_cmdstrb,

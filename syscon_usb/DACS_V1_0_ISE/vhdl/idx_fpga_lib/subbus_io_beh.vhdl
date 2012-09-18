@@ -16,15 +16,15 @@ USE ieee.std_logic_1164.all;
 USE ieee.std_logic_arith.all;
 
 ENTITY subbus_io IS
-  PORT(
-    ExpRd   : IN     std_ulogic;
-    ExpWr   : IN     std_ulogic;
-    ExpAck  : OUT    std_ulogic;
-    F8M     : IN     std_ulogic;
-    RdEn    : OUT    std_ulogic;
-    WrEn    : OUT    std_ulogic;
-    BdEn    : IN     std_ulogic
-  );
+   PORT( 
+      ExpRd  : IN     std_ulogic;
+      ExpWr  : IN     std_ulogic;
+      ExpAck : OUT    std_ulogic;
+      F8M    : IN     std_ulogic;
+      RdEn   : OUT    std_ulogic;
+      WrEn   : OUT    std_ulogic;
+      BdEn   : IN     std_ulogic
+   );
   -- ExpRd,ExpWr,ExpAck all external.
   -- RdEn, WrEn are our qualified versions
   -- RdEn and WrEn are both qualified with BdEn
@@ -32,7 +32,7 @@ ENTITY subbus_io IS
   -- RdEn is longer
   -- BdEn is 1 when Addr selects an element
 
-END ENTITY subbus_io;
+END subbus_io ;
 
 --
 ARCHITECTURE beh OF subbus_io IS
