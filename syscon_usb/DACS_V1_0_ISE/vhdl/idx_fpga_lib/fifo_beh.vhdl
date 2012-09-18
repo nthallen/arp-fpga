@@ -36,6 +36,8 @@ ARCHITECTURE beh OF fifo IS
   type FIFO_t is array (FIFO_LENGTH-1 DOWNTO 0) of std_logic_vector(FIFO_WIDTH-1 DOWNTO 0);
   SIGNAL FIFOdata : FIFO_t;
   SIGNAL FIFOcnt : std_logic_vector(7 DOWNTO 0);
+  SIGNAL Full_int : std_logic;
+  SIGNAL Empty_int : std_logic;
 BEGIN
   action : Process (Clk) IS
     VARIABLE iaddr : integer range 255 DOWNTO 0;
@@ -43,13 +45,13 @@ BEGIN
     if Clk'Event AND Clk = '1' then
       if Rst = '1' then
         FIFOcnt <= (others => '0');
-        Full <= '0';
-        Empty <= '1';
+        Full_int <= '0';
+        Empty_int <= '1';
         for i in 1 to FIFO_LENGTH loop
           FIFOdata(i-1) <= (others => '0');
         end loop;
       else
-        if RE = '1' AND Empty = '0' then
+        if RE = '1' AND Empty_int = '0' then
           for i in 1 to FIFO_LENGTH-1 loop
             FIFOdata(i-1) <= FIFOdata(i);
           end loop;
@@ -61,29 +63,31 @@ BEGIN
             end if;
           else
             if FIFOcnt = 1 then
-              Empty <= '1';
+              Empty_int <= '1';
             end if;
-            Full <= '0';
+            Full_int <= '0';
             FIFOcnt <= FIFOcnt-1;
           end if;
-        elsif WE = '1' AND Full = '0' then
+        elsif WE = '1' AND Full_int = '0' then
           iaddr := conv_integer(FIFOcnt);
           if iaddr < FIFO_LENGTH then
             FIFOdata(iaddr) <= WData;
           end if;
           if FIFOcnt >= FIFO_LENGTH-1 then
-            Full <= '1';
+            Full_int <= '1';
           else
-            Full <= '0';
+            Full_int <= '0';
           end if;
           FIFOcnt <= FIFOcnt + 1;
-          Empty <= '0';
+          Empty_int <= '0';
         end if;
       end if;
     end if;
   End Process;
   
   RData <= FIFOdata(0);
+  Full <= Full_int;
+  Empty <= Empty_int;
       
 END ARCHITECTURE beh;
 
