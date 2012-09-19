@@ -111,6 +111,7 @@ BEGIN
     wait until F8M'Event AND F8M = '1';
     wait until F8M'Event AND F8M = '1';
     
+    wait for 6500 us;
     sbrd( X"1104" );
     wait for 350 us;
     sbrd( X"1104" );
