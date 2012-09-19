@@ -36,6 +36,16 @@ name "EngSM"
 duLibraryName "idx_fpga_lib"
 duName "lk204_sm"
 elements [
+(GiElement
+name "LK204_ADDR0"
+type "std_logic_vector(6 downto 0)"
+value "\"0101000\""
+)
+(GiElement
+name "PCA_ADDR"
+type "std_logic_vector(6 downto 0)"
+value "\"0100000\""
+)
 ]
 mwi 0
 uid 427,0
@@ -57,7 +67,7 @@ elements [
 (GiElement
 name "I2C_CLK_PRESCALE"
 type "std_logic_vector(15 DOWNTO 0)"
-value "X\"000E\""
+value "X\"0096\""
 )
 ]
 mwi 0
@@ -116,19 +126,19 @@ value "C:\\HDS\\idx_fpga\\idx_fpga_lib\\hds\\lk204_engine"
 )
 (vvPair
 variable "date"
-value "09/18/2012"
+value "09/19/2012"
 )
 (vvPair
 variable "day"
-value "Tue"
+value "Wed"
 )
 (vvPair
 variable "day_long"
-value "Tuesday"
+value "Wednesday"
 )
 (vvPair
 variable "dd"
-value "18"
+value "19"
 )
 (vvPair
 variable "entity_name"
@@ -252,7 +262,7 @@ value "struct"
 )
 (vvPair
 variable "time"
-value "15:18:00"
+value "12:01:20"
 )
 (vvPair
 variable "unit"
@@ -2354,11 +2364,24 @@ uid 435,0
 va (VaSet
 font "Courier New,8,0"
 )
-xt "10350,43500,10350,43500"
+xt "10350,43500,42850,45100"
+st "LK204_ADDR0 = \"0101000\"    ( std_logic_vector(6 downto 0) )  
+PCA_ADDR    = \"0100000\"    ( std_logic_vector(6 downto 0) )  
+"
 )
 header ""
 )
 elements [
+(GiElement
+name "LK204_ADDR0"
+type "std_logic_vector(6 downto 0)"
+value "\"0101000\""
+)
+(GiElement
+name "PCA_ADDR"
+type "std_logic_vector(6 downto 0)"
+value "\"0100000\""
+)
 ]
 )
 viewicon (ZoomableIcon
@@ -3555,7 +3578,7 @@ isHidden 1
 font "Courier New,8,0"
 )
 xt "-4000,35000,30500,35800"
-st "I2C_CLK_PRESCALE = X\"000E\"    ( std_logic_vector(15 DOWNTO 0) )  "
+st "I2C_CLK_PRESCALE = X\"0096\"    ( std_logic_vector(15 DOWNTO 0) )  "
 )
 header ""
 )
@@ -3563,7 +3586,7 @@ elements [
 (GiElement
 name "I2C_CLK_PRESCALE"
 type "std_logic_vector(15 DOWNTO 0)"
-value "X\"000E\""
+value "X\"0096\""
 )
 ]
 )
@@ -5321,7 +5344,7 @@ exportStdPackageRefs 1
 )
 hasePageBreakOrigin 1
 pageBreakOrigin "-7000,0"
-lastUid 1454,0
+lastUid 1592,0
 defaultCommentText (CommentText
 shape (Rectangle
 layer 0

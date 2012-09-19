@@ -111,28 +111,27 @@ BEGIN
     wait until F8M'Event AND F8M = '1';
     wait until F8M'Event AND F8M = '1';
     
-    wait for 6500 us;
-    sbrd( X"1104" );
-    wait for 350 us;
-    sbrd( X"1104" );
-    wait for 350 us;
-    sbrd( X"1104" );
-    wait for 350 us;
-    sbrd( X"1104" );
-    wait for 350 us;
-    sbrd( X"1104" );
+    loop
+      sbrd( X"1104" );
+      if Read_Result(0) = '1' AND Read_Result(1) = '1' then
+        exit;
+      end if;
+      wait for 350 us;
+    end loop;
     sbwr( X"1102", X"0048"); -- H
-    wait for 350 us;
+    wait for 4 ms;
     sbrd( X"1104" );
     sbwr( X"1102", X"0065"); -- e
     sbwr( X"1102", X"006C"); -- l
     sbwr( X"1102", X"006C"); -- l
     sbwr( X"1102", X"006F"); -- o
-    wait for 350 us;
+    wait for 4 ms;
     sbrd( X"1104" );
-    wait for 350 us;
+    wait for 4 ms;
     sbrd( X"1104" );
-    wait for 100 ms;
+    
+    -- Wait for a polling event...
+    wait for 120 ms;
     sbrd( X"1104" );
     assert Read_Result(4) = '1'
       report "Expected non-empty flag" severity error;
