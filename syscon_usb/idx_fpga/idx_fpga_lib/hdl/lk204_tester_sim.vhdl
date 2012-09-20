@@ -160,6 +160,18 @@ BEGIN
     assert BdIntr = '0'
       report "Expected BdIntr to clear itself after INTA" severity error;
     wait for 350 us;
+    
+    sbwr( X"1102", X"01FE" );
+    sbrd( X"1104" );
+    wait for 350 us;
+    sbwr( X"1102", X"01A0" );
+    sbrd( X"1104" );
+    wait for 350 us;
+    sbwr( X"1102", X"0000" );
+    sbrd( X"1104" );
+    wait for 10 ms;
+    sbrd( X"1104" );
+    wait for 350 us;
     Done <= '1';
     wait;
     -- pragma synthesis_on
