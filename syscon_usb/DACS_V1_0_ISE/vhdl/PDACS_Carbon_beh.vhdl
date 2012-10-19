@@ -26,7 +26,7 @@ ENTITY PDACS_Carbon IS
     N_INTERRUPTS : integer range 15 downto 1 := 2;
     CTR_UG_N_BDS : integer range 5 downto 0 := 0;
     N_QCLICTRL : integer range 5 downto 0 := 3;
-    N_VM : integer range 5 downto 0 := 2;
+    N_VM : integer range 5 downto 0 := 3;
     N_LK204 : integer range 1 downto 0 := 1;
 
     N_PTRH : integer range 16 downto 1 := 9;
@@ -175,7 +175,7 @@ ARCHITECTURE beh OF PDACS_Carbon IS
     GENERIC (
       DACS_BUILD_NUMBER : std_logic_vector(15 DOWNTO 0) := X"0024"; -- 36
       INSTRUMENT_ID : std_logic_vector(15 DOWNTO 0) := X"0001";
-      N_INTERRUPTS : integer range 15 downto 1 := 1;
+      N_INTERRUPTS : integer range 15 downto 1 := 2;
       
       N_PTRH      : integer range 16 downto 1 := 9;
       N_ISBITS    : integer range 8 downto 1 := 5;
@@ -323,10 +323,12 @@ BEGIN
        PTRH_SCK_pin(4)                => BIO(6),
        VM_SCL_pin(0)                  => BIO(8),
        VM_SCL_pin(1)                  => BIO(10),
-       LK204_SCL_pin(0)               => BIO(12),
+       VM_SCL_pin(2)                  => BIO(12),
+       LK204_SCL_pin(0)               => BIO(14),
        VM_SDA_pin(0)                  => BIO(9),
        VM_SDA_pin(1)                  => BIO(11),
-       LK204_SDA_pin(0)               => BIO(13),
+       VM_SDA_pin(2)                  => BIO(13),
+       LK204_SDA_pin(0)               => BIO(15),
        
        subbus_cmdenbl                 => subbus_cmdenbl,
        subbus_cmdstrb                 => subbus_cmdstrb,
