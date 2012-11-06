@@ -149,6 +149,8 @@
 </v>
 <v t="ntallen.20120816125014.1563" a="E"><vh>LK204-7T-1U Display</vh>
 <v t="ntallen.20120816125014.1564" a="E"><vh>LK204 VHDL Driver</vh>
+<v t="ntallen.20120910090627.1591"><vh>Hardware Features</vh></v>
+<v t="ntallen.20120910090627.1592"><vh>Subbus Interface</vh></v>
 <v t="ntallen.20120817130002.1569" a="E"><vh>Architecture</vh>
 <v t="ntallen.20120817161609.1571"><vh>FIFO</vh></v>
 <v t="ntallen.20120904164051.1587"><vh>LK204_I2C</vh></v>
@@ -1774,7 +1776,13 @@ We don't need to address all of the input ports.</t>
 Probably want to include an additional I2C peripheral to read
 switch positions.</t>
 <t tx="ntallen.20120816125014.1564">Initialize device:
-    254 79: Auto transmit key presses off
+    Configure Display:
+        254 79: Auto transmit key presses off
+        etc.? (or does software do the rest)
+    Configure LK204 GPO (not necessary)
+    Configure PCA9554 I/O
+        Configure inputs/outputs
+        Initialize outputs
 Poll device for keyboard and switch status
     W80: 254 38: Poll for key press, then read. If non-zero,
         queue data. If MSB set, read another immediately
@@ -1862,6 +1870,11 @@ If BdIntr was asserted during INTA, clear it
 Logic for this is in Intr state machine
 
 Do not assert ExpAck When INTA is '1'. (syscon acknowledges)
+
+The card must also support an interrupt control register at the base address.
+On write, bit 5 of the interrupt control register is the interrupt enable bit.
+It should default to disabled. The BdIntr should only be asserted if there
+
 </t>
 <t tx="ntallen.20120824140516.1577">If any board asserts their assigned BdIntr pin, asserts interrupt (status(2)) back to FPGA/CPU
 
@@ -1872,7 +1885,7 @@ Reports the BdIntr vector (which should be stable throughout INTA)</t>
 Accepts interrupt attach requests mapping a card base address to an interrupt ID
 Polls status port for interrupt pin (status(2))
 On interrupt, reads from INTA address (X"0040")
-For each bit that is set, report the interrupt code (In) where 'n' is the interrupt ID
+For each bit that is set, report the interrupt code (I&lt;n&gt;) where '&lt;n&gt;' is the interrupt ID
 
 </t>
 <t tx="ntallen.20120824140516.1579">Accepts interrupt attach requests mapping a card base address with a struct sigevent,
@@ -1895,14 +1908,13 @@ Commands:
       set clock divisor, enable core and interrupts
         wr_i2ctop("000", X"0E"); -- LSB
         wr_i2ctop("001", X"00"); -- MSB
-        wr_isctop("010", X"CO"); -- enable core and interrupts
+        wr_i2ctop("010", X"CO"); -- enable core and interrupts
         set Done
-      # initialize switch interface
-        # TBD
     }
     loop {
       if (WrI2C) wr_i2c(I2Cwdata, WrStart, WrStop);
       elsif (RdI2C) rd_i2c(I2Cwdata);
+      if (!Err) Done &lt;= 1;
     }
     
     wr_i2c( data, start, stop ) {
@@ -1910,7 +1922,7 @@ Commands:
         wr_i2ctop("100", start + stop + WR + IACK); // wait for Intr
         stat &lt;= rd_i2ctop("100");
         if ( stat(7) == 0 ) { // ACK
-          if ( stop ) Done &lt;= 1
+          //if ( stop ) Done &lt;= 1 // not here! at top level
         } else {
           if (stat(5)) { // Lost Arbitration (SDA stuck)
             delay(40msec); // and then what? try again?
@@ -1945,21 +1957,105 @@ Commands:
       }
     }</t>
 <t tx="ntallen.20120904164051.1588">Talks to LK204_I2C
+    initialize devices {
+      LK204
+        Auto Keypress Off X"80" X"FE" X"4F"
+      PCA9554
+        Set Direction X"40" X"03" X"HH"
+        Set Polarity  X"40" X"02" X"HH" (optional)
+        Set Output    X"40" X"01" X"HH"
     loop {
         if (!wqueue_empty) {
-            LK204_I2C(Wr, STA, !STO, X"80");
-            loop {
-              read char
-              read isempty
-              LK204_I2C(Wr, !STA, isempty, char);
-            } while ! isempty;
+            read(char, lk204, isempty);
+            loop_1 {
+              if (lk204) CurAddr &lt;= X"80";
+              else CurAddr &lt;= X"40";
+              LK204_I2C(Wr, STA, !STO, CurAddr);
+              WData &lt;= char;
+              loop_2 {
+                LK204_I2C(Wr, !STA, isempty, char);
+                if (isempty) break loop_1;
+                read(char, new_lk204, isempty);
+                if (new_lk204 != lk204) {
+                  lk204 &lt;= new_lk204;
+                  break loop_2;
+                }
+              }
+            }
         } else if (timeout_100msec) {
             read switch status
-            if (!rqueue_full)
+              LK204_I2C(Wr, STA, !STO, X"40");
+              LK204_I2C(Wr, 0, !STO, 0); // input port
+              LK204_I2C(Rd, STA, !STO, X"41"); //read
+            if (!rqueue_full) {
                 read for data until no more data
+              loop {
+                LK204_I2C(Wr, STA, !STO, X"80");
+                LK204_I2C(Wr, !STA, !STO, X"FE");
+                LK204_I2C(Wr, !STA, !STO, X"26");
+                rdkey = LK204_I2C(Rd, STA, !STO, X"81");
+                if (rdkey == 0) break;
+                write rdkey to keyfifo
+                if (rdkey(7) == 0) break;
+              }
+            }
             reset timeout
         }
     }
 </t>
+<t tx="ntallen.20120910090627.1591">I2C Devices:
+    LK204 Address 80:
+        Write to send data to the display
+        [Write GPO]
+        [Read GPO State]
+        [Read Customer Data]
+        Read Version Number
+        Read Module Type
+        [Read One-Wire Devices]
+        Poll Key Press (read char from keypad)
+    PCA9554 I/O Expander Addres 4X:
+        Set direction
+        Set polarity
+        Write byte
+        Read byte
+        </t>
+<t tx="ntallen.20120910090627.1592">BA=Base Address
+    BA: Interrupt Control Reg: Write-only
+        D5: Interrupt Enable
+    
+    LK204
+    BA+2: W: Data(7:0): Single char to display controller.
+             Data(8): LkWrEn. Should be 1 on last byte, zero on earlier
+                bytes in order to ensure accurate interpretation of
+                escape sequences
+             No response anticipated
+    BA+2: R: Read keypress data
+    
+    PCA9554
+        [Initialization of direction/polarity is hard coded]
+    BA+4: W: Set GPIO output port
+             Add bitwise set/reset
+    BA+4: R: Read GPIO input port and/or status?
+
+    Status (bits TBD):
+        0: LK204 Initialized successfully
+        1: PCA9554 Initialized successfully
+        2: LK204 ACK
+        3: PCA9554 ACK
+        4: Key Pressed (RQueue NonEmpty)
+        5: WQueue NonEmpty
+        6: WQueue Full
+        7: LKWrEn
+        8-15: Switch Status
+          8: Bat Purge Switch
+          9: Land Switch
+          12: Bat Purge LED \ 
+          13: Land LED \
+
+Change switch status to report just the two bits we are actually using as well as the state of the two outputs (LEDs) we are using.
+
+Change the format of the write-to-gpio to be bitwise set/reset. In the polling loop, if a switch is closed, change desired state of output LEDs. In Wr, when reading commands from queue, update desired state, then whenever desired state is different from the current state, write out the desired state.
+
+And do this all after testing with the current design to make sure I understand the switch status and LED output polarities, etc.</t>
 </tnodes>
 </leo_file>
