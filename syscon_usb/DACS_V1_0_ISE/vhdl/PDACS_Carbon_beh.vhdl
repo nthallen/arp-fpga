@@ -6,9 +6,10 @@
 --          at - 13:25:16 11/18/2010
 --
 -- PDACS_Carbon DACS implementation for Carbon Isotopes Instrument
--- 9/17/12 Build 36: Test build to run on backup HWV PDACS with LK204
---         mapped to third power board connector and N_VM = 2.
--- 5/2/12 Build 35: Reduce AO clock to 8 MHz
+-- 11/20/12 Build 37: LK204 Updates
+--  9/17/12 Build 36: Test build to run on backup HWV PDACS with LK204
+--          mapped to third power board connector and N_VM = 2.
+--  5/2/12 Build 35: Reduce AO clock to 8 MHz
 -- 12/1/11 First pass is based on DACSbd (HWV) but using ptrhm_acquire.
 --
 -- INSTRUMENT_ID Values are defined in DACSutil/DACS_ID.tmc
@@ -21,7 +22,7 @@ USE idx_fpga_lib.ptrhm.all;
 
 ENTITY PDACS_Carbon IS
   GENERIC (
-    DACS_BUILD_NUMBER : std_logic_vector(15 DOWNTO 0) := X"0024"; -- #36
+    DACS_BUILD_NUMBER : std_logic_vector(15 DOWNTO 0) := X"0025"; -- #37
     INSTRUMENT_ID : std_logic_vector(15 DOWNTO 0) := X"0003";
     N_INTERRUPTS : integer range 15 downto 1 := 2;
     CTR_UG_N_BDS : integer range 5 downto 0 := 0;
