@@ -173,9 +173,13 @@ BEGIN
     wait for 350 us;
     sbwr( X"1102", X"01A0" );
     sbrd( X"1104" );
+    assert(Read_Result(7) = '0')
+      report "Expected LKWrEn to be zero" severity error;
     wait for 350 us;
     sbwr( X"1102", X"0000" );
     sbrd( X"1104" );
+    assert(Read_Result(7) = '1')
+      report "Expected LKWrEn to be one" severity error;
     wait for 10 ms;
     sbrd( X"1104" );
     wait for 350 us;
