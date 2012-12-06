@@ -22,7 +22,7 @@ USE idx_fpga_lib.ptrhm.all;
 
 ENTITY PDACS_Carbon IS
   GENERIC (
-    DACS_BUILD_NUMBER : std_logic_vector(15 DOWNTO 0) := X"0025"; -- #37
+    DACS_BUILD_NUMBER : std_logic_vector(15 DOWNTO 0) := X"0026"; -- #38
     INSTRUMENT_ID : std_logic_vector(15 DOWNTO 0) := X"0003";
     N_INTERRUPTS : integer range 15 downto 1 := 2;
     CTR_UG_N_BDS : integer range 5 downto 0 := 0;
