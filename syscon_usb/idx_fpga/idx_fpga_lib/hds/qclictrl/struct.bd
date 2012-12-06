@@ -103,6 +103,11 @@ name "timer"
 duLibraryName "idx_fpga_lib"
 duName "qclic_timer"
 elements [
+(GiElement
+name "DELAY"
+type "natural"
+value "250000"
+)
 ]
 mwi 0
 uid 972,0
@@ -122,7 +127,7 @@ libraryRefs [
 ]
 )
 version "30.1"
-appVersion "2010.3 (Build 21)"
+appVersion "2012.1 (Build 6)"
 noEmbeddedEditors 1
 model (BlockDiag
 VExpander (VariableExpander
@@ -169,19 +174,19 @@ value "C:\\HDS\\idx_fpga\\idx_fpga_lib\\hds\\qclictrl"
 )
 (vvPair
 variable "date"
-value "02/ 1/2012"
+value "12/ 6/2012"
 )
 (vvPair
 variable "day"
-value "Wed"
+value "Thu"
 )
 (vvPair
 variable "day_long"
-value "Wednesday"
+value "Thursday"
 )
 (vvPair
 variable "dd"
-value "01"
+value "06"
 )
 (vvPair
 variable "entity_name"
@@ -229,7 +234,7 @@ value "$HDS_PROJECT_DIR/idx_fpga_lib/work"
 )
 (vvPair
 variable "mm"
-value "02"
+value "12"
 )
 (vvPair
 variable "module_name"
@@ -237,11 +242,11 @@ value "qclictrl"
 )
 (vvPair
 variable "month"
-value "Feb"
+value "Dec"
 )
 (vvPair
 variable "month_long"
-value "February"
+value "December"
 )
 (vvPair
 variable "p"
@@ -273,7 +278,7 @@ value "<TBD>"
 )
 (vvPair
 variable "task_ModelSimPath"
-value "C:/modeltech_10.0c/win32"
+value "C:/modeltech_10.1c/win32"
 )
 (vvPair
 variable "task_NC-SimPath"
@@ -305,7 +310,7 @@ value "struct"
 )
 (vvPair
 variable "time"
-value "14:35:02"
+value "10:34:42"
 )
 (vvPair
 variable "unit"
@@ -317,7 +322,7 @@ value "nort"
 )
 (vvPair
 variable "version"
-value "2010.3 (Build 21)"
+value "2012.1 (Build 6)"
 )
 (vvPair
 variable "view"
@@ -357,7 +362,7 @@ va (VaSet
 fg "0,0,32768"
 bg "0,0,32768"
 )
-xt "61200,72000,69900,73000"
+xt "61200,72000,70000,73000"
 st "
 by %user on %dd %month %year
 "
@@ -2863,9 +2868,9 @@ uid 833,0
 va (VaSet
 font "arial,8,1"
 )
-xt "69350,42500,74650,43500"
+xt "69350,56500,74650,57500"
 st "idx_fpga_lib"
-blo "69350,43300"
+blo "69350,57300"
 tm "BdLibraryNameMgr"
 )
 *98 (Text
@@ -2873,9 +2878,9 @@ uid 834,0
 va (VaSet
 font "arial,8,1"
 )
-xt "69350,43500,72950,44500"
+xt "69350,57500,72950,58500"
 st "qclic_ser"
-blo "69350,44300"
+blo "69350,58300"
 tm "BlkNameMgr"
 )
 *99 (Text
@@ -2883,9 +2888,9 @@ uid 835,0
 va (VaSet
 font "arial,8,1"
 )
-xt "69350,44500,70850,45500"
+xt "69350,58500,70850,59500"
 st "ser"
-blo "69350,45300"
+blo "69350,59300"
 tm "InstanceNameMgr"
 )
 ]
@@ -3090,13 +3095,20 @@ uid 979,0
 text (MLText
 uid 980,0
 va (VaSet
+isHidden 1
 font "Courier New,8,0"
 )
-xt "56350,45500,56350,45500"
+xt "54000,34200,71000,35000"
+st "DELAY = 250000    ( natural )  "
 )
 header ""
 )
 elements [
+(GiElement
+name "DELAY"
+type "natural"
+value "250000"
+)
 ]
 )
 viewicon (ZoomableIcon
@@ -5886,8 +5898,8 @@ tm "BdCompilerDirectivesTextMgr"
 ]
 associable 1
 )
-windowSize "20,51,1281,974"
-viewArea "3300,15900,85539,77046"
+windowSize "19,51,1281,974"
+viewArea "3300,15900,85618,74834"
 cachedDiagramExtent "0,0,98000,73000"
 pageSetupInfo (PageSetupInfo
 ptrCmd "\\\\proteus\\Ansel,winspool,"
@@ -5912,7 +5924,7 @@ exportStdPackageRefs 1
 )
 hasePageBreakOrigin 1
 pageBreakOrigin "0,0"
-lastUid 3962,0
+lastUid 4183,0
 defaultCommentText (CommentText
 shape (Rectangle
 layer 0

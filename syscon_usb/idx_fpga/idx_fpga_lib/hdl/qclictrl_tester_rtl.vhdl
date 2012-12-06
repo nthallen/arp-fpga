@@ -187,6 +187,7 @@ Begin
     sbrd(X"1000"); -- read ctrlr_status
     assert RData(13) = '0' AND RData(10) = '0'
       report "RWConflict 2 not reset by controller reset";
+    wait for 300 us; -- to clear out any pending read
     
     sbwr(X"100A", X"2200"); -- Start a read block
     loop
