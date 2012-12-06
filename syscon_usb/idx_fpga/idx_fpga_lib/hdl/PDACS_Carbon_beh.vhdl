@@ -174,7 +174,7 @@ ARCHITECTURE beh OF PDACS_Carbon IS
     
   COMPONENT dacs_v2
     GENERIC (
-      DACS_BUILD_NUMBER : std_logic_vector(15 DOWNTO 0) := X"0024"; -- 36
+      DACS_BUILD_NUMBER : std_logic_vector(15 DOWNTO 0) := X"0026"; -- 38
       INSTRUMENT_ID : std_logic_vector(15 DOWNTO 0) := X"0001";
       N_INTERRUPTS : integer range 15 downto 1 := 2;
       
