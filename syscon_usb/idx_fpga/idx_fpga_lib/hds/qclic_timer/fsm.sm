@@ -31,7 +31,7 @@ libraryRefs [
 ]
 )
 version "25.1"
-appVersion "2012.1 (Build 6)"
+appVersion "2010.3 (Build 21)"
 model (StateMachine
 VExpander (VariableExpander
 vvMap [
@@ -77,19 +77,19 @@ value "C:\\HDS\\idx_fpga\\idx_fpga_lib\\hds\\qclic_timer"
 )
 (vvPair
 variable "date"
-value "12/ 6/2012"
+value "12/19/2011"
 )
 (vvPair
 variable "day"
-value "Thu"
+value "Mon"
 )
 (vvPair
 variable "day_long"
-value "Thursday"
+value "Monday"
 )
 (vvPair
 variable "dd"
-value "06"
+value "19"
 )
 (vvPair
 variable "entity_name"
@@ -181,7 +181,7 @@ value "<TBD>"
 )
 (vvPair
 variable "task_ModelSimPath"
-value "C:/modeltech_10.1c/win32"
+value "C:/modeltech_10.0c/win32"
 )
 (vvPair
 variable "task_NC-SimPath"
@@ -213,7 +213,7 @@ value "fsm"
 )
 (vvPair
 variable "time"
-value "10:30:56"
+value "13:08:53"
 )
 (vvPair
 variable "unit"
@@ -225,7 +225,7 @@ value "nort"
 )
 (vvPair
 variable "version"
-value "2012.1 (Build 6)"
+value "2010.3 (Build 21)"
 )
 (vvPair
 variable "view"
@@ -233,11 +233,11 @@ value "fsm"
 )
 (vvPair
 variable "year"
-value "2012"
+value "2011"
 )
 (vvPair
 variable "yy"
-value "12"
+value "11"
 )
 ]
 )
@@ -281,9 +281,9 @@ va (VaSet
 fg "0,0,32768"
 font "arial,10,1"
 )
-xt "40943,20090,47743,21290"
-st "wait STLdly"
-blo "40943,21090"
+xt "40490,20090,47690,21290"
+st "wait 250000"
+blo "40490,21090"
 tm "SmWaitText"
 )
 )
@@ -2182,8 +2182,8 @@ tm "SmCompilerDirectivesTextMgr"
 ]
 associable 1
 )
-windowSize "204,159,1223,849"
-viewArea "-5631,-10782,60335,31571"
+windowSize "204,159,1222,849"
+viewArea "-900,-2000,75708,49936"
 cachedDiagramExtent "0,-1000,68000,49000"
 hasePageBreakOrigin 1
 pageBreakOrigin "0,-2000"
@@ -2305,13 +2305,7 @@ uid 8,0
 va (VaSet
 font "arial,8,0"
 )
-xt "22100,0,38000,5000"
-st "function STLdly
-return std_logic_vector IS
-BEGIN
-  return conv_std_logic_vector(DELAY,18);
-END function STLdly;
-"
+xt "22100,0,22100,0"
 tm "LocalDeclTextMgr"
 )
 declType 2
@@ -2512,7 +2506,6 @@ associable 1
 genChar (SmGenChar
 uid 44,0
 nextStateClocking 0
-vhdlLeftBound 17
 )
 encoding (Encoding
 scheme 3
@@ -2572,7 +2565,7 @@ attribute 0
 synSafe 0
 outputEncodedLocals 0
 useVerilogParameterRange 0
-radix 0
+radix 2
 )
 stateOrder [
 &2
@@ -2582,7 +2575,7 @@ stateOrder [
 name "csm"
 )
 ]
-lastUid 399,0
+lastUid 368,0
 commonDM (CommonDM
 ldm (LogicalDM
 emptyRow *56 (LEmptyRow
@@ -2923,14 +2916,6 @@ tm "GenericPragmaColHdrMgr"
 *115 (EolColHdr
 tm "GenericEolColHdrMgr"
 )
-*116 (LogGeneric
-generic (GiElement
-name "DELAY"
-type "natural"
-value "250000"
-)
-uid 398,0
-)
 ]
 )
 pdm (PhysicalDM
@@ -2938,7 +2923,7 @@ displayShortBounds 1
 editShortBounds 1
 uid 313,0
 optionalChildren [
-*117 (Sheet
+*116 (Sheet
 sheetRow (SheetRow
 headerVa (MVa
 cellColor "49152,49152,49152"
@@ -2955,37 +2940,31 @@ cellColor "39936,56832,65280"
 fontColor "0,0,0"
 font "Tahoma,10,0"
 )
-emptyMRCItem *118 (MRCItem
+emptyMRCItem *117 (MRCItem
 litem &104
-pos 1
+pos 0
 dimension 20
 )
 uid 315,0
 optionalChildren [
-*119 (MRCItem
+*118 (MRCItem
 litem &105
 pos 0
 dimension 20
 uid 316,0
 )
-*120 (MRCItem
+*119 (MRCItem
 litem &106
 pos 1
 dimension 23
 uid 317,0
 )
-*121 (MRCItem
+*120 (MRCItem
 litem &107
 pos 2
 hidden 1
 dimension 20
 uid 318,0
-)
-*122 (MRCItem
-litem &116
-pos 0
-dimension 20
-uid 399,0
 )
 ]
 )
@@ -2998,43 +2977,43 @@ textAngle 90
 )
 uid 319,0
 optionalChildren [
-*123 (MRCItem
+*121 (MRCItem
 litem &108
 pos 0
 dimension 20
 uid 320,0
 )
-*124 (MRCItem
+*122 (MRCItem
 litem &110
 pos 1
 dimension 50
 uid 321,0
 )
-*125 (MRCItem
+*123 (MRCItem
 litem &111
 pos 2
 dimension 100
 uid 322,0
 )
-*126 (MRCItem
+*124 (MRCItem
 litem &112
 pos 3
 dimension 100
 uid 323,0
 )
-*127 (MRCItem
+*125 (MRCItem
 litem &113
 pos 4
 dimension 50
 uid 324,0
 )
-*128 (MRCItem
+*126 (MRCItem
 litem &114
 pos 5
 dimension 50
 uid 325,0
 )
-*129 (MRCItem
+*127 (MRCItem
 litem &115
 pos 6
 dimension 80
