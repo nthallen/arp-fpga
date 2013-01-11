@@ -16,11 +16,11 @@ libraryRefs [
 ]
 )
 version "25.1"
-appVersion "2010.3 (Build 21)"
+appVersion "2012.1 (Build 6)"
 model (Symbol
 commonDM (CommonDM
 ldm (LogicalDM
-suid 23,0
+suid 24,0
 usingSuid 1
 emptyRow *1 (LEmptyRow
 )
@@ -157,17 +157,6 @@ uid 338,0
 *22 (LogPort
 port (LogicalPort
 decl (Decl
-n "F66M"
-t "std_logic"
-o 2
-suid 21,0
-)
-)
-uid 502,0
-)
-*23 (LogPort
-port (LogicalPort
-decl (Decl
 n "WData"
 t "std_logic_vector"
 b "(15 DOWNTO 0)"
@@ -177,7 +166,7 @@ suid 22,0
 )
 uid 532,0
 )
-*24 (LogPort
+*23 (LogPort
 port (LogicalPort
 m 1
 decl (Decl
@@ -188,6 +177,17 @@ suid 23,0
 )
 )
 uid 633,0
+)
+*24 (LogPort
+port (LogicalPort
+decl (Decl
+n "F8M"
+t "std_logic"
+o 2
+suid 24,0
+)
+)
+uid 709,0
 )
 ]
 )
@@ -289,21 +289,21 @@ uid 339,0
 )
 *38 (MRCItem
 litem &22
-pos 1
-dimension 20
-uid 501,0
-)
-*39 (MRCItem
-litem &23
 pos 4
 dimension 20
 uid 531,0
 )
-*40 (MRCItem
-litem &24
+*39 (MRCItem
+litem &23
 pos 10
 dimension 20
 uid 632,0
+)
+*40 (MRCItem
+litem &24
+pos 1
+dimension 20
+uid 708,0
 )
 ]
 )
@@ -588,19 +588,19 @@ value "C:\\HDS\\idx_fpga\\idx_fpga_lib\\hds\\ao_sm"
 )
 (vvPair
 variable "date"
-value "05/ 2/2012"
+value "01/11/2013"
 )
 (vvPair
 variable "day"
-value "Wed"
+value "Fri"
 )
 (vvPair
 variable "day_long"
-value "Wednesday"
+value "Friday"
 )
 (vvPair
 variable "dd"
-value "02"
+value "11"
 )
 (vvPair
 variable "entity_name"
@@ -648,7 +648,7 @@ value "$HDS_PROJECT_DIR/idx_fpga_lib/work"
 )
 (vvPair
 variable "mm"
-value "05"
+value "01"
 )
 (vvPair
 variable "module_name"
@@ -656,11 +656,11 @@ value "ao_sm"
 )
 (vvPair
 variable "month"
-value "May"
+value "Jan"
 )
 (vvPair
 variable "month_long"
-value "May"
+value "January"
 )
 (vvPair
 variable "p"
@@ -692,7 +692,7 @@ value "<TBD>"
 )
 (vvPair
 variable "task_ModelSimPath"
-value "C:/modeltech_10.0c/win32"
+value "C:/modeltech_10.1c/win32"
 )
 (vvPair
 variable "task_NC-SimPath"
@@ -724,7 +724,7 @@ value "symbol"
 )
 (vvPair
 variable "time"
-value "11:42:52"
+value "09:47:25"
 )
 (vvPair
 variable "unit"
@@ -736,7 +736,7 @@ value "nort"
 )
 (vvPair
 variable "version"
-value "2010.3 (Build 21)"
+value "2012.1 (Build 6)"
 )
 (vvPair
 variable "view"
@@ -744,11 +744,11 @@ value "symbol"
 )
 (vvPair
 variable "year"
-value "2012"
+value "2013"
 )
 (vvPair
 variable "yy"
-value "12"
+value "13"
 )
 ]
 )
@@ -1123,50 +1123,6 @@ suid 20,0
 )
 )
 *84 (CptPort
-uid 503,0
-ps "OnEdgeStrategy"
-shape (Triangle
-uid 504,0
-ro 90
-va (VaSet
-vasetType 1
-fg "0,65535,0"
-)
-xt "14250,14625,15000,15375"
-)
-tg (CPTG
-uid 505,0
-ps "CptPortTextPlaceStrategy"
-stg "VerticalLayoutStrategy"
-f (Text
-uid 506,0
-va (VaSet
-font "arial,8,0"
-)
-xt "16000,14500,18400,15500"
-st "F66M"
-blo "16000,15300"
-tm "CptPortNameMgr"
-)
-)
-dt (MLText
-uid 507,0
-va (VaSet
-font "Courier New,8,0"
-)
-xt "44000,2800,61000,3600"
-st "F66M      : IN     std_logic  ;"
-)
-thePort (LogicalPort
-decl (Decl
-n "F66M"
-t "std_logic"
-o 2
-suid 21,0
-)
-)
-)
-*85 (CptPort
 uid 533,0
 ps "OnEdgeStrategy"
 shape (Triangle
@@ -1211,7 +1167,7 @@ suid 22,0
 )
 )
 )
-*86 (CptPort
+*85 (CptPort
 uid 634,0
 ps "OnEdgeStrategy"
 shape (Triangle
@@ -1257,6 +1213,50 @@ suid 23,0
 )
 )
 )
+*86 (CptPort
+uid 710,0
+ps "OnEdgeStrategy"
+shape (Triangle
+uid 711,0
+ro 90
+va (VaSet
+vasetType 1
+fg "0,65535,0"
+)
+xt "14250,16625,15000,17375"
+)
+tg (CPTG
+uid 712,0
+ps "CptPortTextPlaceStrategy"
+stg "VerticalLayoutStrategy"
+f (Text
+uid 713,0
+va (VaSet
+font "arial,8,0"
+)
+xt "16000,16500,18000,17500"
+st "F8M"
+blo "16000,17300"
+tm "CptPortNameMgr"
+)
+)
+dt (MLText
+uid 714,0
+va (VaSet
+font "Courier New,8,0"
+)
+xt "44000,2800,61000,3600"
+st "F8M       : IN     std_logic  ;"
+)
+thePort (LogicalPort
+decl (Decl
+n "F8M"
+t "std_logic"
+o 2
+suid 24,0
+)
+)
+)
 ]
 shape (Rectangle
 uid 9,0
@@ -1266,7 +1266,7 @@ fg "0,65535,0"
 lineColor "0,32896,0"
 lineWidth 2
 )
-xt "15000,6000,24000,17000"
+xt "15000,6000,24000,18000"
 )
 oxt "15000,6000,23000,16000"
 biTextGroup (BiTextGroup
@@ -1349,7 +1349,7 @@ va (VaSet
 fg "0,0,32768"
 bg "0,0,32768"
 )
-xt "31200,50000,40000,51000"
+xt "31200,50000,39800,51000"
 st "
 by %user on %dd %month %year
 "
@@ -1963,6 +1963,6 @@ xt "42000,0,42000,0"
 tm "SyDeclarativeTextMgr"
 )
 )
-lastUid 684,0
+lastUid 760,0
 activeModelName "Symbol:CDM"
 )

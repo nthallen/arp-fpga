@@ -41,7 +41,6 @@ ARCHITECTURE rtl OF bench_ao IS
    SIGNAL ExpAck    : std_ulogic;
    SIGNAL ExpRd     : std_ulogic;
    SIGNAL ExpWr     : std_ulogic;
-   SIGNAL F66M      : std_logic;
    SIGNAL F8M       : std_ulogic;
    SIGNAL rst       : std_ulogic;
    SIGNAL Done      : std_ulogic;
@@ -65,7 +64,6 @@ ARCHITECTURE rtl OF bench_ao IS
          ExpAck    : OUT    std_ulogic;
          ExpRd     : IN     std_ulogic;
          ExpWr     : IN     std_ulogic;
-         F66M      : IN     std_logic;
          F8M       : IN     std_ulogic;
          rst       : IN     std_ulogic
       );
@@ -94,26 +92,9 @@ BEGIN
        ExpAck    => ExpAck,
        ExpRd     => ExpRd,
        ExpWr     => ExpWr,
-       F66M      => F8M,
        F8M       => F8M,
        rst       => rst
     );
-
-    -- Approximately 66.6 MHz
-    clock : Process
-    Begin
-      F66M <= '0';
-      -- pragma synthesis_off
-      wait for 40 ns;
-      while Done = '0' loop
-        F66M <= '0';
-        wait for 7 ns;
-        F66M <= '1';
-        wait for 8 ns;
-      end loop;
-      wait;
-      -- pragma synthesis_on
-    End Process;
 
     -- 8 MHz
     clock8 : Process
@@ -191,7 +172,7 @@ Begin
       for j in 0 to 7 loop
         offset := (i*8+j)*2;
         sbwr( X"0400" + conv_std_logic_vector(offset,16), conv_std_logic_vector(256*offset+offset,16));
-        wait for 6 us;
+        wait for 50 us;
       end loop;
     end loop;
     for i in 0 to N_AO_CHIPS-1 loop
