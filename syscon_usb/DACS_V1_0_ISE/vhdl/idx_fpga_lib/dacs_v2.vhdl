@@ -26,7 +26,7 @@ USE idx_fpga_lib.ptrhm.all;
 
 entity dacs_v2 is
     GENERIC (
-      DACS_BUILD_NUMBER : std_logic_vector(15 DOWNTO 0) := X"0024"; -- 36
+      DACS_BUILD_NUMBER : std_logic_vector(15 DOWNTO 0) := X"0027"; -- 39
       INSTRUMENT_ID : std_logic_vector(15 DOWNTO 0) := X"0001";
       N_INTERRUPTS : integer range 15 downto 1 := 1;
       
@@ -268,7 +268,6 @@ architecture Behavioral of dacs_v2 is
         Addr      : IN     std_logic_vector(15 DOWNTO 0);
         ExpRd     : IN     std_ulogic;
         ExpWr     : IN     std_ulogic;
-        F66M      : IN     std_logic;
         F8M       : IN     std_ulogic;
         rst       : IN     std_ulogic;
         DA_CLR_B  : OUT    std_logic;
@@ -543,7 +542,6 @@ begin
         Addr      => ExpAddr,
         ExpRd     => ExpRd,
         ExpWr     => ExpWr,
-        F66M      => clk_8_0000MHz,
         F8M       => clk_8_0000MHz,
         rst       => rst,
         DA_CLR_B  => DA_CLR_B,
