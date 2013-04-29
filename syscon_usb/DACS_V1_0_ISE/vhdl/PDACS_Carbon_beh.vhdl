@@ -6,7 +6,7 @@
 --          at - 13:25:16 11/18/2010
 --
 -- PDACS_Carbon DACS implementation for Carbon Isotopes Instrument
---  1/11/13 Build 39: Lower AO clock rate
+--  1/11/13 Build 39: Lower AO clock rate to 500 KHz
 -- 12/ 6/12 Build 38: qclictrl extra delay (rolled back for 39)
 -- 11/20/12 Build 37: LK204 Updates
 --  9/17/12 Build 36: Test build to run on backup HWV PDACS with LK204
@@ -14,7 +14,7 @@
 --  5/ 2/12 Build 35: Reduce AO clock to 8 MHz
 -- 12/ 1/11 First pass is based on DACSbd (HWV) but using ptrhm_acquire.
 --
--- INSTRUMENT_ID Values are defined in DACSutil/DACS_ID.tmc
+-- INSTRUMENT_ID Values are defined in DACSutil/DACS_ID.tmc 
 -- (distributed as /usr/local/share/huarp/DACS_ID.tmc)
 LIBRARY ieee;
 USE ieee.std_logic_1164.all;
