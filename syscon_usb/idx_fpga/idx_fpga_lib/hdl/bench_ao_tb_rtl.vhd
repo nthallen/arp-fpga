@@ -14,7 +14,7 @@ USE ieee.std_logic_arith.all;
 
 ENTITY bench_ao IS
    GENERIC( 
-      N_AO_CHIPS : natural range 15 downto 2 := 4
+      N_AO_CHIPS : natural range 15 downto 2 := 2
    );
 END bench_ao;
 

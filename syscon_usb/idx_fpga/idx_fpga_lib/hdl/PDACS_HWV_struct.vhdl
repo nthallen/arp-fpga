@@ -2,6 +2,8 @@
 -- VHDL Architecture idx_fpga_lib.PDACS_HWV.struct
 --
 -- Created:
+--  6/28/13 Build 40: Revert 39.
+--  1/11/13 Build 39: Lower AO clock rate to 500 KHz
 --          by - nort.UNKNOWN (NORT-NBX200T)
 --          at - 13:39:19 02/21/2012
 --
@@ -15,11 +17,13 @@ USE idx_fpga_lib.ptrhm.all;
 
 ENTITY PDACS_HWV IS
   GENERIC (
-    DACS_BUILD_NUMBER : std_logic_vector(15 DOWNTO 0) := X"0022"; -- #34
+    DACS_BUILD_NUMBER : std_logic_vector(15 DOWNTO 0) := X"0028"; -- #40
     INSTRUMENT_ID : std_logic_vector(15 DOWNTO 0) := X"0001"; -- HWV
+    N_INTERRUPTS : integer range 15 downto 1 := 1;
     CTR_UG_N_BDS : integer range 5 downto 0 := 3;
     N_QCLICTRL : integer range 5 downto 0 := 1;
     N_VM : integer range 5 downto 0 := 1;
+    N_LK204 : integer range 1 downto 0 := 0;
 
     N_PTRH : integer range 16 downto 1 := 2;
     N_ISBITS    : integer range 8 downto 1 := 2;
@@ -162,9 +166,9 @@ ARCHITECTURE struct OF PDACS_HWV IS
    SIGNAL DA_CLR_B_int                   : std_ulogic;
    SIGNAL QSync                          : std_ulogic_vector(N_QCLICTRL-1 DOWNTO 0);
     
-  COMPONENT dacs_v2
+  COMPONENT dacs_v2 is
     GENERIC (
-      DACS_BUILD_NUMBER : std_logic_vector(15 DOWNTO 0) := X"0010";
+      DACS_BUILD_NUMBER : std_logic_vector(15 DOWNTO 0) := X"0028";
       INSTRUMENT_ID : std_logic_vector(15 DOWNTO 0) := X"0001";
       N_INTERRUPTS : integer range 15 downto 1 := 1;
       
@@ -184,7 +188,8 @@ ARCHITECTURE struct OF PDACS_HWV IS
       DIGIO_FORCE_DIR : std_ulogic_vector := "000000000000";
       DIGIO_FORCE_DIR_VAL : std_ulogic_vector := "000000000000";
       N_QCLICTRL : integer range 5 downto 0 := 1;
-      N_VM : integer range 5 downto 0 := 1
+      N_VM : integer range 5 downto 0 := 1;
+      N_LK204 : integer range 1 downto 0 := 0
     );
     Port (
       fpga_0_rst_1_sys_rst_pin : IN std_logic;
@@ -203,6 +208,8 @@ ARCHITECTURE struct OF PDACS_HWV IS
       PTRH_SCK_pin : INOUT std_logic_vector(N_ISBITS-1 DOWNTO 0);
       VM_SDA_pin : INOUT std_logic_vector(N_VM-1 DOWNTO 0);
       VM_SCL_pin : INOUT std_logic_vector(N_VM-1 DOWNTO 0);
+      LK204_SDA_pin : INOUT std_logic_vector(N_LK204-1 DOWNTO 0);
+      LK204_SCL_pin : INOUT std_logic_vector(N_LK204-1 DOWNTO 0);
       
       subbus_cmdenbl : OUT std_ulogic;
       subbus_cmdstrb : OUT std_ulogic;
@@ -266,6 +273,7 @@ BEGIN
     GENERIC MAP (
       DACS_BUILD_NUMBER => DACS_BUILD_NUMBER,
       INSTRUMENT_ID => INSTRUMENT_ID,
+      N_INTERRUPTS => N_INTERRUPTS,
       CTR_UG_N_BDS => CTR_UG_N_BDS,
 
       N_PTRH => N_PTRH,
@@ -281,7 +289,8 @@ BEGIN
       DIGIO_FORCE_DIR => DIGIO_FORCE_DIR,
       DIGIO_FORCE_DIR_VAL => DIGIO_FORCE_DIR_VAL,
       N_QCLICTRL => N_QCLICTRL,
-      N_VM => N_VM
+      N_VM => N_VM,
+      N_LK204 => N_LK204
     )
     PORT MAP (
        fpga_0_rst_1_sys_rst_pin       => FPGA_CPU_RESET,
