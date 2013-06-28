@@ -36,6 +36,8 @@ ENTITY ana_acquire IS
 -- Declarations
   attribute fsm_encoding: string;
   attribute fsm_encoding of ana_acquire : entity is "one-hot";
+  attribute safe_implementation: string;
+  attribute safe_implementation of ana_acquire : entity is "yes";
 END ana_acquire ;
 
 --
@@ -186,6 +188,9 @@ ARCHITECTURE fsm OF ana_acquire IS
    SIGNAL WR_Addr_cld : std_logic_vector (7 DOWNTO 0);
    SIGNAL WrEn_cld : std_ulogic ;
 
+   attribute safe_recovery_state: string;
+   attribute safe_recovery_state of current_state : signal is "acq_rst";
+   attribute safe_recovery_state of next_state : signal is "acq_rst";
 BEGIN
 
    -----------------------------------------------------------------

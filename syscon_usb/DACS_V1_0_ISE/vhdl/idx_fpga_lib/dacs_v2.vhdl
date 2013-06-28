@@ -26,7 +26,7 @@ USE idx_fpga_lib.ptrhm.all;
 
 entity dacs_v2 is
     GENERIC (
-      DACS_BUILD_NUMBER : std_logic_vector(15 DOWNTO 0) := X"0027"; -- 39
+      DACS_BUILD_NUMBER : std_logic_vector(15 DOWNTO 0) := X"0028"; -- 40
       INSTRUMENT_ID : std_logic_vector(15 DOWNTO 0) := X"0001";
       N_INTERRUPTS : integer range 15 downto 1 := 1;
       

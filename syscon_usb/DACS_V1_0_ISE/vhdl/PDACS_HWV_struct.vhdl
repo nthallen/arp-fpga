@@ -2,6 +2,7 @@
 -- VHDL Architecture idx_fpga_lib.PDACS_HWV.struct
 --
 -- Created:
+--  6/28/13 Build 40: Revert 39.
 --  1/11/13 Build 39: Lower AO clock rate to 500 KHz
 --          by - nort.UNKNOWN (NORT-NBX200T)
 --          at - 13:39:19 02/21/2012
@@ -16,7 +17,7 @@ USE idx_fpga_lib.ptrhm.all;
 
 ENTITY PDACS_HWV IS
   GENERIC (
-    DACS_BUILD_NUMBER : std_logic_vector(15 DOWNTO 0) := X"0027"; -- #39
+    DACS_BUILD_NUMBER : std_logic_vector(15 DOWNTO 0) := X"0028"; -- #40
     INSTRUMENT_ID : std_logic_vector(15 DOWNTO 0) := X"0001"; -- HWV
     N_INTERRUPTS : integer range 15 downto 1 := 1;
     CTR_UG_N_BDS : integer range 5 downto 0 := 3;
@@ -164,10 +165,10 @@ ARCHITECTURE struct OF PDACS_HWV IS
    SIGNAL DA_LDAC_B_int                  : std_ulogic;
    SIGNAL DA_CLR_B_int                   : std_ulogic;
    SIGNAL QSync                          : std_ulogic_vector(N_QCLICTRL-1 DOWNTO 0);
-
+    
   COMPONENT dacs_v2 is
     GENERIC (
-      DACS_BUILD_NUMBER : std_logic_vector(15 DOWNTO 0) := X"0027"; -- 39
+      DACS_BUILD_NUMBER : std_logic_vector(15 DOWNTO 0) := X"0028";
       INSTRUMENT_ID : std_logic_vector(15 DOWNTO 0) := X"0001";
       N_INTERRUPTS : integer range 15 downto 1 := 1;
       
