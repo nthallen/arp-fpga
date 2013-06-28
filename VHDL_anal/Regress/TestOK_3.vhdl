@@ -1,4 +1,3 @@
--- This file should complain about undefined ident at the end of the entity
 -- synthesis translate_off
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;

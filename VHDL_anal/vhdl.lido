@@ -44,11 +44,15 @@ RULE: component_inst ::= DefIdent ':' UseIdent component_inst_body ';'
 COMPUTE
   component_inst_body.Key = UseIdent.Key;
 END;
+SYMBOL component_decl_body INHERITS ExportRange END;
 
 RULE: DefIdent ::= ident COMPUTE DefIdent.Sym = ident; END;
 SYMBOL DefIdent INHERITS IdDefScope END;
 RULE: UseIdent ::= ident COMPUTE UseIdent.Sym = ident; END;
-SYMBOL UseIdent INHERITS IdUseScope COMPUTE
+SYMBOL UseIdent INHERITS IdUseScope, ChkIdUse END;
+RULE: QualUseIdent ::= ident COMPUTE QualUseIdent.Sym = ident; END;
+SYMBOL QualUseIdent INHERITS QualIdUse, ChkQualIdUse COMPUTE
+  INH.ScopeKey = INCLUDING component_inst_body.Key;
 END;
 
 RULE: opt_is ::= 'is' END;
