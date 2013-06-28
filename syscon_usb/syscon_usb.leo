@@ -31,9 +31,9 @@
 <v t="ntallen.20100827154528.1331"><vh>subbusd (here for visibility)</vh></v>
 <v t="ntallen.20100907120439.1333"><vh>syscon_usb</vh></v>
 </v>
-<v t="ntallen.20100520123955.1247"><vh>Development Issues</vh>
+<v t="ntallen.20100520123955.1247" a="E"><vh>Development Issues</vh>
 <v t="ntallen.20100519134237.1503"><vh>12.1 Upgrade</vh></v>
-<v t="ntallen.20100524120730.1249"><vh>ISE/XPS/SDK</vh>
+<v t="ntallen.20100524120730.1249" a="E"><vh>ISE/XPS/SDK</vh>
 <v t="ntallen.20100524120730.1250"><vh>Bit Stream</vh></v>
 <v t="ntallen.20100524120730.1251"><vh>PROM</vh></v>
 </v>
@@ -151,7 +151,7 @@
 <v t="ntallen.20120816125014.1564" a="E"><vh>LK204 VHDL Driver</vh>
 <v t="ntallen.20120910090627.1591"><vh>Hardware Features</vh></v>
 <v t="ntallen.20120910090627.1592"><vh>Subbus Interface</vh></v>
-<v t="ntallen.20120817130002.1569" a="E"><vh>Architecture</vh>
+<v t="ntallen.20120817130002.1569"><vh>Architecture</vh>
 <v t="ntallen.20120817161609.1571"><vh>FIFO</vh></v>
 <v t="ntallen.20120904164051.1587"><vh>LK204_I2C</vh></v>
 <v t="ntallen.20120904164051.1588"><vh>LK204_SM</vh></v>
@@ -219,7 +219,7 @@
 </v>
 </v>
 </v>
-<v t="ntallen.20100823102718.1327"><vh>Documentation</vh>
+<v t="ntallen.20100823102718.1327" a="E"><vh>Documentation</vh>
 <v t="ntallen.20100525090916.1259"></v>
 <v t="ntallen.20110118143100.1406"></v>
 <v t="ntallen.20100824101804.1329"><vh>Document API</vh></v>
@@ -296,7 +296,9 @@ Note that the FTDI USB interface we are using also has its own connection to the
 To program the PROM, we need to reformat the bit file. The app note lists the command:
     promgen -spi -p mcs -o spi_prom.mcs -s 8192 -u 0 dacs_download.bit
 
-In iMPACT, need to added SPI PROM to the design. The part on the FTDI board is M25P20.</t>
+In iMPACT, need to added SPI PROM to the design. The DACS board prom is M25P64 (width 1).
+The part on the FTDI board is M25P20.
+</t>
 <t tx="ntallen.20100524120730.1253">The DLP board uses the FTDI FT2232D (0x0403,0x6010), but it is reportedly supported
 by the devc-serusb driver, which is listed as supporting FT8U232AM (0x0403,0x6001)
 
