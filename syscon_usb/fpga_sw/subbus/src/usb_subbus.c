@@ -26,7 +26,7 @@ extern void print(char*);
 /* BOARD_REV includes the SUBBUS_SUBFUNCTION code (5 for DACS) and the
  * SUBBUS_FEATURES bitmap (in hex). Values are defined in subbus.h
  */
-#define BOARD_REV                   "V5:178:Syscon Rev.C.0.04"
+#define BOARD_REV                   "V5:178:Syscon Rev.C.0.05"
 #define	CPU_FREQ					XPAR_CPU_CORE_CLOCK_FREQ_HZ
 #define FTDI_ADDRESS 				XPAR_XPS_EPC_0_PRH0_BASEADDR
 #define DATA_RDY_DEVICE_ID    		XPAR_XPS_GPIO_DATA_RDY_DEVICE_ID    	
