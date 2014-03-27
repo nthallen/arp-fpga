@@ -183,7 +183,7 @@ static void intr_service(void) {
  * @return non-zero on error (no number)
  */
 static int read_hex( char **sp, unsigned short *rvp) {
-  char *s = *sp;
+  unsigned char *s = (unsigned char *)*sp;
   unsigned short rv = 0;
   if (! isxdigit(*s)) return 1;
   while ( isxdigit(*s)) {
@@ -193,7 +193,7 @@ static int read_hex( char **sp, unsigned short *rvp) {
     ++s;
   }
   *rvp = rv;
-  *sp = s;
+  *sp = (char *)s;
   return 0;
 }
 
