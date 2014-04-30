@@ -13,6 +13,7 @@
 -- Dependencies: 
 --
 -- Revision:
+-- Build 41: Add ES96 ADC interface
 -- Build 35: Reduce AO to 8 MHz
 -- Revision 0.01 - File Created
 -- Additional Comments: 
@@ -26,7 +27,7 @@ USE idx_fpga_lib.ptrhm.all;
 
 entity dacs_v2 is
     GENERIC (
-      DACS_BUILD_NUMBER : std_logic_vector(15 DOWNTO 0) := X"0028"; -- 40
+      DACS_BUILD_NUMBER : std_logic_vector(15 DOWNTO 0) := X"0029"; -- 41
       INSTRUMENT_ID : std_logic_vector(15 DOWNTO 0) := X"0001";
       N_INTERRUPTS : integer range 15 downto 1 := 1;
       
@@ -47,7 +48,8 @@ entity dacs_v2 is
       DIGIO_FORCE_DIR_VAL : std_ulogic_vector := "000000000000";
       N_QCLICTRL : integer range 5 downto 0 := 1;
       N_VM : integer range 5 downto 0 := 1;
-      N_LK204 : integer range 1 downto 0 := 0
+      N_LK204 : integer range 1 downto 0 := 0;
+      N_ADC : integer range 1 downto 0 := 0
     );
     Port (
       fpga_0_rst_1_sys_rst_pin : IN std_logic;
@@ -108,7 +110,11 @@ entity dacs_v2 is
       QSync       : OUT    std_ulogic_vector(N_QCLICTRL-1 DOWNTO 0);
       QSClk       : INOUT  std_logic_vector(N_QCLICTRL-1 DOWNTO 0);
       QSData      : INOUT  std_logic_vector(N_QCLICTRL-1 DOWNTO 0);
-      QNBsy       : IN     std_logic_vector(N_QCLICTRL-1 DOWNTO 0)
+      QNBsy       : IN     std_logic_vector(N_QCLICTRL-1 DOWNTO 0);
+      
+      ADC_MISO    : IN     std_logic_vector(N_ADC-1 DOWNTO 0);
+      ADC_CS_B    : OUT    std_logic_vector(N_ADC-1 DOWNTO 0);
+      ADC_SCLK    : OUT    std_logic_vector(N_ADC-1 DOWNTO 0)
     );
 end dacs_v2;
 
@@ -359,12 +365,31 @@ architecture Behavioral of dacs_v2 is
      );
   END COMPONENT;
   
+  COMPONENT adc_v1
+     GENERIC( 
+        BASE_ADDR : std_logic_vector := X"0E80"
+     );
+     PORT (
+        Addr   : IN     std_logic_vector(15 DOWNTO 0);
+        ExpRd  : IN     std_ulogic;
+        ExpWr  : IN     std_ulogic;
+        F8M    : IN     std_ulogic;
+        MISO   : IN     std_logic;
+        rst    : IN     std_logic;
+        CS_B   : OUT    std_logic;
+        ExpAck : OUT    std_ulogic;
+        RData  : OUT    std_logic_vector(15 DOWNTO 0);
+        SCLK   : OUT    std_logic
+     );
+  END COMPONENT adc_v1;
+  
   FOR ALL : ctr_ungated USE ENTITY idx_fpga_lib.ctr_ungated;
   FOR ALL : ao USE ENTITY idx_fpga_lib.ao;
   FOR ALL : vm USE ENTITY idx_fpga_lib.vm;
   FOR ALL : ptrhm_acquire USE ENTITY idx_fpga_lib.ptrhm_acquire;
   FOR ALL : qclictrl USE ENTITY idx_fpga_lib.qclictrl;
   FOR ALL : lk204 USE ENTITY idx_fpga_lib.lk204;
+  FOR ALL : adc_v1 USE ENTITY idx_fpga_lib.adc_v1;
 
 	attribute box_type : string;
 	attribute box_type of Processor : component is "user_black_box";
@@ -378,7 +403,8 @@ architecture Behavioral of dacs_v2 is
 	CONSTANT CTR_UG_BDNO : integer := VM_BDNO+N_VM;
 	CONSTANT QCLI_BDNO : integer := CTR_UG_BDNO+CTR_UG_N_BDS;
 	CONSTANT LK204_BDNO : integer := QCLI_BDNO+N_QCLICTRL;
-	CONSTANT N_BOARDS : integer := LK204_BDNO+N_LK204;
+	CONSTANT ADC_BDNO : integer := LK204_BDNO+N_LK204;
+	CONSTANT N_BOARDS : integer := ADC_BDNO+N_ADC;
 	SIGNAL clk_8_0000MHz : std_logic;
 	SIGNAL clk_66_6667MHz : std_logic;
   SIGNAL xps_epc_0_PRH_Wr_n_pin : std_logic;
@@ -435,7 +461,6 @@ begin
      xps_gpio_subbus_switches_pin => DACS_switches,
      xps_gpio_subbus_leds_readback_pin => Fail_inputs
 	 );
-
 	
 	Inst_syscon: syscon
   	 GENERIC MAP (
@@ -656,6 +681,24 @@ begin
       );
   end generate;
 
+   adc_gen: if N_ADC = 1 generate
+     adc_if: adc_v1
+    GENERIC MAP (
+      BASE_ADDR => X"0E80"
+    )
+    PORT MAP (
+       Addr   => ExpAddr,
+       ExpRd  => ExpRd,
+       ExpWr  => ExpWr,
+       F8M    => clk_8_0000MHz,
+       MISO   => ADC_MISO(0),
+       rst    => rst,
+       CS_B   => ADC_CS_B(0),
+       ExpAck => ExpAck(ADC_BDNO),
+       RData  => iRData(16*ADC_BDNO+15 DOWNTO 16*ADC_BDNO),
+       SCLK   => ADC_SCLK(0)
+    );
+  end generate;
 
   subbus_cmdenbl <= CmdEnbl;
   subbus_cmdstrb <= CmdStrb;
