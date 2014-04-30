@@ -1,13 +1,13 @@
 --
 -- VHDL Architecture idx_fpga_lib.DACSbd.beh
 --
--- History:
---    3/26/14: Build 40, add QCLI
 -- Created:
---          by - nort (NORT-NBX200T)
---          at - 13:25:16 11/18/2010, Build 13
+--          by - nort
+--          at - 13:25:16 4/7/2014
 --
--- using Mentor Graphics HDL Designer(TM) 2009.2 (Build 10)
+-- using Mentor Graphics HDL Designer(TM) 2013.1
+--
+--   4/7/14 Copied from PDACS_HTW
 --
 LIBRARY ieee;
 USE ieee.std_logic_1164.all;
@@ -15,9 +15,9 @@ USE ieee.std_logic_arith.all;
 LIBRARY idx_fpga_lib;
 USE idx_fpga_lib.ptrhm.all;
 
-ENTITY PDACS_HTW IS
+ENTITY PDACS_ES96 IS
   GENERIC (
-    DACS_BUILD_NUMBER : std_logic_vector(15 DOWNTO 0) := X"0028"; -- Build 40
+    DACS_BUILD_NUMBER : std_logic_vector(15 DOWNTO 0) := X"0029"; -- Build 41
     INSTRUMENT_ID : std_logic_vector(15 DOWNTO 0) := X"0002"; -- HTW
     N_INTERRUPTS : integer range 15 downto 1 := 1;
     N_QCLICTRL : integer range 5 downto 0 := 1;
@@ -38,7 +38,8 @@ ENTITY PDACS_HTW IS
     -- FORCE_DIR vectors are indexed 0 to 23
     DIGIO_FORCE_DIR : std_ulogic_vector := "111111111111111111100010";
     DIGIO_FORCE_DIR_VAL : std_ulogic_vector := "000000001111001111100000";
-    CMD_PROC_N_CMDS : integer := 38
+    CMD_PROC_N_CMDS : integer := 38;
+    N_ADC : integer range 1 downto 0 := 1
   );
   PORT (
     AI_AD_CNV : OUT std_ulogic_vector ( 1 DOWNTO 0 );
@@ -109,7 +110,8 @@ ENTITY PDACS_HTW IS
     FTDI_SPR_BC7 : IN std_ulogic;
     FTDI_SUSPEND_B : IN std_ulogic;
     FTDI_UPLOAD : IN std_ulogic;
-    GPIO_HDR : IN std_ulogic_vector ( 15 DOWNTO 0 );
+    GPIO_HDR_LO : IN std_logic_vector ( 7 DOWNTO 0 );
+    GPIO_HDR_HI : OUT std_logic_vector ( 15 DOWNTO 8 );
     MPS_PFO_B : IN std_ulogic;
     MPS_RESET_B : IN std_ulogic;
     MPS_WDI : IN std_ulogic;
@@ -135,10 +137,10 @@ ENTITY PDACS_HTW IS
     USB_1_CTS : IN std_ulogic;
     USB_1_RTS : IN std_ulogic
   );
-END ENTITY PDACS_HTW;
+END ENTITY PDACS_ES96;
 
 --
-ARCHITECTURE beh OF PDACS_HTW IS
+ARCHITECTURE beh OF PDACS_ES96 IS
    SIGNAL subbus_cmdenbl                 : std_ulogic;
    SIGNAL subbus_cmdstrb                 : std_ulogic;
    SIGNAL subbus_fail_leds               : std_logic_vector(4 downto 0);
@@ -191,7 +193,8 @@ ARCHITECTURE beh OF PDACS_HTW IS
       DIGIO_FORCE_DIR_VAL : std_ulogic_vector := "000000000000";
       N_QCLICTRL : integer range 5 downto 0 := 1;
       N_VM : integer range 5 downto 0 := 1;
-      N_LK204 : integer range 1 downto 0 := 0
+      N_LK204 : integer range 1 downto 0 := 0;
+      N_ADC : integer range 1 downto 0 := 0
     );
     Port (
       fpga_0_rst_1_sys_rst_pin : IN std_logic;
@@ -252,7 +255,11 @@ ARCHITECTURE beh OF PDACS_HTW IS
       QSync       : OUT    std_ulogic_vector(N_QCLICTRL-1 DOWNTO 0);
       QSClk       : INOUT  std_logic_vector(N_QCLICTRL-1 DOWNTO 0);
       QSData      : INOUT  std_logic_vector(N_QCLICTRL-1 DOWNTO 0);
-      QNBsy       : IN     std_logic_vector(N_QCLICTRL-1 DOWNTO 0)
+      QNBsy       : IN     std_logic_vector(N_QCLICTRL-1 DOWNTO 0);
+      
+      ADC_MISO    : IN     std_logic_vector(N_ADC-1 DOWNTO 0);
+      ADC_CS_B    : OUT    std_logic_vector(N_ADC-1 DOWNTO 0);
+      ADC_SCLK    : OUT    std_logic_vector(N_ADC-1 DOWNTO 0)
     );
   END COMPONENT;
 
@@ -292,7 +299,8 @@ BEGIN
       DIGIO_FORCE_DIR_VAL => DIGIO_FORCE_DIR_VAL,
       N_QCLICTRL => N_QCLICTRL,
       N_VM => N_VM,
-      N_LK204 => N_LK204
+      N_LK204 => N_LK204,
+      N_ADC => N_ADC
     )
     PORT MAP (
        fpga_0_rst_1_sys_rst_pin       => FPGA_CPU_RESET,
@@ -366,7 +374,11 @@ BEGIN
        QSData                         => BIO(13 DOWNTO 13),
        QSClk                          => BIO(12 DOWNTO 12),
        QSync                          => QSync,
-       QNBsy                          => BIO(14 DOWNTO 14)
+       QNBsy                          => BIO(14 DOWNTO 14),
+       
+       ADC_MISO(0)                    => GPIO_HDR_LO(0),
+       ADC_CS_B(0)                    => GPIO_HDR_HI(8),
+       ADC_SCLK(0)                    => GPIO_HDR_HI(9)
     );
 
     cmd_proc_i : cmd_proc
@@ -458,6 +470,8 @@ BEGIN
   DA_SDI <= DA_SDI_int;
   DA_LDAC_B <= DA_LDAC_B_int;
   DA_CLR_B <= DA_CLR_B_int;
+  GPIO_HDR_HI(15 downto 10) <= (others => '0');
 
 END ARCHITECTURE beh;
+
 
