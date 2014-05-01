@@ -1,9 +1,11 @@
 --
 -- VHDL Architecture idx_fpga_lib.DACSbd.beh
 --
+-- History:
+--    3/26/14: Build 40, add QCLI
 -- Created:
---          by - nort.UNKNOWN (NORT-NBX200T)
---          at - 13:25:16 11/18/2010
+--          by - nort (NORT-NBX200T)
+--          at - 13:25:16 11/18/2010, Build 13
 --
 -- using Mentor Graphics HDL Designer(TM) 2009.2 (Build 10)
 --
@@ -11,13 +13,25 @@ LIBRARY ieee;
 USE ieee.std_logic_1164.all;
 USE ieee.std_logic_arith.all;
 LIBRARY idx_fpga_lib;
--- USE idx_fpga_lib.All;
+USE idx_fpga_lib.ptrhm.all;
 
 ENTITY PDACS_HTW IS
   GENERIC (
-    DACS_BUILD_NUMBER : std_logic_vector(15 DOWNTO 0) := X"000E";
-    INSTRUMENT_ID : std_logic_vector(15 DOWNTO 0) := X"0002";
-    PTRH_N_BDS : integer range 5 downto 1 := 3;
+    DACS_BUILD_NUMBER : std_logic_vector(15 DOWNTO 0) := X"0028"; -- Build 40
+    INSTRUMENT_ID : std_logic_vector(15 DOWNTO 0) := X"0002"; -- HTW
+    N_INTERRUPTS : integer range 15 downto 1 := 1;
+    N_QCLICTRL : integer range 5 downto 0 := 1;
+    N_VM : integer range 5 downto 0 := 1;
+    N_LK204 : integer range 1 downto 0 := 0;
+
+    N_PTRH : integer range 5 downto 1 := 3;
+    N_ISBITS    : integer range 8 downto 1 := 3;
+    ESID        : ESID_array := ( 0, 0, 0 );
+    ESwitchBit  : ESB_array  := ( 0, 0, 0 );
+    ISwitchBit  : ISB_array  := ( 0, 1, 2 );
+    ESwitchAddr : ESA_array  := ( "0000000", "0000000", "0000000" );
+
+    N_AO_CHIPS : natural range 15 downto 1 := 2;
     CTR_UG_N_BDS : integer range 5 downto 0 := 0;
     IDX_N_CHANNELS : integer range 15 downto 1 := 2;
     DIGIO_N_CONNECTORS : integer range 4 DOWNTO 1 := 4;
@@ -147,80 +161,102 @@ ARCHITECTURE beh OF PDACS_HTW IS
    SIGNAL RST                            : std_ulogic;
    SIGNAL Collision                      : std_ulogic;
    SIGNAL DACS_switches                  : std_logic_vector(7 DOWNTO 0);
+   SIGNAL DA_SCK_int                     : std_ulogic;
+   SIGNAL DA_SDI_int                     : std_ulogic;
+   SIGNAL DA_LDAC_B_int                  : std_ulogic;
+   SIGNAL DA_CLR_B_int                   : std_ulogic;
+   SIGNAL QSync                          : std_ulogic_vector(N_QCLICTRL-1 DOWNTO 0);
    SIGNAL ctr_PMT                        : std_logic_vector(4*CTR_UG_N_BDS-1 DOWNTO 0);
    
-   COMPONENT dacs
-     GENERIC (
-       DACS_BUILD_NUMBER : std_logic_vector(15 DOWNTO 0) := X"0007";
-       INSTRUMENT_ID : std_logic_vector(15 DOWNTO 0) := X"0001";
-       N_INTERRUPTS : integer range 15 downto 1 := 1;
-       PTRH_N_BDS : integer range 5 downto 1 := 2;
-       CTR_UG_N_BDS : integer range 5 downto 0 := 2;
-       IDX_N_CHANNELS : integer range 15 downto 1 := 3;
-       IDX_BASE_ADDR : std_logic_vector(15 downto 0) := X"0A00";
-       DIGIO_BASE_ADDRESS : std_logic_vector (15 DOWNTO 0) := X"0800";
-       DIGIO_N_CONNECTORS : integer range 4 DOWNTO 1 := 2;
-       DIGIO_FORCE_DIR : std_ulogic_vector := "000000000000";
-       DIGIO_FORCE_DIR_VAL : std_ulogic_vector := "000000000000"
-     );
-     PORT (
-       fpga_0_rst_1_sys_rst_pin       : IN     std_logic;
-       fpga_0_clk_1_sys_clk_pin       : IN     std_logic;
+  COMPONENT dacs_v2 is
+    GENERIC (
+      DACS_BUILD_NUMBER : std_logic_vector(15 DOWNTO 0) := X"0028";
+      INSTRUMENT_ID : std_logic_vector(15 DOWNTO 0) := X"0001";
+      N_INTERRUPTS : integer range 15 downto 1 := 1;
+      
+      N_PTRH      : integer range 16 downto 1 := 8;
+      N_ISBITS    : integer range 8 downto 1 := 4;
+      ESID        : ESID_array := ( 3, 2, 1, 0, 0, 0, 0, 0 );
+      ESwitchBit  : ESB_array  := ( 0, 0, 0, 4, 3, 2, 1, 0 );
+      ISwitchBit  : ISB_array  := ( 3, 2, 1, 0 );
+      ESwitchAddr : ESA_array  := ( "0000000", "0000000", "0000000", "1110000" );
+      
+      N_AO_CHIPS : natural range 15 downto 1 := 2;
+      CTR_UG_N_BDS : integer range 5 downto 0 := 2;
+      IDX_N_CHANNELS : integer range 15 downto 1 := 3;
+      IDX_BASE_ADDR : std_logic_vector(15 downto 0) := X"0A00";
+      DIGIO_BASE_ADDRESS : std_logic_vector (15 DOWNTO 0) := X"0800";
+      DIGIO_N_CONNECTORS : integer range 8 DOWNTO 1 := 2;
+      DIGIO_FORCE_DIR : std_ulogic_vector := "000000000000";
+      DIGIO_FORCE_DIR_VAL : std_ulogic_vector := "000000000000";
+      N_QCLICTRL : integer range 5 downto 0 := 1;
+      N_VM : integer range 5 downto 0 := 1;
+      N_LK204 : integer range 1 downto 0 := 0
+    );
+    Port (
+      fpga_0_rst_1_sys_rst_pin : IN std_logic;
+      fpga_0_clk_1_sys_clk_pin : IN std_logic;
+      
+      xps_epc_0_PRH_Data_pin : INOUT std_logic_vector(7 downto 0);
+      FTDI_RD_pin : OUT std_logic;
+      FTDI_WR_pin : OUT std_logic;
+      FTDI_RXF_pin : IN std_logic;
+      FTDI_TXE_pin : IN std_logic;
+      FTDI_SI_pin : OUT std_logic;
+      
+      fpga_0_RS232_RX_pin : IN std_logic;
+      fpga_0_RS232_TX_pin : OUT std_logic;
+      PTRH_SDA_pin : INOUT std_logic_vector(N_ISBITS-1 DOWNTO 0);
+      PTRH_SCK_pin : INOUT std_logic_vector(N_ISBITS-1 DOWNTO 0);
+      VM_SDA_pin : INOUT std_logic_vector(N_VM-1 DOWNTO 0);
+      VM_SCL_pin : INOUT std_logic_vector(N_VM-1 DOWNTO 0);
+      LK204_SDA_pin : INOUT std_logic_vector(N_LK204-1 DOWNTO 0);
+      LK204_SCL_pin : INOUT std_logic_vector(N_LK204-1 DOWNTO 0);
+      
+      subbus_cmdenbl : OUT std_ulogic;
+      subbus_cmdstrb : OUT std_ulogic;
+      subbus_fail_leds : OUT std_logic_vector(4 downto 0);
+      subbus_flt_cpu_reset : OUT std_ulogic;
+      subbus_reset : OUT std_ulogic;
+      DACS_switches : IN std_logic_vector(7 downto 0);
+      Collision : OUT std_ulogic;
 
-       xps_epc_0_PRH_Data_pin         : INOUT  std_logic_vector(7 downto 0);
-       FTDI_RD_pin                    : OUT    std_logic;
-       FTDI_RXF_pin                   : IN     std_logic;
-       FTDI_TXE_pin                   : IN     std_logic;
-       FTDI_WR_pin                    : OUT    std_logic;
-       FTDI_SI_pin                    : OUT    std_logic;
+      idx_Run : OUT std_ulogic_vector(IDX_N_CHANNELS-1 downto 0);
+      idx_Step : OUT std_ulogic_vector(IDX_N_CHANNELS-1 downto 0);
+      idx_Dir : OUT std_ulogic_vector (IDX_N_CHANNELS-1 DOWNTO 0);
+      idx_KillA : IN std_ulogic_vector (IDX_N_CHANNELS-1 DOWNTO 0);
+      idx_KillB : IN std_ulogic_vector (IDX_N_CHANNELS-1 DOWNTO 0);
+      idx_LimI : IN std_ulogic_vector (IDX_N_CHANNELS-1 DOWNTO 0);
+      idx_LimO : IN std_ulogic_vector (IDX_N_CHANNELS-1 DOWNTO 0);
+      idx_ZR : IN std_ulogic_vector (IDX_N_CHANNELS-1 DOWNTO 0);
+      
+      dig_IO : INOUT std_logic_vector( DIGIO_N_CONNECTORS*6*8-1 DOWNTO 0);
+      dig_Dir : OUT std_logic_vector( DIGIO_N_CONNECTORS*6-1 DOWNTO 0);
+      
+      ana_in_SDI : IN std_ulogic_vector(1 DOWNTO 0); -- From A/D Converter
+      ana_in_CS5 : OUT std_ulogic; -- To LMP7312
+      ana_in_Conv : OUT std_ulogic; -- To A/D Converter
+      ana_in_Row : OUT std_ulogic_vector(5 DOWNTO 0);
+      ana_in_SCK16 : OUT std_ulogic_vector(1 DOWNTO 0);
+      ana_in_SCK5 : OUT std_ulogic_vector(1 DOWNTO 0);
+      ana_in_SDO  : OUT std_ulogic_vector(1 DOWNTO 0);
+      
+      ctr_PMT     : IN std_logic_vector(4*CTR_UG_N_BDS-1 DOWNTO 0);
+      
+      DA_CLR_B    : OUT std_logic;
+      DA_CS_B     : OUT std_logic_vector(N_AO_CHIPS-1 DOWNTO 0);
+      DA_LDAC_B   : OUT std_logic;
+      DA_SCK      : OUT std_logic;
+      DA_SDI      : OUT std_logic;
 
-       fpga_0_RS232_RX_pin            : IN     std_logic;
-       fpga_0_RS232_TX_pin            : OUT    std_logic;
+      QSync       : OUT    std_ulogic_vector(N_QCLICTRL-1 DOWNTO 0);
+      QSClk       : INOUT  std_logic_vector(N_QCLICTRL-1 DOWNTO 0);
+      QSData      : INOUT  std_logic_vector(N_QCLICTRL-1 DOWNTO 0);
+      QNBsy       : IN     std_logic_vector(N_QCLICTRL-1 DOWNTO 0)
+    );
+  END COMPONENT;
 
-       PTRH_SDA_pin                   : INOUT std_logic_vector(PTRH_N_BDS-1 DOWNTO 0);
-       PTRH_SCK_pin                   : INOUT std_logic_vector(PTRH_N_BDS-1 DOWNTO 0);
-       VM_SDA_pin                     : INOUT std_logic;
-       VM_SCL_pin                     : INOUT std_logic;
-
-       subbus_cmdenbl                 : OUT    std_ulogic;
-       subbus_cmdstrb                 : OUT    std_ulogic;
-       subbus_fail_leds               : OUT    std_logic_vector(4 downto 0);
-       subbus_flt_cpu_reset           : OUT    std_ulogic;
-       subbus_reset                   : OUT    std_ulogic;
-       Collision                      : OUT    std_ulogic;
-
-       DACS_switches                  : IN     std_logic_vector(7 downto 0);
-
-       idx_Run                        : OUT    std_ulogic_vector(IDX_N_CHANNELS-1 downto 0);
-       idx_Step                       : OUT    std_ulogic_vector(IDX_N_CHANNELS-1 downto 0);
-       idx_Dir                        : OUT    std_ulogic_vector(IDX_N_CHANNELS-1 DOWNTO 0);
-       idx_KillA                      : IN     std_ulogic_vector(IDX_N_CHANNELS-1 DOWNTO 0);
-       idx_KillB                      : IN     std_ulogic_vector(IDX_N_CHANNELS-1 DOWNTO 0);
-       idx_LimI                       : IN     std_ulogic_vector(IDX_N_CHANNELS-1 DOWNTO 0);
-       idx_LimO                       : IN     std_ulogic_vector(IDX_N_CHANNELS-1 DOWNTO 0);
-       idx_ZR                         : IN     std_ulogic_vector(IDX_N_CHANNELS-1 DOWNTO 0);
-
-       dig_IO                         : INOUT  std_logic_vector( DIGIO_N_CONNECTORS*6*8-1 DOWNTO 0);
-       dig_Dir                        : OUT    std_logic_vector( DIGIO_N_CONNECTORS*6-1 DOWNTO 0);
-
-       ana_in_SDI                     : IN     std_ulogic_vector(1 DOWNTO 0);
-       ana_in_CS5                     : OUT    std_ulogic;
-       ana_in_Conv                    : OUT    std_ulogic;
-       ana_in_Row                     : OUT    std_ulogic_vector(5 DOWNTO 0);
-       ana_in_SCK16                   : OUT    std_ulogic_vector(1 DOWNTO 0);
-       ana_in_SCK5                    : OUT    std_ulogic_vector(1 DOWNTO 0);
-       ana_in_SDO                     : OUT    std_ulogic_vector(1 DOWNTO 0);
-
-       ctr_PMT                        : IN std_logic_vector(4*CTR_UG_N_BDS-1 DOWNTO 0);
-       
-       DA_CLR_B                       : OUT std_logic;
-       DA_CS_B                        : OUT std_logic_vector(1 DOWNTO 0);
-       DA_LDAC_B                      : OUT std_logic;
-       DA_SCK                         : OUT std_logic;
-       DA_SDI                         : OUT std_logic
-     );
-   END COMPONENT;
-   COMPONENT cmd_proc
+  COMPONENT cmd_proc
       GENERIC (
          CMD_PROC_N_CMDS : integer := 24
       );
@@ -232,19 +268,31 @@ ARCHITECTURE beh OF PDACS_HTW IS
          RST     : IN     std_ulogic
       );
    END COMPONENT;
-   FOR ALL : dacs USE ENTITY idx_fpga_lib.dacs;
+   FOR ALL : dacs_v2 USE ENTITY idx_fpga_lib.dacs_v2;
    FOR ALL : cmd_proc USE ENTITY idx_fpga_lib.cmd_proc;
 BEGIN
-  dacs_i : dacs
+  dacs_i : dacs_v2
     GENERIC MAP (
       DACS_BUILD_NUMBER => DACS_BUILD_NUMBER,
       INSTRUMENT_ID => INSTRUMENT_ID,
-      PTRH_N_BDS => PTRH_N_BDS,
+      N_INTERRUPTS => N_INTERRUPTS,
       CTR_UG_N_BDS => CTR_UG_N_BDS,
+
+      N_PTRH => N_PTRH,
+      N_ISBITS => N_ISBITS,
+      ESID => ESID,
+      ESwitchBit => ESwitchBit,
+      ISwitchBit => ISwitchBit,
+      ESwitchAddr => ESwitchAddr,
+  
+      N_AO_CHIPS => N_AO_CHIPS,
       IDX_N_CHANNELS => IDX_N_CHANNELS,
       DIGIO_N_CONNECTORS => DIGIO_N_CONNECTORS,
       DIGIO_FORCE_DIR => DIGIO_FORCE_DIR,
-      DIGIO_FORCE_DIR_VAL => DIGIO_FORCE_DIR_VAL
+      DIGIO_FORCE_DIR_VAL => DIGIO_FORCE_DIR_VAL,
+      N_QCLICTRL => N_QCLICTRL,
+      N_VM => N_VM,
+      N_LK204 => N_LK204
     )
     PORT MAP (
        fpga_0_rst_1_sys_rst_pin       => FPGA_CPU_RESET,
@@ -259,14 +307,15 @@ BEGIN
 
        fpga_0_RS232_RX_pin            => USB_1_RX,
        fpga_0_RS232_TX_pin            => USB_1_TX,
+
        PTRH_SDA_pin(0)                => IIC_SDA,
        PTRH_SDA_pin(1)                => BIO(0),
        PTRH_SDA_pin(2)                => BIO(2),
        PTRH_SCK_pin(0)                => IIC_SCL,
        PTRH_SCK_pin(1)                => BIO(1),
        PTRH_SCK_pin(2)                => BIO(3),
-       VM_SCL_pin                     => BIO(8),
-       VM_SDA_pin                     => BIO(9),
+       VM_SCL_pin(0)                  => BIO(8),
+       VM_SDA_pin(0)                  => BIO(9),
 
        subbus_cmdenbl                 => subbus_cmdenbl,
        subbus_cmdstrb                 => subbus_cmdstrb,
@@ -305,13 +354,19 @@ BEGIN
        ana_in_SCK16                   => AI_AD_SCK,
        ana_in_SCK5                    => AI_AFE_SCK,
        ana_in_SDO                     => AI_AFE_MOSI,
-       DA_CLR_B                       => DA_CLR_B,
-       DA_CS_B                        => DA_CS_B,
-       DA_LDAC_B                      => DA_LDAC_B,
-       DA_SCK                         => DA_SCK,
-       DA_SDI                         => DA_SDI,
        
-       ctr_PMT                        => ctr_PMT
+       ctr_PMT                        => ctr_PMT,
+
+       DA_CLR_B                       => DA_CLR_B_int,
+       DA_CS_B                        => DA_CS_B,
+       DA_LDAC_B                      => DA_LDAC_B_int,
+       DA_SCK                         => DA_SCK_int,
+       DA_SDI                         => DA_SDI_int,
+       
+       QSData                         => BIO(13 DOWNTO 13),
+       QSClk                          => BIO(12 DOWNTO 12),
+       QSync                          => QSync,
+       QNBsy                          => BIO(14 DOWNTO 14)
     );
 
     cmd_proc_i : cmd_proc
@@ -336,8 +391,12 @@ BEGIN
   DIO(114) <= ana_in_row(4);
   DIO(116) <= ana_in_row(5);
 
-  BIO(15 DOWNTO 10) <= (others => 'Z');
+  -- BIO(15 DOWNTO 12) are QCLI control lines
+  BIO(15) <= std_logic(QSync(0));
+  BIO(11 DOWNTO 10) <= (others => 'Z');
+  -- BIO(9 DOWNTO 8) are VM I2C
   BIO(7 DOWNTO 4) <= (others => 'Z');
+  -- BIO(3 DOWNTO 0) are PTRH I2C
 
   DIO(9 DOWNTO 0) <= cmd_out(33 DOWNTO 24);
   DIO(10) <= not cmd_out(34);
@@ -394,5 +453,11 @@ BEGIN
   GPIO_LED(2 DOWNTO 0) <= subbus_fail_leds(3 DOWNTO 1);
   GPIO_LED(3) <= Collision;
   -- GPIO_LED <= subbus_fail_leds(4 DOWNTO 1);
+
+  DA_SCK <= DA_SCK_int;
+  DA_SDI <= DA_SDI_int;
+  DA_LDAC_B <= DA_LDAC_B_int;
+  DA_CLR_B <= DA_CLR_B_int;
+
 END ARCHITECTURE beh;
 
