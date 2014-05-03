@@ -371,7 +371,7 @@ architecture Behavioral of dacs_v2 is
   COMPONENT adc_v1
      GENERIC( 
         BASE_ADDR : std_logic_vector := X"0E80";
-        N_ADC : integer range 4 DOWNTO 0 := 0;
+        N_ADC : integer range 4 DOWNTO 0 := 2;
         NSHIFTBITS : integer range 31 DOWNTO 0 := 1;
         RATEDEF : std_logic_vector(4 DOWNTO 0) := "11111"
      );
@@ -380,12 +380,13 @@ architecture Behavioral of dacs_v2 is
         ExpRd  : IN     std_ulogic;
         ExpWr  : IN     std_ulogic;
         F8M    : IN     std_ulogic;
-        MISO   : IN     std_logic;
+        MISO   : IN     std_logic_vector (N_ADC-1 DOWNTO 0);
         rst    : IN     std_logic;
-        CS_B   : OUT    std_logic;
+        CS_B   : OUT    std_logic_vector (N_ADC-1 DOWNTO 0);
         ExpAck : OUT    std_ulogic;
-        RData  : OUT    std_logic_vector(15 DOWNTO 0);
-        SCLK   : OUT    std_logic
+        MOSI   : OUT    std_logic_vector (N_ADC-1 DOWNTO 0);
+        RData  : OUT    std_logic_vector (15 DOWNTO 0);
+        SCLK   : OUT    std_logic_vector (N_ADC-1 DOWNTO 0)
      );
   END COMPONENT adc_v1;
   
@@ -419,7 +420,7 @@ architecture Behavioral of dacs_v2 is
 	CONSTANT QCLI_BDNO : integer := CTR_UG_BDNO+CTR_UG_N_BDS;
 	CONSTANT LK204_BDNO : integer := QCLI_BDNO+N_QCLICTRL;
 	CONSTANT ADC_BDNO : integer := LK204_BDNO+N_LK204;
-	CONSTANT N_BOARDS : integer := ADC_BDNO+N_ADC;
+	CONSTANT N_BOARDS : integer := ADC_BDNO+N_ADC_BD;
 	SIGNAL clk_8_0000MHz : std_logic;
 	SIGNAL clk_66_6667MHz : std_logic;
   SIGNAL xps_epc_0_PRH_Wr_n_pin : std_logic;
@@ -697,59 +698,26 @@ begin
   end generate;
 
   adc_gen: if N_ADC > 0 generate
---     adc_if: adc_v2
---      GENERIC MAP (
---        BASE_ADDR => X"0E80",
---        N_ADC => N_ADC,
---        NSHIFTBITS => ADC_NSHIFTBITS,
---        RATEDEF => ADC_RATEDEF
---      )
---      PORT MAP (
---         Addr   => ExpAddr,
---         ExpRd  => ExpRd,
---         ExpWr  => ExpWr,
---         F8M    => clk_8_0000MHz,
---         MISO   => ADC_MISO,
---         MOSI   => ADC_MOSI,
---         CS_B   => ADC_CS_B,
---         SCLK   => ADC_SCLK,
---         ExpAck => ExpAck(ADC_BDNO),
---         RData  => iRData(16*ADC_BDNO+15 DOWNTO 16*ADC_BDNO),
---         rst    => rst
---      );
-
-     adc_if0: adc_v1
-      GENERIC MAP (
-        BASE_ADDR => X"0E80"
-      )
-      PORT MAP (
-         Addr   => ExpAddr,
-         ExpRd  => ExpRd,
-         ExpWr  => ExpWr,
-         F8M    => clk_8_0000MHz,
-         MISO   => ADC_MISO(0),
-         CS_B   => ADC_CS_B(0),
-         SCLK   => ADC_SCLK(0),
-         ExpAck => ExpAck(ADC_BDNO),
-         RData  => iRData(16*ADC_BDNO+15 DOWNTO 16*ADC_BDNO),
-         rst    => rst
-      );
-     adc_if1: adc_v1
-      GENERIC MAP (
-        BASE_ADDR => X"0E88"
-      )
-      PORT MAP (
-         Addr   => ExpAddr,
-         ExpRd  => ExpRd,
-         ExpWr  => ExpWr,
-         F8M    => clk_8_0000MHz,
-         MISO   => ADC_MISO(1),
-         CS_B   => ADC_CS_B(1),
-         SCLK   => ADC_SCLK(1),
-         ExpAck => ExpAck(ADC_BDNO+1),
-         RData  => iRData(16*ADC_BDNO+31 DOWNTO 16*ADC_BDNO+16),
-         rst    => rst
-      );
+    adc_if: adc_v1
+     GENERIC MAP (
+       BASE_ADDR => X"0E80",
+       N_ADC => N_ADC,
+       NSHIFTBITS => ADC_NSHIFTBITS,
+       RATEDEF => ADC_RATEDEF
+     )
+     PORT MAP (
+        Addr   => ExpAddr,
+        ExpRd  => ExpRd,
+        ExpWr  => ExpWr,
+        F8M    => clk_8_0000MHz,
+        MISO   => ADC_MISO,
+        MOSI   => ADC_MOSI,
+        CS_B   => ADC_CS_B,
+        SCLK   => ADC_SCLK,
+        ExpAck => ExpAck(ADC_BDNO),
+        RData  => iRData(16*ADC_BDNO+15 DOWNTO 16*ADC_BDNO),
+        rst    => rst
+     );
   end generate;
 
   subbus_cmdenbl <= CmdEnbl;
