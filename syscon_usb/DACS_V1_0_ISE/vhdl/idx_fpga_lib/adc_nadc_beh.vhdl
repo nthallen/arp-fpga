@@ -94,27 +94,25 @@ BEGIN
       );
    end generate;
    
-   ACQ_PROC: PROCESS (EOC,ERR_int)
+   ACQ_PROC: PROCESS (EOC,ERR_int, ACQ, ALL_EOC)
    BEGIN
      ACQ <= '1';
+     ALL_EOC <= '0'; -- zero if all EOC(i) are zero
      for i in 0 to N_ADC-1 LOOP
        if ERR_int(i) = '0' AND EOC(i) = '0' THEN
          ACQ <= '0';
        end if;
-     end LOOP;
-   END PROCESS ACQ_PROC;   
-   
-   EOCS: PROCESS (EOC)
-   BEGIN
-     ALL_EOC <= '0';
-     for i in 0 to N_ADC-1 LOOP
        if EOC(i) = '1' THEN
          ALL_EOC <= '1';
-      end if;
+       end if;
      end LOOP;
-   END PROCESS EOCS;
-   
-   ACQ_OUT <= ACQ;
+     if ACQ = '1' AND ALL_EOC = '1' THEN
+       ACQ_OUT <= '1';
+     else
+       ACQ_OUT <= '0';
+     end if;
+   END PROCESS ACQ_PROC;   
+  
    ERR <= ERR_int;
       
 END ARCHITECTURE beh;

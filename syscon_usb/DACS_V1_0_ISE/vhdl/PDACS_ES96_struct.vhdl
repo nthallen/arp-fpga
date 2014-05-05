@@ -41,7 +41,7 @@ ENTITY PDACS_ES96 IS
     CMD_PROC_N_CMDS : integer := 12;
     N_ADC : integer range 4 downto 0 := 2;
     ADC_NBITSHIFT : integer range 31 downto 0 := 1;
-    ADC_RATEDEF : std_logic_vector(4 DOWNTO 0) := "01001"
+    ADC_RATE_DEF : std_logic_vector(4 DOWNTO 0) := "01001"
   );
   PORT (
     AI_AD_CNV : OUT std_ulogic_vector ( 1 DOWNTO 0 );
@@ -197,9 +197,9 @@ ARCHITECTURE beh OF PDACS_ES96 IS
       N_QCLICTRL : integer range 5 downto 0 := 1;
       N_VM : integer range 5 downto 0 := 1;
       N_LK204 : integer range 1 downto 0 := 0;
-      N_ADC : integer range 4 downto 0 := 0
-      --ADC_NBITSHIFT : integer range 31 downto 0 := 1;
-      --ADC_RATEDEF : std_logic_vector(4 DOWNTO 0) := "11111"
+      N_ADC : integer range 4 downto 0 := 0;
+      ADC_NBITSHIFT : integer range 31 downto 0 := 1;
+      ADC_RATE_DEF : std_logic_vector(4 DOWNTO 0) := "11111"
     );
     Port (
       fpga_0_rst_1_sys_rst_pin : IN std_logic;
@@ -305,9 +305,9 @@ BEGIN
       N_QCLICTRL => N_QCLICTRL,
       N_VM => N_VM,
       N_LK204 => N_LK204,
-      N_ADC => N_ADC
-      --ADC_NSHIFTBITS => ADC_NSHIFTBITS,
-      --ADC_RATEDEF => ADC_RATEDEF
+      N_ADC => N_ADC,
+      ADC_NBITSHIFT => ADC_NBITSHIFT,
+      ADC_RATE_DEF => ADC_RATE_DEF
     )
     PORT MAP (
        fpga_0_rst_1_sys_rst_pin       => FPGA_CPU_RESET,
@@ -374,8 +374,8 @@ BEGIN
        
        ADC_MISO(0)                    => BIO(0),
        ADC_MISO(1)                    => BIO(2),
---     ADC_MOSI(0)                    => DIO(0),
---     ADC_MOSI(1)                    => DIO(2),
+       ADC_MOSI(0)                    => DIO(0),
+       ADC_MOSI(1)                    => DIO(2),
        ADC_CS_B(0)                    => DIO(1),
        ADC_CS_B(1)                    => DIO(3),
        ADC_SCLK(0)                    => BIO(1),
@@ -406,8 +406,6 @@ BEGIN
   BIO(15 DOWNTO 8) <= (others => 'Z');
 
   -- DIO(3 DOWNTO 0) are ADC communication lines
-  DIO(0) <= '1';
-  DIO(2) <= '1';
   DIO(15 DOWNTO 4) <= cmd_out;
   -- DIO(119 DOWNTO 16) are digio
     

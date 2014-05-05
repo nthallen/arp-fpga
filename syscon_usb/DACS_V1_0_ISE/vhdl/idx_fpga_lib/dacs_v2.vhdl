@@ -50,8 +50,8 @@ entity dacs_v2 is
       N_VM : integer range 5 downto 0 := 1;
       N_LK204 : integer range 1 downto 0 := 0;
       N_ADC : integer range 4 downto 0 := 0;
-      ADC_NSHIFTBITS : integer range 31 downto 0 := 1;
-      ADC_RATEDEF : std_logic_vector(4 DOWNTO 0) := "11111"
+      ADC_NBITSHIFT : integer range 31 downto 0 := 1;
+      ADC_RATE_DEF : std_logic_vector(4 DOWNTO 0) := "11111"
     );
     Port (
       fpga_0_rst_1_sys_rst_pin : IN std_logic;
@@ -372,8 +372,8 @@ architecture Behavioral of dacs_v2 is
      GENERIC( 
         BASE_ADDR : std_logic_vector := X"0E80";
         N_ADC : integer range 4 DOWNTO 0 := 2;
-        NSHIFTBITS : integer range 31 DOWNTO 0 := 1;
-        RATEDEF : std_logic_vector(4 DOWNTO 0) := "11111"
+        NBITSHIFT : integer range 31 DOWNTO 0 := 1;
+        RATE_DEF : std_logic_vector(4 DOWNTO 0) := "11111"
      );
      PORT (
         Addr   : IN     std_logic_vector(15 DOWNTO 0);
@@ -702,8 +702,8 @@ begin
      GENERIC MAP (
        BASE_ADDR => X"0E80",
        N_ADC => N_ADC,
-       NSHIFTBITS => ADC_NSHIFTBITS,
-       RATEDEF => ADC_RATEDEF
+       NBITSHIFT => ADC_NBITSHIFT,
+       RATE_DEF => ADC_RATE_DEF
      )
      PORT MAP (
         Addr   => ExpAddr,
