@@ -46,6 +46,7 @@ ARCHITECTURE beh OF adc_nadc IS
    SIGNAL ACQ       : std_logic;
    SIGNAL EOC       : std_logic_vector(N_ADC-1 DOWNTO 0);
    SIGNAL ERR_int   : std_logic_vector(N_ADC-1 DOWNTO 0);
+	SIGNAL ALL_EOC_int : std_logic;
    COMPONENT adc_int
       GENERIC (
          NBITSHIFT : integer := 1;
@@ -94,19 +95,19 @@ BEGIN
       );
    end generate;
    
-   ACQ_PROC: PROCESS (EOC,ERR_int, ACQ, ALL_EOC)
+   ACQ_PROC: PROCESS (EOC,ERR_int, ACQ, ALL_EOC_int)
    BEGIN
      ACQ <= '1';
-     ALL_EOC <= '0'; -- zero if all EOC(i) are zero
+     ALL_EOC_int <= '0'; -- zero if all EOC(i) are zero
      for i in 0 to N_ADC-1 LOOP
        if ERR_int(i) = '0' AND EOC(i) = '0' THEN
          ACQ <= '0';
        end if;
        if EOC(i) = '1' THEN
-         ALL_EOC <= '1';
+         ALL_EOC_int <= '1';
        end if;
      end LOOP;
-     if ACQ = '1' AND ALL_EOC = '1' THEN
+     if ACQ = '1' AND ALL_EOC_int = '1' THEN
        ACQ_OUT <= '1';
      else
        ACQ_OUT <= '0';
@@ -114,6 +115,7 @@ BEGIN
    END PROCESS ACQ_PROC;   
   
    ERR <= ERR_int;
+	ALL_EOC <= ALL_EOC_int;
       
 END ARCHITECTURE beh;
 
