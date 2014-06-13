@@ -263,6 +263,7 @@ ARCHITECTURE beh OF PDACS_ES96 IS
       QNBsy       : IN     std_logic_vector(N_QCLICTRL-1 DOWNTO 0);
       
       ADC_MISO    : IN     std_logic_vector(N_ADC-1 DOWNTO 0);
+      ADC_MOSI    : OUT    std_logic_vector(N_ADC-1 DOWNTO 0);
       ADC_CS_B    : OUT    std_logic_vector(N_ADC-1 DOWNTO 0);
       ADC_SCLK    : OUT    std_logic_vector(N_ADC-1 DOWNTO 0)
     );
