@@ -363,10 +363,10 @@ BEGIN
        DA_SCK                         => DA_SCK_int,
        DA_SDI                         => DA_SDI_int,
        
-       QSData                         => BIO(13 DOWNTO 13),
-       QSClk                          => BIO(12 DOWNTO 12),
+       QSData                         => BIO(5 DOWNTO 5),
+       QSClk                          => BIO(4 DOWNTO 4),
        QSync                          => QSync,
-       QNBsy                          => BIO(14 DOWNTO 14)
+       QNBsy                          => BIO(6 DOWNTO 6)
     );
 
     cmd_proc_i : cmd_proc
@@ -392,10 +392,11 @@ BEGIN
   DIO(116) <= ana_in_row(5);
 
   -- BIO(15 DOWNTO 12) are QCLI control lines
-  BIO(15) <= std_logic(QSync(0));
-  BIO(11 DOWNTO 10) <= (others => 'Z');
+  -- BIO(15) <= std_logic(QSync(0));
+  BIO(15 DOWNTO 10) <= (others => 'Z');
   -- BIO(9 DOWNTO 8) are VM I2C
-  BIO(7 DOWNTO 4) <= (others => 'Z');
+  -- BIO(7 DOWNTO 4) are QCLI
+  BIO(7) <= QSync(0);
   -- BIO(3 DOWNTO 0) are PTRH I2C
 
   DIO(9 DOWNTO 0) <= cmd_out(33 DOWNTO 24);
