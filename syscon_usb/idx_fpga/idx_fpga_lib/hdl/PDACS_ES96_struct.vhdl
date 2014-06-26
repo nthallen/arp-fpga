@@ -19,21 +19,21 @@ ENTITY PDACS_ES96 IS
   GENERIC (
     DACS_BUILD_NUMBER : std_logic_vector(15 DOWNTO 0) := X"0029"; -- Build 41
     INSTRUMENT_ID : std_logic_vector(15 DOWNTO 0) := X"0004"; -- ES96 O3
-    N_INTERRUPTS : integer range 15 downto 1 := 0;
+    N_INTERRUPTS : integer range 15 downto 1 := 1;
     N_QCLICTRL : integer range 5 downto 0 := 0;
     N_VM : integer range 5 downto 0 := 0;
     N_LK204 : integer range 1 downto 0 := 0;
 
-    N_PTRH : integer range 5 downto 1 := 1;
-    N_ISBITS    : integer range 8 downto 1 := 1;
-    ESID        : ESID_array := ( 0 );
-    ESwitchBit  : ESB_array  := ( 0 );
-    ISwitchBit  : ISB_array  := ( 0 );
-    ESwitchAddr : ESA_array  := ( "0000000" );
+    N_PTRH : integer range 5 downto 1 := 3;
+    N_ISBITS    : integer range 8 downto 1 := 3;
+    ESID        : ESID_array := ( 0, 0, 0 );
+    ESwitchBit  : ESB_array  := ( 0, 0, 0 );
+    ISwitchBit  : ISB_array  := ( 0, 1, 2 );
+    ESwitchAddr : ESA_array  := ( "0000000", "0000000", "0000000" );
 
     N_AO_CHIPS : natural range 15 downto 1 := 2;
     CTR_UG_N_BDS : integer range 5 downto 0 := 0;
-    IDX_N_CHANNELS : integer range 15 downto 1 := 0;
+    IDX_N_CHANNELS : integer range 15 downto 1 := 1;
     DIGIO_N_CONNECTORS : integer range 4 DOWNTO 1 := 3;
     -- FORCE_DIR vectors are indexed 0 to 17
     DIGIO_FORCE_DIR : std_ulogic_vector := "111110000000000000";
@@ -41,7 +41,7 @@ ENTITY PDACS_ES96 IS
     CMD_PROC_N_CMDS : integer := 12;
     N_ADC : integer range 4 downto 0 := 2;
     ADC_NBITSHIFT : integer range 31 downto 0 := 1;
-    ADC_RATEDEF : std_logic_vector(4 DOWNTO 0) := "01001"
+    ADC_RATE_DEF : std_logic_vector(4 DOWNTO 0) := "01001"
   );
   PORT (
     AI_AD_CNV : OUT std_ulogic_vector ( 1 DOWNTO 0 );
@@ -199,7 +199,7 @@ ARCHITECTURE beh OF PDACS_ES96 IS
       N_LK204 : integer range 1 downto 0 := 0;
       N_ADC : integer range 4 downto 0 := 0;
       ADC_NBITSHIFT : integer range 31 downto 0 := 1;
-        ADC_RATEDEF : std_logic_vector(4 DOWNTO 0) := "11111"
+      ADC_RATE_DEF : std_logic_vector(4 DOWNTO 0) := "11111"
     );
     Port (
       fpga_0_rst_1_sys_rst_pin : IN std_logic;
@@ -263,6 +263,7 @@ ARCHITECTURE beh OF PDACS_ES96 IS
       QNBsy       : IN     std_logic_vector(N_QCLICTRL-1 DOWNTO 0);
       
       ADC_MISO    : IN     std_logic_vector(N_ADC-1 DOWNTO 0);
+      ADC_MOSI    : OUT    std_logic_vector(N_ADC-1 DOWNTO 0);
       ADC_CS_B    : OUT    std_logic_vector(N_ADC-1 DOWNTO 0);
       ADC_SCLK    : OUT    std_logic_vector(N_ADC-1 DOWNTO 0)
     );
@@ -306,8 +307,8 @@ BEGIN
       N_VM => N_VM,
       N_LK204 => N_LK204,
       N_ADC => N_ADC,
-      ADC_NSHIFTBITS => ADC_NSHIFTBITS,
-      ADC_RATEDEF => ADC_RATEDEF
+      ADC_NBITSHIFT => ADC_NBITSHIFT,
+      ADC_RATE_DEF => ADC_RATE_DEF
     )
     PORT MAP (
        fpga_0_rst_1_sys_rst_pin       => FPGA_CPU_RESET,
@@ -324,7 +325,11 @@ BEGIN
        fpga_0_RS232_TX_pin            => USB_1_TX,
 
        PTRH_SDA_pin(0)                => IIC_SDA,
+       PTRH_SDA_pin(1)                => BIO(4),
+       PTRH_SDA_pin(2)                => BIO(6),
        PTRH_SCK_pin(0)                => IIC_SCL,
+       PTRH_SCK_pin(1)                => BIO(5),
+       PTRH_SCK_pin(2)                => BIO(7),
 
        subbus_cmdenbl                 => subbus_cmdenbl,
        subbus_cmdstrb                 => subbus_cmdstrb,
@@ -369,12 +374,12 @@ BEGIN
        QNBsy                          => QNull,
        
        ADC_MISO(0)                    => BIO(0),
-       ADC_MOSI(0)                    => DIO(0),
-       ADC_CS_B(0)                    => DIO(1),
-       ADC_SCLK(0)                    => BIO(1),
        ADC_MISO(1)                    => BIO(2),
+       ADC_MOSI(0)                    => DIO(0),
        ADC_MOSI(1)                    => DIO(2),
+       ADC_CS_B(0)                    => DIO(1),
        ADC_CS_B(1)                    => DIO(3),
+       ADC_SCLK(0)                    => BIO(1),
        ADC_SCLK(1)                    => BIO(3)
     );
 
@@ -398,7 +403,8 @@ BEGIN
   AI_MUX1_A <= ana_in_Row(2 DOWNTO 0);
 
   -- BIO(3 DOWNTO 0) are ADC communication lines
-  BIO(15 DOWNTO 4) <= (others => 'Z');
+  -- BIO(7 DOWNTO 4) are (unused) PTRH lines
+  BIO(15 DOWNTO 8) <= (others => 'Z');
 
   -- DIO(3 DOWNTO 0) are ADC communication lines
   DIO(15 DOWNTO 4) <= cmd_out;

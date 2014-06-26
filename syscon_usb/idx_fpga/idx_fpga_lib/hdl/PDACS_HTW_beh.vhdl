@@ -24,6 +24,10 @@ ENTITY PDACS_HTW IS
     N_VM : integer range 5 downto 0 := 1;
     N_LK204 : integer range 1 downto 0 := 0;
 
+    N_ADC : integer range 4 downto 0 := 0;
+    ADC_NBITSHIFT : integer range 31 downto 0 := 1;
+    ADC_RATE_DEF : std_logic_vector(4 DOWNTO 0) := "11111";
+
     N_PTRH : integer range 5 downto 1 := 3;
     N_ISBITS    : integer range 8 downto 1 := 3;
     ESID        : ESID_array := ( 0, 0, 0 );
@@ -167,6 +171,10 @@ ARCHITECTURE beh OF PDACS_HTW IS
    SIGNAL DA_CLR_B_int                   : std_ulogic;
    SIGNAL QSync                          : std_ulogic_vector(N_QCLICTRL-1 DOWNTO 0);
    SIGNAL ctr_PMT                        : std_logic_vector(4*CTR_UG_N_BDS-1 DOWNTO 0);
+   SIGNAL ADC_MISO                       : std_logic_vector(N_ADC-1 DOWNTO 0);
+   SIGNAL ADC_MOSI                       : std_logic_vector(N_ADC-1 DOWNTO 0);
+   SIGNAL ADC_CS_B                       : std_logic_vector(N_ADC-1 DOWNTO 0);
+   SIGNAL ADC_SCLK                       : std_logic_vector(N_ADC-1 DOWNTO 0);
    
   COMPONENT dacs_v2 is
     GENERIC (
@@ -191,7 +199,10 @@ ARCHITECTURE beh OF PDACS_HTW IS
       DIGIO_FORCE_DIR_VAL : std_ulogic_vector := "000000000000";
       N_QCLICTRL : integer range 5 downto 0 := 1;
       N_VM : integer range 5 downto 0 := 1;
-      N_LK204 : integer range 1 downto 0 := 0
+      N_LK204 : integer range 1 downto 0 := 0;
+      N_ADC : integer range 4 downto 0 := 0;
+      ADC_NBITSHIFT : integer range 31 downto 0 := 1;
+      ADC_RATE_DEF : std_logic_vector(4 DOWNTO 0) := "11111"
     );
     Port (
       fpga_0_rst_1_sys_rst_pin : IN std_logic;
@@ -252,7 +263,12 @@ ARCHITECTURE beh OF PDACS_HTW IS
       QSync       : OUT    std_ulogic_vector(N_QCLICTRL-1 DOWNTO 0);
       QSClk       : INOUT  std_logic_vector(N_QCLICTRL-1 DOWNTO 0);
       QSData      : INOUT  std_logic_vector(N_QCLICTRL-1 DOWNTO 0);
-      QNBsy       : IN     std_logic_vector(N_QCLICTRL-1 DOWNTO 0)
+      QNBsy       : IN     std_logic_vector(N_QCLICTRL-1 DOWNTO 0);
+      
+      ADC_MISO    : IN     std_logic_vector(N_ADC-1 DOWNTO 0);
+      ADC_MOSI    : OUT    std_logic_vector(N_ADC-1 DOWNTO 0);
+      ADC_CS_B    : OUT    std_logic_vector(N_ADC-1 DOWNTO 0);
+      ADC_SCLK    : OUT    std_logic_vector(N_ADC-1 DOWNTO 0)
     );
   END COMPONENT;
 
@@ -292,7 +308,10 @@ BEGIN
       DIGIO_FORCE_DIR_VAL => DIGIO_FORCE_DIR_VAL,
       N_QCLICTRL => N_QCLICTRL,
       N_VM => N_VM,
-      N_LK204 => N_LK204
+      N_LK204 => N_LK204,
+      N_ADC => N_ADC,
+      ADC_NBITSHIFT => ADC_NBITSHIFT,
+      ADC_RATE_DEF => ADC_RATE_DEF
     )
     PORT MAP (
        fpga_0_rst_1_sys_rst_pin       => FPGA_CPU_RESET,
@@ -363,10 +382,14 @@ BEGIN
        DA_SCK                         => DA_SCK_int,
        DA_SDI                         => DA_SDI_int,
        
-       QSData                         => BIO(13 DOWNTO 13),
-       QSClk                          => BIO(12 DOWNTO 12),
+       QSData                         => BIO(5 DOWNTO 5),
+       QSClk                          => BIO(4 DOWNTO 4),
        QSync                          => QSync,
-       QNBsy                          => BIO(14 DOWNTO 14)
+       QNBsy                          => BIO(6 DOWNTO 6),
+       ADC_MISO                       => ADC_MISO,
+       ADC_MOSI                       => ADC_MOSI,
+       ADC_CS_B                       => ADC_CS_B,
+       ADC_SCLK                       => ADC_SCLK
     );
 
     cmd_proc_i : cmd_proc
@@ -392,10 +415,11 @@ BEGIN
   DIO(116) <= ana_in_row(5);
 
   -- BIO(15 DOWNTO 12) are QCLI control lines
-  BIO(15) <= std_logic(QSync(0));
-  BIO(11 DOWNTO 10) <= (others => 'Z');
+  -- BIO(15) <= std_logic(QSync(0));
+  BIO(15 DOWNTO 10) <= (others => 'Z');
   -- BIO(9 DOWNTO 8) are VM I2C
-  BIO(7 DOWNTO 4) <= (others => 'Z');
+  -- BIO(7 DOWNTO 4) are QCLI
+  BIO(7) <= QSync(0);
   -- BIO(3 DOWNTO 0) are PTRH I2C
 
   DIO(9 DOWNTO 0) <= cmd_out(33 DOWNTO 24);
