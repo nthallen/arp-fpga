@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Created by Leo (http://leoeditor.com/leo_toc.html) -->
 <?xml-stylesheet ekr_test?>
-<leo_file>
+<leo_file xmlns:leo="http://www.leo-editor.org/2011/leo" >
 <leo_header file_format="2" tnodes="0" max_tnode_index="0" clone_windows="0"/>
 <globals body_outline_ratio="0.5" body_secondary_ratio="0.5">
 	<global_window_position top="50" left="50" height="500" width="700"/>
@@ -80,7 +81,7 @@
 <v t="ntallen.20100525090916.1260"><vh>Done: Implement Subbus Library</vh></v>
 <v t="ntallen.20101102122701.1375"><vh>Implement Subbus/Syscon Library</vh></v>
 <v t="ntallen.20100525090916.1261"><vh>Indexer: Simulated</vh></v>
-<v t="ntallen.20100525090916.1262"><vh>A/D VHDL: Simulated</vh>
+<v t="ntallen.20100525090916.1262" a="E"><vh>A/D VHDL: Simulated</vh>
 <v t="ntallen.20110331101033.1427"><vh>Rework 110331</vh></v>
 <v t="ntallen.20101013150328.1339"><vh>Convert Clock</vh></v>
 <v t="ntallen.20101013150328.1340"><vh>A/D =&gt; RAM</vh></v>
@@ -94,7 +95,7 @@
 <v t="ntallen.20101013150328.1345"><vh>Enhanced Operations</vh>
 <v t="ntallen.20101013150328.1346"><vh>Configuration Readback</vh></v>
 </v>
-<v t="ntallen.20101019142341.1359"><vh>Design Hierarchy</vh>
+<v t="ntallen.20101019142341.1359" a="E"><vh>Design Hierarchy</vh>
 <v t="ntallen.20110122074609.1411"><vh>ana_addr</vh></v>
 <v t="ntallen.20101022104642.1372"><vh>ana_subbus</vh></v>
 <v t="ntallen.20110118143100.1403"><vh>ana_data_ram</vh>
@@ -104,8 +105,9 @@
 <v t="ntallen.20110118143100.1405"><vh>ana_cfg_ram</vh>
 <v t="ntallen.20101019142341.1363"></v>
 </v>
-<v t="ntallen.20101022104642.1371"><vh>ana_hwside</vh>
-<v t="ntallen.20101019142341.1364"><vh>ana_acquire</vh>
+<v t="ntallen.20101022104642.1371" a="E"><vh>ana_hwside</vh>
+<v t="ntallen.20101019142341.1364" a="E"><vh>ana_acquire</vh>
+<v t="nort.20140626153503.1569"><vh>Settling Time</vh></v>
 <v t="ntallen.20110118143100.1406"><vh>AI configuration and sub-muxing</vh></v>
 </v>
 <v t="ntallen.20101019142341.1362"><vh>ana_s16</vh></v>
@@ -147,7 +149,7 @@
 <v t="ntallen.20111215085119.1457"><vh>Read FIFO</vh></v>
 </v>
 </v>
-<v t="ntallen.20120816125014.1563" a="E"><vh>LK204-7T-1U Display</vh>
+<v t="ntallen.20120816125014.1563"><vh>LK204-7T-1U Display</vh>
 <v t="ntallen.20120816125014.1564" a="E"><vh>LK204 VHDL Driver</vh>
 <v t="ntallen.20120910090627.1591"><vh>Hardware Features</vh></v>
 <v t="ntallen.20120910090627.1592"><vh>Subbus Interface</vh></v>
@@ -240,6 +242,13 @@
 </v>
 </vnodes>
 <tnodes>
+<t tx="nort.20140626153503.1569">6/26/14
+As simulated, the circuit currently allows 186.3 us between mux address update and Conv. 36.3 us of this is spent shifting in/out the previous conversions, and 150 us is an explicit wait of 1200 clocks at 8 MHz. This is a sufficient delay for low-impedance signals such as 30K thermistors, but it is inadequate for the 1 M thermistors with 250 K pullups we have been using on HCI and Ozone. Until we find a better way to make those measurements, we will extend that delay by a factor of 5:
+    186.3 * 5 = 931.5 us total targeted delay
+                      -36.3 us shifting delay
+                      895.2 us required wait time
+                      * 8 clocks/us
+                      7162 clocks of delay</t>
 <t tx="ntallen.20100519134237.1501">@nocolor
 </t>
 <t tx="ntallen.20100519134237.1502"></t>
