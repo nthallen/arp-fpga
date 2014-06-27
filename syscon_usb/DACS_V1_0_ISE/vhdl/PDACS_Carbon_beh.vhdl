@@ -6,7 +6,7 @@
 --          at - 13:25:16 11/18/2010
 --
 -- PDACS_Carbon DACS implementation for Carbon Isotopes Instrument
---  1/11/13 Build 39: Lower AO clock rate to 500 KHz
+--  1/11/13 Build 39: Lower AO clock rate
 -- 12/ 6/12 Build 38: qclictrl extra delay (rolled back for 39)
 -- 11/20/12 Build 37: LK204 Updates
 --  9/17/12 Build 36: Test build to run on backup HWV PDACS with LK204
@@ -14,7 +14,7 @@
 --  5/ 2/12 Build 35: Reduce AO clock to 8 MHz
 -- 12/ 1/11 First pass is based on DACSbd (HWV) but using ptrhm_acquire.
 --
--- INSTRUMENT_ID Values are defined in DACSutil/DACS_ID.tmc 
+-- INSTRUMENT_ID Values are defined in DACSutil/DACS_ID.tmc
 -- (distributed as /usr/local/share/huarp/DACS_ID.tmc)
 LIBRARY ieee;
 USE ieee.std_logic_1164.all;
@@ -24,13 +24,16 @@ USE idx_fpga_lib.ptrhm.all;
 
 ENTITY PDACS_Carbon IS
   GENERIC (
-    DACS_BUILD_NUMBER : std_logic_vector(15 DOWNTO 0) := X"0027"; -- #39
+    DACS_BUILD_NUMBER : std_logic_vector(15 DOWNTO 0) := X"002A"; -- #42
     INSTRUMENT_ID : std_logic_vector(15 DOWNTO 0) := X"0003";
     N_INTERRUPTS : integer range 15 downto 1 := 2;
     CTR_UG_N_BDS : integer range 5 downto 0 := 0;
     N_QCLICTRL : integer range 5 downto 0 := 3;
     N_VM : integer range 5 downto 0 := 3;
     N_LK204 : integer range 1 downto 0 := 1;
+    N_ADC : integer range 4 downto 0 := 0;
+    ADC_NBITSHIFT : integer range 31 downto 0 := 1;
+    ADC_RATE_DEF : std_logic_vector(4 DOWNTO 0) := "11111";
 
     N_PTRH : integer range 16 downto 1 := 9;
     N_ISBITS    : integer range 8 downto 1 := 5;
@@ -173,11 +176,15 @@ ARCHITECTURE beh OF PDACS_Carbon IS
    SIGNAL DA_LDAC_B_int                  : std_ulogic;
    SIGNAL DA_CLR_B_int                   : std_ulogic;
    SIGNAL QSync                          : std_ulogic_vector(N_QCLICTRL-1 DOWNTO 0);
+   SIGNAL ADC_MISO                       : std_logic_vector(N_ADC-1 DOWNTO 0);
+   SIGNAL ADC_MOSI                       : std_logic_vector(N_ADC-1 DOWNTO 0);
+   SIGNAL ADC_CS_B                       : std_logic_vector(N_ADC-1 DOWNTO 0);
+   SIGNAL ADC_SCLK                       : std_logic_vector(N_ADC-1 DOWNTO 0);
     
   COMPONENT dacs_v2
     GENERIC (
-      DACS_BUILD_NUMBER : std_logic_vector(15 DOWNTO 0) := X"0026"; -- 38
-      INSTRUMENT_ID : std_logic_vector(15 DOWNTO 0) := X"0001";
+      DACS_BUILD_NUMBER : std_logic_vector(15 DOWNTO 0) := X"002A"; -- 42
+      INSTRUMENT_ID : std_logic_vector(15 DOWNTO 0) := X"0001"; -- HCI
       N_INTERRUPTS : integer range 15 downto 1 := 2;
       
       N_PTRH      : integer range 16 downto 1 := 9;
@@ -197,7 +204,10 @@ ARCHITECTURE beh OF PDACS_Carbon IS
       DIGIO_FORCE_DIR_VAL : std_ulogic_vector := "000000000000";
       N_QCLICTRL : integer range 5 downto 0 := 1;
       N_VM : integer range 5 downto 0 := 1;
-      N_LK204 : integer range 1 downto 0 := 0
+      N_LK204 : integer range 1 downto 0 := 0;
+      N_ADC : integer range 4 downto 0 := 0;
+      ADC_NBITSHIFT : integer range 31 downto 0 := 1;
+      ADC_RATE_DEF : std_logic_vector(4 DOWNTO 0) := "11111"
     );
     Port (
       fpga_0_rst_1_sys_rst_pin : IN std_logic;
@@ -258,7 +268,12 @@ ARCHITECTURE beh OF PDACS_Carbon IS
       QSync       : OUT    std_ulogic_vector(N_QCLICTRL-1 DOWNTO 0);
       QSClk       : INOUT  std_logic_vector(N_QCLICTRL-1 DOWNTO 0);
       QSData      : INOUT  std_logic_vector(N_QCLICTRL-1 DOWNTO 0);
-      QNBsy       : IN     std_logic_vector(N_QCLICTRL-1 DOWNTO 0)
+      QNBsy       : IN     std_logic_vector(N_QCLICTRL-1 DOWNTO 0);
+      
+      ADC_MISO    : IN     std_logic_vector(N_ADC-1 DOWNTO 0);
+      ADC_MOSI    : OUT    std_logic_vector(N_ADC-1 DOWNTO 0);
+      ADC_CS_B    : OUT    std_logic_vector(N_ADC-1 DOWNTO 0);
+      ADC_SCLK    : OUT    std_logic_vector(N_ADC-1 DOWNTO 0)
     );
   END COMPONENT;
    
@@ -298,7 +313,10 @@ BEGIN
       DIGIO_FORCE_DIR_VAL => DIGIO_FORCE_DIR_VAL,
       N_QCLICTRL => N_QCLICTRL,
       N_VM => N_VM,
-      N_LK204 => N_LK204
+      N_LK204 => N_LK204,
+      N_ADC => N_ADC,
+      ADC_NBITSHIFT => ADC_NBITSHIFT,
+      ADC_RATE_DEF => ADC_RATE_DEF
     )
     PORT MAP (
        fpga_0_rst_1_sys_rst_pin       => FPGA_CPU_RESET,
@@ -381,7 +399,11 @@ BEGIN
        QSData                         => DIO(2 DOWNTO 0),
        QSClk                          => DIO(5 DOWNTO 3),
        QSync                          => QSync,
-       QNBsy                          => DIO(58 DOWNTO 56)
+       QNBsy                          => DIO(58 DOWNTO 56),
+       ADC_MISO                       => ADC_MISO,
+       ADC_MOSI                       => ADC_MOSI,
+       ADC_CS_B                       => ADC_CS_B,
+       ADC_SCLK                       => ADC_SCLK
     );
 
     cmd_proc_i : cmd_proc
