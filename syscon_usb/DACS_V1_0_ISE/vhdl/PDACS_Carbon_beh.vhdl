@@ -6,6 +6,8 @@
 --          at - 13:25:16 11/18/2010
 --
 -- PDACS_Carbon DACS implementation for Carbon Isotopes Instrument
+--  6/29/14 Build 43: ana_acquire even longer settling time
+--  6/27/14 Build 41: ana_acquire longer settling time
 --  1/11/13 Build 39: Lower AO clock rate
 -- 12/ 6/12 Build 38: qclictrl extra delay (rolled back for 39)
 -- 11/20/12 Build 37: LK204 Updates
@@ -24,7 +26,7 @@ USE idx_fpga_lib.ptrhm.all;
 
 ENTITY PDACS_Carbon IS
   GENERIC (
-    DACS_BUILD_NUMBER : std_logic_vector(15 DOWNTO 0) := X"0029"; -- #41
+    DACS_BUILD_NUMBER : std_logic_vector(15 DOWNTO 0) := X"002B"; -- #43
     INSTRUMENT_ID : std_logic_vector(15 DOWNTO 0) := X"0003";
     N_INTERRUPTS : integer range 15 downto 1 := 2;
     CTR_UG_N_BDS : integer range 5 downto 0 := 0;

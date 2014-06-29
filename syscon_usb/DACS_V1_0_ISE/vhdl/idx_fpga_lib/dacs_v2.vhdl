@@ -13,7 +13,8 @@
 -- Dependencies: 
 --
 -- Revision:
--- Build 42: Add long settline time for 1M therms
+-- Build 43: ana_acquire even longer settling time
+-- Build 42: Add long settling time for 1M therms
 -- Build 41: Add ES96 ADC interface
 -- Build 35: Reduce AO to 8 MHz
 -- Revision 0.01 - File Created
@@ -28,7 +29,7 @@ USE idx_fpga_lib.ptrhm.all;
 
 entity dacs_v2 is
     GENERIC (
-      DACS_BUILD_NUMBER : std_logic_vector(15 DOWNTO 0) := X"002A"; -- 42
+      DACS_BUILD_NUMBER : std_logic_vector(15 DOWNTO 0) := X"002B"; -- 43
       INSTRUMENT_ID : std_logic_vector(15 DOWNTO 0) := X"0001";
       N_INTERRUPTS : integer range 15 downto 1 := 1;
       
