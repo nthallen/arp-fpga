@@ -17,7 +17,7 @@ USE idx_fpga_lib.ptrhm.all;
 
 ENTITY PDACS_ES96 IS
   GENERIC (
-    DACS_BUILD_NUMBER : std_logic_vector(15 DOWNTO 0) := X"0029"; -- Build 41
+    DACS_BUILD_NUMBER : std_logic_vector(15 DOWNTO 0) := X"002A"; -- Build 42
     INSTRUMENT_ID : std_logic_vector(15 DOWNTO 0) := X"0004"; -- ES96 O3
     N_INTERRUPTS : integer range 15 downto 1 := 1;
     N_QCLICTRL : integer range 5 downto 0 := 0;
