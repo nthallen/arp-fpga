@@ -13,6 +13,7 @@
 -- Dependencies: 
 --
 -- Revision:
+-- Build 44: Add ES96 Temperature Sensor Interface
 -- Build 43: ana_acquire even longer settling time
 -- Build 42: Add long settling time for 1M therms
 -- Build 41: Add ES96 ADC interface
@@ -29,7 +30,7 @@ USE idx_fpga_lib.ptrhm.all;
 
 entity dacs_v2 is
     GENERIC (
-      DACS_BUILD_NUMBER : std_logic_vector(15 DOWNTO 0) := X"002B"; -- 43
+      DACS_BUILD_NUMBER : std_logic_vector(15 DOWNTO 0) := X"002C"; -- 44
       INSTRUMENT_ID : std_logic_vector(15 DOWNTO 0) := X"0001";
       N_INTERRUPTS : integer range 15 downto 1 := 1;
       
@@ -53,7 +54,8 @@ entity dacs_v2 is
       N_LK204 : integer range 1 downto 0 := 0;
       N_ADC : integer range 4 downto 0 := 0;
       ADC_NBITSHIFT : integer range 31 downto 0 := 1;
-      ADC_RATE_DEF : std_logic_vector(4 DOWNTO 0) := "11111"
+      ADC_RATE_DEF : std_logic_vector(4 DOWNTO 0) := "11111";
+      N_TEMP_SENSOR : integer range 1 downto 0 := 0
     );
     Port (
       fpga_0_rst_1_sys_rst_pin : IN std_logic;
@@ -119,7 +121,10 @@ entity dacs_v2 is
       ADC_MISO    : IN     std_logic_vector(N_ADC-1 DOWNTO 0);
       ADC_MOSI    : OUT    std_logic_vector(N_ADC-1 DOWNTO 0);
       ADC_CS_B    : OUT    std_logic_vector(N_ADC-1 DOWNTO 0);
-      ADC_SCLK    : OUT    std_logic_vector(N_ADC-1 DOWNTO 0)
+      ADC_SCLK    : OUT    std_logic_vector(N_ADC-1 DOWNTO 0);
+      
+      TS_SDA      : INOUT std_logic_vector(N_TEMP_SENSOR-1 DOWNTO 0);
+      TS_SCL      : INOUT std_logic_vector(N_TEMP_SENSOR-1 DOWNTO 0)
     );
 end dacs_v2;
 
@@ -392,6 +397,22 @@ architecture Behavioral of dacs_v2 is
      );
   END COMPONENT adc_v1;
   
+  COMPONENT temp_top
+     GENERIC (
+        BASE_ADDR : std_logic_vector (15 DOWNTO 0) := X"0000"
+     );
+     PORT (
+        Addr  : IN     std_logic_vector(15 DOWNTO 0);
+        ExpRd : IN     std_logic;
+        ExpWr : IN     std_logic;
+        F8M   : IN     std_logic;
+        rst   : IN     std_logic;                     -- sync high
+        RData : OUT    std_logic_vector(15 DOWNTO 0);
+        scl   : INOUT  std_logic;
+        sda   : INOUT  std_logic
+     );
+  END COMPONENT temp_top;
+  
   FOR ALL : ctr_ungated USE ENTITY idx_fpga_lib.ctr_ungated;
   FOR ALL : ao USE ENTITY idx_fpga_lib.ao;
   FOR ALL : vm USE ENTITY idx_fpga_lib.vm;
@@ -399,6 +420,7 @@ architecture Behavioral of dacs_v2 is
   FOR ALL : qclictrl USE ENTITY idx_fpga_lib.qclictrl;
   FOR ALL : lk204 USE ENTITY idx_fpga_lib.lk204;
   FOR ALL : adc_v1 USE ENTITY idx_fpga_lib.adc_v1;
+  FOR ALL : temp_top USE ENTITY idx_fpga_lib.temp_top;
 
 	attribute box_type : string;
 	attribute box_type of Processor : component is "user_black_box";
@@ -422,7 +444,8 @@ architecture Behavioral of dacs_v2 is
 	CONSTANT QCLI_BDNO : integer := CTR_UG_BDNO+CTR_UG_N_BDS;
 	CONSTANT LK204_BDNO : integer := QCLI_BDNO+N_QCLICTRL;
 	CONSTANT ADC_BDNO : integer := LK204_BDNO+N_LK204;
-	CONSTANT N_BOARDS : integer := ADC_BDNO+N_ADC_BD;
+	CONSTANT TS_BDNO : integer := ADC_BDNO+N_ADC_BD;
+	CONSTANT N_BOARDS : integer := TS_BDNO+N_TIME_SENSOR;
 	SIGNAL clk_8_0000MHz : std_logic;
 	SIGNAL clk_66_6667MHz : std_logic;
   SIGNAL xps_epc_0_PRH_Wr_n_pin : std_logic;
@@ -720,6 +743,23 @@ begin
         RData  => iRData(16*ADC_BDNO+15 DOWNTO 16*ADC_BDNO),
         rst    => rst
      );
+  end generate;
+  
+  ts_gen: if N_TIME_SENSOR > 0 generate
+    ts_inst : temp_top
+       GENERIC MAP (
+          BASE_ADDR => X"0480"  
+       )
+       PORT MAP (
+          Addr  => ExpAddr,
+          ExpRd => ExpRd,
+          ExpWr => ExpWr,
+          F8M   => clk_8_0000MHz,
+          rst   => rst,
+          RData => iRData(16*TS_BDNO+15 DOWNTO 16*TS_BDNO),
+          scl   => TS_SCL(0),
+          sda   => TS_SDA(0)
+       );
   end generate;
 
   subbus_cmdenbl <= CmdEnbl;
