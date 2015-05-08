@@ -12,8 +12,9 @@ dacsbd_download.bit : dacsbd.bit $(ELF)
 pdacs_es96.mcs : pdacs_es96.bit
 	promgen -spi -w -p mcs -o pdacs_es96.mcs -s 8192 -u 0 pdacs_es96.bit
 
-htw_spi_prom.mcs : pdacs_htw.bit
-	promgen -spi -w -p mcs -o htw_spi_prom.mcs -s 8192 -u 0 pdacs_htw.bit
+# 7/1/14: Changing name from htw_spi_prom.mcs to pdacs_htw.mcs
+pdacs_htw.mcs : pdacs_htw.bit
+	promgen -spi -w -p mcs -o pdacs_htw.mcs -s 8192 -u 0 pdacs_htw.bit
 
 pdacs_carbon.mcs : pdacs_carbon.bit
 	promgen -spi -w -p mcs -o pdacs_carbon.mcs -s 8192 -u 0 pdacs_carbon.bit
