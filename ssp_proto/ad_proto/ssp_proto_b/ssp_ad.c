@@ -149,6 +149,19 @@ void *udpThread(void *arg) {
   if ( ethernet_init() ) return &err_rv;
   //safe_print("ethernet initialized\n");
   
+  // This block is a demonstration of endian-ness
+  { unsigned long word;
+  	unsigned char *p;
+  	int i;
+  	word = 0x12345678L;
+  	p = (unsigned char *)&word;
+    print_mutex_lock();
+  	for ( i = 0; i < sizeof(word); i++ ) {
+      safe_printf(("  Byte[%d] = %02X\r\n", i, p[i] ));
+  	}
+    print_mutex_unlock();
+  }
+  
   SPI_system_init();
   AD9510_Init( 0, 1 );
   
@@ -494,9 +507,9 @@ static unsigned int limit_range( char *var, unsigned int val,
     NF:xx      Frequency Divisor
     NP:xxxxx UDP Port Number
     NE:x 1-7 bit-mapped
-    NU:[-]xxxxx Level Trigger Rising
-    ND:[-]xxxxx Level Trigger Falling
-    NT:x (0-3)
+    TU:[-]xxxxx Level Trigger Rising
+    TD:[-]xxxxx Level Trigger Falling
+    TS:x (0-3)
     AE Autotrig Enable
     AD Autotrig Disable
 
