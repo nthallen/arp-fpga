@@ -32,7 +32,7 @@ int udp_create(void) {
   return port;
 }
 
-int udp_receive(long int *scan, size_t length ) {
+int udp_receive(uint32_t *scan, size_t length ) {
     struct sockaddr_in cliAddr;
   	int n, cliLen;
 

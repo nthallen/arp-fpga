@@ -25,6 +25,7 @@
 #include <time.h>
 #include <math.h>
 #include <setjmp.h>
+#include <stdint.h>
 #include "ringdown.h"
 #include "nortlib.h"
 #include "mlf.h"
@@ -77,7 +78,7 @@ static int raw_length;
 
 typedef struct {
   ssp_scan_header_t hdr;
-  long int idata[SSP_CLIENT_BUF_LENGTH-6];
+  uint32_t idata[SSP_CLIENT_BUF_LENGTH-6];
 } ssp_raw_scan;
   
 static void output_scan( ssp_raw_scan *scan, mlf_def_t *mlf ) {
@@ -117,7 +118,7 @@ static void output_scan( ssp_raw_scan *scan, mlf_def_t *mlf ) {
       scan->hdr.NWordsHdr, scan->hdr.FormatVersion, scan->hdr.NChannels, scan->hdr.NF,
       scan->hdr.NSamples, scan->hdr.NCoadd, scan->hdr.NAvg, scan->hdr.NSkL, scan->hdr.NSkP,
       scan->hdr.ScanNum, (scan->hdr.T_HtSink & 0xFFE0)/256.,
-      (scan->hdr.T_FPGA>>3)/16., (unsigned long)scan->idata[raw_length-7] );
+      (scan->hdr.T_FPGA>>3)/16., (uint32_t)scan->idata[raw_length-7] );
     for ( j = 0; j < scan->hdr.NChannels; ++j ) {
       Ringdown_t *rdf = ringdown_fit(&scan->hdr, fdata[0] + j*scan->hdr.NSamples);
       fprintf( hdr_fp, " %.3lf %.3lf %.4lf %.4lf", rdf->tau, rdf->dtau, rdf->b, rdf->a );
@@ -129,15 +130,15 @@ static void output_scan( ssp_raw_scan *scan, mlf_def_t *mlf ) {
       scan->hdr.NWordsHdr, scan->hdr.FormatVersion, scan->hdr.NChannels, scan->hdr.NF,
       scan->hdr.NSamples, scan->hdr.NCoadd, scan->hdr.NAvg, scan->hdr.NSkL, scan->hdr.NSkP,
       scan->hdr.ScanNum, (scan->hdr.T_HtSink & 0xFFE0)/256.,
-      (scan->hdr.T_FPGA>>3)/16., (unsigned long)scan->idata[raw_length-7] );
+      (scan->hdr.T_FPGA>>3)/16., (uint32_t)scan->idata[raw_length-7] );
   }
   fflush(hdr_fp);
   
-  { unsigned long n_l;
+  { uint32_t n_l;
     n_l = scan->hdr.NSamples;
-    fwrite( &n_l, sizeof(unsigned long), 1, ofp );
+    fwrite( &n_l, sizeof(uint32_t), 1, ofp );
     n_l = scan->hdr.NChannels;
-    fwrite( &n_l, sizeof(unsigned long), 1, ofp );
+    fwrite( &n_l, sizeof(uint32_t), 1, ofp );
   }
 
   fwrite( fdata, scan->hdr.NChannels*scan->hdr.NSamples*sizeof(float), 1, ofp );
@@ -155,7 +156,7 @@ static void output_scan( ssp_raw_scan *scan, mlf_def_t *mlf ) {
   //  nl_error( 1, "%lu: scan[5] = %08lX (not %08lX)\n", mlf->index, scan[5], scan5 );
 }
 
-static long int scan_buf[SSP_CLIENT_BUF_LENGTH];
+static int32_t scan_buf[SSP_CLIENT_BUF_LENGTH];
 
 int main( int argc, char **argv ) {
   char cmdbuf[80];
@@ -245,7 +246,7 @@ int main( int argc, char **argv ) {
     if ( RD )
       ringdown_setup( RD_n_skip, RD_n_off );
     raw_length = (7 + scan_length*n_channels);
-    scan_size = raw_length*sizeof(long);
+    scan_size = raw_length*sizeof(uint32_t);
     scan1 = (scan_length << 16) + n_channels;
     while (tcp_send("EN\r\n") == 503 ) sleep(1);
     tcp_close();
@@ -288,7 +289,7 @@ int main( int argc, char **argv ) {
             nl_error( 2, "Lost data: SN skip" );
           }
         }
-        cur_word = frag_offset + (n/sizeof(long)) - 1;
+        cur_word = frag_offset + (n/sizeof(uint32_t)) - 1;
         if ( frag_hdr & SSP_LAST_FRAG_FLAG ) {
           if ( scan_OK ) {
             if ( cur_word == raw_length )

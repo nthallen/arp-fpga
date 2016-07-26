@@ -12,10 +12,11 @@
 #include <string.h> /* memset() */
 #include <errno.h>
 #include <ctype.h>
+#include <stdint.h>
 #include "ssp_ad.h"
 
 extern int udp_create(void);
-extern int udp_receive(long int *scan, size_t length );
+extern int udp_receive(uint32_t *scan, size_t length );
 extern int tcp_create(char *hostname);
 extern int tcp_send( char * cmd );
 extern int tcp_close(void);

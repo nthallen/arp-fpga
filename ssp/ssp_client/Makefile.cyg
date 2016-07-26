@@ -6,7 +6,7 @@ SSP_SIM_SRCS = ssp_sim.c ringdown.c
 SSP_SIM_OBJS = $(SSP_SIM_SRCS:.c=.o)
 SSP_CMD_SRCS = ssp_cmd.c tcp.c udp.c
 SSP_CMD_OBJS = $(SSP_CMD_SRCS:.c=.o)
-LDLIBS=-lnort
+LDLIBS=-L/usr/local/lib -lnort
 
 all : ssp_log ssp_cmd
 
@@ -14,3 +14,7 @@ ssp_log : $(SSP_LOG_OBJS)
 ssp_sim : $(SSP_SIM_OBJS)
 ssp_cmd : $(SSP_CMD_OBJS)
 ssp_get : $(SSP_OBJS)
+
+.PHONY : clean
+clean :
+	rm -f $(SSP_OBJS) $(SSP_LOG_OBJS) ssp_log ssp_cmd
