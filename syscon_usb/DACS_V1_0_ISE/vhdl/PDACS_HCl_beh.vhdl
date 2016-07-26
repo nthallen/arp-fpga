@@ -414,8 +414,8 @@ BEGIN
        ADC_MOSI                       => ADC_MOSI,
        ADC_CS_B                       => ADC_CS_B,
        ADC_SCLK                       => ADC_SCLK,
-       TS_SDA(0)                      => DIO(0),
-       TS_SCL(0)                      => DIO(3)
+       TS_SDA(0)                      => DIO(3),
+       TS_SCL(0)                      => DIO(0)
     );
 
     cmd_proc_i : cmd_proc
