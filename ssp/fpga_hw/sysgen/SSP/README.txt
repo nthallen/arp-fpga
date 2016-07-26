@@ -1,4 +1,14 @@
-ssp_proto V2.2
+12/14/12 Started new development for per-point noise and ringdown
+
+V3.01b
+  Added SSP_Reset output port to support PMT input circuit.
+
+V3.01a
+  Recompiled for EDK 12.1 using PLD instead of FSL
+  
+V3.00
+  Used in initial release on the SSP Board Rev 1
+  Flew during TILDE test flights
 
 New features in V2.2:
   dynamically configurable coadd circuit
@@ -48,3 +58,15 @@ ssp_ad_preaddr circuit description:
   This means that triggering jitter is limited to one A/D sample, not a pre-added
   sample.
 
+ssp_trigger.mdl
+
+  This is an XPS wrapper around the Triggering library block. We generate
+  VHDL from this (no pcore) and then used some tool or other to make it
+  into a pcore.
+  
+ssp_system.mdl
+
+  This is simply a schematic diagram to show how the components should be
+  interconnected in XPS. It does not show how ScanProcessing is connected
+  to the CPU. (Note also that in 12.1, the connection was changed from FSL
+  to PLB)
