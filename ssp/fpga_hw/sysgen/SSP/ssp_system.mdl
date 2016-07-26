@@ -1,6 +1,6 @@
 Model {
   Name			  "ssp_system"
-  Version		  6.5
+  Version		  7.3
   MdlSubVersion		  0
   GraphicalInterface {
     NumRootInports	    0
@@ -12,7 +12,24 @@ Model {
   }
   SavedCharacterEncoding  "windows-1252"
   SaveDefaultBlockParams  on
+  ScopeRefreshTime	  0.035000
+  OverrideScopeRefreshTime on
+  DisableAllScopes	  off
+  DataTypeOverride	  "UseLocalSettings"
+  MinMaxOverflowLogging	  "UseLocalSettings"
+  MinMaxOverflowArchiveMode "Overwrite"
+  Created		  "Thu Feb 28 14:03:48 2008"
+  Creator		  "nort"
+  UpdateHistory		  "UpdateHistoryNever"
+  ModifiedByFormat	  "%<Auto>"
+  LastModifiedBy	  "nort"
+  ModifiedDateFormat	  "%<Auto>"
+  LastModifiedDate	  "Tue Sep 14 14:52:37 2010"
+  RTWModifiedTimeStamp	  0
+  ModelVersionFormat	  "1.%<AutoIncrement:14>"
+  ConfigurationManager	  "None"
   SampleTimeColors	  off
+  SampleTimeAnnotations	  off
   LibraryLinkDisplay	  "user"
   WideLines		  off
   ShowLineDimensions	  off
@@ -21,16 +38,11 @@ Model {
   IgnoreBidirectionalLines off
   ShowStorageClass	  off
   ShowTestPointIcons	  on
+  ShowSignalResolutionIcons on
   ShowViewerIcons	  on
   SortedOrder		  off
   ExecutionContextIcon	  off
   ShowLinearizationAnnotations on
-  ScopeRefreshTime	  0.035000
-  OverrideScopeRefreshTime on
-  DisableAllScopes	  off
-  DataTypeOverride	  "UseLocalSettings"
-  MinMaxOverflowLogging	  "UseLocalSettings"
-  MinMaxOverflowArchiveMode "Overwrite"
   BlockNameDataTip	  off
   BlockParametersDataTip  off
   BlockDescriptionStringDataTip	off
@@ -38,15 +50,7 @@ Model {
   StatusBar		  on
   BrowserShowLibraryLinks off
   BrowserLookUnderMasks	  off
-  Created		  "Thu Feb 28 14:03:48 2008"
-  Creator		  "nort"
-  UpdateHistory		  "UpdateHistoryNever"
-  ModifiedByFormat	  "%<Auto>"
-  LastModifiedBy	  "nort"
-  ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Wed Apr 30 12:53:11 2008"
-  ModelVersionFormat	  "1.%<AutoIncrement:14>"
-  ConfigurationManager	  "None"
+  SimulationMode	  "normal"
   LinearizationMsg	  "none"
   Profile		  off
   ParamWorkspaceSource	  "MATLABWorkspace"
@@ -65,6 +69,8 @@ Model {
   CovCumulativeVarName	  "covCumulativeData"
   CovCumulativeReport	  off
   CovReportOnPause	  on
+  CovModelRefEnable	  "Off"
+  CovExternalEMLEnable	  off
   ExtModeBatchMode	  off
   ExtModeEnableFloating	  on
   ExtModeTrigType	  "manual"
@@ -87,7 +93,6 @@ Model {
   ExtModeLogAll		  on
   ExtModeAutoUpdateStatusClock on
   BufferReuse		  on
-  ProdHWDeviceType	  "32-bit Generic"
   ShowModelReferenceBlockVersion off
   ShowModelReferenceBlockIO off
   Array {
@@ -95,13 +100,13 @@ Model {
     Dimension		    1
     Simulink.ConfigSet {
       $ObjectID		      1
-      Version		      "1.2.0"
+      Version		      "1.6.0"
       Array {
 	Type			"Handle"
-	Dimension		7
+	Dimension		8
 	Simulink.SolverCC {
 	  $ObjectID		  2
-	  Version		  "1.2.0"
+	  Version		  "1.6.0"
 	  StartTime		  "0.0"
 	  StopTime		  "10.0"
 	  AbsTol		  "auto"
@@ -109,6 +114,7 @@ Model {
 	  InitialStep		  "auto"
 	  MaxNumMinSteps	  "-1"
 	  MaxOrder		  5
+	  ZcThreshold		  "auto"
 	  ConsecutiveZCsStepRelTol "10*128*eps"
 	  MaxConsecutiveZCs	  "1000"
 	  ExtrapolationOrder	  4
@@ -120,17 +126,20 @@ Model {
 	  SolverMode		  "Auto"
 	  Solver		  "ode45"
 	  SolverName		  "ode45"
+	  ShapePreserveControl	  "DisableAll"
 	  ZeroCrossControl	  "UseLocalSettings"
+	  ZeroCrossAlgorithm	  "Nonadaptive"
 	  AlgebraicLoopSolver	  "TrustRegion"
 	  SolverResetMethod	  "Fast"
 	  PositivePriorityOrder	  off
 	  AutoInsertRateTranBlk	  off
 	  SampleTimeConstraint	  "Unconstrained"
-	  RateTranMode		  "Deterministic"
+	  InsertRTBMode		  "Whenever possible"
+	  SignalSizeVariationType "Allow only fixed size"
 	}
 	Simulink.DataIOCC {
 	  $ObjectID		  3
-	  Version		  "1.2.0"
+	  Version		  "1.6.0"
 	  Decimation		  "1"
 	  ExternalInput		  "[t, u]"
 	  FinalStateName	  "xFinal"
@@ -140,6 +149,7 @@ Model {
 	  LoadExternalInput	  off
 	  LoadInitialState	  off
 	  SaveFinalState	  off
+	  SaveCompleteFinalSimState off
 	  SaveFormat		  "Array"
 	  SaveOutput		  on
 	  SaveState		  off
@@ -156,17 +166,16 @@ Model {
 	}
 	Simulink.OptimizationCC {
 	  $ObjectID		  4
+	  Version		  "1.6.0"
 	  Array {
 	    Type		    "Cell"
-	    Dimension		    5
+	    Dimension		    4
 	    Cell		    "ZeroExternalMemoryAtStartup"
 	    Cell		    "ZeroInternalMemoryAtStartup"
-	    Cell		    "InitFltsAndDblsToZero"
-	    Cell		    "OptimizeModelRefInitCode"
 	    Cell		    "NoFixptDivByZeroProtection"
+	    Cell		    "OptimizeModelRefInitCode"
 	    PropName		    "DisabledProps"
 	  }
-	  Version		  "1.2.0"
 	  BlockReduction	  on
 	  BooleanDataType	  on
 	  ConditionallyExecuteInputs on
@@ -174,11 +183,16 @@ Model {
 	  InlineInvariantSignals  off
 	  OptimizeBlockIOStorage  on
 	  BufferReuse		  on
+	  EnhancedBackFolding	  off
+	  StrengthReduction	  off
 	  EnforceIntegerDowncast  on
 	  ExpressionFolding	  on
+	  EnableMemcpy		  on
+	  MemcpyThreshold	  64
+	  PassReuseOutputArgsAs	  "Structure reference"
+	  ExpressionDepthLimit	  2147483647
 	  FoldNonRolledExpr	  on
 	  LocalBlockOutputs	  on
-	  ParameterPooling	  on
 	  RollThreshold		  5
 	  SystemCodeInlineAuto	  off
 	  StateBitsets		  off
@@ -189,23 +203,31 @@ Model {
 	  InitFltsAndDblsToZero	  on
 	  NoFixptDivByZeroProtection off
 	  EfficientFloat2IntCast  off
+	  EfficientMapNaN2IntZero on
 	  OptimizeModelRefInitCode off
 	  LifeSpan		  "inf"
 	  BufferReusableBoundary  on
+	  SimCompilerOptimization "Off"
+	  AccelVerboseBuild	  off
 	}
 	Simulink.DebuggingCC {
 	  $ObjectID		  5
-	  Version		  "1.2.0"
+	  Version		  "1.6.0"
 	  RTPrefix		  "error"
 	  ConsistencyChecking	  "none"
 	  ArrayBoundsChecking	  "none"
 	  SignalInfNanChecking	  "none"
+	  SignalRangeChecking	  "none"
 	  ReadBeforeWriteMsg	  "UseLocalSettings"
 	  WriteAfterWriteMsg	  "UseLocalSettings"
 	  WriteAfterReadMsg	  "UseLocalSettings"
 	  AlgebraicLoopMsg	  "warning"
 	  ArtificialAlgebraicLoopMsg "warning"
+	  SaveWithDisabledLinksMsg "warning"
+	  SaveWithParameterizedLinksMsg	"none"
 	  CheckSSInitialOutputMsg on
+	  UnderspecifiedInitializationDetection	"Classic"
+	  MergeDetectMultiDrivingBlocksExec "none"
 	  CheckExecutionContextPreStartOutputMsg off
 	  CheckExecutionContextRuntimeOutputMsg	off
 	  SignalResolutionControl "TryResolveAllWithWarning"
@@ -229,6 +251,7 @@ Model {
 	  ParameterOverflowMsg	  "error"
 	  ParameterUnderflowMsg	  "none"
 	  ParameterPrecisionLossMsg "warning"
+	  ParameterTunabilityLossMsg "warning"
 	  UnderSpecifiedDataTypeMsg "none"
 	  UnnecessaryDatatypeConvMsg "none"
 	  VectorMatrixConversionMsg "none"
@@ -248,16 +271,18 @@ Model {
 	  ModelReferenceVersionMismatchMessage "none"
 	  ModelReferenceIOMismatchMessage "none"
 	  ModelReferenceCSMismatchMessage "none"
-	  ModelReferenceSimTargetVerbose off
 	  UnknownTsInhSupMsg	  "warning"
 	  ModelReferenceDataLoggingMessage "warning"
 	  ModelReferenceSymbolNameMessage "warning"
 	  ModelReferenceExtraNoncontSigs "error"
+	  StateNameClashWarn	  "warning"
 	  StrictBusMsg		  "Warning"
+	  LoggingUnavailableSignals "error"
+	  BlockIODiagnostic	  "none"
 	}
 	Simulink.HardwareCC {
 	  $ObjectID		  6
-	  Version		  "1.2.0"
+	  Version		  "1.6.0"
 	  ProdBitPerChar	  8
 	  ProdBitPerShort	  16
 	  ProdBitPerInt		  32
@@ -284,23 +309,33 @@ Model {
 	}
 	Simulink.ModelReferenceCC {
 	  $ObjectID		  7
-	  Version		  "1.2.0"
+	  Version		  "1.6.0"
 	  UpdateModelReferenceTargets "IfOutOfDateOrStructuralChange"
 	  CheckModelReferenceTargetMessage "error"
 	  ModelReferenceNumInstancesAllowed "Multi"
 	  ModelReferencePassRootInputsByReference on
 	  ModelReferenceMinAlgLoopOccurrences off
 	}
+	Simulink.SFSimCC {
+	  $ObjectID		  8
+	  Version		  "1.6.0"
+	  SFSimEnableDebug	  on
+	  SFSimOverflowDetection  on
+	  SFSimEcho		  on
+	  SimBlas		  on
+	  SimUseLocalCustomCode	  off
+	  SimBuildMode		  "sf_incremental_build"
+	}
 	Simulink.RTWCC {
 	  $BackupClass		  "Simulink.RTWCC"
-	  $ObjectID		  8
+	  $ObjectID		  9
+	  Version		  "1.6.0"
 	  Array {
 	    Type		    "Cell"
 	    Dimension		    1
 	    Cell		    "IncludeHyperlinkInReport"
 	    PropName		    "DisabledProps"
 	  }
-	  Version		  "1.2.0"
 	  SystemTargetFile	  "grt.tlc"
 	  GenCodeOnly		  off
 	  MakeCommand		  "make_rtw"
@@ -317,16 +352,27 @@ Model {
 	  ProcessScriptMode	  "Default"
 	  ConfigurationMode	  "Optimized"
 	  ConfigAtBuild		  off
+	  RTWUseLocalCustomCode	  off
+	  RTWUseSimCustomCode	  off
 	  IncludeHyperlinkInReport off
 	  LaunchReport		  off
 	  TargetLang		  "C"
 	  IncludeBusHierarchyInRTWFileBlockHierarchyMap	off
 	  IncludeERTFirstTime	  off
+	  GenerateTraceInfo	  off
+	  GenerateTraceReport	  off
+	  GenerateTraceReportSl	  off
+	  GenerateTraceReportSf	  off
+	  GenerateTraceReportEml  off
+	  GenerateCodeInfo	  off
+	  RTWCompilerOptimization "Off"
+	  CheckMdlBeforeBuild	  "Off"
 	  Array {
 	    Type		    "Handle"
 	    Dimension		    2
 	    Simulink.CodeAppCC {
-	      $ObjectID		      9
+	      $ObjectID		      10
+	      Version		      "1.6.0"
 	      Array {
 		Type			"Cell"
 		Dimension		16
@@ -348,10 +394,10 @@ Model {
 		Cell			"CustomSymbolStrMacro"
 		PropName		"DisabledProps"
 	      }
-	      Version		      "1.2.0"
 	      ForceParamTrailComments off
 	      GenerateComments	      on
 	      IgnoreCustomStorageClasses on
+	      IgnoreTestpoints	      off
 	      IncHierarchyInIds	      off
 	      MaxIdLength	      31
 	      PreserveName	      off
@@ -361,7 +407,6 @@ Model {
 	      SimulinkDataObjDesc     off
 	      SFDataObjDesc	      off
 	      IncDataTypeInIds	      off
-	      PrefixModelToSubsysFcnNames on
 	      MangleLength	      1
 	      CustomSymbolStrGlobalVar "$R$N$M"
 	      CustomSymbolStrType     "$N$R$M"
@@ -378,10 +423,12 @@ Model {
 	      EnableCustomComments    off
 	      InlinedPrmAccess	      "Literals"
 	      ReqsInCode	      off
+	      UseSimReservedNames     off
 	    }
 	    Simulink.GRTTargetCC {
 	      $BackupClass	      "Simulink.TargetCC"
-	      $ObjectID		      10
+	      $ObjectID		      11
+	      Version		      "1.6.0"
 	      Array {
 		Type			"Cell"
 		Dimension		13
@@ -400,20 +447,25 @@ Model {
 		Cell			"SupportNonInlinedSFcns"
 		PropName		"DisabledProps"
 	      }
-	      Version		      "1.2.0"
 	      TargetFcnLib	      "ansi_tfl_tmw.mat"
 	      TargetLibSuffix	      ""
 	      TargetPreCompLibLocation ""
-	      GenFloatMathFcnCalls    "ANSI_C"
+	      TargetFunctionLibrary   "ANSI_C"
 	      UtilityFuncGeneration   "Auto"
+	      ERTMultiwordTypeDef     "System defined"
+	      ERTMultiwordLength      256
+	      MultiwordLength	      2048
 	      GenerateFullHeader      on
 	      GenerateSampleERTMain   off
 	      GenerateTestInterfaces  off
 	      IsPILTarget	      off
 	      ModelReferenceCompliant on
+	      ParMdlRefBuildCompliant on
+	      CompOptLevelCompliant   on
 	      IncludeMdlTerminateFcn  on
 	      CombineOutputUpdateFcns off
 	      SuppressErrorStatus     off
+	      ERTFirstTimeCompliant   off
 	      IncludeFileDelimiter    "Auto"
 	      ERTCustomFileBanners    off
 	      SupportAbsoluteTime     on
@@ -427,12 +479,18 @@ Model {
 	      SupportNonInlinedSFcns  on
 	      EnableShiftOperators    on
 	      ParenthesesLevel	      "Nominal"
+	      PortableWordSizes	      off
+	      ModelStepFunctionPrototypeControlCompliant off
+	      CPPClassGenCompliant    off
+	      AutosarCompliant	      off
+	      UseMalloc		      off
 	      ExtMode		      off
 	      ExtModeStaticAlloc      off
 	      ExtModeTesting	      off
 	      ExtModeStaticAllocSize  1000000
 	      ExtModeTransport	      0
 	      ExtModeMexFile	      "ext_comm"
+	      ExtModeIntrfLevel	      "Level1"
 	      RTWCAPISignals	      off
 	      RTWCAPIParams	      off
 	      RTWCAPIStates	      off
@@ -444,8 +502,8 @@ Model {
 	PropName		"Components"
       }
       Name		      "Configuration"
-      SimulationMode	      "normal"
       CurrentDlgPage	      "Solver"
+      ConfigPrmDlgPosition    " [ 200, 197, 1080, 827 ] "
     }
     PropName		    "ConfigurationSets"
   }
@@ -454,7 +512,6 @@ Model {
     $ObjectID		    1
   }
   BlockDefaults {
-    Orientation		    "right"
     ForegroundColor	    "black"
     BackgroundColor	    "white"
     DropShadow		    off
@@ -464,6 +521,26 @@ Model {
     FontWeight		    "normal"
     FontAngle		    "normal"
     ShowName		    on
+    BlockRotation	    0
+    BlockMirror		    off
+  }
+  AnnotationDefaults {
+    HorizontalAlignment	    "center"
+    VerticalAlignment	    "middle"
+    ForegroundColor	    "black"
+    BackgroundColor	    "white"
+    DropShadow		    off
+    FontName		    "Arial"
+    FontSize		    10
+    FontWeight		    "normal"
+    FontAngle		    "normal"
+    UseDisplayTextAsClickCallback off
+  }
+  LineDefaults {
+    FontName		    "Arial"
+    FontSize		    9
+    FontWeight		    "normal"
+    FontAngle		    "normal"
   }
   BlockParameterDefaults {
     Block {
@@ -474,14 +551,19 @@ Model {
       BusOutputAsStruct	      off
       PortDimensions	      "-1"
       SampleTime	      "-1"
+      OutMin		      "[]"
+      OutMax		      "[]"
       DataType		      "auto"
-      OutDataType	      "sfix(16)"
-      OutScaling	      "2^0"
+      OutDataType	      "fixdt(1,16,0)"
+      OutScaling	      "[]"
+      OutDataTypeStr	      "Inherit: auto"
+      LockScale		      off
       SignalType	      "auto"
       SamplingMode	      "auto"
       LatchByDelayingOutsideSignal off
       LatchByCopyingInsideSignal off
       Interpolate	      on
+      DimensionsMode	      "auto"
     }
     Block {
       BlockType		      Outport
@@ -491,29 +573,27 @@ Model {
       BusOutputAsStruct	      off
       PortDimensions	      "-1"
       SampleTime	      "-1"
+      OutMin		      "[]"
+      OutMax		      "[]"
       DataType		      "auto"
-      OutDataType	      "sfix(16)"
-      OutScaling	      "2^0"
+      OutDataType	      "fixdt(1,16,0)"
+      OutScaling	      "[]"
+      OutDataTypeStr	      "Inherit: auto"
+      LockScale		      off
       SignalType	      "auto"
       SamplingMode	      "auto"
+      SourceOfInitialOutputValue "Dialog"
       OutputWhenDisabled      "held"
       InitialOutput	      "[]"
-    }
-    Block {
-      BlockType		      Reference
-    }
-    Block {
-      BlockType		      "S-Function"
-      FunctionName	      "system"
-      SFunctionModules	      "''"
-      PortCounts	      "[]"
+      DimensionsMode	      "auto"
     }
     Block {
       BlockType		      SubSystem
-      ShowPortLabels	      on
+      ShowPortLabels	      "FromPortIcon"
       Permissions	      "ReadWrite"
       PermitHierarchicalResolution "All"
       TreatAsAtomicUnit	      off
+      CheckFcnCallInpInsideContextMsg off
       SystemSampleTime	      "-1"
       RTWFcnNameOpts	      "Auto"
       RTWFileNameOpts	      "Auto"
@@ -527,26 +607,9 @@ Model {
       MinMaxOverflowLogging   "UseLocalSettings"
     }
   }
-  AnnotationDefaults {
-    HorizontalAlignment	    "center"
-    VerticalAlignment	    "middle"
-    ForegroundColor	    "black"
-    BackgroundColor	    "white"
-    DropShadow		    off
-    FontName		    "Arial"
-    FontSize		    10
-    FontWeight		    "normal"
-    FontAngle		    "normal"
-  }
-  LineDefaults {
-    FontName		    "Arial"
-    FontSize		    9
-    FontWeight		    "normal"
-    FontAngle		    "normal"
-  }
   System {
     Name		    "ssp_system"
-    Location		    [78, 108, 994, 695]
+    Location		    [78, 108, 994, 678]
     Open		    on
     ModelBrowserVisibility  off
     ModelBrowserWidth	    200
@@ -558,7 +621,7 @@ Model {
     TiledPaperMargins	    [0.500000, 0.500000, 0.500000, 0.500000]
     TiledPageScale	    1
     ShowPageBoundaries	    off
-    ZoomFactor		    "54"
+    ZoomFactor		    "67"
     ReportName		    "simulink-default.rpt"
     Block {
       BlockType		      SubSystem
@@ -567,8 +630,11 @@ Model {
       Position		      [35, 123, 90, 167]
       BackgroundColor	      "magenta"
       MinAlgLoopOccurrences   off
+      PropExecContextOutsideSubsystem off
       RTWSystemCode	      "Auto"
       FunctionWithSeparateData off
+      Opaque		      off
+      RequestExecContextInheritance off
       MaskHideContents	      off
       System {
 	Name			"AD0"
@@ -590,7 +656,8 @@ Model {
 	  Name			  "Out1"
 	  Position		  [360, 103, 390, 117]
 	  IconDisplay		  "Port number"
-	  BusOutputAsStruct	  off
+	  OutDataType		  "sfix(16)"
+	  OutScaling		  "2^0"
 	}
       }
     }
@@ -601,8 +668,11 @@ Model {
       Position		      [425, 133, 480, 177]
       BackgroundColor	      "magenta"
       MinAlgLoopOccurrences   off
+      PropExecContextOutsideSubsystem off
       RTWSystemCode	      "Auto"
       FunctionWithSeparateData off
+      Opaque		      off
+      RequestExecContextInheritance off
       MaskHideContents	      off
       System {
 	Name			"AD1"
@@ -624,7 +694,8 @@ Model {
 	  Name			  "Out1"
 	  Position		  [360, 103, 390, 117]
 	  IconDisplay		  "Port number"
-	  BusOutputAsStruct	  off
+	  OutDataType		  "sfix(16)"
+	  OutScaling		  "2^0"
 	}
       }
     }
@@ -635,8 +706,11 @@ Model {
       Position		      [755, 138, 810, 182]
       BackgroundColor	      "magenta"
       MinAlgLoopOccurrences   off
+      PropExecContextOutsideSubsystem off
       RTWSystemCode	      "Auto"
       FunctionWithSeparateData off
+      Opaque		      off
+      RequestExecContextInheritance off
       MaskHideContents	      off
       System {
 	Name			"AD2"
@@ -658,7 +732,8 @@ Model {
 	  Name			  "Out1"
 	  Position		  [360, 103, 390, 117]
 	  IconDisplay		  "Port number"
-	  BusOutputAsStruct	  off
+	  OutDataType		  "sfix(16)"
+	  OutScaling		  "2^0"
 	}
       }
     }
@@ -670,9 +745,8 @@ Model {
       NamePlacement	      "alternate"
       SourceBlock	      "xbsIndex_r4/Gateway In"
       SourceType	      "Xilinx Gateway In Block"
-      infoedit		      "Gateway in block.  Converts inputs of type Simu"
-"link integer, double and fixed point to  Xilinx fixed point type.<P><P>Hardwa"
-"re notes:  In hardware these blocks become top level input ports."
+      infoedit		      "Gateway in block.  Converts inputs of type Simulink integer, double and fixed point to  Xilinx "
+      "fixed point type.<P><P>Hardware notes:  In hardware these blocks become top level input ports."
       arith_type	      "Signed  (2's comp)"
       n_bits		      "16"
       bin_pt		      "14"
@@ -685,19 +759,19 @@ Model {
       LOCs		      "{}"
       xl_use_area	      off
       xl_area		      "[0,0,0,0,0,0,0]"
+      hdl_port		      "on"
       has_advanced_control    "0"
       sggui_pos		      "-1,-1,-1,-1"
       block_type	      "gatewayin"
       block_version	      "9.2.01"
-      sg_icon_stat	      "65,20,1,1,white,yellow,0,4bb76ffd"
-      sg_mask_display	      "fprintf('','COMMENT: begin icon graphics');\npa"
-"tch([0 65 65 0 ],[0 0 20 20 ],[0.95 0.93 0.65]);\npatch([27 24 29 24 27 32 33"
-" 34 40 36 32 29 34 29 32 36 40 34 33 32 27 ],[2 5 10 15 18 18 17 18 18 14 18 "
-"15 10 5 2 6 2 2 3 2 2 ],[0.98 0.96 0.92]);\nplot([0 0 65 65 0 ],[0 20 20 0 0 "
-"]);\nfprintf('','COMMENT: end icon graphics');\nfprintf('','COMMENT: begin ic"
-"on text');\ncolor('black');port_label('input',1,'\\fontsize{11pt}\\bf In ','t"
-"exmode','on');\ncolor('black');port_label('output',1,' ');\nfprintf('','COMME"
-"NT: end icon text');\n"
+      sg_icon_stat	      "65,20,1,1,white,yellow,0,00d3666e,right,"
+      sg_mask_display	      "fprintf('','COMMENT: begin icon graphics');\npatch([0 1 1 0 ],[0 0 1 1 ],[0.95 0.93 0.65]"
+      ");\npatch([0.415385 0.369231 0.446154 0.369231 0.415385 0.492308 0.507692 0.523077 0.615385 0.553846 0.492308 0."
+      "446154 0.523077 0.446154 0.492308 0.553846 0.615385 0.523077 0.507692 0.492308 0.415385 ],[0.1 0.25 0.5 0.75 0.9"
+      " 0.9 0.85 0.9 0.9 0.7 0.9 0.75 0.5 0.25 0.1 0.3 0.1 0.1 0.15 0.1 0.1 ],[0.98 0.96 0.92]);\nplot([0 1 1 0 0 ],[0 "
+      "0 1 1 0 ]);\nfprintf('','COMMENT: end icon graphics');\nfprintf('','COMMENT: begin icon text');\ncolor('black');"
+      "port_label('input',1,'\\fontsize{11pt}\\bf In ','texmode','on');\ncolor('black');port_label('output',1,' ');\nfp"
+      "rintf('','COMMENT: end icon text');\n"
     }
     Block {
       BlockType		      SubSystem
@@ -706,8 +780,11 @@ Model {
       Position		      [1110, 27, 1210, 383]
       BackgroundColor	      "yellow"
       MinAlgLoopOccurrences   off
+      PropExecContextOutsideSubsystem off
       RTWSystemCode	      "Auto"
       FunctionWithSeparateData off
+      Opaque		      off
+      RequestExecContextInheritance off
       MaskHideContents	      off
       Port {
 	PortNumber		2
@@ -759,6 +836,8 @@ Model {
 	  Name			  "Sig0"
 	  Position		  [70, 28, 100, 42]
 	  IconDisplay		  "Port number"
+	  OutDataType		  "sfix(16)"
+	  OutScaling		  "2^0"
 	}
 	Block {
 	  BlockType		  Inport
@@ -766,6 +845,8 @@ Model {
 	  Position		  [70, 63, 100, 77]
 	  Port			  "2"
 	  IconDisplay		  "Port number"
+	  OutDataType		  "sfix(16)"
+	  OutScaling		  "2^0"
 	}
 	Block {
 	  BlockType		  Inport
@@ -773,13 +854,16 @@ Model {
 	  Position		  [70, 93, 100, 107]
 	  Port			  "3"
 	  IconDisplay		  "Port number"
+	  OutDataType		  "sfix(16)"
+	  OutScaling		  "2^0"
 	}
 	Block {
 	  BlockType		  Outport
 	  Name			  "FSL"
 	  Position		  [320, 28, 350, 42]
 	  IconDisplay		  "Port number"
-	  BusOutputAsStruct	  off
+	  OutDataType		  "sfix(16)"
+	  OutScaling		  "2^0"
 	}
 	Block {
 	  BlockType		  Outport
@@ -787,7 +871,8 @@ Model {
 	  Position		  [320, 193, 350, 207]
 	  Port			  "2"
 	  IconDisplay		  "Port number"
-	  BusOutputAsStruct	  off
+	  OutDataType		  "sfix(16)"
+	  OutScaling		  "2^0"
 	}
 	Block {
 	  BlockType		  Outport
@@ -795,7 +880,8 @@ Model {
 	  Position		  [320, 128, 350, 142]
 	  Port			  "3"
 	  IconDisplay		  "Port number"
-	  BusOutputAsStruct	  off
+	  OutDataType		  "sfix(16)"
+	  OutScaling		  "2^0"
 	}
 	Block {
 	  BlockType		  Outport
@@ -803,7 +889,8 @@ Model {
 	  Position		  [320, 58, 350, 72]
 	  Port			  "4"
 	  IconDisplay		  "Port number"
-	  BusOutputAsStruct	  off
+	  OutDataType		  "sfix(16)"
+	  OutScaling		  "2^0"
 	}
 	Block {
 	  BlockType		  Outport
@@ -811,7 +898,8 @@ Model {
 	  Position		  [320, 93, 350, 107]
 	  Port			  "5"
 	  IconDisplay		  "Port number"
-	  BusOutputAsStruct	  off
+	  OutDataType		  "sfix(16)"
+	  OutScaling		  "2^0"
 	}
 	Block {
 	  BlockType		  Outport
@@ -819,7 +907,8 @@ Model {
 	  Position		  [320, 158, 350, 172]
 	  Port			  "6"
 	  IconDisplay		  "Port number"
-	  BusOutputAsStruct	  off
+	  OutDataType		  "sfix(16)"
+	  OutScaling		  "2^0"
 	}
 	Line {
 	  SrcBlock		  "Sig0"
@@ -837,7 +926,7 @@ Model {
       BackgroundColor	      "yellow"
       SourceBlock	      "nort_sysgenlib/Triggering"
       SourceType	      "SubSystem"
-      ShowPortLabels	      on
+      ShowPortLabels	      "FromPortIcon"
       SystemSampleTime	      "-1"
       FunctionWithSeparateData off
       RTWMemSecFuncInitTerm   "Inherit from model"
@@ -866,7 +955,7 @@ Model {
       BackgroundColor	      "yellow"
       SourceBlock	      "nort_sysgenlib/arp_ssp"
       SourceType	      "SubSystem"
-      ShowPortLabels	      on
+      ShowPortLabels	      "FromPortIcon"
       SystemSampleTime	      "-1"
       FunctionWithSeparateData off
       RTWMemSecFuncInitTerm   "Inherit from model"
@@ -883,7 +972,7 @@ Model {
       BackgroundColor	      "yellow"
       SourceBlock	      "nort_sysgenlib/arp_ssp"
       SourceType	      "SubSystem"
-      ShowPortLabels	      on
+      ShowPortLabels	      "FromPortIcon"
       SystemSampleTime	      "-1"
       FunctionWithSeparateData off
       RTWMemSecFuncInitTerm   "Inherit from model"
@@ -900,7 +989,7 @@ Model {
       BackgroundColor	      "yellow"
       SourceBlock	      "nort_sysgenlib/arp_ssp"
       SourceType	      "SubSystem"
-      ShowPortLabels	      on
+      ShowPortLabels	      "FromPortIcon"
       SystemSampleTime	      "-1"
       FunctionWithSeparateData off
       RTWMemSecFuncInitTerm   "Inherit from model"
@@ -917,7 +1006,7 @@ Model {
       BackgroundColor	      "yellow"
       SourceBlock	      "nort_sysgenlib/ssp_ad_preaddr"
       SourceType	      "SubSystem"
-      ShowPortLabels	      on
+      ShowPortLabels	      "FromPortIcon"
       SystemSampleTime	      "-1"
       FunctionWithSeparateData off
       RTWMemSecFuncInitTerm   "Inherit from model"
@@ -946,7 +1035,7 @@ Model {
       BackgroundColor	      "yellow"
       SourceBlock	      "nort_sysgenlib/ssp_ad_preaddr"
       SourceType	      "SubSystem"
-      ShowPortLabels	      on
+      ShowPortLabels	      "FromPortIcon"
       SystemSampleTime	      "-1"
       FunctionWithSeparateData off
       RTWMemSecFuncInitTerm   "Inherit from model"
@@ -975,7 +1064,7 @@ Model {
       BackgroundColor	      "yellow"
       SourceBlock	      "nort_sysgenlib/ssp_ad_preaddr"
       SourceType	      "SubSystem"
-      ShowPortLabels	      on
+      ShowPortLabels	      "FromPortIcon"
       SystemSampleTime	      "-1"
       FunctionWithSeparateData off
       RTWMemSecFuncInitTerm   "Inherit from model"
@@ -1259,7 +1348,6 @@ Model {
       Position		      [163, 49]
       BackgroundColor	      "cyan"
       DropShadow	      on
-      UseDisplayTextAsClickCallback off
       FontSize		      16
       FontWeight	      "bold"
     }
