@@ -1,4 +1,4 @@
-ACE = ssp_V1a_r2_n1.ace
+ACE = ssp_V1ap_r1_n1.ace
 SW_APP = ssp_fpga_sw
 BIT = implementation/system.bit
 ELF = SDK_projects/$(SW_APP)/Release/$(SW_APP).elf
