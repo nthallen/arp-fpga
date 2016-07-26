@@ -399,7 +399,7 @@ architecture Behavioral of dacs_v2 is
   
   COMPONENT temp_top
      GENERIC (
-        BASE_ADDR : std_logic_vector (15 DOWNTO 0) := X"0000"
+        BASE_ADDR : unsigned (15 DOWNTO 0) := X"0000"
      );
      PORT (
         Addr  : IN     std_logic_vector(15 DOWNTO 0);
@@ -407,6 +407,7 @@ architecture Behavioral of dacs_v2 is
         ExpWr : IN     std_logic;
         F8M   : IN     std_logic;
         rst   : IN     std_logic;                     -- sync high
+        ExpAck : OUT   std_logic;
         RData : OUT    std_logic_vector(15 DOWNTO 0);
         scl   : INOUT  std_logic;
         sda   : INOUT  std_logic
@@ -445,7 +446,7 @@ architecture Behavioral of dacs_v2 is
 	CONSTANT LK204_BDNO : integer := QCLI_BDNO+N_QCLICTRL;
 	CONSTANT ADC_BDNO : integer := LK204_BDNO+N_LK204;
 	CONSTANT TS_BDNO : integer := ADC_BDNO+N_ADC_BD;
-	CONSTANT N_BOARDS : integer := TS_BDNO+N_TIME_SENSOR;
+	CONSTANT N_BOARDS : integer := TS_BDNO+N_TEMP_SENSOR;
 	SIGNAL clk_8_0000MHz : std_logic;
 	SIGNAL clk_66_6667MHz : std_logic;
   SIGNAL xps_epc_0_PRH_Wr_n_pin : std_logic;
@@ -745,7 +746,7 @@ begin
      );
   end generate;
   
-  ts_gen: if N_TIME_SENSOR > 0 generate
+  ts_gen: if N_TEMP_SENSOR > 0 generate
     ts_inst : temp_top
        GENERIC MAP (
           BASE_ADDR => X"0480"  
@@ -754,6 +755,7 @@ begin
           Addr  => ExpAddr,
           ExpRd => ExpRd,
           ExpWr => ExpWr,
+          ExpAck => ExpAck(TS_BDNO),
           F8M   => clk_8_0000MHz,
           rst   => rst,
           RData => iRData(16*TS_BDNO+15 DOWNTO 16*TS_BDNO),

@@ -16,7 +16,7 @@ USE ieee.std_logic_arith.all;
 
 ENTITY temp_addr IS
    GENERIC( 
-      BASE_ADDR : std_logic_vector (15 DOWNTO 0)
+      BASE_ADDR : unsigned (15 DOWNTO 0) := X"0000"
    );
    PORT( 
       Addr   : IN     std_logic_vector (15 DOWNTO 0);
@@ -39,21 +39,23 @@ ARCHITECTURE beh OF temp_addr IS
   SIGNAL Pos_Word : std_logic_vector(1 DOWNTO 0);
   SIGNAL BdEn_int : std_logic;
 BEGIN
-  BE : Process (Addr) BEGIN
-    BdEn <= '0';
-    IF Addr >= BASE_ADDR THEN
+  BE : Process (Addr,Cur_Sensor) BEGIN
+    BdEn_int <= '0';
+    Pos_Sensor <= "111"; -- not a valid sensor
+    Pos_Word <= "11"; -- not a valid word
+    IF unsigned(Addr) >= BASE_ADDR THEN
       for i in 0 to 5 loop
         if Addr = BASE_ADDR + i*6 THEN
           BdEn_int <= '1';
-          Pos_Sensor <= i;
+          Pos_Sensor <= conv_std_logic_vector(i,3);
           Pos_Word <= "00";
-        elsif Addr = BASE_ADDR + i*6 + 2 AND Cur_Sensor = i THEN
+        elsif Addr = BASE_ADDR + i*6 + 2 AND Cur_Sensor = conv_std_logic_vector(i,3) THEN
           BdEn_int <= '1';
-          Pos_Sensor <= i;
+          Pos_Sensor <= conv_std_logic_vector(i,3);
           Pos_Word <= "01";
-        elsif Addr = BASE_ADDR + i*6 + 4 AND Cur_Sensor = i THEN
+        elsif Addr = BASE_ADDR + i*6 + 4 AND Cur_Sensor = conv_std_logic_vector(i,3) THEN
           BdEn_int <= '1';
-          Pos_Sensor <= i;
+          Pos_Sensor <= conv_std_logic_vector(i,3);
           Pos_Word <= "10";
         end if;
       end loop;
@@ -64,6 +66,7 @@ BEGIN
     IF F8M'event AND F8M = '1' THEN
       IF rst = '1' THEN
         Cur_Sensor <= "111"; -- not a valid sensor
+        Word <= "11"; -- not a valid word
       ELSIF ExpRd = '1' AND BdEn_int = '1' THEN
         Cur_Sensor <= Pos_Sensor;
         Word <= Pos_Word;
