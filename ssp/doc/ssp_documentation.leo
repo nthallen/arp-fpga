@@ -9,10 +9,10 @@
 <preferences/>
 <find_panel_settings/>
 <vnodes>
-<v t="ntallen.20100702124409.1475"><vh>@chapters</vh></v>
+<v t="ntallen.20091224122848.1465"><vh>@chapters</vh></v>
 <v t="ntallen.20080228100701" a="E"><vh>SSP Documentation</vh>
 <v t="ntallen.20080228100842" a="E"><vh>IIP Development Notes</vh>
-<v t="ntallen.20080228100842.1"><vh>Design Issues</vh>
+<v t="ntallen.20080228100842.1" a="E"><vh>Design Issues</vh>
 <v t="ntallen.20080228100842.2"><vh>Multiple Clocks</vh></v>
 <v t="ntallen.20080228100842.3"><vh>Implement Coadd and N Channels</vh>
 <v t="ntallen.20080311125846"><vh>Remaining Work</vh></v>
@@ -21,7 +21,7 @@
 <v t="ntallen.20080228100842.4"><vh>Back to benchmarks</vh></v>
 <v t="ntallen.20080228100842.5"><vh>Data Transfer Strategies</vh>
 <v t="ntallen.20080228100842.6"><vh>V1</vh></v>
-<v t="ntallen.20080228100842.7"><vh>V2</vh>
+<v t="ntallen.20080228100842.7" a="E"><vh>V2</vh>
 <v t="ntallen.20080311125846.1"><vh>V2a</vh></v>
 </v>
 <v t="ntallen.20080228100842.8"><vh>V3</vh></v>
@@ -33,53 +33,21 @@
 <v t="ntallen.20081118114833"><vh>TCP for web</vh></v>
 </v>
 </v>
+<v t="ntallen.20121214140639.1499" a="E"><vh>SSP V2: Ringdown, Per Point Noise</vh>
+<v t="ntallen.20121214140639.1500"><vh>PreAdder for Channel 0</vh></v>
 </v>
-<v t="ntallen.20080228100842.9"><vh>Knowledge Base</vh>
-<v t="ntallen.20080228100842.10"><vh>Software Versions</vh>
+</v>
+<v t="ntallen.20080228100842.9" a="E"><vh>Knowledge Base</vh>
+<v t="ntallen.20080228100842.10" a="E"><vh>Software Versions</vh>
 <v t="ntallen.20080228100842.11"><vh>LwIP</vh></v>
 <v t="ntallen.20080228100842.12"><vh>Cygwin compatability</vh></v>
 </v>
 <v t="ntallen.20080228100842.13"><vh>Do we need to have different pcores for different FPGA targets?</vh></v>
 <v t="ntallen.20080228100842.14"><vh>Xilkernel timer bug</vh></v>
 </v>
-<v t="ntallen.20080228100842.15"><vh>Document clearly what we need to build this app</vh>
-<v t="ntallen.20080228100842.14"></v>
-<v t="ntallen.20080502115342"><vh>System ACE File Generation</vh></v>
-<v t="ntallen.20080228100842.16"><vh>Sysgen Pcore Creation</vh>
-<v t="ntallen.20080228100842.13"></v>
-<v t="ntallen.20080228100842.17"><vh>Things to do after generation</vh>
-<v t="ntallen.20080228100842.18"><vh>Edit .mpd to mark interrupt</vh></v>
-<v t="ntallen.20080228100842.19"><vh>Edit .tcl to workaround bug</vh></v>
-<v t="ntallen.20080228100842.20"><vh>Edit src files to fix ArrayRead prototype</vh></v>
-</v>
-</v>
-<v t="ntallen.20080228100842.21"><vh>HW Components</vh>
-<v t="ntallen.20080228100842.22"><vh>CPU: Microblaze</vh></v>
-<v t="ntallen.20080228100842.23"><vh>xps_spi</vh></v>
-<v t="ntallen.20080228100842.24"><vh>Ethernet</vh></v>
-<v t="ntallen.20080228100842.25"><vh>opb_timer</vh></v>
-<v t="ntallen.20080228100842.26"><vh>scan_ctrl pcore</vh></v>
-<v t="ntallen.20080228100842.27"><vh>arp_ssp pcore</vh></v>
-<v t="ntallen.20080228100842.28"><vh>ssp_ad_scan</vh></v>
-<v t="ntallen.20080228100842.29"><vh>opb_intc</vh></v>
-<v t="ntallen.20081029142547"><vh>xps_iic</vh></v>
-<v t="ntallen.20080228100842.30"><vh>UCF</vh></v>
-</v>
-<v t="ntallen.20080228100842.31"><vh>SW Components</vh>
-<v t="ntallen.20080228100842.32"><vh>xilkernel</vh></v>
-<v t="ntallen.20080228100842.33"><vh>LwIP</vh></v>
-<v t="ntallen.20080512113736"><vh>Libraries</vh></v>
-</v>
-<v t="ntallen.20080228100842.34"><vh>Remote Driver</vh>
-<v t="ntallen.20080228100842.35"><vh>Incoming Messages</vh>
-<v t="ntallen.20080228100842.36"><vh>Commands</vh></v>
-<v t="ntallen.20080228100842.37"><vh>Status Requests</vh></v>
-<v t="ntallen.20080228100842.38"><vh>TCP responses</vh></v>
-<v t="ntallen.20080228100842.39"><vh>UDP data</vh></v>
-</v>
-</v>
-<v t="ntallen.20080228100842.40"><vh>Revisions</vh>
-<v t="ntallen.20080228100842.41"><vh>XPS</vh>
+<v t="ntallen.20080228100842.15" a="E"><vh>Document clearly what we need to build this app</vh>
+<v t="ntallen.20080228100842.40" a="E"><vh>Revisions</vh>
+<v t="ntallen.20080228100842.41" a="E"><vh>XPS</vh>
 <v t="ntallen.20080228100842.42"><vh>SSP_Proto_c3</vh>
 <v t="ntallen.20080228100842.43"><vh>ssp_ad_scan V2.01b</vh></v>
 <v t="ntallen.20080228100842.44"><vh>ssp_ad_preaddr V1.00a</vh></v>
@@ -109,15 +77,19 @@
 <v t="ntallen.20080228133017.6"></v>
 </v>
 <v t="ntallen.20080930110904"><vh>SSP_V1p (ML401)</vh>
-<v t="ntallen.20080930110904.1"><vh>SSP_PMT_Input</vh></v>
+<v t="ntallen.20080930110904.1"><vh>SSP_PMT_Input</vh>
+<v t="ntallen.20100204091808.1468"><vh>ssp_pmt_input V1.00a</vh></v>
+</v>
 <v t="ntallen.20080930104722.1" a="M"></v>
 <v t="ntallen.20080403140406"></v>
 <v t="ntallen.20080228133017.4"></v>
 <v t="ntallen.20080228133017.6"></v>
 </v>
 <v t="ntallen.20081031104332.4"><vh>SSP_Devel(SSP)</vh></v>
+<v t="ntallen.20090123124826"><vh>SSP_Config(SSP)</vh></v>
+<v t="ntallen.20090123124826.1"><vh>SSP_Proto_Config(ML401)</vh></v>
 </v>
-<v t="ntallen.20080228100842.46"><vh>IP</vh>
+<v t="ntallen.20080228100842.46" a="E"><vh>IP</vh>
 <v t="ntallen.20080228100842.47"><vh>ssp_ad_scan</vh>
 <v t="ntallen.20080228100842.48"><vh>ssp_ad_scan V2.00a</vh></v>
 <v t="ntallen.20080228100842.49"><vh>ssp_ad_scan V2.01a</vh></v>
@@ -126,13 +98,13 @@
 <v t="ntallen.20080228100842.51"><vh>Scan Logic</vh></v>
 </v>
 <v t="ntallen.20080228133017.6"></v>
+<v t="ntallen.20100204091808.1467"><vh>ssp_ad_scan V3.01a</vh></v>
 </v>
 <v t="ntallen.20080228100842.52"><vh>ssp_ad_preaddr</vh>
 <v t="ntallen.20080228100842.44"></v>
 <v t="ntallen.20080228100842.53"><vh>ssp_ad_preaddr V1.00b</vh></v>
-<v t="ntallen.20080228133017.5"><vh>ssp_ad_preaddr V2.00a</vh>
+<v t="ntallen.20080228133017.5" a="E"><vh>ssp_ad_preaddr V2.00a</vh>
 <v t="ntallen.20080229125358.1"><vh>dual-clock FIFO</vh></v>
-<v t="ntallen.20080303084933"><vh>Handshaking</vh></v>
 <v t="ntallen.20080228140103"><vh>Handshaking - old plan</vh></v>
 <v t="ntallen.20080229125358"><vh>Rework Again?</vh></v>
 </v>
@@ -147,6 +119,43 @@
 <v t="ntallen.20080228133017.4"></v>
 </v>
 <v t="ntallen.20080930110904.1"></v>
+</v>
+</v>
+<v t="ntallen.20080228100842.14"></v>
+<v t="ntallen.20080502115342"><vh>System ACE File Generation</vh></v>
+<v t="ntallen.20080228100842.16" a="E"><vh>Sysgen Pcore Creation</vh>
+<v t="ntallen.20080228100842.13"></v>
+<v t="ntallen.20080228100842.17" a="E"><vh>Things to do after generation</vh>
+<v t="ntallen.20080228100842.18"><vh>Edit .mpd to mark interrupt</vh></v>
+<v t="ntallen.20080228100842.19"><vh>Edit .tcl to workaround bug</vh></v>
+<v t="ntallen.20080228100842.20"><vh>Edit src files to fix ArrayRead prototype</vh></v>
+</v>
+</v>
+<v t="ntallen.20080228100842.21" a="E"><vh>HW Components</vh>
+<v t="ntallen.20080228100842.22"><vh>CPU: Microblaze</vh></v>
+<v t="ntallen.20080228100842.23"><vh>xps_spi</vh></v>
+<v t="ntallen.20080228100842.24"><vh>Ethernet</vh></v>
+<v t="ntallen.20080228100842.25"><vh>opb_timer</vh></v>
+<v t="ntallen.20080228100842.26"><vh>scan_ctrl pcore</vh></v>
+<v t="ntallen.20080228100842.27"><vh>arp_ssp pcore</vh></v>
+<v t="ntallen.20080228100842.28"><vh>ssp_ad_scan</vh></v>
+<v t="ntallen.20080228100842.29"><vh>opb_intc</vh></v>
+<v t="ntallen.20081029142547"><vh>xps_iic</vh></v>
+<v t="ntallen.20080228100842.30"><vh>UCF</vh></v>
+</v>
+<v t="ntallen.20080228100842.31"><vh>SW Components</vh>
+<v t="ntallen.20080228100842.32"><vh>xilkernel</vh></v>
+<v t="ntallen.20080228100842.33"><vh>LwIP</vh></v>
+<v t="ntallen.20080512113736"><vh>Libraries</vh></v>
+<v t="ntallen.20100503130534.1485"><vh>Memory Map</vh></v>
+<v t="ntallen.20100503140219.1487"><vh>Software Repositories</vh></v>
+</v>
+<v t="ntallen.20080228100842.34"><vh>Remote Driver</vh>
+<v t="ntallen.20080228100842.35"><vh>Incoming Messages</vh>
+<v t="ntallen.20080228100842.36"><vh>Commands</vh></v>
+<v t="ntallen.20080228100842.37"><vh>Status Requests</vh></v>
+<v t="ntallen.20080228100842.38"><vh>TCP responses</vh></v>
+<v t="ntallen.20080228100842.39"><vh>UDP data</vh></v>
 </v>
 </v>
 </v>
@@ -165,38 +174,38 @@
 <v t="ntallen.20080404114126"><vh>Debugging</vh></v>
 </v>
 <v t="ntallen.20080228133017" a="E"><vh>Documentation</vh>
-<v t="ntallen.20080228133017.1"><vh>Circuits</vh>
-<v t="ntallen.20080228133017.2"><vh>SSP V1</vh>
+<v t="ntallen.20080228133017.1" a="E"><vh>Circuits</vh>
+<v t="ntallen.20080228133017.2" a="E"><vh>SSP V1</vh>
 <v t="ntallen.20080228100842.45" a="M"></v>
 <v t="ntallen.20080228133017.4"></v>
-<v t="ntallen.20080228133017.5"></v>
+<v t="ntallen.20080228133017.5" a="E"></v>
 <v t="ntallen.20080228133017.6"></v>
 </v>
 </v>
 <v t="ntallen.20080228133017.7" a="E"><vh>Software</vh>
-<v t="ntallen.20081114110138"><vh>SSP_Config</vh>
+<v t="ntallen.20081114110138" a="E"><vh>SSP_Config</vh>
 <v t="ntallen.20081114110138.1"><vh>Threads</vh></v>
 </v>
-<v t="ntallen.20080331101629"><vh>Server V2.0</vh>
+<v t="ntallen.20080331101629" a="E"><vh>Server V2.0</vh>
 <v t="ntallen.20080331101629.1"><vh>Threads</vh></v>
-<v t="ntallen.20080331101629.2"><vh>Commands</vh>
+<v t="ntallen.20080331101629.2" a="E"><vh>Commands</vh>
 <v t="ntallen.20080331114222"><vh>Inter-thread communication</vh></v>
 </v>
 <v t="ntallen.20080331131839"><vh>Data</vh></v>
 </v>
-<v t="ntallen.20080331101629.3" a="E"><vh>Client</vh>
-<v t="ntallen.20100702124409.1476" a="E"><vh>cygwin</vh>
-<v t="ntallen.20100702124409.1477"><vh>ssp_cmd.exe</vh></v>
-<v t="ntallen.20100702124409.1478"><vh>ssp_log.exe</vh></v>
-<v t="ntallen.20100702124409.1480"><vh>Matlab: ssp_data.m</vh></v>
-</v>
-<v t="ntallen.20100702124409.1479"><vh>QNX6</vh></v>
-</v>
+<v t="ntallen.20080331101629.3"><vh>Client</vh></v>
 </v>
 </v>
 <v t="ntallen.20080617120554" a="E"><vh>To Do</vh>
 <v t="ntallen.20080617120554.1"><vh>Read Temperatures</vh></v>
 <v t="ntallen.20080617120554.2"><vh>Plug sample rate into header</vh></v>
+</v>
+<v t="ntallen.20100507082816.1489" a="E"><vh>Xilinx ISE Notes</vh>
+<v t="ntallen.20100507082816.1490" a="E"><vh>ISE Design Suite 12.1</vh>
+<v t="ntallen.20100507082816.1491"><vh>Sysgen pcores</vh></v>
+<v t="ntallen.20100507082816.1492"><vh>Export to SDK</vh></v>
+<v t="ntallen.20100507082816.1493"><vh>Install SVN for Eclipse</vh></v>
+</v>
 </v>
 </v>
 </vnodes>
@@ -235,6 +244,13 @@ And I've gotta rewrite the TCP/IP stuff to use RAW
     but for the moment I have copied in their bash to see if that helps
     No, it doesn't. Copied the new one back and reset the environment variables
   make: They want make version 3.79.1, which I have copied in from the EDK distro.
+
+Update 4/26/10
+  Now I am running cygwin 1.7.5, and these tricks don't work, which is to say,
+  we cannot use cygwin 1.7 as part of the whole XPS/SDK environment. However,
+  because cygwin 1.7 is so cool, it is easy to move it out of the way, leaving
+  XPS to use it's own version of 1.5.25. Haven't yet determined if they will
+  run independently, but we'll find out.
 </t>
 <t tx="ntallen.20080228100842.13">It would appear the answer is no. I generated two versions of the scan_ctrl model, one targeted at xc4vlx25-10ff668 (ML401) and the other at xc4vsx35-10ff668 (ML402), then compared the generated directory structure. The only differences were direct references to the version name.
 
@@ -245,7 +261,7 @@ In 9.2 (at least) the .mpd lists multiple architectures as supported
 to make sure remove_tmr() function does not decrement nactive.</t>
 <t tx="ntallen.20080228100842.15"></t>
 <t tx="ntallen.20080228100842.16"></t>
-<t tx="ntallen.20080228100842.17"></t>
+<t tx="ntallen.20080228100842.17">As of XPS 9...</t>
 <t tx="ntallen.20080228100842.18">Any interrupt ports need to have the attributes 'SIGIS' and 'SENSITIVITY' added:
     
 PORT scanintr = "", DIR = O
@@ -502,7 +518,9 @@ Inputs:
     Signal: The 16-bit A/D data from the arp_ssp block
     TrigLevel: 16-bit configuration value from the scan processor for level-sensitive triggering.
     NAvg: 8-bit configuration value. Pre-adder will add NAvg+1 samples before reporting.
-    Reset: Boolean control signal from scan processor. Resets all states and counters. The signal must be synchronized to the rising edge of a sample clock via the triggering block.
+    Reset: Boolean control signal from scan processor. Resets all states and counters.
+           The signal must be synchronized to the rising edge of a sample clock via the
+           triggering block.
     RE[0:2]: Read enable vector (one-hot)
     Trigger: Synchronized boolean signal from triggering block.
         
@@ -593,7 +611,6 @@ Outputs:
     ScanNum: Scan number (free running counter)
 
 Internally, it will maintain the states ResetSt, ScanSt and EOSSt</t>
-<t tx="ntallen.20080303084933"></t>
 <t tx="ntallen.20080305130648">States:
     PreCoadd: Skipping scans before first scan
     FirstScan: no coadding yet
@@ -694,12 +711,14 @@ Next, the state machine has a single CLK input, but Sysgen's Blackbox is looking
 When you add the black box part, you will select SHSTATE.vhd, and it looks like it's happy, but if you go to simulate, you'll find that it does nothing, although it doesn't complain. I will, however dump a log file into the directory which indicates that it doesn't know where to find the SHELL_SHSTATE entity. What you need to do is edit the .m file that was generated by the black box part and near the end of the file add the SHELL_SHSTATE.vhd file after the SHSTATE.vhd file is listed.</t>
 <t tx="ntallen.20080331101629">The source code is in
 forge.abcd.harvard.edu:/cvsroot/arp-fpga
-/ssp/ad_proto/ssp_proto_b V2_0
+/ssp/fpga_sw/ssp_fpga_sw
 
 The server software is the code that runs on the microblaze processor inside the FPGA. It's responsibilities include:
     Monitoring TCP connections for incoming commands
     Monitoring and servicing the hardware
-    Transmitting collected data</t>
+    Transmitting collected data
+
+Preliminary documentation for commands and data formats is here, but more detailed documentation can be found in svn under SSP_Doc.</t>
 <t tx="ntallen.20080331101629.1">main_main,2:
     The startup thread as specified in software platform settings. Invokes lwip_init(), which ultimately runs tcpip_init() which starts the tcpip_thread and then runs ready waiting for tcpip_thread's initialization to complete. As such, main_main needs to run at a lower priority than tcpip_thread or it will never complete. In round robin scheduling, the tcpip_thread should complete its initialization before tcpip_init() hits its busy loop.
 
@@ -876,10 +895,8 @@ On the receiving end, we should be able to predict fragmentation and be ready fo
 
 </t>
 <t tx="ntallen.20080617120554"></t>
-<t tx="ntallen.20080617120554.1">I believe this is done.
-</t>
-<t tx="ntallen.20080617120554.2">Also?
-</t>
+<t tx="ntallen.20080617120554.1"></t>
+<t tx="ntallen.20080617120554.2"></t>
 <t tx="ntallen.20080717103941"></t>
 <t tx="ntallen.20080930104722">Targeting ML401 for desktop testing
 
@@ -900,7 +917,9 @@ The A/D clock goes high at the same time the data is updated, so the data should
 ssp_trigger 1.00.a
 arp_ssp 2.00.c X3
 ssp_ad_preaddr 2.00.b X3
-ssp_ad_scan_sm 3.00.b</t>
+ssp_ad_scan_sm 3.00.b
+
+2/4/2010: Currently working on an update to compile under XPS11. Requires switch from FSL to PLB.</t>
 <t tx="ntallen.20080930110904">Targeting ML401 for quick test of PMT input
 
 ssp_trigger 1.00.a
@@ -982,85 +1001,61 @@ tcpThread, 4: (ssp_fpga_sw has this set to 1)
     IP Header: 20
     TCP Header: 20
     Maximum TCP Payload: 1500-20-20 = 1460</t>
-<t tx="ntallen.20100702124409.1475"></t>
-<t tx="ntallen.20100702124409.1476">ssp_cmd.exe
-ssp_log.exe</t>
-<t tx="ntallen.20100702124409.1477">  ssp_cmd
-    Opens TCP command connection to 10.0.0.200 or the IP address specified in the
-    environment variable SSP_HOSTNAME. Sends the list of commands passed on
-    the command line. If the disable command (DA) is sent, attempts to shut down
-    ssp_log if it is running. Otherwise, ssp_cmd does not attempt to interpret the
-    commands.
-
-  Commands:
-    EN Enable
-    DA Disable
-    EX Quit
-    NS:xxxx N_Samples
-    NA:xxxx N_Avg
-    NC:xxxx N_Coadd
-    NP:xxxxx UDP Port Number
-    NE:x Channel Enable (1-7)
-    TU:[-]xxxxx Level Trigger Rising
-    TD:[-]xxxxx Level Trigger Falling
-    TS:x Trigger Source (0-3)
-    AE Autotrig Enable
-    AD Autotrig Disable
-  Return Values:
-    200 OK
-    500 Bad
+<t tx="ntallen.20090123124826">Hardware required to run the configuration web server application. Needs to talk to the IIC EEPROM, but not to other SSP hardware.</t>
+<t tx="ntallen.20090123124826.1">Very similar to SSP_Config but targeting the ML401.</t>
+<t tx="ntallen.20091224122848.1465"></t>
+<t tx="ntallen.20100204091808.1467">For XPS11, switched from FSL to PLB.</t>
+<t tx="ntallen.20100204091808.1468"></t>
+<t tx="ntallen.20100503130534.1485">Need Head size 0x4000
+Stack size 0x400 (I think)
 </t>
-<t tx="ntallen.20100702124409.1478">  ssp_log NS:%d NA:%d NC:%d NF:%d NE:%d TS:%d [TU|TD]:%d IX:%d'
-    Opens a UDP socket for receiving data
-    Opens TCP command connection to SSP board
-    Issues the configuration command, informing the SSP board
-      what UDP port to send data to
-    Reads some quantity of data from the UDP port
-    Issues the stop command
+<t tx="ntallen.20100503140219.1487">Need to explicitly list edk_user_repository folder as a software repository, or libgen won't be able to find pcore drivers.
+If the pcore is in the project, the software repository listing is a real kluge. You need to specify the directory two above
+the pcores directory, i.e. the parent of the project directory.</t>
+<t tx="ntallen.20100507082816.1489"></t>
+<t tx="ntallen.20100507082816.1490">Installed May 6, 2010
+</t>
+<t tx="ntallen.20100507082816.1491">As of May 6, 2010
 
-  Commands:
-    NS:xxxx N_Samples
-    NC:xxxx N_Coadd
-    NA:xxxx N_Average
-    NF:xxxx Frequence Divisor
-    NE:xxxx Bit-mapped channel enable
-    TS:x    Trigger Source [0-3] (3 =&gt; external)
-    TU:xxx  Rising Trigger Level
-    TD:xxx  Falling Trigger Level
-    IX:xxxx Starting MLF file index
+XPS "Project-&gt;Export to SDK" cannot locate pcores in userRepository
+  (specifically, libgen clearly does not look in that directory, although it looks everywhere else!)
+  So pcores need to be placed in the pcores directory inside the project
+SDK does not know about the project pcores directory,
+  So pcores need to be placed in the userRepository
+So pcores need to be in both places.
 
-ssp_log initiates communication with the SSP board. The default IP address is 10.0.0.200.
-It can be overridden with the environment variable SSP_HOSTNAME in order to target a
-different board.
+Will allegedly be addressed in 12.2
 
-ssp_log issues the appropriate configuration commands to the SSP board, then issues the enable command 'EN'. It then records incoming scans until it receives a SIGHUP. As each scan is
-received and written, a status line is written to the header log file, CPCI14/ssp.log
+userRepository
+  MyProccesorIPLib
+    drivers
+    pcores
+      ssp_ad_scan_plbw_v3_01_a
+userProject
+  pcores
+    ssp_ad_scan_plbw_v3_01_a
+  SDK
+    SDK_Export
+    SDK_Workspace_35</t>
+<t tx="ntallen.20100507082816.1492">In the export folder:
+    SDK/SDK_Export/hw/system.bit and system_bd.bmm
+have all permissions cleared.
+I manually enabled read, and the errors went away
 
-  fprintf( hdr_fp, "%ld %lu %u %u %u %u %u %u %u %u %u %lu %.4f %.4f %lu\n",
-    now, mlf-&gt;index,
-    hdr-&gt;NWordsHdr, hdr-&gt;FormatVersion, hdr-&gt;NChannels, hdr-&gt;NF,
-    hdr-&gt;NSamples, hdr-&gt;NCoadd, hdr-&gt;NAvg, hdr-&gt;NSkL, hdr-&gt;NSkP,
-    hdr-&gt;ScanNum, (hdr-&gt;T_HtSink &amp; 0xFFE0)/256.,
-    (hdr-&gt;T_FPGA&gt;&gt;3)/16., (unsigned long)scan[raw_length-1] );
-  fflush(hdr_fp);
+I removed those two files and re-exported to verify that the permissions were reset to 0000
 
-Before each file is written, a lock file is created in CPCI14/ssp_%d.lock. After the file is written, the lock file is renamed to the next index number.</t>
-<t tx="ntallen.20100702124409.1479"></t>
-<t tx="ntallen.20100702124409.1480">GUI that invokes ssp_cmd and ssp_log, then displays the data in realtime.
-
-GUI actually monitors the lock file to see if a new file is ready to be processed,
-then reads the header info from the log file:
-    index = 1
-    while true
-      if data file specified by index exists and corresponding lock file does not
-        read a line from the log file and process the data file
-        index &lt;= index + 1
-      else sleep .1 seconds
-    done
-
-    [Note that currently there is no check to make sure the header line matches
-     the log file index.]
+May be tied to strange permissions on /Data. What is the 'Read Only' flag?
 
 </t>
+<t tx="ntallen.20100507082816.1493">Subclipse from tigris</t>
+<t tx="ntallen.20121214140639.1499">The challenge here is to support three modes of operation:
+    1: Traditional SSP with configurable NS, NA, NC, NF
+    2: PerPoint Noise on one channel, calculating Sx, Sxx
+    3: Ringdown on one channel, calculating Sx, Sy, Sxy, Sxx, Syy
+
+</t>
+<t tx="ntallen.20121214140639.1500">This preadder needs to support the following modes:
+    1: Traditional SSP with NA
+    2: Per Point Noise, summing signal and signal squared</t>
 </tnodes>
 </leo_file>
