@@ -1,7 +1,15 @@
 ELF=Processor/SDK/SDK_Workspace_143/subbus/Debug/subbus.elf
 .PHONY : all
 # all : spi_prom.mcs htw_spi_prom.mcs cti_spi_prom.mcs
-all : cti_spi_prom.mcs hwv_spi_prom.mcs pdacs_bench.mcs
+all : pdacs_carbon.mcs hwv_spi_prom.mcs pdacs_bench.mcs pdacs_hcl.mcs
+
+pdacs_hcl.mcs : pdacs_hcl.bit
+	promgen -spi -w -p mcs -o pdacs_hcl.mcs -s 8192 -u 0 pdacs_hcl.bit
+pdacs_hcl.bit : $(ELF)
+	@echo pdacs_hcl.bit is out of date with respect to $?
+	@ls -lt pdacs_hcl.mcs pdacs_hcl.bit $(ELF)
+	@false
+
 spi_prom.mcs : dacsbd_download.bit
 	promgen -spi -w -p mcs -o spi_prom.mcs -s 8192 -u 0 dacsbd_download.bit
 dacsbd_download.bit : dacsbd.bit $(ELF)
@@ -18,14 +26,6 @@ pdacs_htw.mcs : pdacs_htw.bit
 
 pdacs_carbon.mcs : pdacs_carbon.bit
 	promgen -spi -w -p mcs -o pdacs_carbon.mcs -s 8192 -u 0 pdacs_carbon.bit
-
-# 6/27/14: Changing name of HCI's mcs file from cti_spi_prom.mcs to pdacs_carbon.mcs	
-#cti_spi_prom.mcs : pdacs_carbon_download.bit
-#	promgen -spi -w -p mcs -o cti_spi_prom.mcs -s 8192 -u 0 pdacs_carbon_download.bit
-#pdacs_carbon_download.bit : pdacs_carbon.bit $(ELF)
-#	@echo pdacs_carbon_download_bit is out of date with respect to $?
-#	@ls -lt *.mcs *.bit $(ELF)
-#	@false
 
 hwv_spi_prom.mcs : pdacs_hwv_download.bit
 	promgen -spi -w -p mcs -o hwv_spi_prom.mcs -s 8192 -u 0 pdacs_hwv_download.bit
