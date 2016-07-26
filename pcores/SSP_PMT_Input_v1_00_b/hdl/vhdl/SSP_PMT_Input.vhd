@@ -4,7 +4,8 @@ USE ieee.std_logic_1164.all;
 Entity SSP_PMT_Input IS
   PORT ( CLK, PMT, RESET: IN std_logic;
          SIG: OUT std_logic_vector (15 downto 0);
-         OVF: OUT std_logic );
+         OVF: OUT std_logic;
+         CLK_INV: OUT std_logic );
 END;
 
 ARCHITECTURE BEHAVIOR OF SSP_PMT_Input IS
@@ -54,4 +55,5 @@ BEGIN
   SIG(0) <= Qout;
   
   OVF <= OVFout;
+  CLK_INV <= not CLK;
 END;

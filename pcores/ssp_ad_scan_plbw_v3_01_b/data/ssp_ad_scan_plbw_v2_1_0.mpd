@@ -60,26 +60,26 @@ PARAMETER C_MEMMAP_SRCSIGNAL_DEPTH = 512, DT = integer, ASSIGNMENT = CONSTANT
 # Shared RAMs
 
 # Ports
-PORT splb_clk = "", BUS = SPLB, SIGIS = CLK, DIR = IN
+PORT SPLB_clk = "", BUS = SPLB, SIGIS = CLK, DIR = IN
 PORT pa_0_out = "", VEC = [0:(29-1)], DIR = IN
 PORT pa_1_out = "", VEC = [0:(29-1)], DIR = IN
 PORT pa_2_out = "", VEC = [0:(29-1)], DIR = IN
-PORT plb_abus = plb_abus, VEC = [0:(32-1)], BUS = SPLB, DIR = IN
-PORT plb_pavalid = plb_pavalid, BUS = SPLB, DIR = IN
-PORT plb_rnw = plb_rnw, BUS = SPLB, DIR = IN
-PORT plb_wrdbus = plb_wrdbus, VEC = [0:(C_SPLB_DWIDTH-1)], BUS = SPLB, DIR = IN
-PORT splb_rst = "", SIGIS = RST, DIR = IN
+PORT PLB_abus = PLB_abus, VEC = [0:(32-1)], BUS = SPLB, DIR = IN
+PORT PLB_pavalid = PLB_pavalid, BUS = SPLB, DIR = IN
+PORT PLB_rnw = PLB_rnw, BUS = SPLB, DIR = IN
+PORT PLB_wrdbus = PLB_wrdbus, VEC = [0:(C_SPLB_DWIDTH-1)], BUS = SPLB, DIR = IN
+PORT SPLB_Rst = "SPLB_Rst", SIGIS = RST, DIR = IN, BUS = SPLB
 PORT navg = "", VEC = [0:(8-1)], DIR = OUT
 PORT pa_re = "", VEC = [0:(3-1)], DIR = OUT
 PORT pa_reset = "", DIR = OUT
-PORT sl_addrack = sl_addrack, BUS = SPLB, DIR = OUT
-PORT sl_rdcomp = sl_rdcomp, BUS = SPLB, DIR = OUT
-PORT sl_rddack = sl_rddack, BUS = SPLB, DIR = OUT
-PORT sl_rddbus = sl_rddbus, VEC = [0:(C_SPLB_DWIDTH-1)], BUS = SPLB, DIR = OUT
-PORT sl_wait = sl_wait, BUS = SPLB, DIR = OUT
-PORT sl_wrcomp = sl_wrcomp, BUS = SPLB, DIR = OUT
-PORT sl_wrdack = sl_wrdack, BUS = SPLB, DIR = OUT
-PORT ssp_reset = "", DIR = OUT
+PORT Sl_addrack = Sl_addrack, BUS = SPLB, DIR = OUT
+PORT Sl_rdcomp = Sl_rdcomp, BUS = SPLB, DIR = OUT
+PORT Sl_rddack = Sl_rddack, BUS = SPLB, DIR = OUT
+PORT Sl_rddbus = Sl_rddbus, VEC = [0:(C_SPLB_DWIDTH-1)], BUS = SPLB, DIR = OUT
+PORT Sl_wait = Sl_wait, BUS = SPLB, DIR = OUT
+PORT Sl_wrcomp = Sl_wrcomp, BUS = SPLB, DIR = OUT
+PORT Sl_wrdack = Sl_wrdack, BUS = SPLB, DIR = OUT
+PORT SSP_Reset = "", DIR = OUT
 PORT trigconfig = "", VEC = [0:(4-1)], DIR = OUT
 PORT triggerlevel = "", VEC = [0:(16-1)], DIR = OUT
 
