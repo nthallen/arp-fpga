@@ -1,47 +1,40 @@
 --
--- VHDL Architecture idx_fpga_lib.DACSbd.beh
+-- VHDL Architecture idx_fpga_lib.PDACS_Bench.struct
 --
 -- Created:
---          by - nort
---          at - 13:25:16 4/7/2014
+--          by - nort.UNKNOWN (NORT-NBX200T)
+--          at - 13:39:19 02/21/2012
 --
--- using Mentor Graphics HDL Designer(TM) 2013.1
---
---   4/7/14 Copied from PDACS_HTW
+-- Copied from PDACS_HWV_struct.vhdl in order to test
+-- with PTHRM test board with Mux
 --
 LIBRARY ieee;
 USE ieee.std_logic_1164.all;
-USE ieee.std_logic_arith.all;
+USE ieee.std_logic_unsigned.all;
 LIBRARY idx_fpga_lib;
 USE idx_fpga_lib.ptrhm.all;
 
-ENTITY PDACS_ES96 IS
+ENTITY PDACS_Bench IS
   GENERIC (
-    DACS_BUILD_NUMBER : std_logic_vector(15 DOWNTO 0) := X"002A"; -- Build 42
-    INSTRUMENT_ID : std_logic_vector(15 DOWNTO 0) := X"0004"; -- ES96 O3
-    N_INTERRUPTS : integer range 15 downto 1 := 1;
-    N_QCLICTRL : integer range 5 downto 0 := 0;
-    N_VM : integer range 5 downto 0 := 0;
-    N_LK204 : integer range 1 downto 0 := 0;
+    DACS_BUILD_NUMBER : std_logic_vector(15 DOWNTO 0) := X"0021"; -- #33
+    INSTRUMENT_ID : std_logic_vector(15 DOWNTO 0) := X"0001"; -- HWV
+    CTR_UG_N_BDS : integer range 5 downto 0 := 3;
+    N_QCLICTRL : integer range 5 downto 0 := 1;
+    N_VM : integer range 5 downto 0 := 1;
 
-    N_PTRH : integer range 5 downto 1 := 3;
-    N_ISBITS    : integer range 8 downto 1 := 3;
-    ESID        : ESID_array := ( 0, 0, 0 );
-    ESwitchBit  : ESB_array  := ( 0, 0, 0 );
-    ISwitchBit  : ISB_array  := ( 0, 1, 2 );
-    ESwitchAddr : ESA_array  := ( "0000000", "0000000", "0000000" );
+    N_PTRH : integer range 16 downto 1 := 3;
+    N_ISBITS    : integer range 8 downto 1 := 2;
+    ESID        : ESID_array := ( 0, 1, 1 );
+    ESwitchBit  : ESB_array  := ( 0, 0, 1 );
+    ISwitchBit  : ISB_array  := ( 0, 1, 1 );
+    ESwitchAddr : ESA_array  := ( "0000000", "1110000" );
 
     N_AO_CHIPS : natural range 15 downto 1 := 2;
-    CTR_UG_N_BDS : integer range 5 downto 0 := 0;
     IDX_N_CHANNELS : integer range 15 downto 1 := 1;
-    DIGIO_N_CONNECTORS : integer range 4 DOWNTO 1 := 3;
-    -- FORCE_DIR vectors are indexed 0 to 17
-    DIGIO_FORCE_DIR : std_ulogic_vector := "111110000000000000";
-    DIGIO_FORCE_DIR_VAL : std_ulogic_vector := "000110000000000000";
-    CMD_PROC_N_CMDS : integer := 12;
-    N_ADC : integer range 4 downto 0 := 2;
-    ADC_NBITSHIFT : integer range 31 downto 0 := 1;
-    ADC_RATE_DEF : std_logic_vector(4 DOWNTO 0) := "01001"
+    DIGIO_N_CONNECTORS : integer range 8 DOWNTO 1 := 4;
+    DIGIO_FORCE_DIR : std_ulogic_vector := "111111111111000111110111";
+    DIGIO_FORCE_DIR_VAL : std_ulogic_vector := "000000001111000111100110";
+    CMD_PROC_N_CMDS : integer := 32
   );
   PORT (
     AI_AD_CNV : OUT std_ulogic_vector ( 1 DOWNTO 0 );
@@ -53,7 +46,7 @@ ENTITY PDACS_ES96 IS
     AI_MUX0_A : OUT std_ulogic_vector ( 2 DOWNTO 0 );
     AI_MUX1_A : OUT std_ulogic_vector ( 2 DOWNTO 0 );
 
-    DA_CS_B : OUT std_logic_vector ( 1 DOWNTO 0 );
+    DA_CS_B : OUT std_logic_vector(1 DOWNTO 0);
     DA_CLR_B : OUT std_ulogic;
     DA_LDAC_B : OUT std_ulogic;
     DA_SCK : OUT std_ulogic;
@@ -112,8 +105,7 @@ ENTITY PDACS_ES96 IS
     FTDI_SPR_BC7 : IN std_ulogic;
     FTDI_SUSPEND_B : IN std_ulogic;
     FTDI_UPLOAD : IN std_ulogic;
-    GPIO_HDR_LO : IN std_logic_vector ( 7 DOWNTO 0 );
-    GPIO_HDR_HI : OUT std_logic_vector ( 15 DOWNTO 8 );
+    GPIO_HDR : IN std_ulogic_vector ( 15 DOWNTO 0 );
     MPS_PFO_B : IN std_ulogic;
     MPS_RESET_B : IN std_ulogic;
     MPS_WDI : IN std_ulogic;
@@ -139,10 +131,10 @@ ENTITY PDACS_ES96 IS
     USB_1_CTS : IN std_ulogic;
     USB_1_RTS : IN std_ulogic
   );
-END ENTITY PDACS_ES96;
+END ENTITY PDACS_Bench;
 
 --
-ARCHITECTURE beh OF PDACS_ES96 IS
+ARCHITECTURE struct OF PDACS_Bench IS
    SIGNAL subbus_cmdenbl                 : std_ulogic;
    SIGNAL subbus_cmdstrb                 : std_ulogic;
    SIGNAL subbus_fail_leds               : std_logic_vector(4 downto 0);
@@ -156,7 +148,7 @@ ARCHITECTURE beh OF PDACS_ES96 IS
    SIGNAL idx_LimO                       : std_ulogic_vector(IDX_N_CHANNELS-1 DOWNTO 0);
    SIGNAL idx_ZR                         : std_ulogic_vector(IDX_N_CHANNELS-1 DOWNTO 0);
    SIGNAL dig_Dir                        : std_logic_vector( DIGIO_N_CONNECTORS*6-1 DOWNTO 0);
-   SIGNAL dig_io_nc                      : std_logic_vector( 3 DOWNTO 0);
+   SIGNAL dig_io_nc                      : std_logic_vector( 46 DOWNTO 0);
    SIGNAL ana_in_CS5                     : std_ulogic;
    SIGNAL ana_in_Conv                    : std_ulogic;
    SIGNAL ana_in_Row                     : std_ulogic_vector(5 DOWNTO 0);
@@ -170,12 +162,10 @@ ARCHITECTURE beh OF PDACS_ES96 IS
    SIGNAL DA_LDAC_B_int                  : std_ulogic;
    SIGNAL DA_CLR_B_int                   : std_ulogic;
    SIGNAL QSync                          : std_ulogic_vector(N_QCLICTRL-1 DOWNTO 0);
-   SIGNAL ctr_PMT                        : std_logic_vector(4*CTR_UG_N_BDS-1 DOWNTO 0);
-   SIGNAL QNull                          : std_logic_vector(N_QCLICTRL-1 DOWNTO 0);
-   
-  COMPONENT dacs_v2 is
+    
+  COMPONENT dacs_v2
     GENERIC (
-      DACS_BUILD_NUMBER : std_logic_vector(15 DOWNTO 0) := X"0028";
+      DACS_BUILD_NUMBER : std_logic_vector(15 DOWNTO 0) := X"0010";
       INSTRUMENT_ID : std_logic_vector(15 DOWNTO 0) := X"0001";
       N_INTERRUPTS : integer range 15 downto 1 := 1;
       
@@ -195,11 +185,7 @@ ARCHITECTURE beh OF PDACS_ES96 IS
       DIGIO_FORCE_DIR : std_ulogic_vector := "000000000000";
       DIGIO_FORCE_DIR_VAL : std_ulogic_vector := "000000000000";
       N_QCLICTRL : integer range 5 downto 0 := 1;
-      N_VM : integer range 5 downto 0 := 1;
-      N_LK204 : integer range 1 downto 0 := 0;
-      N_ADC : integer range 4 downto 0 := 0;
-      ADC_NBITSHIFT : integer range 31 downto 0 := 1;
-      ADC_RATE_DEF : std_logic_vector(4 DOWNTO 0) := "11111"
+      N_VM : integer range 5 downto 0 := 1
     );
     Port (
       fpga_0_rst_1_sys_rst_pin : IN std_logic;
@@ -218,8 +204,6 @@ ARCHITECTURE beh OF PDACS_ES96 IS
       PTRH_SCK_pin : INOUT std_logic_vector(N_ISBITS-1 DOWNTO 0);
       VM_SDA_pin : INOUT std_logic_vector(N_VM-1 DOWNTO 0);
       VM_SCL_pin : INOUT std_logic_vector(N_VM-1 DOWNTO 0);
-      LK204_SDA_pin : INOUT std_logic_vector(N_LK204-1 DOWNTO 0);
-      LK204_SCL_pin : INOUT std_logic_vector(N_LK204-1 DOWNTO 0);
       
       subbus_cmdenbl : OUT std_ulogic;
       subbus_cmdstrb : OUT std_ulogic;
@@ -260,27 +244,22 @@ ARCHITECTURE beh OF PDACS_ES96 IS
       QSync       : OUT    std_ulogic_vector(N_QCLICTRL-1 DOWNTO 0);
       QSClk       : INOUT  std_logic_vector(N_QCLICTRL-1 DOWNTO 0);
       QSData      : INOUT  std_logic_vector(N_QCLICTRL-1 DOWNTO 0);
-      QNBsy       : IN     std_logic_vector(N_QCLICTRL-1 DOWNTO 0);
-      
-      ADC_MISO    : IN     std_logic_vector(N_ADC-1 DOWNTO 0);
-      ADC_MOSI    : OUT    std_logic_vector(N_ADC-1 DOWNTO 0);
-      ADC_CS_B    : OUT    std_logic_vector(N_ADC-1 DOWNTO 0);
-      ADC_SCLK    : OUT    std_logic_vector(N_ADC-1 DOWNTO 0)
+      QNBsy       : IN     std_logic_vector(N_QCLICTRL-1 DOWNTO 0)
     );
   END COMPONENT;
-
+   
   COMPONENT cmd_proc
-      GENERIC (
-         CMD_PROC_N_CMDS : integer := 24
-      );
-      PORT (
-         cmd_dio : IN     std_logic_vector( CMD_PROC_N_CMDS*2-1 DOWNTO 0 );
-         cmd_out : OUT    std_logic_vector( CMD_PROC_N_CMDS-1 DOWNTO 0 );
-         CmdStrb : IN     std_ulogic;
-         CmdEnbl : IN     std_ulogic;
-         RST     : IN     std_ulogic
-      );
-   END COMPONENT;
+    GENERIC (
+       CMD_PROC_N_CMDS : integer := 24
+    );
+    PORT (
+       cmd_dio : IN     std_logic_vector( CMD_PROC_N_CMDS*2-1 DOWNTO 0 );
+       cmd_out : OUT    std_logic_vector( CMD_PROC_N_CMDS-1 DOWNTO 0 );
+       CmdStrb : IN     std_ulogic;
+       CmdEnbl : IN     std_ulogic;
+       RST     : IN     std_ulogic
+    );
+ END COMPONENT;
    FOR ALL : dacs_v2 USE ENTITY idx_fpga_lib.dacs_v2;
    FOR ALL : cmd_proc USE ENTITY idx_fpga_lib.cmd_proc;
 BEGIN
@@ -288,7 +267,6 @@ BEGIN
     GENERIC MAP (
       DACS_BUILD_NUMBER => DACS_BUILD_NUMBER,
       INSTRUMENT_ID => INSTRUMENT_ID,
-      N_INTERRUPTS => N_INTERRUPTS,
       CTR_UG_N_BDS => CTR_UG_N_BDS,
 
       N_PTRH => N_PTRH,
@@ -304,11 +282,7 @@ BEGIN
       DIGIO_FORCE_DIR => DIGIO_FORCE_DIR,
       DIGIO_FORCE_DIR_VAL => DIGIO_FORCE_DIR_VAL,
       N_QCLICTRL => N_QCLICTRL,
-      N_VM => N_VM,
-      N_LK204 => N_LK204,
-      N_ADC => N_ADC,
-      ADC_NBITSHIFT => ADC_NBITSHIFT,
-      ADC_RATE_DEF => ADC_RATE_DEF
+      N_VM => N_VM
     )
     PORT MAP (
        fpga_0_rst_1_sys_rst_pin       => FPGA_CPU_RESET,
@@ -323,14 +297,15 @@ BEGIN
 
        fpga_0_RS232_RX_pin            => USB_1_RX,
        fpga_0_RS232_TX_pin            => USB_1_TX,
-
+       
        PTRH_SDA_pin(0)                => IIC_SDA,
        PTRH_SDA_pin(1)                => BIO(4),
-       PTRH_SDA_pin(2)                => BIO(6),
        PTRH_SCK_pin(0)                => IIC_SCL,
        PTRH_SCK_pin(1)                => BIO(5),
-       PTRH_SCK_pin(2)                => BIO(7),
 
+       VM_SCL_pin(0)                  => BIO(8),
+       VM_SDA_pin(0)                  => BIO(9),
+       
        subbus_cmdenbl                 => subbus_cmdenbl,
        subbus_cmdstrb                 => subbus_cmdstrb,
        subbus_fail_leds               => subbus_fail_leds,
@@ -347,11 +322,22 @@ BEGIN
        idx_LimO                       => idx_LimO,
        idx_ZR                         => idx_ZR,
        dig_Dir                        => dig_Dir,
-       dig_IO(23 DOWNTO 0)            => cmd_dio,
-       dig_IO(35 DOWNTO 24)           => cmd_out, -- DS
-       dig_IO(39 DOWNTO 36)           => dig_io_nc,
-       dig_IO(143 DOWNTO 40)          => DIO(119 DOWNTO 16),
-       
+       dig_IO(63 DOWNTO 0)            => cmd_dio,
+       dig_IO(95 DOWNTO 64)           => cmd_out,
+       dig_IO(111 DOWNTO 96)          => DIO(23 DOWNTO 8),
+       dig_IO(127 DOWNTO 112)         => DIO(63 DOWNTO 48),
+       dig_IO(151 DOWNTO 128)         => DIO(111 DOWNTO 88),
+       dig_IO(158 DOWNTO 152)         => dig_io_nc(18 DOWNTO 12),
+       dig_IO(159)                    => DIO(7),
+       dig_IO(165 DOWNTO 160)         => DIO(29 DOWNTO 24),
+       dig_IO(171 DOWNTO 166)         => dig_io_nc(24 DOWNTO 19),
+       dig_IO(175 DOWNTO 172)         => DIO(39 DOWNTO 36),
+       dig_IO(179 DOWNTO 176)         => dig_io_nc(28 DOWNTO 25),
+       dig_IO(183 DOWNTO 180)         => DIO(47 DOWNTO 44),
+       dig_IO(188 DOWNTO 184)         => dig_io_nc(33 DOWNTO 29),
+       dig_IO(189)                    => DIO(117),
+       dig_IO(190)                    => dig_io_nc(34),
+       dig_IO(191)                    => DIO(119),
        ana_in_SDI                     => AI_AD_MISO,
        ana_in_CS5                     => ana_in_CS5,
        ana_in_Conv                    => ana_in_Conv,
@@ -359,28 +345,20 @@ BEGIN
        ana_in_SCK16                   => AI_AD_SCK,
        ana_in_SCK5                    => AI_AFE_SCK,
        ana_in_SDO                     => AI_AFE_MOSI,
-       
-       ctr_PMT                        => ctr_PMT,
-
+       ctr_PMT(0)                     => COUNT(1),
+       ctr_PMT(1)                     => COUNT(3),
+       ctr_PMT(4 DOWNTO 2)            => COUNT(7 DOWNTO 5),
+       ctr_PMT(10 DOWNTO 5)           => DIO(35 DOWNTO 30),
+       ctr_PMT(11)                    => '0',
        DA_CLR_B                       => DA_CLR_B_int,
        DA_CS_B                        => DA_CS_B,
        DA_LDAC_B                      => DA_LDAC_B_int,
        DA_SCK                         => DA_SCK_int,
        DA_SDI                         => DA_SDI_int,
-       
-       QSData                         => QNull,
-       QSClk                          => QNull,
+       QSData                         => BIO(1 DOWNTO 1),
+       QSClk                          => BIO(0 DOWNTO 0),
        QSync                          => QSync,
-       QNBsy                          => QNull,
-       
-       ADC_MISO(0)                    => BIO(0),
-       ADC_MISO(1)                    => BIO(2),
-       ADC_MOSI(0)                    => DIO(0),
-       ADC_MOSI(1)                    => DIO(2),
-       ADC_CS_B(0)                    => DIO(1),
-       ADC_CS_B(1)                    => DIO(3),
-       ADC_SCLK(0)                    => BIO(1),
-       ADC_SCLK(1)                    => BIO(3)
+       QNBsy                          => BIO(3 DOWNTO 3)
     );
 
     cmd_proc_i : cmd_proc
@@ -402,29 +380,47 @@ BEGIN
   AI_MUX0_A <= ana_in_Row(2 DOWNTO 0);
   AI_MUX1_A <= ana_in_Row(2 DOWNTO 0);
 
-  -- BIO(3 DOWNTO 0) are ADC communication lines
-  -- BIO(7 DOWNTO 4) are (unused) PTRH lines
-  BIO(15 DOWNTO 8) <= (others => 'Z');
+  -- BIO(3 DOWNTO 0) are QCLI control lines
+  BIO(2) <= std_logic(QSync(0));
+  -- BIO(5 DOWNTO 4) are SPV PTRH lines
+  BIO(15 DOWNTO 6) <= (others => 'Z');
 
-  -- DIO(3 DOWNTO 0) are ADC communication lines
-  DIO(15 DOWNTO 4) <= cmd_out;
-  -- DIO(119 DOWNTO 16) are digio
-    
-  DIO_DIR(0) <= '0';
-  DIO_DIR(1) <= '0';
-  DIO_DIR(14 DOWNTO 2) <= dig_Dir(17 DOWNTO 5);
+  DIO(0) <= not cmd_out(24); -- QCLI Reset
+  DIO(3 DOWNTO 1) <= cmd_out(27 DOWNTO 25);
+  DIO(4) <=	idx_Step(0);
+  DIO(5) <=	idx_Run(0);
+  DIO(6) <=	idx_Dir(0);
+  idx_KillA(0) <= DIO(40);
+  idx_KillB(0) <= DIO(41);
+  idx_LimI(0) <= DIO(42);
+  idx_LimO(0) <= DIO(43);
+  DIO(87 DOWNTO 64) <= cmd_out(23 DOWNTO 0);
+  DIO(112) <= ana_in_row(3);
+  DIO(113) <= subbus_fail_leds(0);
+  DIO(114) <= ana_in_row(4);
+  DIO(115) <= subbus_fail_leds(1);
+  DIO(116) <= ana_in_row(5);
+  DIO(118) <= subbus_flt_cpu_reset;
+
+  DIO_DIR(0) <= dig_dir(19);
+  DIO_DIR(1) <= dig_dir(12);
+  DIO_DIR(2) <= dig_dir(13);
+  DIO_DIR(3) <= dig_dir(20);
+  DIO_DIR(4) <= dig_dir(21);
+  DIO_DIR(5) <= dig_dir(22);
+  DIO_DIR(6) <= dig_dir(14);
+  DIO_DIR(7) <= dig_dir(15);
+  DIO_DIR(10 DOWNTO 8) <= "000"; -- Power board outputs
+  DIO_DIR(11) <= dig_dir(16);
+  DIO_DIR(12) <= dig_dir(17);
+  DIO_DIR(13) <= dig_dir(18);
+  DIO_DIR(14) <= dig_dir(23);
   
   DIO_OE <= '1';
   DIO_OE_B <= '0';
-  
-  -- We don't currently have an IO Panel, so map the
-  -- DACS switches in where the IO Switches would be:
-  -- DACS_switches(7 DOWNTO 4) <= GPIO_SW;
-  -- DACS_switches(3) <= '1';
-  -- DACS_switches(2 DOWNTO 0) <= not DIO(62 DOWNTO 60);
-  DACS_switches(7 DOWNTO 4) <= "0000";
-  DACS_switches(3 DOWNTO 0) <= GPIO_SW;
-  
+  DACS_switches(7 DOWNTO 4) <= GPIO_SW;
+  DACS_switches(3) <= '1';
+  DACS_switches(2 DOWNTO 0) <= not DIO(62 DOWNTO 60);
   FPGA_CMDENBL	<= subbus_cmdenbl;
   FPGA_CMDENBL_B	<= not subbus_cmdenbl;
   FPGA_CMDSTRB	<= subbus_cmdstrb;
@@ -432,14 +428,11 @@ BEGIN
   GPIO_ERROR_LED	<= subbus_fail_leds(0);
   GPIO_LED(2 DOWNTO 0) <= subbus_fail_leds(3 DOWNTO 1);
   GPIO_LED(3) <= Collision;
-  -- GPIO_LED <= subbus_fail_leds(4 DOWNTO 1);
 
   DA_SCK <= DA_SCK_int;
   DA_SDI <= DA_SDI_int;
   DA_LDAC_B <= DA_LDAC_B_int;
   DA_CLR_B <= DA_CLR_B_int;
-  GPIO_HDR_HI(15 downto 8) <= (others => '0');
 
-END ARCHITECTURE beh;
-
+END ARCHITECTURE struct;
 

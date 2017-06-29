@@ -17,7 +17,7 @@ USE idx_fpga_lib.ptrhm.all;
 
 ENTITY PDACS_HTW IS
   GENERIC (
-    DACS_BUILD_NUMBER : std_logic_vector(15 DOWNTO 0) := X"0028"; -- Build 40
+    DACS_BUILD_NUMBER : std_logic_vector(15 DOWNTO 0) := X"002B"; -- Build 43
     INSTRUMENT_ID : std_logic_vector(15 DOWNTO 0) := X"0002"; -- HTW
     N_INTERRUPTS : integer range 15 downto 1 := 1;
     N_QCLICTRL : integer range 5 downto 0 := 1;
@@ -30,7 +30,7 @@ ENTITY PDACS_HTW IS
 
     N_PTRH : integer range 5 downto 1 := 3;
     N_ISBITS    : integer range 8 downto 1 := 3;
-    ESID        : ESID_array := ( 0, 0, 0 );
+    ESID        : ESID_array := ( 0, 1, 2 );
     ESwitchBit  : ESB_array  := ( 0, 0, 0 );
     ISwitchBit  : ISB_array  := ( 0, 1, 2 );
     ESwitchAddr : ESA_array  := ( "0000000", "0000000", "0000000" );
