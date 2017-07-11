@@ -9,27 +9,27 @@
 --
 LIBRARY ieee;
 USE ieee.std_logic_1164.all;
---USE ieee.std_logic_arith.all;
---USE ieee.std_logic_unsigned.all;
+-- USE ieee.std_logic_arith.all;
+-- USE ieee.std_logic_unsigned.all;
 USE ieee.numeric_std.all;
 
 ENTITY PosCtr IS
-   PORT( 
-      RdEn     : IN     std_ulogic;
-      PosEn    : IN     std_ulogic;
-      F8M      : IN     std_ulogic;
-      rst      : IN     std_logic;
-      Ld       : IN     std_ulogic;
-      ClkEn    : IN     std_ulogic;
-      DirOut   : IN     std_ulogic;
-      ResetPos : IN     std_ulogic;
-      WData    : IN     std_logic_vector ( 15 DOWNTO 0 );
-      PosData  : OUT    std_logic_vector ( 15 DOWNTO 0 )
-   );
+  PORT( 
+    RdEn     : IN     std_ulogic;
+    PosEn    : IN     std_ulogic;
+    F8M      : IN     std_ulogic;
+    rst      : IN     std_logic;
+    Ld       : IN     std_ulogic;
+    ClkEn    : IN     std_ulogic;
+    DirOut   : IN     std_ulogic;
+    ResetPos : IN     std_ulogic;
+    WData    : IN     std_logic_vector ( 15 DOWNTO 0 );
+    PosData  : OUT    std_logic_vector ( 15 DOWNTO 0 )
+  );
 
 -- Declarations
 
-END PosCtr ;
+END ENTITY PosCtr ;
 
 -- Counter 
 ARCHITECTURE arch OF PosCtr IS

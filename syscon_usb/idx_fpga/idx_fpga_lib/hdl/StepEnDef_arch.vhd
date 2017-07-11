@@ -11,18 +11,19 @@ LIBRARY ieee;
 USE ieee.std_logic_1164.all;
 USE ieee.std_logic_arith.all;
 USE ieee.std_logic_unsigned.all;
+USE ieee.numeric_std.all;
 
 ENTITY StepEnDef IS
-   PORT( 
-      CMDENBL : IN     std_ulogic;
-      Limit   : IN     std_ulogic;
-      ZeroCt  : IN     std_ulogic;
-      StepEn  : OUT    std_ulogic
-   );
+  PORT( 
+    CMDENBL : IN     std_ulogic;
+    Limit   : IN     std_ulogic;
+    ZeroCt  : IN     std_ulogic;
+    StepEn  : OUT    std_ulogic
+  );
 
 -- Declarations
 
-END StepEnDef ;
+END ENTITY StepEnDef ;
 
 --
 ARCHITECTURE arch OF StepEnDef IS

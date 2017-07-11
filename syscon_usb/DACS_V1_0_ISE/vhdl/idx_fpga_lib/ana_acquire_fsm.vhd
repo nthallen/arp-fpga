@@ -41,7 +41,7 @@ ENTITY ana_acquire IS
   attribute fsm_encoding of ana_acquire : entity is "one-hot";
   attribute safe_implementation: string;
   attribute safe_implementation of ana_acquire : entity is "yes";
-END ana_acquire ;
+END ENTITY ana_acquire ;
 
 --
 -- VHDL Architecture idx_fpga_lib.ana_acquire.fsm
@@ -656,4 +656,4 @@ BEGIN
    Status_int(6 downto 5) <= TOStat;
    Status_int(7) <= '0';
    Status_int(11 downto 8) <= RdyIn;
-END fsm;
+END ARCHITECTURE fsm;

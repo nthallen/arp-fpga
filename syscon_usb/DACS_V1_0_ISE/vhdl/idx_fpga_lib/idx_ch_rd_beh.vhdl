@@ -14,16 +14,16 @@ USE ieee.std_logic_unsigned.all;
 USE ieee.numeric_std.all;
 
 ENTITY idx_ch_rd IS
-   PORT( 
-      OpCd     : IN     std_logic_vector (2 DOWNTO 0);
-      PosData  : IN     std_logic_vector ( 15 DOWNTO 0 );
-      StatData : IN     std_logic_vector ( 15 DOWNTO 0 );
-      RData    : OUT    std_logic_vector (15 DOWNTO 0)
-   );
+  PORT( 
+    OpCd     : IN     std_logic_vector (2 DOWNTO 0);
+    PosData  : IN     std_logic_vector ( 15 DOWNTO 0 );
+    StatData : IN     std_logic_vector ( 15 DOWNTO 0 );
+    RData    : OUT    std_logic_vector (15 DOWNTO 0)
+  );
 
 -- Declarations
 
-END idx_ch_rd ;
+END ENTITY idx_ch_rd ;
 
 --
 ARCHITECTURE beh OF idx_ch_rd IS

@@ -68,11 +68,6 @@ name "i2c_sm"
 duLibraryName "idx_fpga_lib"
 duName "ptrh_i2c_sm"
 elements [
-(GiElement
-name "I2C_CLK_PRESCALE"
-type "std_logic_vector(15 DOWNTO 0)"
-value "X\"009F\""
-)
 ]
 mwi 0
 uid 527,0
@@ -91,31 +86,31 @@ libraryRefs [
 "ieee"
 ]
 )
-version "30.1"
-appVersion "2010.3 (Build 21)"
+version "31.1"
+appVersion "2016.1 (Build 8)"
 noEmbeddedEditors 1
 model (BlockDiag
 VExpander (VariableExpander
 vvMap [
 (vvPair
 variable "HDLDir"
-value "C:\\HDS\\idx_fpga\\idx_fpga_lib\\hdl"
+value "C:\\Users\\nort.ARP\\Documents\\SW\\arp-fpga\\syscon_usb\\idx_fpga\\idx_fpga_lib\\hdl"
 )
 (vvPair
 variable "HDSDir"
-value "C:\\HDS\\idx_fpga\\idx_fpga_lib\\hds"
+value "C:\\Users\\nort.ARP\\Documents\\SW\\arp-fpga\\syscon_usb\\idx_fpga\\idx_fpga_lib\\hds"
 )
 (vvPair
 variable "SideDataDesignDir"
-value "C:\\HDS\\idx_fpga\\idx_fpga_lib\\hds\\vm\\struct.bd.info"
+value "C:\\Users\\nort.ARP\\Documents\\SW\\arp-fpga\\syscon_usb\\idx_fpga\\idx_fpga_lib\\hds\\vm\\struct.bd.info"
 )
 (vvPair
 variable "SideDataUserDir"
-value "C:\\HDS\\idx_fpga\\idx_fpga_lib\\hds\\vm\\struct.bd.user"
+value "C:\\Users\\nort.ARP\\Documents\\SW\\arp-fpga\\syscon_usb\\idx_fpga\\idx_fpga_lib\\hds\\vm\\struct.bd.user"
 )
 (vvPair
 variable "SourceDir"
-value "C:\\HDS\\idx_fpga\\idx_fpga_lib\\hds"
+value "C:\\Users\\nort.ARP\\Documents\\SW\\arp-fpga\\syscon_usb\\idx_fpga\\idx_fpga_lib\\hds"
 )
 (vvPair
 variable "appl"
@@ -131,15 +126,15 @@ value "%(unit)_%(view)_config"
 )
 (vvPair
 variable "d"
-value "C:\\HDS\\idx_fpga\\idx_fpga_lib\\hds\\vm"
+value "C:\\Users\\nort.ARP\\Documents\\SW\\arp-fpga\\syscon_usb\\idx_fpga\\idx_fpga_lib\\hds\\vm"
 )
 (vvPair
 variable "d_logical"
-value "C:\\HDS\\idx_fpga\\idx_fpga_lib\\hds\\vm"
+value "C:\\Users\\nort.ARP\\Documents\\SW\\arp-fpga\\syscon_usb\\idx_fpga\\idx_fpga_lib\\hds\\vm"
 )
 (vvPair
 variable "date"
-value "03/27/2012"
+value "07/11/2017"
 )
 (vvPair
 variable "day"
@@ -151,7 +146,7 @@ value "Tuesday"
 )
 (vvPair
 variable "dd"
-value "27"
+value "11"
 )
 (vvPair
 variable "entity_name"
@@ -174,12 +169,32 @@ variable "f_noext"
 value "struct"
 )
 (vvPair
+variable "graphical_source_author"
+value "nort"
+)
+(vvPair
+variable "graphical_source_date"
+value "07/11/2017"
+)
+(vvPair
+variable "graphical_source_group"
+value "UNKNOWN"
+)
+(vvPair
+variable "graphical_source_host"
+value "NORT-XPS14"
+)
+(vvPair
+variable "graphical_source_time"
+value "11:29:56"
+)
+(vvPair
 variable "group"
 value "UNKNOWN"
 )
 (vvPair
 variable "host"
-value "NORT-NBX200T"
+value "NORT-XPS14"
 )
 (vvPair
 variable "language"
@@ -199,7 +214,7 @@ value "$HDS_PROJECT_DIR/idx_fpga_lib/work"
 )
 (vvPair
 variable "mm"
-value "03"
+value "07"
 )
 (vvPair
 variable "module_name"
@@ -207,19 +222,19 @@ value "vm"
 )
 (vvPair
 variable "month"
-value "Mar"
+value "Jul"
 )
 (vvPair
 variable "month_long"
-value "March"
+value "July"
 )
 (vvPair
 variable "p"
-value "C:\\HDS\\idx_fpga\\idx_fpga_lib\\hds\\vm\\struct.bd"
+value "C:\\Users\\nort.ARP\\Documents\\SW\\arp-fpga\\syscon_usb\\idx_fpga\\idx_fpga_lib\\hds\\vm\\struct.bd"
 )
 (vvPair
 variable "p_logical"
-value "C:\\HDS\\idx_fpga\\idx_fpga_lib\\hds\\vm\\struct.bd"
+value "C:\\Users\\nort.ARP\\Documents\\SW\\arp-fpga\\syscon_usb\\idx_fpga\\idx_fpga_lib\\hds\\vm\\struct.bd"
 )
 (vvPair
 variable "package_name"
@@ -243,7 +258,7 @@ value "<TBD>"
 )
 (vvPair
 variable "task_ModelSimPath"
-value "C:/modeltech_10.0c/win32"
+value "C:\\modeltech64_10.6\\win64"
 )
 (vvPair
 variable "task_NC-SimPath"
@@ -275,7 +290,7 @@ value "struct"
 )
 (vvPair
 variable "time"
-value "12:27:49"
+value "11:29:56"
 )
 (vvPair
 variable "unit"
@@ -287,7 +302,7 @@ value "nort"
 )
 (vvPair
 variable "version"
-value "2010.3 (Build 21)"
+value "2016.1 (Build 8)"
 )
 (vvPair
 variable "view"
@@ -295,11 +310,11 @@ value "struct"
 )
 (vvPair
 variable "year"
-value "2012"
+value "2017"
 )
 (vvPair
 variable "yy"
-value "12"
+value "17"
 )
 ]
 )
@@ -2459,16 +2474,10 @@ isHidden 1
 font "Courier New,8,0"
 )
 xt "43000,67200,77500,68000"
-st "I2C_CLK_PRESCALE = X\"009F\"    ( std_logic_vector(15 DOWNTO 0) )  "
 )
 header ""
 )
 elements [
-(GiElement
-name "I2C_CLK_PRESCALE"
-type "std_logic_vector(15 DOWNTO 0)"
-value "X\"009F\""
-)
 ]
 )
 viewicon (ZoomableIcon
@@ -5103,7 +5112,7 @@ tm "BdCompilerDirectivesTextMgr"
 associable 1
 )
 windowSize "0,153,1281,931"
-viewArea "-3254,-1422,126345,75409"
+viewArea "24433,28822,107633,78205"
 cachedDiagramExtent "0,0,98000,73000"
 pageSetupInfo (PageSetupInfo
 ptrCmd "Adobe PDF,winspool,"
@@ -5129,7 +5138,7 @@ exportStdPackageRefs 1
 )
 hasePageBreakOrigin 1
 pageBreakOrigin "0,0"
-lastUid 1420,0
+lastUid 1491,0
 defaultCommentText (CommentText
 shape (Rectangle
 layer 0

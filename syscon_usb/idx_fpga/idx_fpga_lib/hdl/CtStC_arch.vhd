@@ -13,19 +13,19 @@ USE ieee.std_logic_arith.all;
 USE ieee.std_logic_unsigned.all;
 
 ENTITY CtStC IS
-   PORT( 
-      CtEn  : IN     std_ulogic;
-      F8M   : IN     std_ulogic;
-      PosEn : IN     std_ulogic;
-      RdEn  : IN     std_ulogic;
-      WrEn  : IN     std_ulogic;
-      R     : OUT    std_ulogic;
-      Ld    : OUT    std_ulogic
-   );
+  PORT( 
+    CtEn  : IN     std_ulogic;
+    F8M   : IN     std_ulogic;
+    PosEn : IN     std_ulogic;
+    RdEn  : IN     std_ulogic;
+    WrEn  : IN     std_ulogic;
+    R     : OUT    std_ulogic;
+    Ld    : OUT    std_ulogic
+  );
 
 -- Declarations
 
-END CtStC ;
+END ENTITY CtStC ;
 
 --
 ARCHITECTURE arch OF CtStC IS

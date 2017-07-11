@@ -12,18 +12,18 @@ USE ieee.std_logic_1164.all;
 USE ieee.std_logic_arith.all;
 
 ENTITY vm_addr IS
-   GENERIC( 
-      BASE_ADDR : unsigned(15 DOWNTO 0) := X"0360"
-   );
-   PORT( 
-      Addr  : IN     std_logic_vector (15 DOWNTO 0);
-      BdEn  : OUT    std_ulogic;
-      RegEn : OUT    std_ulogic_vector (4 DOWNTO 0)
-   );
+  GENERIC( 
+    BASE_ADDR : unsigned(15 DOWNTO 0) := X"0360"
+  );
+  PORT( 
+    Addr  : IN     std_logic_vector (15 DOWNTO 0);
+    BdEn  : OUT    std_ulogic;
+    RegEn : OUT    std_ulogic_vector (4 DOWNTO 0)
+  );
 
 -- Declarations
 
-END vm_addr ;
+END ENTITY vm_addr ;
 
 --
 ARCHITECTURE beh OF vm_addr IS

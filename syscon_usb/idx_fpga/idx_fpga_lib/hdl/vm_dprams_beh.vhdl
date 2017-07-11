@@ -10,22 +10,21 @@
 LIBRARY ieee;
 USE ieee.std_logic_1164.all;
 USE ieee.std_logic_arith.all;
-LIBRARY idx_fpga_lib;
 
 ENTITY vm_dprams IS
-   PORT( 
-      F8M   : IN     std_ulogic;
-      RdEn  : IN     std_ulogic;
-      RegEn : IN     std_ulogic_vector (4 DOWNTO 0);
-      WrEn  : IN     std_ulogic_vector (4 DOWNTO 0);
-      wData : IN     std_logic_vector (15 DOWNTO 0);
-      rData : OUT    std_logic_vector (15 DOWNTO 0);
-      rst   : IN     std_ulogic
-   );
+  PORT( 
+    F8M   : IN     std_ulogic;
+    RdEn  : IN     std_ulogic;
+    RegEn : IN     std_ulogic_vector (4 DOWNTO 0);
+    WrEn  : IN     std_ulogic_vector (4 DOWNTO 0);
+    wData : IN     std_logic_vector (15 DOWNTO 0);
+    rData : OUT    std_logic_vector (15 DOWNTO 0);
+    rst   : IN     std_ulogic
+  );
 
 -- Declarations
 
-END vm_dprams ;
+END ENTITY vm_dprams ;
 
 --
 ARCHITECTURE beh OF vm_dprams IS
@@ -41,7 +40,7 @@ ARCHITECTURE beh OF vm_dprams IS
         Full  : OUT    std_ulogic
      );
   END COMPONENT;
-  FOR ALL : ptrh_dpram USE ENTITY idx_fpga_lib.ptrh_dpram;
+  -- FOR ALL : ptrh_dpram USE ENTITY idx_fpga_lib.ptrh_dpram;
   SIGNAL Full : std_ulogic_vector(4 DOWNTO 0);
   type iRData_t is array (4 DOWNTO 0) of std_logic_vector(15 DOWNTO 0);
   SIGNAL iRData : iRData_t;

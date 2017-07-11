@@ -427,12 +427,14 @@ architecture Behavioral of dacs_v2 is
 	attribute box_type of Processor : component is "user_black_box";
 	
 	function N_ADC_BD return integer IS
+	  Variable RV : integer;
 	BEGIN
 	  IF N_ADC > 0 THEN
-	    return 1;
+	    RV := 1;
     ELSE
-	    return 0;
+	    RV := 0;
     END IF;
+    return RV;
 	END N_ADC_BD;
 	
 	CONSTANT IDX_BDNO : integer := 0;
@@ -723,6 +725,7 @@ begin
       );
   end generate;
 
+  -- ES96 2014 Ozone Preamp Boards with SPI ADC LTC2440
   adc_gen: if N_ADC > 0 generate
     adc_if: adc_v1
      GENERIC MAP (
