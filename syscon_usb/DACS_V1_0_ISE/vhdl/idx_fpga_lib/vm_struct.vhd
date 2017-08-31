@@ -67,7 +67,7 @@ ARCHITECTURE struct OF vm IS
   SIGNAL BdEn      : std_ulogic;
   SIGNAL Done      : std_logic;
   SIGNAL Err       : std_logic;
-  SIGNAL ExpWr     : std_ulogic := '0';
+  CONSTANT ExpWr   : std_ulogic := '0';
   SIGNAL Rd        : std_logic;
   SIGNAL Rd3       : std_logic;
   SIGNAL RdEn      : std_ulogic;

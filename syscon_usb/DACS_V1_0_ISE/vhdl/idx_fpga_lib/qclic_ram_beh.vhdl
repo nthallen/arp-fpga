@@ -13,19 +13,19 @@ USE ieee.std_logic_unsigned.all;
 USE ieee.std_logic_arith.all;
 
 ENTITY qclic_ram IS
-   PORT( 
-      rRd       : IN     std_ulogic;
-      rWr       : IN     std_ulogic;
-      raddr     : IN     std_logic_vector (6 DOWNTO 0);
-      ram_wdata : IN     std_logic_vector (15 DOWNTO 0);
-      ram_rdata : OUT    std_logic_vector (15 DOWNTO 0);
-      F8M       : IN     std_logic;
-      rst       : IN     std_logic
-   );
+  PORT( 
+    rRd       : IN     std_ulogic;
+    rWr       : IN     std_ulogic;
+    raddr     : IN     std_logic_vector (6 DOWNTO 0);
+    ram_wdata : IN     std_logic_vector (15 DOWNTO 0);
+    ram_rdata : OUT    std_logic_vector (15 DOWNTO 0);
+    F8M       : IN     std_logic;
+    rst       : IN     std_logic
+  );
 
 -- Declarations
 
-END qclic_ram ;
+END ENTITY qclic_ram ;
 
 --
 ARCHITECTURE beh OF qclic_ram IS

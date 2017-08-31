@@ -17,12 +17,13 @@ USE idx_fpga_lib.ptrhm.all;
 
 ENTITY PDACS_ES96 IS
   GENERIC (
-    DACS_BUILD_NUMBER : std_logic_vector(15 DOWNTO 0) := X"002A"; -- Build 42
+    DACS_BUILD_NUMBER : std_logic_vector(15 DOWNTO 0) := X"002D"; -- Build 45
     INSTRUMENT_ID : std_logic_vector(15 DOWNTO 0) := X"0004"; -- ES96 O3
     N_INTERRUPTS : integer range 15 downto 1 := 1;
     N_QCLICTRL : integer range 5 downto 0 := 0;
-    N_VM : integer range 5 downto 0 := 0;
+    N_VM : integer range 5 downto 0 := 1;
     N_LK204 : integer range 1 downto 0 := 0;
+    N_TEMP_SENSOR : integer range 1 downto 0 := 1;
 
     N_PTRH : integer range 5 downto 1 := 3;
     N_ISBITS    : integer range 8 downto 1 := 3;
@@ -199,7 +200,8 @@ ARCHITECTURE beh OF PDACS_ES96 IS
       N_LK204 : integer range 1 downto 0 := 0;
       N_ADC : integer range 4 downto 0 := 0;
       ADC_NBITSHIFT : integer range 31 downto 0 := 1;
-      ADC_RATE_DEF : std_logic_vector(4 DOWNTO 0) := "11111"
+      ADC_RATE_DEF : std_logic_vector(4 DOWNTO 0) := "11111";
+      N_TEMP_SENSOR : integer range 1 downto 0 := 0
     );
     Port (
       fpga_0_rst_1_sys_rst_pin : IN std_logic;
@@ -265,7 +267,10 @@ ARCHITECTURE beh OF PDACS_ES96 IS
       ADC_MISO    : IN     std_logic_vector(N_ADC-1 DOWNTO 0);
       ADC_MOSI    : OUT    std_logic_vector(N_ADC-1 DOWNTO 0);
       ADC_CS_B    : OUT    std_logic_vector(N_ADC-1 DOWNTO 0);
-      ADC_SCLK    : OUT    std_logic_vector(N_ADC-1 DOWNTO 0)
+      ADC_SCLK    : OUT    std_logic_vector(N_ADC-1 DOWNTO 0);
+      
+      TS_SDA      : INOUT std_logic_vector(N_TEMP_SENSOR-1 DOWNTO 0);
+      TS_SCL      : INOUT std_logic_vector(N_TEMP_SENSOR-1 DOWNTO 0)
     );
   END COMPONENT;
 
@@ -308,7 +313,8 @@ BEGIN
       N_LK204 => N_LK204,
       N_ADC => N_ADC,
       ADC_NBITSHIFT => ADC_NBITSHIFT,
-      ADC_RATE_DEF => ADC_RATE_DEF
+      ADC_RATE_DEF => ADC_RATE_DEF,
+      N_TEMP_SENSOR => N_TEMP_SENSOR
     )
     PORT MAP (
        fpga_0_rst_1_sys_rst_pin       => FPGA_CPU_RESET,
@@ -330,6 +336,8 @@ BEGIN
        PTRH_SCK_pin(0)                => IIC_SCL,
        PTRH_SCK_pin(1)                => BIO(5),
        PTRH_SCK_pin(2)                => BIO(7),
+       VM_SCL_pin(0)                  => BIO(8),
+       VM_SDA_pin(0)                  => BIO(9),
 
        subbus_cmdenbl                 => subbus_cmdenbl,
        subbus_cmdstrb                 => subbus_cmdstrb,
@@ -380,7 +388,9 @@ BEGIN
        ADC_CS_B(0)                    => DIO(1),
        ADC_CS_B(1)                    => DIO(3),
        ADC_SCLK(0)                    => BIO(1),
-       ADC_SCLK(1)                    => BIO(3)
+       ADC_SCLK(1)                    => BIO(3),
+       TS_SDA(0)                      => DIO(3), -- Needs to be set
+       TS_SCL(0)                      => DIO(0)  -- Needs to be set
     );
 
     cmd_proc_i : cmd_proc

@@ -1,7 +1,7 @@
-ELF=Processor/SDK/SDK_Workspace_143/subbus/Debug/subbus.elf
+ELF=Processor/SDK/subbus/Debug/subbus.elf
 .PHONY : all
 # all : spi_prom.mcs htw_spi_prom.mcs cti_spi_prom.mcs
-all : pdacs_carbon.mcs hwv_spi_prom.mcs pdacs_bench.mcs pdacs_hcl.mcs
+all : pdacs_hcl.mcs
 
 pdacs_hcl.mcs : pdacs_hcl.bit
 	promgen -spi -w -p mcs -o pdacs_hcl.mcs -s 8192 -u 0 pdacs_hcl.bit

@@ -7,6 +7,7 @@
 --
 -- PDACS_HCl DACS implementation for ES96 HCl Instrument
 --   Based on PDACS_Carbon for the Carbon Isotopes Instrument
+--  8/7/17  Build 45: HCl flight configuration
 --  5/7/15  Build 44: With ES96 Temperature Sensor
 --  6/29/14 Build 43: ana_acquire even longer settling time
 --  6/27/14 Build 41: ana_acquire longer settling time
@@ -33,7 +34,7 @@ ENTITY PDACS_HCl IS
     N_INTERRUPTS : integer range 15 downto 1 := 1;
     CTR_UG_N_BDS : integer range 5 downto 0 := 1;
     N_QCLICTRL : integer range 5 downto 0 := 1;
-    N_VM : integer range 5 downto 0 := 3;
+    N_VM : integer range 5 downto 0 := 1;
     N_LK204 : integer range 1 downto 0 := 0;
     N_ADC : integer range 4 downto 0 := 0;
     ADC_NBITSHIFT : integer range 31 downto 0 := 1;
@@ -98,10 +99,10 @@ ENTITY PDACS_HCl IS
     IIC_SDA : INOUT std_logic;
     USB_1_RX : IN std_logic;
     USB_1_TX : OUT std_logic;
-    -- UNUSED BELOW HERE
     COUNT : IN std_logic_vector ( 7 DOWNTO 0 );
-    COUNT_LE : IN std_logic_vector ( 7 DOWNTO 0 );
-    COUNT_SDN : IN std_ulogic;
+    COUNT_LE : IN std_logic_vector ( 7 DOWNTO 0 ); -- Actually control, but want 'Z'
+    COUNT_SDN : IN std_ulogic; -- Same as _LE
+    -- UNUSED BELOW HERE
     FPGA_CSO_B : IN std_ulogic;
     FPGA_D0_DIN_MISO_MISO1 : IN std_ulogic;
     FPGA_D1_MISO2 : IN std_ulogic;
@@ -349,12 +350,14 @@ BEGIN
        PTRH_SCK_pin(0)                => IIC_SCL,
        PTRH_SCK_pin(1)                => BIO(3),
        PTRH_SCK_pin(2)                => BIO(4),
-       VM_SCL_pin(0)                  => BIO(0),
-       VM_SCL_pin(1)                  => BIO(6),
-       VM_SCL_pin(2)                  => DIO(1), -- Jumpered to DACS DIO2, renamed BIO10
-       VM_SDA_pin(0)                  => BIO(1),
-       VM_SDA_pin(1)                  => BIO(7),
-       VM_SDA_pin(2)                  => DIO(4), -- Jumpered to DACS DIO5, renamed BIO13
+       VM_SCL_pin(0)                  => BIO(8),
+       VM_SDA_pin(0)                  => BIO(9),
+   --  VM_SCL_pin(0)                  => BIO(0),
+   --  VM_SCL_pin(1)                  => BIO(6),
+   --  VM_SCL_pin(2)                  => DIO(1), -- Jumpered to DACS DIO2, renamed BIO10
+   --  VM_SDA_pin(0)                  => BIO(1),
+   --  VM_SDA_pin(1)                  => BIO(7),
+   --  VM_SDA_pin(2)                  => DIO(4), -- Jumpered to DACS DIO5, renamed BIO13
        LK204_SCL_pin                  => BIO(N_LK204-1 DOWNTO 0),
        LK204_SDA_pin                  => BIO(N_LK204-1 DOWNTO 0),
        
@@ -388,8 +391,8 @@ BEGIN
        ana_in_SCK16                   => AI_AD_SCK,
        ana_in_SCK5                    => AI_AFE_SCK,
        ana_in_SDO                     => AI_AFE_MOSI,
-       ctr_PMT(0)                     => DIO(21),
-       ctr_PMT(1)                     => DIO(57),
+       ctr_PMT(0)                     => COUNT(0),
+       ctr_PMT(1)                     => COUNT(1),
        ctr_PMT(3 DOWNTO 2)            => "00",
        DA_CLR_B                       => DA_CLR_B_int,
        DA_CS_B(1 DOWNTO 0)            => DA_CS_B,
@@ -453,7 +456,7 @@ BEGIN
   -- DIO(17) is idx_Limi<0>
   -- DIO(18,19) are unused inputs
   -- DIO(20) is dig_IO<27>
-  -- DIO(21) is ctr_PMT<0>
+  -- DIO(21) is ctr_PMT<0> unused input
   -- DIO(22) is unused input
   -- DIO(23) is dig_IO<26>
   DIO(24) <= not cmd_out(0);
@@ -471,7 +474,7 @@ BEGIN
   DIO(54 DOWNTO 48) <= (others => '0'); -- unused outputs
   DIO(55) <= cmd_out(5);
   -- DIO(56) is unused input
-  -- DIO(57) is ctr_PMT(1)
+  -- DIO(57) is ctr_PMT(1) unused input
   -- DIO(58) is QNBsy(0)
   -- DIO(59) is dig_IO(25)
   DIO(119 DOWNTO 60) <= (others => '0'); -- unused outputs
@@ -487,6 +490,8 @@ BEGIN
   DIO_DIR(6 DOWNTO 3) <= "0000";
   DIO_DIR(7) <= '1';
   DIO_DIR(14 DOWNTO 8) <= (others => '0'); -- No Power board
+  
+  idx_ZR(0) <= '0';
 
   DIO_OE <= '1';
   DIO_OE_B <= '0';

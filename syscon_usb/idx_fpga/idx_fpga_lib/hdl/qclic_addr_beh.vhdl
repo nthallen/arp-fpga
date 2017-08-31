@@ -13,18 +13,18 @@ USE ieee.std_logic_unsigned.all;
 USE ieee.std_logic_arith.all;
 
 ENTITY qclic_addr IS
-   GENERIC( 
-      BASE_ADDR : std_logic_vector(15 DOWNTO 0) := X"1000"
-   );
-   PORT( 
-      Addr : IN     std_logic_vector (15 DOWNTO 0);
-      BdEn : OUT    std_ulogic;
-      cmd  : OUT    std_logic_vector (2 DOWNTO 0)
-   );
+  GENERIC( 
+    BASE_ADDR : std_logic_vector(15 DOWNTO 0) := X"1000"
+  );
+  PORT( 
+    Addr : IN     std_logic_vector (15 DOWNTO 0);
+    BdEn : OUT    std_ulogic;
+    cmd  : OUT    std_logic_vector (2 DOWNTO 0)
+  );
 
 -- Declarations
 
-END qclic_addr ;
+END ENTITY qclic_addr ;
 
 --
 ARCHITECTURE beh OF qclic_addr IS
