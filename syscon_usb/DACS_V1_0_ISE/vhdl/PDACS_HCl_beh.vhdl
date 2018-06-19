@@ -7,6 +7,7 @@
 --
 -- PDACS_HCl DACS implementation for ES96 HCl Instrument
 --   Based on PDACS_Carbon for the Carbon Isotopes Instrument
+--  6/19/18 Build 46: HCl invert GD Valve Command (DIO28)
 --  8/7/17  Build 45: HCl flight configuration
 --  5/7/15  Build 44: With ES96 Temperature Sensor
 --  6/29/14 Build 43: ana_acquire even longer settling time
@@ -29,7 +30,7 @@ USE idx_fpga_lib.ptrhm.all;
 
 ENTITY PDACS_HCl IS
   GENERIC (
-    DACS_BUILD_NUMBER : std_logic_vector(15 DOWNTO 0) := X"002D"; -- #45
+    DACS_BUILD_NUMBER : std_logic_vector(15 DOWNTO 0) := X"002E"; -- #46
     INSTRUMENT_ID : std_logic_vector(15 DOWNTO 0) := X"0005"; -- ES96 HCl
     N_INTERRUPTS : integer range 15 downto 1 := 1;
     CTR_UG_N_BDS : integer range 5 downto 0 := 1;
@@ -462,7 +463,7 @@ BEGIN
   DIO(24) <= not cmd_out(0);
   DIO(26 DOWNTO 25) <= (others => '0'); -- M&C QSync
   DIO(27 DOWNTO 27) <= std_logic_vector(QSync);
-  DIO(28) <= cmd_out(2);
+  DIO(28) <= not cmd_out(2);
   DIO(30 DOWNTO 29) <= (others => '0');
   DIO(31) <= cmd_out(1);
   DIO(35 DOWNTO 32) <= (others => '0');
