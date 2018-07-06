@@ -55,7 +55,7 @@ entity dacs_v2 is
       N_ADC : integer range 4 downto 0 := 0;
       ADC_NBITSHIFT : integer range 31 downto 0 := 1;
       ADC_RATE_DEF : std_logic_vector(4 DOWNTO 0) := "11111";
-      N_TEMP_SENSOR : integer range 1 downto 0 := 0
+      N_TEMP_SENSOR : integer range 2 downto 0 := 0
     );
     Port (
       fpga_0_rst_1_sys_rst_pin : IN std_logic;
@@ -749,21 +749,21 @@ begin
      );
   end generate;
   
-  ts_gen: if N_TEMP_SENSOR > 0 generate
+  ts_gen:  for i in 0 TO N_TEMP_SENSOR-1 generate
     ts_inst : temp_top
        GENERIC MAP (
-          BASE_ADDR => X"0480"  
+          BASE_ADDR => CONV_UNSIGNED(1152+i*64,16) -- X"0480" + i*X"0040"
        )
        PORT MAP (
           Addr  => ExpAddr,
           ExpRd => ExpRd,
           ExpWr => ExpWr,
-          ExpAck => ExpAck(TS_BDNO),
+          ExpAck => ExpAck(TS_BDNO+i),
           F8M   => clk_8_0000MHz,
           rst   => rst,
-          RData => iRData(16*TS_BDNO+15 DOWNTO 16*TS_BDNO),
-          scl   => TS_SCL(0),
-          sda   => TS_SDA(0)
+          RData => iRData(16*(TS_BDNO+i)+15 DOWNTO 16*(TS_BDNO+i)),
+          scl   => TS_SCL(i),
+          sda   => TS_SDA(i)
        );
   end generate;
 

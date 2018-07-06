@@ -7,6 +7,7 @@
 --
 -- PDACS_HCl DACS implementation for ES96 HCl Instrument
 --   Based on PDACS_Carbon for the Carbon Isotopes Instrument
+--   7/5/18 Build 47: HCl Support for Amb_T (2nd TS connector)
 --  6/19/18 Build 46: HCl invert GD Valve Command (DIO28)
 --  8/7/17  Build 45: HCl flight configuration
 --  5/7/15  Build 44: With ES96 Temperature Sensor
@@ -30,24 +31,24 @@ USE idx_fpga_lib.ptrhm.all;
 
 ENTITY PDACS_HCl IS
   GENERIC (
-    DACS_BUILD_NUMBER : std_logic_vector(15 DOWNTO 0) := X"002E"; -- #46
+    DACS_BUILD_NUMBER : std_logic_vector(15 DOWNTO 0) := X"002F"; -- #47
     INSTRUMENT_ID : std_logic_vector(15 DOWNTO 0) := X"0005"; -- ES96 HCl
     N_INTERRUPTS : integer range 15 downto 1 := 1;
     CTR_UG_N_BDS : integer range 5 downto 0 := 1;
     N_QCLICTRL : integer range 5 downto 0 := 1;
-    N_VM : integer range 5 downto 0 := 1;
+    N_VM : integer range 5 downto 0 := 2;
     N_LK204 : integer range 1 downto 0 := 0;
     N_ADC : integer range 4 downto 0 := 0;
     ADC_NBITSHIFT : integer range 31 downto 0 := 1;
     ADC_RATE_DEF : std_logic_vector(4 DOWNTO 0) := "11111";
-    N_TEMP_SENSOR : integer range 1 downto 0 := 1;
+    N_TEMP_SENSOR : integer range 2 downto 0 := 2;
 
-    N_PTRH : integer range 16 downto 1 := 3;
-    N_ISBITS    : integer range 8 downto 1 := 3;
-    ESID        : ESID_array := ( 0, 1, 2 );
-    ESwitchBit  : ESB_array  := ( 0, 1, 2 );
-    ISwitchBit  : ISB_array  := ( 0, 1, 2 );
-    ESwitchAddr : ESA_array  := ( "0000000", "0000000", "0000000" );
+    N_PTRH : integer range 16 downto 1 := 2;
+    N_ISBITS    : integer range 8 downto 1 := 2;
+    ESID        : ESID_array := ( 0, 1 );
+    ESwitchBit  : ESB_array  := ( 0, 1 );
+    ISwitchBit  : ISB_array  := ( 0, 1 );
+    ESwitchAddr : ESA_array  := ( "0000000", "0000000" );
 
     N_AO_CHIPS : natural range 15 downto 1 := 2;
     IDX_N_CHANNELS : integer range 15 downto 1 := 1;
@@ -216,7 +217,7 @@ ARCHITECTURE beh OF PDACS_HCl IS
       N_ADC : integer range 4 downto 0 := 0;
       ADC_NBITSHIFT : integer range 31 downto 0 := 1;
       ADC_RATE_DEF : std_logic_vector(4 DOWNTO 0) := "11111";
-      N_TEMP_SENSOR : integer range 1 downto 0 := 0
+      N_TEMP_SENSOR : integer range 2 downto 0 := 0
     );
     Port (
       fpga_0_rst_1_sys_rst_pin : IN std_logic;
@@ -346,18 +347,16 @@ BEGIN
        fpga_0_RS232_TX_pin            => USB_1_TX,
        
        PTRH_SDA_pin(0)                => IIC_SDA,
-       PTRH_SDA_pin(1)                => BIO(2),
-       PTRH_SDA_pin(2)                => BIO(5),
+       PTRH_SDA_pin(1)                => BIO(5),
+   --  PTRH_SDA_pin(2)                => BIO(5),
        PTRH_SCK_pin(0)                => IIC_SCL,
-       PTRH_SCK_pin(1)                => BIO(3),
-       PTRH_SCK_pin(2)                => BIO(4),
-       VM_SCL_pin(0)                  => BIO(8),
-       VM_SDA_pin(0)                  => BIO(9),
-   --  VM_SCL_pin(0)                  => BIO(0),
-   --  VM_SCL_pin(1)                  => BIO(6),
+       PTRH_SCK_pin(1)                => BIO(4),
+   --  PTRH_SCK_pin(2)                => BIO(4),
+       VM_SCL_pin(0)                  => BIO(0),
+       VM_SCL_pin(1)                  => BIO(6),
    --  VM_SCL_pin(2)                  => DIO(1), -- Jumpered to DACS DIO2, renamed BIO10
-   --  VM_SDA_pin(0)                  => BIO(1),
-   --  VM_SDA_pin(1)                  => BIO(7),
+       VM_SDA_pin(0)                  => BIO(1),
+       VM_SDA_pin(1)                  => BIO(7),
    --  VM_SDA_pin(2)                  => DIO(4), -- Jumpered to DACS DIO5, renamed BIO13
        LK204_SCL_pin                  => BIO(N_LK204-1 DOWNTO 0),
        LK204_SDA_pin                  => BIO(N_LK204-1 DOWNTO 0),
@@ -409,7 +408,9 @@ BEGIN
        ADC_CS_B                       => ADC_CS_B,
        ADC_SCLK                       => ADC_SCLK,
        TS_SDA(0)                      => DIO(3),
-       TS_SCL(0)                      => DIO(0)
+       TS_SDA(1)                      => BIO(2),
+       TS_SCL(0)                      => DIO(0),
+       TS_SCL(1)                      => BIO(3)
     );
 
     cmd_proc_i : cmd_proc
