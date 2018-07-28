@@ -14,29 +14,29 @@ LIBRARY idx_fpga_lib;
 USE idx_fpga_lib.ptrhm.ALL;
 
 ENTITY bench_ptrhm_acquire_tester IS
-   GENERIC( 
-      N_ISBITS : integer range 7 downto 1 := 4
-   );
-   PORT( 
-      ExpAck : IN     std_ulogic;
-      rData  : IN     std_logic_vector (15 DOWNTO 0);
-      wdata0 : IN     std_ulogic_vector (7 DOWNTO 0);
-      wdata1 : IN     std_ulogic_vector (7 DOWNTO 0);
-      wdata2 : IN     std_ulogic_vector (7 DOWNTO 0);
-      Addr   : OUT    std_logic_vector (15 DOWNTO 0);
-      ExpRd  : OUT    std_ulogic;
-      ExpWr  : OUT    std_ulogic;
-      F8M    : OUT    std_ulogic;
-      rst    : OUT    std_logic;
-      m_scl  : INOUT  std_logic_vector (8 DOWNTO 0);
-      m_sda  : INOUT  std_logic_vector (8 DOWNTO 0);
-      scl    : INOUT  std_logic_vector (N_ISBITS-1 DOWNTO 0);
-      sda    : INOUT  std_logic_vector (N_ISBITS-1 DOWNTO 0)
-   );
+  GENERIC( 
+    N_ISBITS : integer range 7 downto 1 := 4
+  );
+  PORT( 
+    ExpAck : IN     std_ulogic;
+    rData  : IN     std_logic_vector (15 DOWNTO 0);
+    wdata0 : IN     std_ulogic_vector (7 DOWNTO 0);
+    wdata1 : IN     std_ulogic_vector (7 DOWNTO 0);
+    wdata2 : IN     std_ulogic_vector (7 DOWNTO 0);
+    Addr   : OUT    std_logic_vector (15 DOWNTO 0);
+    ExpRd  : OUT    std_ulogic;
+    ExpWr  : OUT    std_ulogic;
+    F8M    : OUT    std_ulogic;
+    rst    : OUT    std_logic;
+    m_scl  : INOUT  std_logic_vector (8 DOWNTO 0);
+    m_sda  : INOUT  std_logic_vector (8 DOWNTO 0);
+    scl    : INOUT  std_logic_vector (N_ISBITS-1 DOWNTO 0);
+    sda    : INOUT  std_logic_vector (N_ISBITS-1 DOWNTO 0)
+  );
 
 -- Declarations
 
-END bench_ptrhm_acquire_tester ;
+END ENTITY bench_ptrhm_acquire_tester ;
 
 --
 ARCHITECTURE rtl OF bench_ptrhm_acquire_tester IS

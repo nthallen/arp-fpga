@@ -17,19 +17,20 @@ USE idx_fpga_lib.ptrhm.all;
 
 ENTITY PDACS_ES96 IS
   GENERIC (
-    DACS_BUILD_NUMBER : std_logic_vector(15 DOWNTO 0) := X"002A"; -- Build 42
+    DACS_BUILD_NUMBER : std_logic_vector(15 DOWNTO 0) := X"0031"; -- Build 49
     INSTRUMENT_ID : std_logic_vector(15 DOWNTO 0) := X"0004"; -- ES96 O3
     N_INTERRUPTS : integer range 15 downto 1 := 1;
     N_QCLICTRL : integer range 5 downto 0 := 0;
-    N_VM : integer range 5 downto 0 := 0;
+    N_VM : integer range 5 downto 0 := 1;
     N_LK204 : integer range 1 downto 0 := 0;
+    N_TEMP_SENSOR : integer range 1 downto 0 := 0;
 
-    N_PTRH : integer range 5 downto 1 := 3;
-    N_ISBITS    : integer range 8 downto 1 := 3;
-    ESID        : ESID_array := ( 0, 0, 0 );
-    ESwitchBit  : ESB_array  := ( 0, 0, 0 );
-    ISwitchBit  : ISB_array  := ( 0, 1, 2 );
-    ESwitchAddr : ESA_array  := ( "0000000", "0000000", "0000000" );
+    N_PTRH : integer range 5 downto 1 := 2;
+    N_ISBITS    : integer range 8 downto 1 := 2;
+    ESID        : ESID_array := ( 1, 0 );
+    ESwitchBit  : ESB_array  := ( 0, 0 );
+    ISwitchBit  : ISB_array  := ( 1, 0 );
+    ESwitchAddr : ESA_array  := ( "0000000", "0000000" );
 
     N_AO_CHIPS : natural range 15 downto 1 := 2;
     CTR_UG_N_BDS : integer range 5 downto 0 := 0;
@@ -199,7 +200,8 @@ ARCHITECTURE beh OF PDACS_ES96 IS
       N_LK204 : integer range 1 downto 0 := 0;
       N_ADC : integer range 4 downto 0 := 0;
       ADC_NBITSHIFT : integer range 31 downto 0 := 1;
-      ADC_RATE_DEF : std_logic_vector(4 DOWNTO 0) := "11111"
+      ADC_RATE_DEF : std_logic_vector(4 DOWNTO 0) := "11111";
+      N_TEMP_SENSOR : integer range 1 downto 0 := 0
     );
     Port (
       fpga_0_rst_1_sys_rst_pin : IN std_logic;
@@ -265,7 +267,10 @@ ARCHITECTURE beh OF PDACS_ES96 IS
       ADC_MISO    : IN     std_logic_vector(N_ADC-1 DOWNTO 0);
       ADC_MOSI    : OUT    std_logic_vector(N_ADC-1 DOWNTO 0);
       ADC_CS_B    : OUT    std_logic_vector(N_ADC-1 DOWNTO 0);
-      ADC_SCLK    : OUT    std_logic_vector(N_ADC-1 DOWNTO 0)
+      ADC_SCLK    : OUT    std_logic_vector(N_ADC-1 DOWNTO 0);
+      
+      TS_SDA      : INOUT std_logic_vector(N_TEMP_SENSOR-1 DOWNTO 0);
+      TS_SCL      : INOUT std_logic_vector(N_TEMP_SENSOR-1 DOWNTO 0)
     );
   END COMPONENT;
 
@@ -308,7 +313,8 @@ BEGIN
       N_LK204 => N_LK204,
       N_ADC => N_ADC,
       ADC_NBITSHIFT => ADC_NBITSHIFT,
-      ADC_RATE_DEF => ADC_RATE_DEF
+      ADC_RATE_DEF => ADC_RATE_DEF,
+      N_TEMP_SENSOR => N_TEMP_SENSOR
     )
     PORT MAP (
        fpga_0_rst_1_sys_rst_pin       => FPGA_CPU_RESET,
@@ -324,12 +330,14 @@ BEGIN
        fpga_0_RS232_RX_pin            => USB_1_RX,
        fpga_0_RS232_TX_pin            => USB_1_TX,
 
-       PTRH_SDA_pin(0)                => IIC_SDA,
+       PTRH_SDA_pin(0)                => BIO(11), -- IIC_SDA,
        PTRH_SDA_pin(1)                => BIO(4),
-       PTRH_SDA_pin(2)                => BIO(6),
-       PTRH_SCK_pin(0)                => IIC_SCL,
+--     PTRH_SDA_pin(2)                => BIO(6),
+       PTRH_SCK_pin(0)                => BIO(10), -- IIC_SCL,
        PTRH_SCK_pin(1)                => BIO(5),
-       PTRH_SCK_pin(2)                => BIO(7),
+--     PTRH_SCK_pin(2)                => BIO(7),
+       VM_SCL_pin(0)                  => BIO(8),
+       VM_SDA_pin(0)                  => BIO(9),
 
        subbus_cmdenbl                 => subbus_cmdenbl,
        subbus_cmdstrb                 => subbus_cmdstrb,
@@ -403,8 +411,11 @@ BEGIN
   AI_MUX1_A <= ana_in_Row(2 DOWNTO 0);
 
   -- BIO(3 DOWNTO 0) are ADC communication lines
-  -- BIO(7 DOWNTO 4) are (unused) PTRH lines
-  BIO(15 DOWNTO 8) <= (others => 'Z');
+  -- BIO(5 DOWNTO 4) <= (others => 'Z'); -- PTRH lines
+  BIO(7 DOWNTO 6) <= (others => 'Z');
+  -- BIO(9 DOWNTO 8) are power mons
+  -- BIO(11 DOWNTO 10) are PTRH (on power board J2)
+  BIO(15 DOWNTO 12) <= (others => 'Z');
 
   -- DIO(3 DOWNTO 0) are ADC communication lines
   DIO(15 DOWNTO 4) <= cmd_out;

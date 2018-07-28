@@ -17,7 +17,7 @@ ENTITY Processor IS
 --		fpga_0_Generic_IIC_Bus_Sda_pin : INOUT std_logic;
 --		fpga_0_Generic_IIC_Bus_Scl_pin : INOUT std_logic;
     clk_8_0000MHz_pin : OUT std_logic;
-    clk_30_0000MHz_pin : OUT std_logic;
+--  clk_30_0000MHz_pin : OUT std_logic;
     clk_66_6667MHz_pin : OUT std_logic;
 		xps_epc_0_PRH_Data_pin : INOUT std_logic_vector(7 downto 0);      
 		xps_epc_0_PRH_RDY_pin : IN std_logic;
@@ -235,20 +235,20 @@ begin
    wait;
     -- pragma synthesis_on
   End Process;
-
-  f30m_clk : Process -- actually 25MHz
-  Begin
-    -- pragma synthesis_off
-    wait for 40 ns;
-    while Finish = '0' loop
-      clk_30_0000MHz_pin <= '0';
-     wait for 20 ns;
-      clk_30_0000MHz_pin <= '1';
-     wait for 20 ns;
-    end loop;
-    wait;
-    -- pragma synthesis_on
-  End Process;
+--
+--  f30m_clk : Process -- actually 25MHz
+--  Begin
+--    -- pragma synthesis_off
+--    wait for 40 ns;
+--    while Finish = '0' loop
+--      clk_30_0000MHz_pin <= '0';
+--     wait for 20 ns;
+--      clk_30_0000MHz_pin <= '1';
+--     wait for 20 ns;
+--    end loop;
+--    wait;
+--    -- pragma synthesis_on
+--  End Process;
 
   f66m_clk : Process -- 66MHz
   Begin
