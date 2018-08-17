@@ -31,7 +31,7 @@ USE idx_fpga_lib.ptrhm.all;
 
 ENTITY PDACS_HCl IS
   GENERIC (
-    DACS_BUILD_NUMBER : std_logic_vector(15 DOWNTO 0) := X"002F"; -- #47
+    DACS_BUILD_NUMBER : std_logic_vector(15 DOWNTO 0) := X"0030"; -- #48
     INSTRUMENT_ID : std_logic_vector(15 DOWNTO 0) := X"0005"; -- ES96 HCl
     N_INTERRUPTS : integer range 15 downto 1 := 1;
     CTR_UG_N_BDS : integer range 5 downto 0 := 1;
@@ -352,12 +352,12 @@ BEGIN
        PTRH_SCK_pin(0)                => IIC_SCL,
        PTRH_SCK_pin(1)                => BIO(4),
    --  PTRH_SCK_pin(2)                => BIO(4),
-       VM_SCL_pin(0)                  => BIO(0),
+       VM_SCL_pin(0)                  => DIO(1), -- Jumpered to DACS DIO2, renamed BIO10
        VM_SCL_pin(1)                  => BIO(6),
-   --  VM_SCL_pin(2)                  => DIO(1), -- Jumpered to DACS DIO2, renamed BIO10
-       VM_SDA_pin(0)                  => BIO(1),
+   --  VM_SCL_pin(2)                  => BIO(0),
+       VM_SDA_pin(0)                  => DIO(4), -- Jumpered to DACS DIO5, renamed BIO13
        VM_SDA_pin(1)                  => BIO(7),
-   --  VM_SDA_pin(2)                  => DIO(4), -- Jumpered to DACS DIO5, renamed BIO13
+   --  VM_SDA_pin(2)                  => BIO(1),
        LK204_SCL_pin                  => BIO(N_LK204-1 DOWNTO 0),
        LK204_SDA_pin                  => BIO(N_LK204-1 DOWNTO 0),
        
@@ -432,7 +432,15 @@ BEGIN
   AI_MUX0_A <= ana_in_Row(2 DOWNTO 0);
   AI_MUX1_A <= ana_in_Row(2 DOWNTO 0);
 
-  -- BIO(13 DOWNTO 8) are VM I2C lines
+  BIO(0) <= 'Z'; -- BIO(0) => Was VM_SCL w/ BIO(1)
+  BIO(1) <= 'Z'; -- BIO(1) => Was Vm_SDA w/ BIO(0), but did not go through
+  -- BIO(2) => TS_SDA(1)
+  -- BIO(3) => TS_SCL(1)
+  -- BIO(4) => PTRH_SCK(1)
+  -- BIO(5) => PTRH_SDA(1)
+  -- BIO(6) => VM_SCL(1)
+  -- BIO(7) => VM_SDA(1)
+  -- BIO(13 DOWNTO 8) are VM I2C lines going to the power board on J5
   BIO(15 DOWNTO 8) <= (others => 'Z');
 
   -- The buffer chip on DIO(7:0) was replaced with
@@ -443,10 +451,10 @@ BEGIN
   -- is not connected to the FPGA.
   -- The DIO indexes here correspond the FPGA_DIO bus on the board.
   -- DIO(0) is ICelT_SCLK TS_SCL<0>
-  -- DIO(1) is PM_SCL(2)
+  -- DIO(1) is PM_SCL(0)
   -- DIO(2) is QSData<0>
   -- DIO(3) is ICelT_SDIN TS_SDA<0>
-  -- DIO(4) is PM_SDA(2)
+  -- DIO(4) is PM_SDA(0)
   -- DIO(5) is QSClk<0>
   DIO(6) <= 'Z'; -- DIO(6) is spare
   DIO(7) <= 'Z'; -- DIO(7) goes nowhere
