@@ -17,13 +17,17 @@ USE idx_fpga_lib.ptrhm.all;
 
 ENTITY PDACS_HWV IS
   GENERIC (
-    DACS_BUILD_NUMBER : std_logic_vector(15 DOWNTO 0) := X"0028"; -- #40
+    DACS_BUILD_NUMBER : std_logic_vector(15 DOWNTO 0) := X"0033"; -- #51
     INSTRUMENT_ID : std_logic_vector(15 DOWNTO 0) := X"0001"; -- HWV
     N_INTERRUPTS : integer range 15 downto 1 := 1;
     CTR_UG_N_BDS : integer range 5 downto 0 := 3;
     N_QCLICTRL : integer range 5 downto 0 := 1;
     N_VM : integer range 5 downto 0 := 1;
     N_LK204 : integer range 1 downto 0 := 0;
+    N_ADC : integer range 4 downto 0 := 0;
+    ADC_NBITSHIFT : integer range 31 downto 0 := 1;
+    ADC_RATE_DEF : std_logic_vector(4 DOWNTO 0) := "11111";
+    N_TEMP_SENSOR : integer range 1 downto 0 := 0;
 
     N_PTRH : integer range 16 downto 1 := 2;
     N_ISBITS    : integer range 8 downto 1 := 2;
@@ -165,6 +169,14 @@ ARCHITECTURE struct OF PDACS_HWV IS
    SIGNAL DA_LDAC_B_int                  : std_ulogic;
    SIGNAL DA_CLR_B_int                   : std_ulogic;
    SIGNAL QSync                          : std_ulogic_vector(N_QCLICTRL-1 DOWNTO 0);
+      
+   SIGNAL ADC_MISO                       : std_logic_vector(N_ADC-1 DOWNTO 0);
+   SIGNAL ADC_MOSI                       : std_logic_vector(N_ADC-1 DOWNTO 0);
+   SIGNAL ADC_CS_B                       : std_logic_vector(N_ADC-1 DOWNTO 0);
+   SIGNAL ADC_SCLK                       : std_logic_vector(N_ADC-1 DOWNTO 0);
+      
+   SIGNAL TS_SDA                         : std_logic_vector(N_TEMP_SENSOR-1 DOWNTO 0);
+   SIGNAL TS_SCL                         : std_logic_vector(N_TEMP_SENSOR-1 DOWNTO 0);
     
   COMPONENT dacs_v2 is
     GENERIC (
@@ -189,7 +201,11 @@ ARCHITECTURE struct OF PDACS_HWV IS
       DIGIO_FORCE_DIR_VAL : std_ulogic_vector := "000000000000";
       N_QCLICTRL : integer range 5 downto 0 := 1;
       N_VM : integer range 5 downto 0 := 1;
-      N_LK204 : integer range 1 downto 0 := 0
+      N_LK204 : integer range 1 downto 0 := 0;
+      N_ADC : integer range 4 downto 0 := 0;
+      ADC_NBITSHIFT : integer range 31 downto 0 := 1;
+      ADC_RATE_DEF : std_logic_vector(4 DOWNTO 0) := "11111";
+      N_TEMP_SENSOR : integer range 1 downto 0 := 0
     );
     Port (
       fpga_0_rst_1_sys_rst_pin : IN std_logic;
@@ -250,7 +266,15 @@ ARCHITECTURE struct OF PDACS_HWV IS
       QSync       : OUT    std_ulogic_vector(N_QCLICTRL-1 DOWNTO 0);
       QSClk       : INOUT  std_logic_vector(N_QCLICTRL-1 DOWNTO 0);
       QSData      : INOUT  std_logic_vector(N_QCLICTRL-1 DOWNTO 0);
-      QNBsy       : IN     std_logic_vector(N_QCLICTRL-1 DOWNTO 0)
+      QNBsy       : IN     std_logic_vector(N_QCLICTRL-1 DOWNTO 0);
+      
+      ADC_MISO    : IN     std_logic_vector(N_ADC-1 DOWNTO 0);
+      ADC_MOSI    : OUT    std_logic_vector(N_ADC-1 DOWNTO 0);
+      ADC_CS_B    : OUT    std_logic_vector(N_ADC-1 DOWNTO 0);
+      ADC_SCLK    : OUT    std_logic_vector(N_ADC-1 DOWNTO 0);
+      
+      TS_SDA      : INOUT std_logic_vector(N_TEMP_SENSOR-1 DOWNTO 0);
+      TS_SCL      : INOUT std_logic_vector(N_TEMP_SENSOR-1 DOWNTO 0)
     );
   END COMPONENT;
    
@@ -290,7 +314,11 @@ BEGIN
       DIGIO_FORCE_DIR_VAL => DIGIO_FORCE_DIR_VAL,
       N_QCLICTRL => N_QCLICTRL,
       N_VM => N_VM,
-      N_LK204 => N_LK204
+      N_LK204 => N_LK204,
+      N_ADC => N_ADC,
+      ADC_NBITSHIFT => ADC_NBITSHIFT,
+      ADC_RATE_DEF => ADC_RATE_DEF,
+      N_TEMP_SENSOR => N_TEMP_SENSOR
     )
     PORT MAP (
        fpga_0_rst_1_sys_rst_pin       => FPGA_CPU_RESET,
@@ -366,7 +394,13 @@ BEGIN
        QSData                         => BIO(1 DOWNTO 1),
        QSClk                          => BIO(0 DOWNTO 0),
        QSync                          => QSync,
-       QNBsy                          => BIO(3 DOWNTO 3)
+       QNBsy                          => BIO(3 DOWNTO 3),
+       ADC_MISO                       => ADC_MISO,
+       ADC_MOSI                       => ADC_MOSI,
+       ADC_CS_B                       => ADC_CS_B,
+       ADC_SCLK                       => ADC_SCLK,
+       TS_SDA                         => TS_SDA,
+       TS_SCL                         => TS_SCL
     );
 
     cmd_proc_i : cmd_proc
@@ -441,6 +475,8 @@ BEGIN
   DA_SDI <= DA_SDI_int;
   DA_LDAC_B <= DA_LDAC_B_int;
   DA_CLR_B <= DA_CLR_B_int;
+  
+  ADC_MISO <= (others => '0');
 
 END ARCHITECTURE struct;
 
