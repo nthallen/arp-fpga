@@ -11,7 +11,7 @@ LIBRARY ieee;
 USE ieee.std_logic_1164.all;
 USE ieee.std_logic_arith.all;
 LIBRARY idx_fpga_lib;
--- USE idx_fpga_lib.All;
+USE idx_fpga_lib.All;
 
 ENTITY ana_cfg_ram IS
   PORT (
@@ -32,22 +32,22 @@ ARCHITECTURE beh OF ana_cfg_ram IS
    SIGNAL RD_DATA_int : std_logic_vector(31 DOWNTO 0);
    SIGNAL WR_DATA_int : std_logic_vector(31 DOWNTO 0);
    SIGNAL WREN    : std_ulogic;
-   COMPONENT ana_ram
-      PORT (
-         RD_ADDR : IN     std_logic_vector(7 DOWNTO 0);
-         WR_ADDR : IN     std_logic_vector(7 DOWNTO 0);
-         RD_DATA : OUT    std_logic_vector(31 DOWNTO 0);
-         WR_DATA : IN     std_logic_vector(31 DOWNTO 0);
-         WREN    : IN     std_ulogic;
-         RDEN    : IN     std_ulogic;
-         CLK     : IN     std_ulogic;
-         RST     : IN     std_ulogic
-      );
-   END COMPONENT;
-   FOR ALL : ana_ram USE ENTITY idx_fpga_lib.ana_ram;
+--   COMPONENT ana_ram
+--      PORT (
+--         RD_ADDR : IN     std_logic_vector(7 DOWNTO 0);
+--         WR_ADDR : IN     std_logic_vector(7 DOWNTO 0);
+--         RD_DATA : OUT    std_logic_vector(31 DOWNTO 0);
+--         WR_DATA : IN     std_logic_vector(31 DOWNTO 0);
+--         WREN    : IN     std_ulogic;
+--         RDEN    : IN     std_ulogic;
+--         CLK     : IN     std_ulogic;
+--         RST     : IN     std_ulogic
+--      );
+--   END COMPONENT;
+--   FOR ALL : ana_ram USE ENTITY idx_fpga_lib.ana_ram;
 BEGIN
    --  hds hds_inst
-   ana_ram_i : ana_ram
+   ana_ram_i : entity ana_ram(sim)
       PORT MAP (
          RD_ADDR => RD_ADDR,
          WR_ADDR => WR_ADDR,

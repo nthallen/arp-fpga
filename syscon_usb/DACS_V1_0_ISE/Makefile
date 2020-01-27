@@ -27,12 +27,9 @@ PDACS_HTW.mcs : PDACS_HTW.bit
 pdacs_carbon.mcs : pdacs_carbon.bit
 	promgen -spi -w -p mcs -o pdacs_carbon.mcs -s 8192 -u 0 pdacs_carbon.bit
 
-hwv_spi_prom.mcs : pdacs_hwv_download.bit
-	promgen -spi -w -p mcs -o hwv_spi_prom.mcs -s 8192 -u 0 pdacs_hwv_download.bit
-pdacs_hwv_download.bit : pdacs_hwv.bit $(ELF)
-	@echo pdacs_hwv_download_bit is out of date with respect to $?
-	@ls -lt *.mcs *.bit $(ELF)
-	@false
+# 7/23/19: Change name to PDACS_HWV
+PDACS_HWV.mcs : PDACS_HWV.bit
+	promgen -spi -w -p mcs -o PDACS_HWV.mcs -s 8192 -u 0 PDACS_HWV.bit
 
 pdacs_bench.mcs : pdacs_bench_download.bit
 	promgen -spi -w -p mcs -o pdacs_bench.mcs -s 8192 -u 0 pdacs_bench_download.bit

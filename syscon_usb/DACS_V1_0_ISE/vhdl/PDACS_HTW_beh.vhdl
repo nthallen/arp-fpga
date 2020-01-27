@@ -17,31 +17,38 @@ USE idx_fpga_lib.ptrhm.all;
 
 ENTITY PDACS_HTW IS
   GENERIC (
-    DACS_BUILD_NUMBER : std_logic_vector(15 DOWNTO 0) := X"002B"; -- Build 43
+    DACS_BUILD_NUMBER : std_logic_vector(15 DOWNTO 0) := X"0034"; -- Build 52
     INSTRUMENT_ID : std_logic_vector(15 DOWNTO 0) := X"0002"; -- HTW
     N_INTERRUPTS : integer range 15 downto 1 := 1;
-    N_QCLICTRL : integer range 5 downto 0 := 1;
-    N_VM : integer range 5 downto 0 := 1;
-    N_LK204 : integer range 1 downto 0 := 0;
 
-    N_ADC : integer range 4 downto 0 := 0;
-    ADC_NBITSHIFT : integer range 31 downto 0 := 1;
-    ADC_RATE_DEF : std_logic_vector(4 DOWNTO 0) := "11111";
-
-    N_PTRH : integer range 5 downto 1 := 3;
+    N_PTRH : integer range 16 downto 1 := 3;
     N_ISBITS    : integer range 8 downto 1 := 3;
     ESID        : ESID_array := ( 0, 1, 2 );
     ESwitchBit  : ESB_array  := ( 0, 0, 0 );
     ISwitchBit  : ISB_array  := ( 0, 1, 2 );
     ESwitchAddr : ESA_array  := ( "0000000", "0000000", "0000000" );
 
-    N_AO_CHIPS : natural range 15 downto 1 := 2;
+    N_AO_CHIPS : natural range 15 downto 1 := 2; -- DAC chips. 2 onboard.
     CTR_UG_N_BDS : integer range 5 downto 0 := 0;
-    IDX_N_CHANNELS : integer range 15 downto 1 := 2;
+    IDX_N_CHANNELS : integer range 15 downto 1 := 1;
+    IDX_BASE_ADDR : std_logic_vector(15 downto 0) := X"0A00";
+    DIGIO_BASE_ADDRESS : std_logic_vector (15 DOWNTO 0) := X"0800";
     DIGIO_N_CONNECTORS : integer range 4 DOWNTO 1 := 4;
     -- FORCE_DIR vectors are indexed 0 to 23
     DIGIO_FORCE_DIR : std_ulogic_vector := "111111111111111111100010";
     DIGIO_FORCE_DIR_VAL : std_ulogic_vector := "000000001111001111100000";
+
+    N_QCLICTRL : integer range 5 downto 0 := 1;
+    N_VM : integer range 5 downto 0 := 2;
+    N_LK204 : integer range 1 downto 0 := 0;
+
+    N_ADC : integer range 4 downto 0 := 0; -- Ozone preamp boards with LTC2440
+    ADC_NBITSHIFT : integer range 31 downto 0 := 1;
+    ADC_RATE_DEF : std_logic_vector(4 DOWNTO 0) := "11111";
+
+
+    N_TEMP_SENSOR : integer range 2 downto 0 := 1;
+
     CMD_PROC_N_CMDS : integer := 38
   );
   PORT (
@@ -202,7 +209,8 @@ ARCHITECTURE beh OF PDACS_HTW IS
       N_LK204 : integer range 1 downto 0 := 0;
       N_ADC : integer range 4 downto 0 := 0;
       ADC_NBITSHIFT : integer range 31 downto 0 := 1;
-      ADC_RATE_DEF : std_logic_vector(4 DOWNTO 0) := "11111"
+      ADC_RATE_DEF : std_logic_vector(4 DOWNTO 0) := "11111";
+      N_TEMP_SENSOR : integer range 2 downto 0 := 0
     );
     Port (
       fpga_0_rst_1_sys_rst_pin : IN std_logic;
@@ -268,7 +276,10 @@ ARCHITECTURE beh OF PDACS_HTW IS
       ADC_MISO    : IN     std_logic_vector(N_ADC-1 DOWNTO 0);
       ADC_MOSI    : OUT    std_logic_vector(N_ADC-1 DOWNTO 0);
       ADC_CS_B    : OUT    std_logic_vector(N_ADC-1 DOWNTO 0);
-      ADC_SCLK    : OUT    std_logic_vector(N_ADC-1 DOWNTO 0)
+      ADC_SCLK    : OUT    std_logic_vector(N_ADC-1 DOWNTO 0);
+      
+      TS_SDA      : INOUT std_logic_vector(N_TEMP_SENSOR-1 DOWNTO 0);
+      TS_SCL      : INOUT std_logic_vector(N_TEMP_SENSOR-1 DOWNTO 0)
     );
   END COMPONENT;
 
@@ -292,7 +303,6 @@ BEGIN
       DACS_BUILD_NUMBER => DACS_BUILD_NUMBER,
       INSTRUMENT_ID => INSTRUMENT_ID,
       N_INTERRUPTS => N_INTERRUPTS,
-      CTR_UG_N_BDS => CTR_UG_N_BDS,
 
       N_PTRH => N_PTRH,
       N_ISBITS => N_ISBITS,
@@ -302,7 +312,10 @@ BEGIN
       ESwitchAddr => ESwitchAddr,
   
       N_AO_CHIPS => N_AO_CHIPS,
+      CTR_UG_N_BDS => CTR_UG_N_BDS,
       IDX_N_CHANNELS => IDX_N_CHANNELS,
+      IDX_BASE_ADDR => IDX_BASE_ADDR,
+      DIGIO_BASE_ADDRESS => DIGIO_BASE_ADDRESS,
       DIGIO_N_CONNECTORS => DIGIO_N_CONNECTORS,
       DIGIO_FORCE_DIR => DIGIO_FORCE_DIR,
       DIGIO_FORCE_DIR_VAL => DIGIO_FORCE_DIR_VAL,
@@ -311,7 +324,8 @@ BEGIN
       N_LK204 => N_LK204,
       N_ADC => N_ADC,
       ADC_NBITSHIFT => ADC_NBITSHIFT,
-      ADC_RATE_DEF => ADC_RATE_DEF
+      ADC_RATE_DEF => ADC_RATE_DEF,
+      N_TEMP_SENSOR => N_TEMP_SENSOR
     )
     PORT MAP (
        fpga_0_rst_1_sys_rst_pin       => FPGA_CPU_RESET,
@@ -327,22 +341,26 @@ BEGIN
        fpga_0_RS232_RX_pin            => USB_1_RX,
        fpga_0_RS232_TX_pin            => USB_1_TX,
 
-       PTRH_SDA_pin(0)                => IIC_SDA,
-       PTRH_SDA_pin(1)                => BIO(0),
-       PTRH_SDA_pin(2)                => BIO(2),
-       PTRH_SCK_pin(0)                => IIC_SCL,
-       PTRH_SCK_pin(1)                => BIO(1),
-       PTRH_SCK_pin(2)                => BIO(3),
+       PTRH_SDA_pin(0)                => IIC_SDA, -- DACS PTRH SDA
+       PTRH_SDA_pin(1)                => BIO(0), -- DPV PTRH SDA
+       PTRH_SDA_pin(2)                => BIO(2), -- LPV PTRH SDA
+       PTRH_SCK_pin(0)                => IIC_SCL, -- DACS PTRH SCL
+       PTRH_SCK_pin(1)                => BIO(1), -- DPV PTRH SCK
+       PTRH_SCK_pin(2)                => BIO(3), -- LPV PTRH SCK
        VM_SCL_pin(0)                  => BIO(8),
+       VM_SCL_pin(1)                  => BIO(12),
        VM_SDA_pin(0)                  => BIO(9),
+       VM_SDA_pin(1)                  => BIO(13),
+       LK204_SCL_pin                  => BIO(N_LK204-1 DOWNTO 0),
+       LK204_SDA_pin                  => BIO(N_LK204-1 DOWNTO 0),
 
        subbus_cmdenbl                 => subbus_cmdenbl,
        subbus_cmdstrb                 => subbus_cmdstrb,
        subbus_fail_leds               => subbus_fail_leds,
        subbus_flt_cpu_reset           => subbus_flt_cpu_reset,
        subbus_reset                   => RST,
-       Collision                      => Collision,
        DACS_switches                  => DACS_switches,
+       Collision                      => Collision,
        idx_Run                        => idx_Run,
        idx_Step                       => idx_Step,
        idx_Dir                        => idx_Dir,
@@ -389,7 +407,9 @@ BEGIN
        ADC_MISO                       => ADC_MISO,
        ADC_MOSI                       => ADC_MOSI,
        ADC_CS_B                       => ADC_CS_B,
-       ADC_SCLK                       => ADC_SCLK
+       ADC_SCLK                       => ADC_SCLK,
+       TS_SDA(0)                      => BIO(11),
+       TS_SCL(0)                      => BIO(10)
     );
 
     cmd_proc_i : cmd_proc
