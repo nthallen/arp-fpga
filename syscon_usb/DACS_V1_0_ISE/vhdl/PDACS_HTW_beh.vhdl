@@ -455,15 +455,15 @@ BEGIN
   idx_KillB(0) <= DIO(17);
   idx_LimI(0) <= DIO(18);
   idx_LimO(0) <= DIO(19);
-  idx_KillA(1) <= DIO(20);
-  idx_KillB(1) <= DIO(21);
-  idx_LimI(1) <= DIO(22);
-  idx_LimO(1) <= DIO(23);
-  idx_ZR <= "00";
+--idx_KillA(1) <= DIO(20);
+--idx_KillB(1) <= DIO(21);
+--idx_LimI(1) <= DIO(22);
+--idx_LimO(1) <= DIO(23);
+  idx_ZR <= "0";
   ctr_PMT <= (others => '0');
-  DIO(40) <= idx_Dir(1);
-  DIO(41) <= idx_Run(1);
-  DIO(42) <= idx_Step(1);
+--DIO(40) <= idx_Dir(1);
+--DIO(41) <= idx_Run(1);
+--DIO(42) <= idx_Step(1);
     
   DIO(87 DOWNTO 64) <= cmd_out(23 DOWNTO 0);
   DIO(113) <= subbus_fail_leds(0);

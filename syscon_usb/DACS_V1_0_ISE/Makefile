@@ -1,7 +1,14 @@
 ELF=Processor/SDK/subbus/Debug/subbus.elf
 .PHONY : all
 # all : spi_prom.mcs htw_spi_prom.mcs cti_spi_prom.mcs
-all : pdacs_hcl.mcs
+all : PDACS_HTW.mcs
+
+PDACS_HTW.mcs : PDACS_HTW.bit
+	promgen -spi -w -p mcs -o PDACS_HTW.mcs -s 8192 -u 0 PDACS_HTW.bit
+PDACS_HTW.bit : $(ELF)
+	@echo PDACS_HTW.bit is out of date with respect to $?
+	@ls -lt PDACS_HTW.mcs PDACS_HTW.bit $(ELF)
+	@false
 
 pdacs_hcl.mcs : pdacs_hcl.bit
 	promgen -spi -w -p mcs -o pdacs_hcl.mcs -s 8192 -u 0 pdacs_hcl.bit
