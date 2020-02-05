@@ -17,17 +17,9 @@ USE idx_fpga_lib.ptrhm.all;
 
 ENTITY PDACS_HWV IS
   GENERIC (
-    DACS_BUILD_NUMBER : std_logic_vector(15 DOWNTO 0) := X"0033"; -- #51
+    DACS_BUILD_NUMBER : std_logic_vector(15 DOWNTO 0) := X"0038"; -- Build 56
     INSTRUMENT_ID : std_logic_vector(15 DOWNTO 0) := X"0001"; -- HWV
     N_INTERRUPTS : integer range 15 downto 1 := 1;
-    CTR_UG_N_BDS : integer range 5 downto 0 := 3;
-    N_QCLICTRL : integer range 5 downto 0 := 1;
-    N_VM : integer range 5 downto 0 := 1;
-    N_LK204 : integer range 1 downto 0 := 0;
-    N_ADC : integer range 4 downto 0 := 0;
-    ADC_NBITSHIFT : integer range 31 downto 0 := 1;
-    ADC_RATE_DEF : std_logic_vector(4 DOWNTO 0) := "11111";
-    N_TEMP_SENSOR : integer range 1 downto 0 := 0;
 
     N_PTRH : integer range 16 downto 1 := 2;
     N_ISBITS    : integer range 8 downto 1 := 2;
@@ -35,12 +27,26 @@ ENTITY PDACS_HWV IS
     ESwitchBit  : ESB_array  := ( 0, 0 );
     ISwitchBit  : ISB_array  := ( 0, 1 );
     ESwitchAddr : ESA_array  := ( "0000000", "0000000" );
-
+    
     N_AO_CHIPS : natural range 15 downto 1 := 2;
+    CTR_UG_N_BDS : integer range 5 downto 0 := 3;
     IDX_N_CHANNELS : integer range 15 downto 1 := 1;
+    IDX_BASE_ADDR : std_logic_vector(15 downto 0) := X"0A00";
+    DIGIO_BASE_ADDRESS : std_logic_vector (15 DOWNTO 0) := X"0800";
     DIGIO_N_CONNECTORS : integer range 8 DOWNTO 1 := 4;
+    -- FORCE_DIR vectors are indexed 0 to 23
     DIGIO_FORCE_DIR : std_ulogic_vector := "111111111111000111110111";
     DIGIO_FORCE_DIR_VAL : std_ulogic_vector := "000000001111000111100110";
+
+    N_QCLICTRL : integer range 5 downto 0 := 1;
+    N_VM : integer range 5 downto 0 := 1;
+    N_LK204 : integer range 1 downto 0 := 0;
+
+    N_ADC : integer range 4 downto 0 := 0;
+    ADC_NBITSHIFT : integer range 31 downto 0 := 1;
+    ADC_RATE_DEF : std_logic_vector(4 DOWNTO 0) := "11111";
+    N_TEMP_SENSOR : integer range 1 downto 0 := 0;
+
     CMD_PROC_N_CMDS : integer := 32
   );
   PORT (
@@ -298,7 +304,6 @@ BEGIN
       DACS_BUILD_NUMBER => DACS_BUILD_NUMBER,
       INSTRUMENT_ID => INSTRUMENT_ID,
       N_INTERRUPTS => N_INTERRUPTS,
-      CTR_UG_N_BDS => CTR_UG_N_BDS,
 
       N_PTRH => N_PTRH,
       N_ISBITS => N_ISBITS,
@@ -308,7 +313,10 @@ BEGIN
       ESwitchAddr => ESwitchAddr,
   
       N_AO_CHIPS => N_AO_CHIPS,
+      CTR_UG_N_BDS => CTR_UG_N_BDS,
       IDX_N_CHANNELS => IDX_N_CHANNELS,
+      IDX_BASE_ADDR => IDX_BASE_ADDR,
+      DIGIO_BASE_ADDRESS => DIGIO_BASE_ADDRESS,
       DIGIO_N_CONNECTORS => DIGIO_N_CONNECTORS,
       DIGIO_FORCE_DIR => DIGIO_FORCE_DIR,
       DIGIO_FORCE_DIR_VAL => DIGIO_FORCE_DIR_VAL,
