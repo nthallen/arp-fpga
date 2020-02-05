@@ -17,7 +17,7 @@ USE idx_fpga_lib.ptrhm.all;
 
 ENTITY PDACS_HTW IS
   GENERIC (
-    DACS_BUILD_NUMBER : std_logic_vector(15 DOWNTO 0) := X"0036"; -- Build 54
+    DACS_BUILD_NUMBER : std_logic_vector(15 DOWNTO 0) := X"0037"; -- Build 55
     INSTRUMENT_ID : std_logic_vector(15 DOWNTO 0) := X"0002"; -- HTW
     N_INTERRUPTS : integer range 15 downto 1 := 1;
 
@@ -30,7 +30,7 @@ ENTITY PDACS_HTW IS
 
     N_AO_CHIPS : natural range 15 downto 1 := 2; -- DAC chips. 2 onboard.
     CTR_UG_N_BDS : integer range 5 downto 0 := 0;
-    IDX_N_CHANNELS : integer range 15 downto 1 := 1;
+    IDX_N_CHANNELS : integer range 15 downto 1 := 2;
     IDX_BASE_ADDR : std_logic_vector(15 downto 0) := X"0A00";
     DIGIO_BASE_ADDRESS : std_logic_vector (15 DOWNTO 0) := X"0800";
     DIGIO_N_CONNECTORS : integer range 4 DOWNTO 1 := 4;
@@ -455,15 +455,15 @@ BEGIN
   idx_KillB(0) <= DIO(17);
   idx_LimI(0) <= DIO(18);
   idx_LimO(0) <= DIO(19);
---idx_KillA(1) <= DIO(20);
---idx_KillB(1) <= DIO(21);
---idx_LimI(1) <= DIO(22);
---idx_LimO(1) <= DIO(23);
-  idx_ZR <= "0";
+  idx_KillA(1) <= DIO(20);
+  idx_KillB(1) <= DIO(21);
+  idx_LimI(1) <= DIO(22);
+  idx_LimO(1) <= DIO(23);
+  idx_ZR <= "00";
   ctr_PMT <= (others => '0');
---DIO(40) <= idx_Dir(1);
---DIO(41) <= idx_Run(1);
---DIO(42) <= idx_Step(1);
+  DIO(40) <= idx_Dir(1);
+  DIO(41) <= idx_Run(1);
+  DIO(42) <= idx_Step(1);
     
   DIO(87 DOWNTO 64) <= cmd_out(23 DOWNTO 0);
   DIO(113) <= subbus_fail_leds(0);
