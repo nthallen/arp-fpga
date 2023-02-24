@@ -22,7 +22,7 @@
 #include <math.h>
 #include <setjmp.h>
 #include "ringdown.h"
-#include "nortlib.h"
+#include "nl.h"
 #include "mlf.h"
 #include "nl_assert.h"
 
@@ -59,7 +59,7 @@ void move_lock( unsigned long index ) {
 void cleanup(void) {
   unlink(PID_FILE);
   move_lock(0L);
-  nl_error( 0, "cleanup" );
+  msg( 0, "cleanup" );
 }
 
 static sigjmp_buf env;
@@ -87,15 +87,15 @@ static void output_scan( ssp_raw_scan *scan, mlf_def_t *mlf ) {
 
   // scan is guaranteed to be raw_length words long. Want to verify that NSamples*NChannels + NWordsHdr + 1 == raw_length
   if ( scan->hdr.NWordsHdr != scan0 ) {
-    nl_error( 2, "NWordsHdr(%u) != %u", scan->hdr.NWordsHdr, scan0 );
+    msg( 2, "NWordsHdr(%u) != %u", scan->hdr.NWordsHdr, scan0 );
     return;
   }
   if ( scan->hdr.FormatVersion > 1 ) {
-    nl_error( 2, "Unsupported FormatVersion: %u", scan->hdr.FormatVersion );
+    msg( 2, "Unsupported FormatVersion: %u", scan->hdr.FormatVersion );
     return;
   }
   if ( my_scan_length + 7 != raw_length ) {
-    nl_error( 2, "Header reports NS:%u NC:%u -- raw_length is %d",
+    msg( 2, "Header reports NS:%u NC:%u -- raw_length is %d",
       scan->hdr.NSamples, scan->hdr.NChannels, raw_length );
     return;
   }
@@ -140,15 +140,15 @@ static void output_scan( ssp_raw_scan *scan, mlf_def_t *mlf ) {
   fclose(ofp);
   move_lock(mlf->index+1);
   if ( difftime(now, last_rpt) > 5 ) {
-    nl_error( 0, "Recorded Scan %lu", mlf->index );
+    msg( 0, "Recorded Scan %lu", mlf->index );
     last_rpt = now;
   }
   
   // Perform some sanity checks on the inbound scan
   //if ( (scan[1] & 0xFFFF00FF) != scan1 )
-  //  nl_error( 1, "%lu: scan[1] = %08lX (not %08lX)\n", mlf->index, scan[1], scan1 );
+  //  msg( 1, "%lu: scan[1] = %08lX (not %08lX)\n", mlf->index, scan[1], scan1 );
   //if ( scan->hdr.FormatVersion == 0 && scan[5] != scan5 )
-  //  nl_error( 1, "%lu: scan[5] = %08lX (not %08lX)\n", mlf->index, scan[5], scan5 );
+  //  msg( 1, "%lu: scan[5] = %08lX (not %08lX)\n", mlf->index, scan[5], scan5 );
 }
 
 double gasdev(void) {
@@ -241,14 +241,14 @@ int main( int argc, char **argv ) {
   hdr.T_HtSink = (unsigned short)(floor(30.3 * 8)) <<5;
   hdr.T_FPGA = (unsigned short)(floor(30.5 * 16)) << 3;
   mlf_def_t *mlf = mlf_init( 3, 60, 1, LOGROOT, "dat", NULL );
-  nl_error( 0, "SSP_CLIENT_BUF_LENGTH = %d", SSP_CLIENT_BUF_LENGTH );
+  msg( 0, "SSP_CLIENT_BUF_LENGTH = %d", SSP_CLIENT_BUF_LENGTH );
   { FILE *fp = fopen( PID_FILE, "w" );
-    if ( fp == 0 ) nl_error( 3, "Unable to write " PID_FILE );
+    if ( fp == 0 ) msg( 3, "Unable to write " PID_FILE );
     fprintf( fp, "%d\n", getpid() );
     fclose(fp);
   }
   hdr_fp = fopen( HDR_LOG, "a" );
-  if ( hdr_fp == 0 ) nl_error( 3, "Unable to write " HDR_LOG );
+  if ( hdr_fp == 0 ) msg( 3, "Unable to write " HDR_LOG );
 
   move_lock(1L);
   if ( sigsetjmp( env, 1 ) == 0 ) {
@@ -261,13 +261,13 @@ int main( int argc, char **argv ) {
     for ( i = 1; i < argc; i++ ) {
       if (strncmp( argv[i], "RD:", 3 ) == 0 ) {
         char *ns = argv[i]+3;
-        if ( ! isdigit((unsigned char)(*ns)) ) nl_error(3, "Expected digit after RD: argument" );
+        if ( ! isdigit((unsigned char)(*ns)) ) msg(3, "Expected digit after RD: argument" );
         RD_n_skip = atoi(ns);
         while (isdigit((unsigned char)(*ns))) ++ns;
-        if ( *ns != ',' ) nl_error(3, "Expected comma after RD:## argument" );
+        if ( *ns != ',' ) msg(3, "Expected comma after RD:## argument" );
         ++ns;
         if ( ! isdigit((unsigned char)(*ns)) )
-          nl_error(3, "Expected digit after RD:##, argument: '%c' in '%s'", *ns, argv[i] );
+          msg(3, "Expected digit after RD:##, argument: '%c' in '%s'", *ns, argv[i] );
         RD_n_off = atoi(ns);
         RD = 1;
       } else {
@@ -275,12 +275,12 @@ int main( int argc, char **argv ) {
         if ( strncmp( cmdbuf, "NS:", 3 ) == 0 ) {
           scan_length = atoi(cmdbuf+3);
           if ( scan_length < 1 || scan_length > SSP_MAX_SAMPLES )
-            nl_error( 3, "Invalid scan length: %d", scan_length );
+            msg( 3, "Invalid scan length: %d", scan_length );
           hdr.NSamples = scan_length;
         } else if ( strncmp( cmdbuf, "NE:", 3 ) == 0 ) {
           NE = atoi(cmdbuf+3);
           if ( NE < 1 || NE > 7 )
-            nl_error( 3, "Invalid channel configuration: %d", NE );
+            msg( 3, "Invalid channel configuration: %d", NE );
         } else if ( strncmp( cmdbuf, "IX:", 3 ) == 0 ) {
           index = strtoul(cmdbuf+3, NULL, 10);
           mlf_set_index(mlf, index);
@@ -289,22 +289,22 @@ int main( int argc, char **argv ) {
         } else if ( strncmp( cmdbuf, "NF:", 3 ) == 0 ) {
           int NF = atoi(cmdbuf+3);
           if ( NF < 0 || NF >= 32 )
-            nl_error( 3, "Invalid divisor: %d", NF );
+            msg( 3, "Invalid divisor: %d", NF );
           hdr.NF = NF;
         } else if ( strncmp( cmdbuf, "NC:", 3 ) == 0 ) {
           int NC = atoi(cmdbuf+3);
           if ( NC < 0 || NC > SSP_MAX_COADD )
-            nl_error( 3, "Invalid NC: %d", NC );
+            msg( 3, "Invalid NC: %d", NC );
           hdr.NCoadd = NC;
         } else if ( strncmp( cmdbuf, "NA:", 3 ) == 0 ) {
           int NA = atoi(cmdbuf+3);
           if ( NA <= 0 || NA > SSP_MAX_PREADD )
-            nl_error( 3, "Invalid NA: %d", NA );
+            msg( 3, "Invalid NA: %d", NA );
           hdr.NAvg = NA - 1;
         } else if (  strncmp( cmdbuf, "NT:", 3 ) == 0 ) {
           int NT = atoi(cmdbuf+3);
           if ( NT < 0 || NT > 3 )
-            nl_error( 3, "Invalid NT: %d", NT );
+            msg( 3, "Invalid NT: %d", NT );
           def_status = (def_status & ~SSP_STATUS_NT_MASK) |
             ( NT << SSP_STATUS_NT_LSB );
         } else if ( strncmp( cmdbuf, "NU:", 3 ) == 0 ) {
@@ -319,13 +319,13 @@ int main( int argc, char **argv ) {
     }
     if ( scan_length == 0 ) {
       scan_length = 1024;
-      nl_error( 0, "Setting scan_length to %d\n", scan_length );
+      msg( 0, "Setting scan_length to %d\n", scan_length );
       // sprintf(cmdbuf, "NS:%d\r\n", scan_length );
       // tcp_send(cmdbuf);
     }
     if ( NE == 0 ) {
       NE = 1;
-      nl_error( 0, "Setting NE to %d\n", NE );
+      msg( 0, "Setting NE to %d\n", NE );
       // sprintf(cmdbuf, "NE:%d\r\n", NE );
       // tcp_send(cmdbuf);
     }
@@ -335,7 +335,7 @@ int main( int argc, char **argv ) {
       case 1: case 2: case 4: n_channels = 1; break;
       case 3: case 5: case 6: n_channels = 2; break;
       case 7: n_channels = 3; break;
-      default: nl_error( 4, "Invalid NE configuration" );
+      default: msg( 4, "Invalid NE configuration" );
     }
     hdr.NChannels = n_channels;
     if ( RD )
@@ -354,13 +354,13 @@ int main( int argc, char **argv ) {
       //   cur_word ? MAX_UDP_PAYLOAD : SSP_MAX_SCAN_SIZE);
       int n = sim_scan( &hdr, scan_buf, def_status );
       if ( n < 0 )
-        nl_error( 2, "Error from udp_receive: %d", errno );
+        msg( 2, "Error from udp_receive: %d", errno );
       else if ( cur_word == 0 && !(*scan_buf & SSP_FRAG_FLAG) ) {
         if ( n == scan_size ) output_scan((ssp_raw_scan *)scan_buf, mlf);
-        else nl_error( mlf->index ? 2 : 1,
+        else msg( mlf->index ? 2 : 1,
           "Expected %d bytes, received %d", scan_size, n );
       } else if ( !( scan_buf[cur_word] & SSP_FRAG_FLAG ) ) {
-        nl_error( 2, "Expected scan fragment" );
+        msg( 2, "Expected scan fragment" );
       } else {
         int frag_hdr = scan_buf[cur_word];
         int frag_offset = frag_hdr & 0xFFFFL;
@@ -368,11 +368,11 @@ int main( int argc, char **argv ) {
         if ( frag_offset != cur_word ) {
           if ( frag_offset == 0 ) {
             memmove( scan_buf, scan_buf+cur_word, n );
-            if ( scan_OK ) nl_error( 2, "Lost end of scan." );
+            if ( scan_OK ) msg( 2, "Lost end of scan." );
             cur_word = 0;
             scan_OK = 1;
           } else if ( scan_OK ) {
-            nl_error( 2, "Lost fragment" );
+            msg( 2, "Lost fragment" );
             scan_OK = 0;
           }
         }
@@ -382,7 +382,7 @@ int main( int argc, char **argv ) {
           scan_buf[cur_word] = frag_hold;
           if ( scan_OK && scan_serial_number != frag_sn ) {
             scan_OK = 0;
-            nl_error( 2, "Lost data: SN skip" );
+            msg( 2, "Lost data: SN skip" );
           }
         }
         cur_word = frag_offset + (n/sizeof(long)) - 1;
@@ -390,7 +390,7 @@ int main( int argc, char **argv ) {
           if ( scan_OK ) {
             if ( cur_word == raw_length )
               output_scan( (ssp_raw_scan *)(scan_buf+1), mlf );
-            else nl_error( 2, "Scan length error: expected %d words, received %d",
+            else msg( 2, "Scan length error: expected %d words, received %d",
               raw_length, cur_word );
           }
           cur_word = 0;
@@ -399,14 +399,14 @@ int main( int argc, char **argv ) {
           frag_hold = scan_buf[cur_word];
         }
         if ( cur_word + SSP_MAX_FRAG_LENGTH > SSP_CLIENT_BUF_LENGTH ) {
-          nl_error( 2, "Bad fragment offset: %d(%d)", frag_offset, n );
+          msg( 2, "Bad fragment offset: %d(%d)", frag_offset, n );
           cur_word = 0;
           scan_OK = 1;
         }
       }
     }
   }
-  nl_error( 0, "Normal exit" );
+  msg( 0, "Normal exit" );
   // tcp_send("EX\r\n");
   return 0;
 }

@@ -24,6 +24,7 @@
 // #include <inttypes.h>
 // #include <sys/syspage.h>
 #include <math.h>
+#include <stdint.h>
 
 #define SCANS_PER_TEST 100
 #define VERBOSE_LOG 1
@@ -32,14 +33,14 @@ int verbosity = 1;
 
 void process_scan_set( int scan_length, int n_scans, FILE *logfp, char *dumpfile ) {
   char cmdbuf[80];
-  int scan_size = (scan_length+1)*sizeof(long);
+  int scan_size = (scan_length+1)*sizeof(uint32_t);
   int n;
   clock_t start_time, end_time;
   double duration;
   double sdS, sdS2, mean_dS, std_dS;
-  long int last_scan = 0;
+  uint32_t last_scan = 0;
   int total_bytes, i, j;
-  unsigned long int scan[4096];
+  uint32_t scan[4096];
   clock_t cps = CLOCKS_PER_SEC;
   FILE *dumpfp;
 
@@ -48,7 +49,7 @@ void process_scan_set( int scan_length, int n_scans, FILE *logfp, char *dumpfile
   tcp_send(cmdbuf);
   while (tcp_send("EN\r\n") == 503 ) sleep(1);
   for (;;) {
-    n = udp_receive(scan);
+    n = udp_receive(scan, scan_size);
     if ( n == scan_size ) break;
     fprintf(stderr, "Expected %d bytes, received %d\n", scan_size, n );
   }
@@ -56,13 +57,13 @@ void process_scan_set( int scan_length, int n_scans, FILE *logfp, char *dumpfile
   start_time = clock( );
   // read a bunch of scans
   for (i = 0; i < n_scans; i++ ) {
-    n = udp_receive(scan );
+    n = udp_receive(scan, scan_size);
     if ( n != scan_size )
       fprintf( stderr, "!Expected %d bytes, received %d\n", scan_size, n);
     else if ( i == 0 ) {
       printf("  First scan = %08lX\n", scan[scan_length] );
     } else {
-      unsigned long int dS = scan[scan_length] - last_scan;
+      uint32_t dS = scan[scan_length] - last_scan;
       sdS += dS;
       sdS2 += dS*dS;
     }

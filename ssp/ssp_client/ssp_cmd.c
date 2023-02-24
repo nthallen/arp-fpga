@@ -31,7 +31,7 @@
 #include <math.h>
 #include <signal.h>
 #include <string.h>
-#include "nortlib.h"
+#include "nl.h"
 #include "mlf.h"
 
 int verbosity = 1;
@@ -39,13 +39,13 @@ int verbosity = 1;
 static void stop_log(void) {
   pid_t ssp_log_pid;
   FILE *fp = fopen( PID_FILE, "r" );
-  if ( fp == 0 ) nl_error( 2, "PID_FILE %s not found", PID_FILE );
+  if ( fp == 0 ) msg( 2, "PID_FILE %s not found", PID_FILE );
   else {
     if ( fscanf(fp, "%d", &ssp_log_pid) == 1 ) {
-      nl_error( 0, "sending SIGINT to pid %d", ssp_log_pid );
+      msg( 0, "sending SIGINT to pid %d", ssp_log_pid );
       kill(ssp_log_pid, SIGINT);
     } else {
-      nl_error( 2, "Problem reading PID_FILE" );
+      msg( 2, "Problem reading PID_FILE" );
     }
     fclose(fp);
   }
@@ -60,7 +60,7 @@ int main( int argc, char **argv ) {
   // open TCP connection to SSP board
   ssp_hostname = getenv("SSP_HOSTNAME");
   if ( ssp_hostname == 0 ) ssp_hostname = "10.0.0.200";
-  else nl_error(0, "Addressing SSP %s", ssp_hostname );
+  else msg(0, "Addressing SSP %s", ssp_hostname );
   if ( strcmp(ssp_hostname, "simulator") == 0 )
     simulate = 1;
   else tcp_create(ssp_hostname);
