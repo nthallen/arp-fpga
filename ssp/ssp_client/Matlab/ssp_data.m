@@ -45,7 +45,7 @@ end
 
 
 % --- Executes just before ssp_data is made visible.
-function ssp_data_OpeningFcn(hObject, eventdata, handles, varargin)
+function ssp_data_OpeningFcn(hObject, ~, handles, varargin)
 % This function has no output args, see OutputFcn.
 % hObject    handle to figure
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -81,7 +81,7 @@ guidata(hObject, handles);
 
 
 % --- Outputs from this function are returned to the command line.
-function varargout = ssp_data_OutputFcn(hObject, eventdata, handles) 
+function varargout = ssp_data_OutputFcn(~, ~, handles) 
 % varargout  cell array for returning output args (see VARARGOUT);
 % hObject    handle to figure
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -92,14 +92,14 @@ varargout{1} = handles.output;
 
 
 % --- Executes on button press in start_btn.
-function start_btn_Callback(hObject, eventdata, handles)
+function start_btn_Callback(hObject, ~, handles)
 % hObject    handle to start_btn (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 if ~handles.data.stopped
   set(hObject,'enable','off');
   handles.data.stopped = 1;
-  system('start ssp_cmd DA');
+  cyg_system('ssp_cmd DA');
   guidata(hObject, handles);
   return;
 end
@@ -147,7 +147,7 @@ if get(handles.Ringdown,'Value')
 else
   RD = '';
 end
-cmd = sprintf('start %s %sNS:%d NA:%d NC:%d NF:%d NE:%d %s IX:%d', ...
+cmd = sprintf('%s %sNS:%d NA:%d NC:%d NF:%d NE:%d %s IX:%d', ...
   handles.data.logcmd, RD, NS, NA, NC, NF, NE, TC, IX);
 fprintf(1, '%s\n', cmd );
 set(handles.NS, 'enable', 'off');
@@ -168,7 +168,7 @@ end
 if ~exist('CPCI14/ssp.log','file')
   ssp_log_fd = fopen('CPCI14/ssp.log','a');
   if ssp_log_fd < 0
-    error('Unable to create CPCI14/ssp.log');
+    error('Unable to create CPCI14/ssp.log');d
   end
   fclose(ssp_log_fd);
 end
@@ -191,8 +191,8 @@ else
     set( handles.RD_readout, 'visible', 'off');
     set( handles.RD_units, 'visible','off');
 end
-
-system(cmd);
+% cmd
+cyg_start(cmd);
 pause(1);
 % files = dir('CPCI14/ssp_*.lock');
 % if length(files) > 1
@@ -409,11 +409,11 @@ function Auto_Callback(hObject, eventdata, handles)
 % Hint: get(hObject,'Value') returns toggle state of Auto
 isauto = get(hObject,'Value');
 if isauto
-  cmd = 'start ssp_cmd AE';
+  cmd = 'ssp_cmd AE';
 else
-  cmd = 'start ssp_cmd AD';
+  cmd = 'ssp_cmd AD';
 end
-[status,result] = system(cmd);
+cyg_system(cmd);
 
 
 % --- Executes on button press in Log.
@@ -444,10 +444,7 @@ function TriggerSource_Callback(hObject, eventdata, handles)
 cmd = TriggerSource_Command(handles);
 if ~isempty(cmd)
     fprintf(1,'Trigger command: "%s"\n', cmd);
-    [status,result] = system(sprintf('ssp_cmd %s', cmd));
-    if status ~= 0
-        errordlg(sprintf('system(%s) returned error', cmd));
-    end
+    [status,result] = cyg_system(sprintf('ssp_cmd %s', cmd));
 end
 
 % --- Executes during object creation, after setting all properties.
@@ -769,3 +766,17 @@ function RD_units_ButtonDownFcn(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 RD_readout_ButtonDownFcn(hObject, eventdata, handles);
+
+function cyg_system(cmd)
+fullcmd = sprintf('%s -c "/usr/local/bin/ssp_wrapper.sh %s"', 'c:\cygwin64\bin\bash', cmd);
+[status] = system(fullcmd);
+if status ~= 0
+  errordlg(sprintf('system(%s) returned error', fullcmd));
+end
+
+function cyg_start(cmd)
+fullcmd = sprintf('start %s -c "/usr/local/bin/ssp_wrapper.sh %s"', 'c:\cygwin64\bin\bash', cmd);
+[status,result] = system(fullcmd);
+if status ~= 0
+  errordlg(sprintf('system(%s) returned error', fullcmd));
+end
