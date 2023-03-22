@@ -34,6 +34,10 @@
 #include "nl.h"
 #include "mlf.h"
 
+#define LOGROOT "LOG"
+#define PID_FILE LOGROOT "/ssp_log.pid"
+#define HDR_LOG LOGROOT "/ssp.log"
+
 int verbosity = 1;
 
 static void stop_log(void) {

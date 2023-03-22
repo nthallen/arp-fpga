@@ -30,14 +30,18 @@
 #include "nl.h"
 #include "mlf.h"
 
+#define LOGROOT "LOG"
+#define PID_FILE LOGROOT "/ssp_log.pid"
+#define HDR_LOG LOGROOT "/ssp.log"
+
 FILE *hdr_fp;
 
 int verbosity = 1;
 static int RD = 0;
 
 /* If index == 0, this is a cleanup operation */
-void move_lock( unsigned long index ) {
-  static unsigned long prev_index;
+void move_lock( uint32_t index ) {
+  static uint32_t prev_index;
   static int initialized = 0;
   char oldname[80], newname[80];
   
@@ -72,7 +76,7 @@ void sigint_handler(int sig) {
   siglongjmp(env,1);
 }
 
-static long int scan0 = 6, scan1;
+static int32_t scan0 = 6, scan1;
 // static long scan5 = 0l;
 static int raw_length;
 
@@ -183,7 +187,7 @@ int main( int argc, char **argv ) {
   move_lock(1L);
   if ( sigsetjmp( env, 1 ) == 0 ) {
     int i;
-    unsigned long index;
+    uint32_t index;
     
     atexit(cleanup);
     signal(SIGINT, sigint_handler);
@@ -251,7 +255,8 @@ int main( int argc, char **argv ) {
     while (tcp_send("EN\r\n") == 503 ) sleep(1);
     tcp_close();
     
-    int cur_word, scan_serial_number, frag_hold, scan_OK;
+    int cur_word, scan_OK;
+    uint32_t scan_serial_number, frag_hold;
     cur_word = 0;
     scan_OK = 1;
     for (;;) {
@@ -266,9 +271,9 @@ int main( int argc, char **argv ) {
       } else if ( !( scan_buf[cur_word] & SSP_FRAG_FLAG ) ) {
         msg( 2, "Expected scan fragment" );
       } else {
-        int frag_hdr = scan_buf[cur_word];
-        int frag_offset = frag_hdr & 0xFFFFL;
-        int frag_sn;
+        uint32_t frag_hdr = scan_buf[cur_word];
+        uint32_t frag_offset = frag_hdr & 0xFFFFL;
+        uint32_t frag_sn;
         if ( frag_offset != cur_word ) {
           if ( frag_offset == 0 ) {
             memmove( scan_buf, scan_buf+cur_word, n );

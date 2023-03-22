@@ -1,5 +1,6 @@
 #ifndef SSP_AD_H_INCLUDED
 #define SSP_AD_H_INCLUDED
+#include <stdint.h>
 
 #define SSP_MAX_SAMPLES 4096
 #define SSP_MAX_PREADD 256
@@ -24,28 +25,28 @@
 #define SSP_STATUS_AE 0x8000
 
 #define SSP_MAX_SCAN_LENGTH (7+SSP_MAX_CHANNELS*SSP_MAX_SAMPLES)
-#define SSP_MAX_SCAN_SIZE (SSP_MAX_SCAN_LENGTH*sizeof(int))
+#define SSP_MAX_SCAN_SIZE (SSP_MAX_SCAN_LENGTH*sizeof(int32_t))
 #define SSP_SERVER_PORT 1500
 #define SSP_MAX_CTRL_MSG 80
 
 typedef struct {
-  unsigned short NWordsHdr;
-  unsigned short FormatVersion;
-  unsigned char  NChannels;
-  unsigned char  NF;
-  unsigned short NSamples;
-  unsigned short NCoadd;
-  unsigned short NAvg;
-  unsigned short NSkL;
-  unsigned short NSkP;
-  unsigned long  ScanNum;
-  signed short T_HtSink;
-  signed short T_FPGA;
+  uint16_t NWordsHdr;
+  uint16_t FormatVersion;
+  uint8_t  NChannels;
+  uint8_t  NF;
+  uint16_t NSamples;
+  uint16_t NCoadd;
+  uint16_t NAvg;
+  uint16_t NSkL;
+  uint16_t NSkP;
+  uint32_t ScanNum;
+  int16_t  T_HtSink;
+  int16_t  T_FPGA;
 } __attribute__((packed)) ssp_scan_header_t;
 
 #define MAX_UDP_PAYLOAD 1472
-#define SSP_MAX_FRAG_PAYLOAD (MAX_UDP_PAYLOAD-sizeof(long int))
-#define SSP_MAX_FRAG_LENGTH (SSP_MAX_FRAG_PAYLOAD/sizeof(long int))
+#define SSP_MAX_FRAG_PAYLOAD (MAX_UDP_PAYLOAD-sizeof(int32_t))
+#define SSP_MAX_FRAG_LENGTH (SSP_MAX_FRAG_PAYLOAD/sizeof(int32_t))
 #define SSP_FRAG_FLAG 0x80000000L
 #define SSP_LAST_FRAG_FLAG 0x40000000L
 #define SSP_MAX_FRAGS ((SSP_MAX_SCAN_SIZE+SSP_MAX_FRAG_PAYLOAD-1)/SSP_MAX_FRAG_PAYLOAD)

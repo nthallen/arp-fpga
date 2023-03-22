@@ -24,7 +24,10 @@ extern int tcp_close(void);
 #define RECV_BUF_SIZE SSP_MAX_CTRL_MSG
 
 extern int verbosity;
+/*
 #define LOGROOT "CPCI14"
 #define PID_FILE LOGROOT "/ssp_log.pid"
 #define HDR_LOG LOGROOT "/ssp.log"
+*/
+
 #endif

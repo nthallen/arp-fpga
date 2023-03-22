@@ -162,19 +162,19 @@ set(handles.CAOVF, 'visible','off');
 set(handles.PAOOR, 'visible','off');
 PAOOR = 0;
 CAOVF = 0;
-if ~exist('CPCI14','dir')
-  mkdir('CPCI14');
+if ~exist('LOG','dir')
+  mkdir('LOG');
 end
-if ~exist('CPCI14/ssp.log','file')
-  ssp_log_fd = fopen('CPCI14/ssp.log','a');
+if ~exist('LOG/ssp.log','file')
+  ssp_log_fd = fopen('LOG/ssp.log','a');
   if ssp_log_fd < 0
-    error('Unable to create CPCI14/ssp.log');d
+    error('Unable to create LOG/ssp.log');d
   end
   fclose(ssp_log_fd);
 end
-ssp_log_fd = fopen('CPCI14/ssp.log', 'r');
+ssp_log_fd = fopen('LOG/ssp.log', 'r');
 if ( ssp_log_fd < 0 )
-  errordlg('Could not read CPCI14/ssp.log');
+  errordlg('Could not read LOG/ssp.log');
   return;
 end
 fseek(ssp_log_fd, 0, 'eof'); % seek to the end
@@ -194,7 +194,7 @@ end
 % cmd
 cyg_start(cmd);
 pause(1);
-% files = dir('CPCI14/ssp_*.lock');
+% files = dir('LOG/ssp_*.lock');
 % if length(files) > 1
 %   errordlg('More than one lock file found');
 %   return;
@@ -217,8 +217,8 @@ index = handles.data.index;
 SN = -1;
 while 1
   handles = guidata(hObject);
-  path = mlf_path( 'CPCI14', index );
-  lockfile = sprintf('CPCI14/ssp_%d.lock', index);
+  path = mlf_path( 'LOG', index );
+  lockfile = sprintf('LOG/ssp_%d.lock', index);
   if exist( path, 'file' ) && ~exist( lockfile, 'file')
     D = loadbin(path);
     fseek(ssp_log_fd, ftell(ssp_log_fd), 'bof');
@@ -377,7 +377,7 @@ while 1
         title(sprintf('Index %d', index));
     end
     index = index+1;
-  elseif handles.data.stopped && ~exist('CPCI14/ssp_log.pid','file')
+  elseif handles.data.stopped && ~exist('LOG/ssp_log.pid','file')
     break;
   else
     pause( .1 );
@@ -444,7 +444,7 @@ function TriggerSource_Callback(hObject, eventdata, handles)
 cmd = TriggerSource_Command(handles);
 if ~isempty(cmd)
     fprintf(1,'Trigger command: "%s"\n', cmd);
-    [status,result] = cyg_system(sprintf('ssp_cmd %s', cmd));
+    cyg_system(sprintf('ssp_cmd %s', cmd));
 end
 
 % --- Executes during object creation, after setting all properties.
