@@ -72,12 +72,12 @@ void process_scan_set( int scan_length, int n_scans, FILE *logfp, char *dumpfile
       printf( "Dumping Scan %d/%d: %ld\n", i, n_scans, last_scan );
       dumpfp = fopen(dumpfile, "w");
       if (dumpfp == NULL) {
-	fprintf(stderr, "Cannot open dump file '%s'\n", dumpfile);
+        fprintf(stderr, "Cannot open dump file '%s'\n", dumpfile);
       } else {
-	// fprintf( dumpfp, "Scan %d\n", i );
-	for ( j = 0; j < scan_length; j++ )
-	  fprintf( dumpfp, "%10ld\n", scan[j] );
-	fclose(dumpfp);
+        // fprintf( dumpfp, "Scan %d\n", i );
+        for ( j = 0; j < scan_length; j++ )
+          fprintf( dumpfp, "%10ld\n", scan[j] );
+        fclose(dumpfp);
       }
     }
   }
