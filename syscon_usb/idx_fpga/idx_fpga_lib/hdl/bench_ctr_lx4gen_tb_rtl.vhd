@@ -14,7 +14,8 @@ USE ieee.std_logic_arith.all;
 
 ENTITY bench_ctr_lx4gen IS
    GENERIC (
-      PRE_DIVISOR : unsigned (19 DOWNTO 0) := X"00008"
+      PRE_DIVISOR : unsigned (19 DOWNTO 0) := X"1E847";
+      DIVISOR_VAL : unsigned(3 DOWNTO 0) := X"1"
    );
 END bench_ctr_lx4gen;
 
@@ -73,9 +74,9 @@ BEGIN
       wait for 40 ns;
       while Done = '0' loop
         F8M <= '0';
-        wait for 62.5 ns;
+        wait for 62 ns;
         F8M <= '1';
-        wait for 62.5 ns;
+        wait for 63 ns;
       end loop;
       wait;
       -- pragma synthesis_on
@@ -84,12 +85,12 @@ BEGIN
     test_proc : Process
     Begin
       Done <= '0';
-      Divisor <= X"1";
+      Divisor <= Divisor_Val;
       rst <= '1';
       -- pragma synthesis_off
       wait for 300 ns;
       rst <= '0';
-      wait for 4000 ns;
+      wait for 1250 ms;
       Done <= '1';
       wait;
       -- pragma synthesis_on
