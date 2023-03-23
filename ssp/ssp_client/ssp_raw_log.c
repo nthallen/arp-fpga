@@ -77,14 +77,13 @@ void sigint_handler(int sig) {
 }
 
 static int32_t scan0 = 6, scan1;
-// static long scan5 = 0l;
 static int raw_length;
 
 typedef struct {
   ssp_scan_header_t hdr;
   uint32_t idata[SSP_CLIENT_BUF_LENGTH-6];
 } ssp_raw_scan;
-  
+
 static void output_scan( ssp_raw_scan *scan, mlf_def_t *mlf ) {
   int i, j;
   FILE *ofp;
@@ -123,7 +122,7 @@ static void output_scan( ssp_raw_scan *scan, mlf_def_t *mlf ) {
       scan->hdr.NWordsHdr, scan->hdr.FormatVersion, scan->hdr.NChannels, scan->hdr.NF,
       scan->hdr.NSamples, scan->hdr.NCoadd, scan->hdr.NAvg, scan->hdr.NSkL, scan->hdr.NSkP,
       scan->hdr.ScanNum, (scan->hdr.T_HtSink & 0xFFE0)/256.,
-      (scan->hdr.T_FPGA>>3)/16., (uint32_t)scan->idata[my_scan_length] );
+      (scan->hdr.T_FPGA>>3)/16., (uint32_t)scan->idata[raw_length-7] );
     for ( j = 0; j < scan->hdr.NChannels; ++j ) {
       Ringdown_t *rdf = ringdown_fit(&scan->hdr, fdata[0] + j*scan->hdr.NSamples);
       fprintf( hdr_fp, " %.3lf %.3lf %.4lf %.4lf", rdf->tau, rdf->dtau, rdf->b, rdf->a );
@@ -135,30 +134,28 @@ static void output_scan( ssp_raw_scan *scan, mlf_def_t *mlf ) {
       scan->hdr.NWordsHdr, scan->hdr.FormatVersion, scan->hdr.NChannels, scan->hdr.NF,
       scan->hdr.NSamples, scan->hdr.NCoadd, scan->hdr.NAvg, scan->hdr.NSkL, scan->hdr.NSkP,
       scan->hdr.ScanNum, (scan->hdr.T_HtSink & 0xFFE0)/256.,
-      (scan->hdr.T_FPGA>>3)/16., (uint32_t)scan->idata[my_scan_length] );
+      (scan->hdr.T_FPGA>>3)/16., (uint32_t)scan->idata[raw_length-7] );
   }
   fflush(hdr_fp);
   
-  { uint32_t n_l;
-    n_l = scan->hdr.NSamples;
-    fwrite( &n_l, sizeof(uint32_t), 1, ofp );
-    n_l = scan->hdr.NChannels;
-    fwrite( &n_l, sizeof(uint32_t), 1, ofp );
-  }
+  if (ofp) {
+    { uint32_t n_l;
+      n_l = scan->hdr.NSamples;
+      fwrite( &n_l, sizeof(uint32_t), 1, ofp );
+      n_l = scan->hdr.NChannels;
+      fwrite( &n_l, sizeof(uint32_t), 1, ofp );
+    }
 
-  fwrite( fdata, scan->hdr.NChannels*scan->hdr.NSamples*sizeof(float), 1, ofp );
-  fclose(ofp);
+    fwrite( fdata, scan->hdr.NChannels*scan->hdr.NSamples*sizeof(float), 1, ofp );
+    fclose(ofp);
+  } else {
+    msg(2, "Could not write scan %lu", mlf->index);
+  }
   move_lock(mlf->index+1);
   if ( difftime(now, last_rpt) > 5 ) {
     msg( 0, "Recorded Scan %lu", mlf->index );
     last_rpt = now;
   }
-  
-  // Perform some sanity checks on the inbound scan
-  //if ( (scan[1] & 0xFFFF00FF) != scan1 )
-  //  msg( 1, "%lu: scan[1] = %08lX (not %08lX)\n", mlf->index, scan[1], scan1 );
-  //if ( scan->hdr.FormatVersion == 0 && scan[5] != scan5 )
-  //  msg( 1, "%lu: scan[5] = %08lX (not %08lX)\n", mlf->index, scan[5], scan5 );
 }
 
 static int32_t scan_buf[SSP_CLIENT_BUF_LENGTH];
@@ -171,8 +168,12 @@ int main( int argc, char **argv ) {
   int scan_size, n_channels;
   int RD_n_skip, RD_n_off;
   char *ssp_hostname;
+  FILE *ofp;
+  time_t now;
+  static time_t last_rpt = 0;
 
   mlf_def_t *mlf = mlf_init( 3, 60, 1, LOGROOT, "dat", NULL );
+  mlf_def_t *mlfp = mlf_init( 3, 60, 1, "PKT", "pkt", NULL );
   msg( 0, "SSP_CLIENT_BUF_LENGTH = %d", SSP_CLIENT_BUF_LENGTH );
   ssp_hostname = getenv("SSP_HOSTNAME");
   if ( ssp_hostname == 0 ) ssp_hostname = "10.0.0.200";
@@ -260,58 +261,76 @@ int main( int argc, char **argv ) {
     uint32_t scan_serial_number, frag_hold;
     cur_word = 0;
     scan_OK = 1;
+    ofp = mlf_next_file(mlfp);
+    now = time(0);
     for (;;) {
-      int n = udp_receive(scan_buf+cur_word,
+      int32_t n = udp_receive(scan_buf+cur_word,
         cur_word ? MAX_UDP_PAYLOAD : SSP_MAX_SCAN_SIZE);
       if ( n < 0 )
         msg( 2, "Error from udp_receive: %d", errno );
-      else if ( cur_word == 0 && !(*scan_buf & SSP_FRAG_FLAG) ) {
-        if ( n == scan_size ) output_scan((ssp_raw_scan *)scan_buf, mlf);
-        else msg( mlf->index ? 2 : 1,
-          "Expected %d bytes, received %d", scan_size, n );
-      } else if ( !( scan_buf[cur_word] & SSP_FRAG_FLAG ) ) {
-        msg( 2, "Expected scan fragment" );
-      } else {
-        uint32_t frag_hdr = scan_buf[cur_word];
-        uint32_t frag_offset = frag_hdr & 0xFFFFL;
-        uint32_t frag_sn;
-        if ( frag_offset != cur_word ) {
-          if ( frag_offset == 0 ) {
-            memmove( scan_buf, scan_buf+cur_word, n );
-            if ( scan_OK ) msg( 2, "Lost end of scan." );
+      else {
+        fwrite(&n, sizeof(int32_t), 1, ofp);
+        fwrite(scan_buf+cur_word, n, 1, ofp);
+        if ( cur_word == 0 && !(*scan_buf & SSP_FRAG_FLAG) ) {
+          if ( n == scan_size )
+            output_scan((ssp_raw_scan *)scan_buf, mlf);
+          else {
+            msg( mlf->index ? 2 : 1,
+              "Expected %d bytes, received %d", scan_size, n );
+          }
+        } else if ( !( scan_buf[cur_word] & SSP_FRAG_FLAG ) ) {
+          msg( 2, "Expected scan fragment" );
+        } else {
+          uint32_t frag_hdr = scan_buf[cur_word];
+          uint32_t frag_offset = frag_hdr & 0xFFFFL;
+          uint32_t frag_sn;
+          if ( frag_offset != cur_word ) {
+            if ( frag_offset == 0 ) {
+              memmove( scan_buf, scan_buf+cur_word, n );
+              if ( scan_OK ) msg( 2, "Lost end of scan." );
+              cur_word = 0;
+              scan_OK = 1;
+            } else if ( scan_OK ) {
+              msg( 2, "Lost fragment" );
+              scan_OK = 0;
+            }
+          }
+          frag_sn = frag_hdr & 0x3FFF0000L;
+          if ( cur_word == 0 ) scan_serial_number = frag_sn;
+          else {
+            scan_buf[cur_word] = frag_hold;
+            if ( scan_OK && scan_serial_number != frag_sn ) {
+              scan_OK = 0;
+              msg( 2, "Lost data: SN skip" );
+            }
+          }
+          cur_word = frag_offset + (n/sizeof(uint32_t)) - 1;
+          if ( frag_hdr & SSP_LAST_FRAG_FLAG ) {
+            if ( scan_OK ) {
+              if ( cur_word == raw_length )
+                output_scan( (ssp_raw_scan *)(scan_buf+1), mlf );
+              else msg( 2,
+                "Scan length error: expected %d words, received %d",
+                raw_length, cur_word );
+            }
             cur_word = 0;
             scan_OK = 1;
-          } else if ( scan_OK ) {
-            msg( 2, "Lost fragment" );
-            scan_OK = 0;
+          } else {
+            frag_hold = scan_buf[cur_word];
+            continue;
           }
-        }
-        frag_sn = frag_hdr & 0x3FFF0000L;
-        if ( cur_word == 0 ) scan_serial_number = frag_sn;
-        else {
-          scan_buf[cur_word] = frag_hold;
-          if ( scan_OK && scan_serial_number != frag_sn ) {
-            scan_OK = 0;
-            msg( 2, "Lost data: SN skip" );
+          if ( cur_word + SSP_MAX_FRAG_LENGTH > SSP_CLIENT_BUF_LENGTH ) {
+            msg( 2, "Bad fragment offset: %d(%d)", frag_offset, n );
+            cur_word = 0;
+            scan_OK = 1;
           }
-        }
-        cur_word = frag_offset + (n/sizeof(uint32_t)) - 1;
-        if ( frag_hdr & SSP_LAST_FRAG_FLAG ) {
-          if ( scan_OK ) {
-            if ( cur_word == raw_length )
-              output_scan( (ssp_raw_scan *)(scan_buf+1), mlf );
-            else msg( 2, "Scan length error: expected %d words, received %d",
-              raw_length, cur_word );
+          fclose(ofp);
+          if ( difftime(now, last_rpt) > 5 ) {
+            msg( 0, "Recorded Packets %lu", mlfp->index );
+            last_rpt = now;
           }
-          cur_word = 0;
-          scan_OK = 1;
-        } else {
-          frag_hold = scan_buf[cur_word];
-        }
-        if ( cur_word + SSP_MAX_FRAG_LENGTH > SSP_CLIENT_BUF_LENGTH ) {
-          msg( 2, "Bad fragment offset: %d(%d)", frag_offset, n );
-          cur_word = 0;
-          scan_OK = 1;
+          ofp = mlf_next_file(mlfp);
+          now = time(0);
         }
       }
     }

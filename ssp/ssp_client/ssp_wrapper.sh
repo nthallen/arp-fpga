@@ -7,7 +7,8 @@ export SSP_HOSTNAME=10.0.0.211
 case $cmd in
   ssp_cmd) :;;
   ssp_log) :;;
+  ssp_raw_log) :;;
   *) echo "Invalid command '$cmd'" >&2; exit 1;;
 esac
-$cmd $*
+$cmd $* 2>> ssp_err.log
 echo "Result was $?"
